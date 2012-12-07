@@ -25,6 +25,6 @@ JHtml::_('behavior.tooltip');
 
 <?php if (JFactory::getUser()->id == $this->data->id) : ?>
 <a href="<?php echo JRoute::_('index.php?option=com_users&task=profile.edit&user_id='.(int) $this->data->id);?>">
-	<?php echo JText::_('COM_EXTUSER_Edit_Profile'); ?></a>
+	<?php echo JText::_('COM_USERS_Edit_Profile'); ?></a>
 <?php endif; ?>
 </div>

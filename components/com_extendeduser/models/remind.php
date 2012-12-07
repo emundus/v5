@@ -112,19 +112,19 @@ class UsersModelRemind extends JModelForm
 
 		// Check for an error.
 		if ($db->getErrorNum()) {
-			$this->setError(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
+			$this->setError(JText::sprintf('COM_USERS_DATABASE_ERROR', $db->getErrorMsg()), 500);
 			return false;
 		}
 
 		// Check for a user.
 		if (empty($user)) {
-			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 			return false;
 		}
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
-			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			$this->setError(JText::_('COM_USERS_USER_BLOCKED'));
 			return false;
 		}
 
@@ -145,11 +145,11 @@ class UsersModelRemind extends JModelForm
 		$data['link_html']	= JRoute::_($link, true, $mode);
 
 		$subject = JText::sprintf(
-			'COM_EXTUSER_EMAIL_USERNAME_REMINDER_SUBJECT',
+			'COM_USERS_EMAIL_USERNAME_REMINDER_SUBJECT',
 			$data['sitename']
 		);
 		$body = JText::sprintf(
-			'COM_EXTUSER_EMAIL_USERNAME_REMINDER_BODY',
+			'COM_USERS_EMAIL_USERNAME_REMINDER_BODY',
 			$data['sitename'],
 			$data['username'],
 			$data['link_text']
@@ -160,7 +160,7 @@ class UsersModelRemind extends JModelForm
 
 		// Check for an error.
 		if ($return !== true) {
-			$this->setError(JText::_('COM_EXTUSER_MAIL_FAILED'), 500);
+			$this->setError(JText::_('COM_USERS_MAIL_FAILED'), 500);
 			return false;
 		}
 

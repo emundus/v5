@@ -45,7 +45,7 @@ class UsersControllerRemind extends UsersController
 			$route	= 'index.php?option=com_users&view=remind'.$itemid;
 
 			// Go back to the request form.
-			$message = JText::sprintf('COM_EXTUSER_REMIND_REQUEST_FAILED', $model->getError());
+			$message = JText::sprintf('COM_USERS_REMIND_REQUEST_FAILED', $model->getError());
 			$this->setRedirect(JRoute::_($route, false), $message, 'notice');
 			return false;
 		} else {
@@ -56,7 +56,7 @@ class UsersControllerRemind extends UsersController
 			$route	= 'index.php?option=com_users&view=login'.$itemid;
 
 			// Proceed to step two.
-			$message = JText::_('COM_EXTUSER_REMIND_REQUEST_SUCCESS');
+			$message = JText::_('COM_USERS_REMIND_REQUEST_SUCCESS');
 			$this->setRedirect(JRoute::_($route, false), $message);
 			return true;
 		}

@@ -36,7 +36,7 @@ JHtml::_('behavior.noframes');
 				<dt>
 					<?php echo $field->label; ?>
 					<?php if (!$field->required && $field->type!='Spacer'): ?>
-						<span class="optional"><?php echo JText::_('COM_EXTUSER_OPTIONAL'); ?></span>
+						<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
 					<?php endif; ?>
 				</dt>
 				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;"; ?></dd>
@@ -48,7 +48,7 @@ JHtml::_('behavior.noframes');
 <?php endforeach;?>
 		<div>
 			<button type="submit" class="validate"><?php echo JText::_('JREGISTER');?></button>
-			<?php echo JText::_('COM_EXTUSER_OR');?>
+			<?php echo JText::_('COM_USERS_OR');?>
 			<a href="<?php echo JRoute::_('');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
 			<input type="hidden" name="option" value="com_users" />
 			<input type="hidden" name="task" value="registration.register" />

@@ -24,7 +24,7 @@ abstract class JHtmlUsers
 			$value = trim($value);
 		}
 		if (empty($value)) {
-			return JText::_('COM_EXTUSER_PROFILE_VALUE_NOT_FOUND');
+			return JText::_('COM_USERS_PROFILE_VALUE_NOT_FOUND');
 		}
 		else {
 			return htmlspecialchars($value);

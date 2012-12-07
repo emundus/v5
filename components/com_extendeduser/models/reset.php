@@ -144,7 +144,7 @@ class UsersModelReset extends JModelForm
 
 		// Check the token and user id.
 		if (empty($token) || empty($userId)) {
-			return new JException(JText::_('COM_EXTUSER_RESET_COMPLETE_TOKENS_MISSING'), 403);
+			return new JException(JText::_('COM_USERS_RESET_COMPLETE_TOKENS_MISSING'), 403);
 		}
 
 		// Get the user object.
@@ -152,13 +152,13 @@ class UsersModelReset extends JModelForm
 
 		// Check for a user and that the tokens match.
 		if (empty($user) || $user->activation !== $token) {
-			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 			return false;
 		}
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
-			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			$this->setError(JText::_('COM_USERS_USER_BLOCKED'));
 			return false;
 		}
 
@@ -174,7 +174,7 @@ class UsersModelReset extends JModelForm
 
 		// Save the user to the database.
 		if (!$user->save(true)) {
-			return new JException(JText::sprintf('COM_EXTUSER_USER_SAVE_FAILED', $user->getError()), 500);
+			return new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
 		}
 
 		// Flush the user data from the session.
@@ -230,19 +230,19 @@ class UsersModelReset extends JModelForm
 
 		// Check for an error.
 		if ($db->getErrorNum()) {
-			return new JException(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
+			return new JException(JText::sprintf('COM_USERS_DATABASE_ERROR', $db->getErrorMsg()), 500);
 		}
 
 		// Check for a user.
 		if (empty($user)) {
-			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 			return false;
 		}
 
 		$parts	= explode( ':', $user->activation );
 		$crypt	= $parts[0];
 		if (!isset($parts[1])) {
-			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 			return false;
 		}
 		$salt	= $parts[1];
@@ -251,13 +251,13 @@ class UsersModelReset extends JModelForm
 		// Verify the token
 		if (!($crypt == $testcrypt))
 		{
-			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 			return false;
 		}
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
-			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			$this->setError(JText::_('COM_USERS_USER_BLOCKED'));
 			return false;
 		}
 
@@ -317,13 +317,13 @@ class UsersModelReset extends JModelForm
 
 		// Check for an error.
 		if ($db->getErrorNum()) {
-			$this->setError(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
+			$this->setError(JText::sprintf('COM_USERS_DATABASE_ERROR', $db->getErrorMsg()), 500);
 			return false;
 		}
 
 		// Check for a user.
 		if (empty($userId)) {
-			$this->setError(JText::_('COM_EXTUSER_INVALID_EMAIL'));
+			$this->setError(JText::_('COM_USERS_INVALID_EMAIL'));
 			return false;
 		}
 
@@ -332,20 +332,20 @@ class UsersModelReset extends JModelForm
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
-			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			$this->setError(JText::_('COM_USERS_USER_BLOCKED'));
 			return false;
 		}
 
 		// Make sure the user isn't a Super Admin.
 		if ($user->authorise('core.admin')) {
-			$this->setError(JText::_('COM_EXTUSER_REMIND_SUPERADMIN_ERROR'));
+			$this->setError(JText::_('COM_USERS_REMIND_SUPERADMIN_ERROR'));
 			return false;
 		}
 		
 		// Make sure the user has not exceeded the reset limit
 		if (!$this->checkResetLimit($user)) {
 			$resetLimit = (int) JFactory::getApplication()->getParams()->get('reset_time');
-			$this->setError(JText::plural('COM_EXTUSER_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit));
+			$this->setError(JText::plural('COM_USERS_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit));
 			return false;
 		}
 		// Set the confirmation token.
@@ -357,7 +357,7 @@ class UsersModelReset extends JModelForm
 
 		// Save the user to the database.
 		if (!$user->save(true)) {
-			return new JException(JText::sprintf('COM_EXTUSER_USER_SAVE_FAILED', $user->getError()), 500);
+			return new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
 		}
 
 		// Assemble the password reset confirmation link.
@@ -376,12 +376,12 @@ class UsersModelReset extends JModelForm
 		$data['token']		= $token;
 
 		$subject = JText::sprintf(
-			'COM_EXTUSER_EMAIL_PASSWORD_RESET_SUBJECT',
+			'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT',
 			$data['sitename']
 		);
 
 		$body = JText::sprintf(
-			'COM_EXTUSER_EMAIL_PASSWORD_RESET_BODY',
+			'COM_USERS_EMAIL_PASSWORD_RESET_BODY',
 			$data['sitename'],
 			$data['token'],
 			$data['link_text']
@@ -391,7 +391,7 @@ class UsersModelReset extends JModelForm
 		$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body);
 		// Check for an error.
 		if ($return !== true) {
-			return new JException(JText::_('COM_EXTUSER_MAIL_FAILED'), 500);
+			return new JException(JText::_('COM_USERS_MAIL_FAILED'), 500);
 		}
 
 		return true;

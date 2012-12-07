@@ -50,7 +50,7 @@ class UsersModelRegistration extends JModelForm
 
 		// Check for a valid user id.
 		if (!$userId) {
-			$this->setError(JText::_('COM_EXTUSER_ACTIVATION_TOKEN_NOT_FOUND'));
+			$this->setError(JText::_('COM_USERS_ACTIVATION_TOKEN_NOT_FOUND'));
 			return false;
 		}
 
@@ -77,13 +77,13 @@ class UsersModelRegistration extends JModelForm
 			$data['sitename'] = $config->get('sitename');
 			$user->setParam('activate', 1);
 			$emailSubject	= JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_SUBJECT',
+				'COM_USERS_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_SUBJECT',
 				$data['name'],
 				$data['sitename']
 			);
 
 			$emailBody = JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_BODY',
+				'COM_USERS_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_BODY',
 				$data['sitename'],
 				$data['name'],
 				$data['email'],
@@ -109,7 +109,7 @@ class UsersModelRegistration extends JModelForm
 
 					// Check for an error.
 					if ($return !== true) {
-						$this->setError(JText::_('COM_EXTUSER_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+						$this->setError(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
 						return false;
 					}
 				}
@@ -132,13 +132,13 @@ class UsersModelRegistration extends JModelForm
 			$data['sitename'] = $config->get('sitename');
 			$data['siteurl']	= JUri::base();
 			$emailSubject	= JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT',
+				'COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT',
 				$data['name'],
 				$data['sitename']
 			);
 
 			$emailBody = JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+				'COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
 				$data['name'],
 				$data['siteurl'],
 				$data['username']
@@ -148,7 +148,7 @@ class UsersModelRegistration extends JModelForm
 
 			// Check for an error.
 			if ($return !== true) {
-				$this->setError(JText::_('COM_EXTUSER_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+				$this->setError(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
 				return false;
 			}
 		}
@@ -160,7 +160,7 @@ class UsersModelRegistration extends JModelForm
 
 		// Store the user object.
 		if (!$user->save()) {
-			$this->setError(JText::sprintf('COM_EXTUSER_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
+			$this->setError(JText::sprintf('COM_USERS_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
 			return false;
 		}
 
@@ -326,7 +326,7 @@ class UsersModelRegistration extends JModelForm
 
 		// Bind the data.
 		if (!$user->bind($data)) {
-			$this->setError(JText::sprintf('COM_EXTUSER_REGISTRATION_BIND_FAILED', $user->getError()));
+			$this->setError(JText::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
 			return false;
 		}
 
@@ -335,7 +335,7 @@ class UsersModelRegistration extends JModelForm
 
 		// Store the data.
 		if (!$user->save()) {
-			$this->setError(JText::sprintf('COM_EXTUSER_REGISTRATION_SAVE_FAILED', $user->getError()));
+			$this->setError(JText::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
 			return false;
 		}
 
@@ -355,7 +355,7 @@ class UsersModelRegistration extends JModelForm
 			$data['activate'] = $base.JRoute::_('index.php?option=com_users&task=registration.activate&token='.$data['activation'], false);
 
 			$emailSubject	= JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACCOUNT_DETAILS',
+				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
@@ -363,7 +363,7 @@ class UsersModelRegistration extends JModelForm
 			if ($sendpassword)
 			{
 				$emailBody = JText::sprintf(
-					'COM_EXTUSER_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
+					'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
 					$data['name'],
 					$data['sitename'],
 					$data['siteurl'].'index.php?option=com_users&task=registration.activate&token='.$data['activation'],
@@ -375,7 +375,7 @@ class UsersModelRegistration extends JModelForm
 			else
 			{
 				$emailBody = JText::sprintf(
-					'COM_EXTUSER_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
+					'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
 					$data['siteurl'].'index.php?option=com_users&task=registration.activate&token='.$data['activation'],
@@ -392,7 +392,7 @@ class UsersModelRegistration extends JModelForm
 			$data['activate'] = $base.JRoute::_('index.php?option=com_users&task=registration.activate&token='.$data['activation'], false);
 
 			$emailSubject	= JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACCOUNT_DETAILS',
+				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
@@ -400,7 +400,7 @@ class UsersModelRegistration extends JModelForm
 			if ($sendpassword)
 			{
 				$emailBody = JText::sprintf(
-					'COM_EXTUSER_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
+					'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
 					$data['name'],
 					$data['sitename'],
 					$data['siteurl'].'index.php?option=com_users&task=registration.activate&token='.$data['activation'],
@@ -412,7 +412,7 @@ class UsersModelRegistration extends JModelForm
 			else
 			{
 				$emailBody = JText::sprintf(
-					'COM_EXTUSER_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
+					'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
 					$data['siteurl'].'index.php?option=com_users&task=registration.activate&token='.$data['activation'],
@@ -425,13 +425,13 @@ class UsersModelRegistration extends JModelForm
 		{
 
 			$emailSubject	= JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACCOUNT_DETAILS',
+				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
 
 			$emailBody = JText::sprintf(
-				'COM_EXTUSER_EMAIL_REGISTERED_BODY',
+				'COM_USERS_EMAIL_REGISTERED_BODY',
 				$data['name'],
 				$data['sitename'],
 				$data['siteurl']
@@ -444,13 +444,13 @@ class UsersModelRegistration extends JModelForm
 		//Send Notification mail to administrators
 		if (($params->get('useractivation') < 2) && ($params->get('mail_to_admin') == 1)) {
 			$emailSubject = JText::sprintf(
-				'COM_EXTUSER_EMAIL_ACCOUNT_DETAILS',
+				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
 
 			$emailBodyAdmin = JText::sprintf(
-				'COM_EXTUSER_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY',
+				'COM_USERS_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY',
 				$data['name'],
 				$data['username'],
 				$data['siteurl']
@@ -471,14 +471,14 @@ class UsersModelRegistration extends JModelForm
 
 				// Check for an error.
 				if ($return !== true) {
-					$this->setError(JText::_('COM_EXTUSER_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+					$this->setError(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
 					return false;
 				}
 			}
 		}
 		// Check for an error.
 		if ($return !== true) {
-			$this->setError(JText::_('COM_EXTUSER_REGISTRATION_SEND_MAIL_FAILED'));
+			$this->setError(JText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 
 			// Send a system message to administrators receiving system mails
 			$db = JFactory::getDBO();
@@ -497,7 +497,7 @@ class UsersModelRegistration extends JModelForm
 				$messages = array();
 
 				foreach ($sendEmail as $userid) {
-					$messages[] = "(".$userid.", ".$userid.", '".$jdate->toSql()."', '".JText::_('COM_EXTUSER_MAIL_SEND_FAILURE_SUBJECT')."', '".JText::sprintf('COM_EXTUSER_MAIL_SEND_FAILURE_BODY', $return, $data['username'])."')";
+					$messages[] = "(".$userid.", ".$userid.", '".$jdate->toSql()."', '".JText::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')."', '".JText::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username'])."')";
 				}
 				$q .= implode(',', $messages);
 				$db->setQuery($q);

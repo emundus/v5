@@ -38,7 +38,7 @@ $lang->load( 'plg_user_profile', JPATH_ADMINISTRATOR );
 				<dt>
 					<?php echo $field->label; ?>
 					<?php if (!$field->required && $field->type!='Spacer' && $field->name!='jform[username]'): ?>
-						<span class="optional"><?php echo JText::_('COM_EXTUSER_OPTIONAL'); ?></span>
+						<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
 					<?php endif; ?>
 				</dt>
 				<dd><?php echo $field->input; ?></dd>
@@ -51,7 +51,7 @@ $lang->load( 'plg_user_profile', JPATH_ADMINISTRATOR );
 
 		<div>
 			<button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-			<?php echo JText::_('COM_EXTUSER_OR'); ?>
+			<?php echo JText::_('COM_USERS_OR'); ?>
 			<a href="<?php echo JRoute::_(''); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
 
 			<input type="hidden" name="option" value="com_users" />

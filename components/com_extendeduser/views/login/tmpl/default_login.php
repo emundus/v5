@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.noframes');
 ?>
-<div class="login<?php echo $this->pageclass_sfx?>">
+<div class="ext-login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<h1>
 		<?php echo $this->escape($this->params->get('page_heading')); ?>
@@ -27,7 +27,7 @@ JHtml::_('behavior.noframes');
 		<?php endif; ?>
 
 		<?php if (($this->params->get('login_image')!='')) :?>
-			<img src="<?php echo $this->escape($this->params->get('login_image')); ?>" class="login-image" alt="<?php echo JTEXT::_('COM_USER_LOGIN_IMAGE_ALT')?>"/>
+			<img src="<?php echo $this->escape($this->params->get('login_image')); ?>" class="login-image" alt="<?php echo JTEXT::_('COM_USERS_LOGIN_IMAGE_ALT')?>"/>
 		<?php endif; ?>
 
 	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
@@ -59,18 +59,18 @@ JHtml::_('behavior.noframes');
 	<ul>
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
-			<?php echo JText::_('COM_EXTUSER_LOGIN_RESET'); ?></a>
+			<?php echo JText::_('COM_USERS_LOGIN_RESET'); ?></a>
 		</li>
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
-			<?php echo JText::_('COM_EXTUSER_LOGIN_REMIND'); ?></a>
+			<?php echo JText::_('COM_USERS_LOGIN_REMIND'); ?></a>
 		</li>
 		<?php
 		$usersConfig = JComponentHelper::getParams('com_users');
 		if ($usersConfig->get('allowUserRegistration')) : ?>
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
-				<?php echo JText::_('COM_EXTUSER_LOGIN_REGISTER'); ?></a>
+				<?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?></a>
 		</li>
 		<?php endif; ?>
 	</ul>

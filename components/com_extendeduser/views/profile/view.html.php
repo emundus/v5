@@ -81,7 +81,7 @@ class UsersViewProfile extends JViewLegacy
 		if($menu) {
 			$this->params->def('page_heading', $this->params->get('page_title', $user->name));
 		} else {
-			$this->params->def('page_heading', JText::_('COM_EXTUSER_PROFILE'));
+			$this->params->def('page_heading', JText::_('COM_USERS_PROFILE'));
 		}
 
 		$title = $this->params->get('page_title', '');
