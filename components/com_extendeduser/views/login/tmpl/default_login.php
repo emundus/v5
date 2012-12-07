@@ -1,72 +1,77 @@
-<?php defined('_JEXEC') or die('Restricted access'); ?>
-<?php if(JPluginHelper::isEnabled('authentication', 'openid')) : ?>
-	<?php JHTML::_('script', 'openid'); ?>
-<?php endif; ?>
-<?php echo @$this->message; ?>
-<?php if(@$this->login_error != 'yes'):?>
-<br>
-<form action="index.php" method="post" name="login" id="form-login">
-<table width="100%" border="0" align="center" cellpadding="4" cellspacing="0" class="contentpane<?php echo $this->params->get( 'pageclass_sfx' ); ?>">
-<tr>
-	<td colspan="2">
-		<?php if ( $this->params->get( 'page_title' ) ) : ?>
-		<div class="componentheading<?php echo $this->params->get( 'pageclass_sfx' ); ?>">
-			<?php echo $this->params->get( 'header_login' ); ?>
-		</div>
-		<?php endif; ?>
-		<div>
-			<?php echo $this->image; ?>
-			<?php if ( $this->params->get( 'description_login' ) ) : ?>
-				<?php echo $this->params->get( 'description_login_text' ); ?>
-				<br/><br/>
-			<?php endif; ?>
-		</div>
-	</td>
-</tr>
-<tr>
-</table>
-<fieldset class="input">
-	<p id="form-login-username">
-		<label for="username"><?php echo JText::_('USERNAME') ?></label><br />
-		<input name="username" id="username" type="text" class="inputbox" alt="username" size="18" />
-	</p>
-	<p id="form-login-password">
-		<label for="passwd"><?php echo JText::_('PASSWORD') ?></label><br />
-		<input type="password" name="passwd" class="inputbox" size="18" alt="password" />
-    </p>
-	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
-	<p id="form-login-remember">
-		<label for="remember"><?php echo JText::_('REMEMBER_ME') ?></label>
-		<input type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" />
-	</p>
-	<?php endif; ?>
-	<input type="submit" name="Submit" class="button" value="<?php echo JText::_('LOGIN') ?>" />
-</fieldset>
-<ul>
-	<li>
-		<a href="<?php echo JRoute::_( 'index.php?option=com_extendeduser&view=reset' ); ?>">
-		<?php echo JText::_('FORGOT_YOUR_PASSWORD'); ?>
-		</a>
-	</li>
-	<li>
-		<a href="<?php echo JRoute::_( 'index.php?option=com_extendeduser&view=remind' ); ?>">
-		<?php echo JText::_('FORGOT_YOUR_USERNAME'); ?>
-		</a>
-	</li>
-	<?php
-	$usersConfig = &JComponentHelper::getParams( 'com_users' );
-	if ($usersConfig->get('allowUserRegistration')) : ?>
-	<li>
-		<a href="<?php echo JRoute::_( 'index.php?option=com_extendeduser&task=register' ); ?>">
-			<?php echo JText::_('REGISTER'); ?>
-		</a>
-	</li>
-	<?php endif; ?>
-</ul>
+<?php
+/**
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @since		1.5
+ */
 
-<input type="hidden" name="option" value="com_extendeduser" />
-<input type="hidden" name="task" value="login" />
-<input type="hidden" name="return" value="" />
-<input type="hidden" name="<?php echo JUtility::getToken(); ?>" value="1" />
-</form>
-<?php endif; ?>
+defined('_JEXEC') or die;
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.noframes');
+?>
+<div class="login<?php echo $this->pageclass_sfx?>">
+	<?php if ($this->params->get('show_page_heading')) : ?>
+	<h1>
+		<?php echo $this->escape($this->params->get('page_heading')); ?>
+	</h1>
+	<?php endif; ?>
+
+	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
+	<div class="login-description">
+	<?php endif ; ?>
+
+		<?php if($this->params->get('logindescription_show') == 1) : ?>
+			<?php echo $this->params->get('login_description'); ?>
+		<?php endif; ?>
+
+		<?php if (($this->params->get('login_image')!='')) :?>
+			<img src="<?php echo $this->escape($this->params->get('login_image')); ?>" class="login-image" alt="<?php echo JTEXT::_('COM_USER_LOGIN_IMAGE_ALT')?>"/>
+		<?php endif; ?>
+
+	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
+	</div>
+	<?php endif ; ?>
+
+	<form action="<?php echo JRoute::_('index.php?option=com_users&task=user.login'); ?>" method="post">
+
+		<fieldset>
+			<?php foreach ($this->form->getFieldset('credentials') as $field): ?>
+				<?php if (!$field->hidden): ?>
+					<div class="login-fields"><?php echo $field->label; ?>
+					<?php echo $field->input; ?></div>
+				<?php endif; ?>
+			<?php endforeach; ?>
+			<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
+			<div class="login-fields">
+				<label id="remember-lbl" for="remember"><?php echo JText::_('JGLOBAL_REMEMBER_ME') ?></label>
+				<input id="remember" type="checkbox" name="remember" class="inputbox" value="yes"  alt="<?php echo JText::_('JGLOBAL_REMEMBER_ME') ?>" />
+			</div>
+			<?php endif; ?>
+			<button type="submit" class="button"><?php echo JText::_('JLOGIN'); ?></button>
+			<input type="hidden" name="return" value="<?php echo base64_encode($this->params->get('login_redirect_url', $this->form->getValue('return'))); ?>" />
+			<?php echo JHtml::_('form.token'); ?>
+		</fieldset>
+	</form>
+</div>
+<div>
+	<ul>
+		<li>
+			<a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
+			<?php echo JText::_('COM_EXTUSER_LOGIN_RESET'); ?></a>
+		</li>
+		<li>
+			<a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
+			<?php echo JText::_('COM_EXTUSER_LOGIN_REMIND'); ?></a>
+		</li>
+		<?php
+		$usersConfig = JComponentHelper::getParams('com_users');
+		if ($usersConfig->get('allowUserRegistration')) : ?>
+		<li>
+			<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
+				<?php echo JText::_('COM_EXTUSER_LOGIN_REGISTER'); ?></a>
+		</li>
+		<?php endif; ?>
+	</ul>
+</div>

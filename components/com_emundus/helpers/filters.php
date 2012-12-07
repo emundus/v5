@@ -207,8 +207,7 @@ class EmundusHelperFilters{
 					AND element.label!=" " 
 					AND element.label!=""  
 				ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering';
-		$db->setQuery( $query );
-//		die(str_replace("#_", "jos", $query));		
+		$db->setQuery( $query );	
 		return $db->loadObjectList('id');
 	}
 	

@@ -1,31 +1,17 @@
 <?php
 /**
-* @version		$Id: user.php 7692 2007-06-08 20:41:29Z tcp $
-* @package		Joomla
-* @subpackage	Users
-* @copyright	Copyright (C) 2005 - 2007 Open Source Matters. All rights reserved.
-* @license		GNU/GPL, see LICENSE.php
-* Joomla! is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-* See COPYRIGHT.php for copyright notices and details.
-*/
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @since		1.5
+ */
 
-// no direct access
-defined('_JEXEC') or die('Restricted access');
+defined('_JEXEC') or die;
 
-// Require the base controller
-require_once (JPATH_COMPONENT.DS.'controller.php');
-JTable::addIncludePath(JPATH_COMPONENT.DS.'models');
-require_once (JPATH_COMPONENT.DS.'models/extuser.php');
+require_once JPATH_COMPONENT.'/helpers/route.php';
 
-
-// Create the controller
-$controller = new UserController();
-
-// Perform the Request task
-$controller->execute( JRequest::getCmd('task'));
-
-// Redirect if set by the controller
+// Launch the controller.
+$controller = JControllerLegacy::getInstance('Users');
+$controller->execute(JRequest::getCmd('task', 'display'));
 $controller->redirect();

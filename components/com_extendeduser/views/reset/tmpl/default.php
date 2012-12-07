@@ -1,28 +1,41 @@
-<?php defined('_JEXEC') or die; 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_extendeduser/style/' );
+<?php
+/**
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @since		1.5
+ */
+
+defined('_JEXEC') or die;
+
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
 ?>
+<div class="reset<?php echo $this->pageclass_sfx?>">
+	<?php if ($this->params->get('show_page_heading')) : ?>
+	<h1>
+		<?php echo $this->escape($this->params->get('page_heading')); ?>
+	</h1>
+	<?php endif; ?>
 
-<div class="componentheading">
-	<?php echo JText::_('FORGOT_YOUR_PASSWORD'); ?>
+	<form id="user-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=reset.request'); ?>" method="post" class="form-validate">
+
+		<?php foreach ($this->form->getFieldsets() as $fieldset): ?>
+		<p><?php echo JText::_($fieldset->label); ?></p>		<fieldset>
+			<dl>
+			<?php foreach ($this->form->getFieldset($fieldset->name) as $name => $field): ?>
+				<dt><?php echo $field->label; ?></dt>
+				<dd><?php echo $field->input; ?></dd>
+			<?php endforeach; ?>
+			</dl>
+		</fieldset>
+		<?php endforeach; ?>
+
+		<div>
+			<button type="submit" class="validate"><?php echo JText::_('JSUBMIT'); ?></button>
+			<?php echo JHtml::_('form.token'); ?>
+		</div>
+	</form>
 </div>
-
-<form action="index.php?option=com_extendeduser&task=requestreset" method="post" class="josForm form-validate">
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="contentpane">
-		<tr>
-			<td colspan="2" height="40">
-				<p><?php echo JText::_('RESET_PASSWORD_REQUEST_DESCRIPTION'); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<td height="40">
-				<label for="email" class="hasTip" title="<?php echo JText::_('RESET_PASSWORD_EMAIL_TIP_TITLE'); ?>::<?php echo JText::_('RESET_PASSWORD_EMAIL_TIP_TEXT'); ?>"><?php echo JText::_('RESET_PASSWORD_EMAIL_TIP_TITLE'); ?>:</label>
-			</td>
-			<td>
-				<input id="email" name="email" type="text" size="40" class="required validate-email" />
-			</td>
-		</tr>
-	</table>
-
-	<input type="hidden" name="<?php echo JUtility::getToken(); ?>" value="1" />
-	<button type="submit" class="validate"><?php echo JText::_('SUBMIT'); ?></button>
-</form>

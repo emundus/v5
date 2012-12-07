@@ -1,54 +1,104 @@
 <?php
 /**
- * @version		$Id: view.html.php 7399 2007-05-14 04:10:09Z eddieajau $
- * @package		Joomla
- * @subpackage	User
- * @copyright	Copyright (C) 2005 - 2007 Open Source Matters. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant to the
- * GNU General Public License, and as distributed it includes or is derivative
- * of works licensed under the GNU General Public License or other free or open
- * source software licenses. See COPYRIGHT.php for copyright notices and
- * details.
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-// No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 /**
- * HTML View class for the Users component
+ * Registration view class for Users.
  *
- * @author		Rob Schley <rob.schley@joomla.org>
- * @package		Joomla
- * @subpackage	User
+ * @package		Joomla.Site
+ * @subpackage	com_users
  * @since		1.5
  */
-class UserViewRemind extends JView
+class UsersViewRemind extends JViewLegacy
 {
-	/**
-	 * Registry namespace prefix
-	 *
-	 * @var	string
-	 */
-	var $_namespace	= 'members.remind.';
+	protected $form;
+	protected $params;
+	protected $state;
 
 	/**
-	 * Display function
+	 * Method to display the view.
 	 *
-	 * @since 1.5
+	 * @param	string	$tpl	The template file to include
+	 * @since	1.5
 	 */
-	function display($tpl = null)
+	public function display($tpl = null)
 	{
-		jimport('joomla.html.html');
+		// Get the view data.
+		$this->form		= $this->get('Form');
+		$this->state	= $this->get('State');
+		$this->params	= $this->state->params;
 
-		// Load the form validation behavior
-		JHTML::_('behavior.formvalidation');
+		// Check for errors.
+		if (count($errors = $this->get('Errors'))) {
+			JError::raiseError(500, implode('<br />', $errors));
+			return false;
+		}
 
-		// Add the tooltip behavior
-		JHTML::_('behavior.tooltip');
+		// Check for layout override
+		$active = JFactory::getApplication()->getMenu()->getActive();
+		if (isset($active->query['layout'])) {
+			$this->setLayout($active->query['layout']);
+		}
+
+		//Escape strings for HTML output
+		$this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
+
+		$this->prepareDocument();
 
 		parent::display($tpl);
+	}
+
+	/**
+	 * Prepares the document.
+	 *
+	 * @since	1.6
+	 */
+	protected function prepareDocument()
+	{
+		$app		= JFactory::getApplication();
+		$menus		= $app->getMenu();
+		$title 		= null;
+
+		// Because the application sets a default page title,
+		// we need to get it from the menu item itself
+		$menu = $menus->getActive();
+		if ($menu) {
+			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+		} else {
+			$this->params->def('page_heading', JText::_('COM_EXTUSER_REMIND'));
+		}
+
+		$title = $this->params->get('page_title', '');
+		if (empty($title)) {
+			$title = $app->getCfg('sitename');
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
+			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
+			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
+		}
+		$this->document->setTitle($title);
+
+		if ($this->params->get('menu-meta_description'))
+		{
+			$this->document->setDescription($this->params->get('menu-meta_description'));
+		}
+
+		if ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
+		{
+			$this->document->setMetadata('robots', $this->params->get('robots'));
+		}
 	}
 }

@@ -1,28 +1,40 @@
-<?php defined('_JEXEC') or die; 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_extendeduser/style/' );
+<?php
+/**
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @since		1.5
+ */
+
+defined('_JEXEC') or die;
+
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.formvalidation');
 ?>
+<div class="reset-confirm<?php echo $this->pageclass_sfx?>">
+	<?php if ($this->params->get('show_page_heading')) : ?>
+	<h1>
+		<?php echo $this->escape($this->params->get('page_heading')); ?>
+	</h1>
+	<?php endif; ?>
 
-<div class="componentheading">
-	<?php echo JText::_('CONFIRM_YOUR_ACCOUNT'); ?>
+	<form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.confirm'); ?>" method="post" class="form-validate">
+
+		<?php foreach ($this->form->getFieldsets() as $fieldset): ?>
+		<p><?php echo JText::_($fieldset->label); ?></p>		<fieldset>
+			<dl>
+			<?php foreach ($this->form->getFieldset($fieldset->name) as $name => $field): ?>
+				<dt><?php echo $field->label; ?></dt>
+				<dd><?php echo $field->input; ?></dd>
+			<?php endforeach; ?>
+			</dl>
+		</fieldset>
+		<?php endforeach; ?>
+
+		<div>
+			<button type="submit" class="validate"><?php echo JText::_('JSUBMIT'); ?></button>
+			<?php echo JHtml::_('form.token'); ?>
+		</div>
+	</form>
 </div>
-
-<form action="index.php?option=com_extendeduser&task=confirmreset" method="post" class="josForm form-validate">
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="contentpane">
-		<tr>
-			<td colspan="2" height="40">
-				<p><?php echo JText::_('RESET_PASSWORD_CONFIRM_DESCRIPTION'); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<td height="40">
-				<label for="token" class="hasTip" title="<?php echo JText::_('RESET_PASSWORD_TOKEN_TIP_TITLE'); ?>::<?php echo JText::_('RESET_PASSWORD_TOKEN_TIP_TEXT'); ?>"><?php echo JText::_('Token'); ?>:</label>
-			</td>
-			<td>
-				<input id="token" name="token" type="text" class="required" size="36" />
-			</td>
-		</tr>
-	</table>
-
-	<input type="hidden" name="<?php echo JUtility::getToken(); ?>" value="1" />
-	<button type="submit" class="validate"><?php echo JText::_('SUBMIT'); ?></button>
-</form>

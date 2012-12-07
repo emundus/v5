@@ -1,107 +1,166 @@
-﻿<?php
+<?php
 /**
- * @version		$Id: remind.php 7399 2007-05-14 04:10:09Z eddieajau $
- * @package		Joomla
- * @subpackage	User
- * @copyright	Copyright (C) 2005 - 2007 Open Source Matters. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant to the
- * GNU General Public License, and as distributed it includes or is derivative
- * of works licensed under the GNU General Public License or other free or open
- * source software licenses. See COPYRIGHT.php for copyright notices and
- * details.
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-// No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.model');
+jimport('joomla.application.component.modelform');
+jimport('joomla.event.dispatcher');
 
 /**
- * User Component Remind Model
+ * Remind model class for Users.
  *
- * @author		Rob Schley <rob.schley@joomla.org>
- * @package		Joomla
- * @subpackage	User
- * @since		1.5
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @version		1.5
  */
-class UserModelRemind extends JModel
+class UsersModelRemind extends JModelForm
 {
 	/**
-	 * Registry namespace prefix
+	 * Method to get the username remind request form.
 	 *
-	 * @var	string
+	 * @param	array	$data		An optional array of data for the form to interogate.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
 	 */
-	var $_namespace	= 'com_extendeduser.remind.';
-
-	/**
-	 * Takes a user supplied e-mail address, looks
-	 * it up in the database to find the username
-	 * and then e-mails the username to the e-mail
-	 * address given.
-	 *
-	 * @since	1.5
-	 * @param	string	E-mail address
-	 * @return	bool	True on success/false on failure
-	 */
-	function remindUsername($email)
+	public function getForm($data = array(), $loadData = true)
 	{
-		jimport('joomla.utilities.mail');
-		jimport( 'joomla.mail.helper' );
-		$mainframe = JFactory::getApplication();
-
-		// Validate the e-mail address
-		if (!JMailHelper::isEmailAddress($email))
-		{
-			$this->setError(JText::_('INVALID_EMAIL_ADDRESS'));
+		// Get the form.
+		$form = $this->loadForm('com_users.remind', 'remind', array('control' => 'jform', 'load_data' => $loadData));
+		if (empty($form)) {
 			return false;
 		}
 
-		$db = &JFactory::getDBO();
-		$db->setQuery('SELECT username FROM #__users WHERE email = '.$db->Quote($email), 0, 1);
-
-		// Get the username
-		if (!($username = $db->loadResult()))
-		{
-			$this->setError(JText::_('COULD_NOT_FIND_EMAIL'));
-			return false;
-		}
-
-		// Push the email address into the session
-		//$mainframe->setUserState($this->_namespace.'email', $email);
-
-		// Send the reminder email
-		if (!$this->_sendReminderMail($email, $username))
-		{
-			return false;
-		}
-
-		return true;
+		return $form;
 	}
 
 	/**
-	 * Sends a username reminder to the e-mail address
-	 * specified containing the specified username.
+	 * Override preprocessForm to load the user plugin group instead of content.
 	 *
-	 * @since	1.5
-	 * @param	string	A user's e-mail address
-	 * @param	string	A user's username
-	 * @return	bool	True on success/false on failure
+	 * @param	object	A form object.
+	 * @param	mixed	The data expected for the form.
+	 * @throws	Exception if there is an error in the form event.
+	 * @since	1.6
 	 */
-	function _sendReminderMail($email, $username)
+	protected function preprocessForm(JForm $form, $data, $group = 'user')
 	{
-		$config		= &JFactory::getConfig();
-		$uri		= &JFactory::getURI();
-		$url		= JURI::base().'index.php?option=com_extendeduser&view=login';
+		parent::preprocessForm($form, $data, 'user');
+	}
 
-		$from		= $config->getValue('mailfrom');
-		$fromname	= $config->getValue('fromname');
-		$subject	= JText::sprintf('USERNAME_REMINDER_EMAIL_TITLE', $config->getValue('sitename'));
-		$body		= JText::sprintf('USERNAME_REMINDER_EMAIL_TEXT', $config->getValue('sitename'), $username, $url);
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @since	1.6
+	 */
+	protected function populateState()
+	{
+		// Get the application object.
+		$app	= JFactory::getApplication();
+		$params	= $app->getParams('com_users');
 
-		if (!JUtility::sendMail($from, $fromname, $email, $subject, $body))
-		{
-			$this->setError('ERROR_SENDING_REMINDER_EMAIL');
+		// Load the parameters.
+		$this->setState('params', $params);
+	}
+
+	/**
+	 * @since	1.6
+	 */
+	public function processRemindRequest($data)
+	{
+		// Get the form.
+		$form = $this->getForm();
+
+		// Check for an error.
+		if (empty($form)) {
+			return false;
+		}
+
+		// Validate the data.
+		$data = $this->validate($form, $data);
+
+		// Check for an error.
+		if ($data instanceof Exception) {
+			return $return;
+		}
+
+		// Check the validation results.
+		if ($data === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+			return false;
+		}
+
+		// Find the user id for the given email address.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+		$query->select('*');
+		$query->from($db->quoteName('#__users'));
+		$query->where($db->quoteName('email').' = '.$db->Quote($data['email']));
+
+		// Get the user id.
+		$db->setQuery((string) $query);
+		$user = $db->loadObject();
+
+		// Check for an error.
+		if ($db->getErrorNum()) {
+			$this->setError(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
+			return false;
+		}
+
+		// Check for a user.
+		if (empty($user)) {
+			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			return false;
+		}
+
+		// Make sure the user isn't blocked.
+		if ($user->block) {
+			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			return false;
+		}
+
+		$config	= JFactory::getConfig();
+
+		// Assemble the login link.
+		$itemid = UsersHelperRoute::getLoginRoute();
+		$itemid = $itemid !== null ? '&Itemid='.$itemid : '';
+		$link	= 'index.php?option=com_users&view=login'.$itemid;
+		$mode	= $config->get('force_ssl', 0) == 2 ? 1 : -1;
+
+		// Put together the email template data.
+		$data = JArrayHelper::fromObject($user);
+		$data['fromname']	= $config->get('fromname');
+		$data['mailfrom']	= $config->get('mailfrom');
+		$data['sitename']	= $config->get('sitename');
+		$data['link_text']	= JRoute::_($link, false, $mode);
+		$data['link_html']	= JRoute::_($link, true, $mode);
+
+		$subject = JText::sprintf(
+			'COM_EXTUSER_EMAIL_USERNAME_REMINDER_SUBJECT',
+			$data['sitename']
+		);
+		$body = JText::sprintf(
+			'COM_EXTUSER_EMAIL_USERNAME_REMINDER_BODY',
+			$data['sitename'],
+			$data['username'],
+			$data['link_text']
+		);
+
+		// Send the password reset request email.
+		$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body);
+
+		// Check for an error.
+		if ($return !== true) {
+			$this->setError(JText::_('COM_EXTUSER_MAIL_FAILED'), 500);
 			return false;
 		}
 

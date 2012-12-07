@@ -208,16 +208,7 @@ class EmundusHelperList{
 	// get forms list to create action block for each users
 	function getFormsList($user_id){
 		$profile = & EmundusHelperList::getProfile($user_id);
-		$db =& JFactory::getDBO();
-		$query = 'select fbtables.id AS table_id, fbtables.form_id, fbtables.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) as link, menu.id, menu.title 
-					FROM #__menu AS menu 
-					INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.'  
-					INNER JOIN #__fabrik_lists AS fbtables ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-					WHERE menu.published=1 AND menu.parent_id!=0 
-					ORDER BY menu.ordering';
-		$db->setQuery( $query );
-		$forms = $db->loadObjectList();
-		return $forms;
+		return EmundusHelperMenu::buildMenuQuery($profile);;
 	}
 	
 	// get icone on first column

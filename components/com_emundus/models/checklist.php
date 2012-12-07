@@ -24,6 +24,7 @@ class EmundusModelChecklist extends JModel
 	function __construct()
 	{
 		parent::__construct();
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 		$this->_db =& JFactory::getDBO();
 		$student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
 		
@@ -60,14 +61,7 @@ class EmundusModelChecklist extends JModel
 
 	function getFormsList()
 	{
-		$query = 'SELECT fbtables.id AS table_id, fbtables.form_id AS id, fbtables.label, fbtables.db_table_name, menu.link
-					FROM #__fabrik_lists AS fbtables 
-					INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-					INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$this->_user->profile.'
-					WHERE fbtables.published = 1 AND fbtables.created_by_alias = "form" ORDER BY menu.ordering';
-					echo str_replace("#_", "jos", $query);
-		$this->_db->setQuery( $query );
-		$forms = $this->_db->loadObjectList();
+		$forms = EmundusHelperMenu::buildMenuQuery($this->_user->profile);
 		foreach ($forms as &$form) {
 			$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$this->_user->id;
 			$this->_db->setQuery( $query );

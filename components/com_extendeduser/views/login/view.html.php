@@ -1,104 +1,107 @@
 <?php
 /**
-* @version		$Id: view.html.php 8485 2007-08-21 05:20:58Z jinx $
-* @package		Joomla
-* @subpackage	Login
-* @copyright	Copyright (C) 2005 - 2007 Open Source Matters. All rights reserved.
-* @license		GNU/GPL, see LICENSE.php
-* Joomla! is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-* See COPYRIGHT.php for copyright notices and details.
-*/
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
-
-jimport( 'joomla.application.component.view');
+defined('_JEXEC') or die;
 
 /**
- * User component login view class
+ * Login view class for Users.
  *
- * @package		Joomla
- * @subpackage	Users
- * @since	1.0
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @since		1.5
  */
-class UserViewLogin extends JView
+class UsersViewLogin extends JViewLegacy
 {
-	function display($tpl = null)
+	protected $form;
+	protected $params;
+	protected $state;
+	protected $user;
+
+	/**
+	 * Method to display the view.
+	 *
+	 * @param	string	The template file to include
+	 * @since	1.5
+	 */
+	public function display($tpl = null)
 	{
-		global $option;
+		// Get the view data.
+		$this->user		= JFactory::getUser();
+		$this->form		= $this->get('Form');
+		$this->state	= $this->get('State');
+		$this->params	= $this->state->get('params');
 
-		$mainframe = JFactory::getApplication();
-		// Initialize variables
-		$document	=& JFactory::getDocument();
-		$user		=& JFactory::getUser();
-		$pathway	=& $mainframe->getPathway();
-
-		$menu =& JSite::getMenu();
-		$item   = $menu->getActive();
-		$params	=& $menu->getParams(@$item->id);
-
-		$type = (!$user->get('guest')) ? 'logout' : 'login';
-
-		// Set some default page parameters if not set
-		$params->def( 'page_title', 				1 );
-		$params->def( 'header_login', 			@$item->name );
-		$params->def( 'header_logout', 			@$item->name );
-		$params->def( 'pageclass_sfx', 			'' );
-		$params->def( 'login', 					'index.php' );
-		$params->def( 'logout', 				'index.php' );
-		$params->def( 'description_login', 		1 );
-		$params->def( 'description_logout', 		1 );
-		$params->def( 'description_login_text', 	JText::_( 'LOGIN_DESCRIPTION' ) );
-		$params->def( 'description_logout_text',	JText::_( 'LOGOUT_DESCRIPTION' ) );
-		$params->def( 'image_login', 				'key.jpg' );
-		$params->def( 'image_logout', 				'key.jpg' );
-		$params->def( 'image_login_align', 			'right' );
-		$params->def( 'image_logout_align', 		'right' );
-		$usersConfig = &JComponentHelper::getParams( 'com_users' );
-		$params->def( 'registration', 				$usersConfig->get( 'allowUserRegistration' ) );
-
-		if ( !$user->get('guest') )
-		{
-			$title = JText::_( 'Logout');
-
-			// pathway item
-			$pathway->addItem($title, '' );
-			// Set page title
-			$document->setTitle( $title );
-		}
-		else
-		{
-			$title = JText::_( 'Login');
-
-			// pathway item
-			$pathway->addItem($title, '' );
-			// Set page title
-			$document->setTitle( $title );
+		// Check for errors.
+		if (count($errors = $this->get('Errors'))) {
+			JError::raiseError(500, implode('<br />', $errors));
+			return false;
 		}
 
-		// Build login image if enabled
-		if ( $params->get( 'image_'.$type ) != -1 ) {
-			$image = 'images/stories/'. $params->get( 'image_'.$type );
-			$image = '<img src="'. $image  .'" align="'. $params->get( 'image_'.$type.'_align' ) .'" hspace="10" alt="" />';
+		// Check for layout override
+		$active = JFactory::getApplication()->getMenu()->getActive();
+		if (isset($active->query['layout'])) {
+			$this->setLayout($active->query['layout']);
 		}
-		
-		// Get the return URL
-		if (!$url = JRequest::getVar('return', '', 'method', 'base64')) {
-			$url = base64_encode($params->get($type));
-		}
-	
-		$errors =& JError::getErrors();
 
-		$this->assign('image' , $image);
-		$this->assign('type'  , $type);
-		$this->assign('return', $url);
-		
-		$this->assignRef('params', $params);
+		//Escape strings for HTML output
+		$this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
+
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
-}
 
+	/**
+	 * Prepares the document
+	 * @since	1.6
+	 */
+	protected function prepareDocument()
+	{
+		$app		= JFactory::getApplication();
+		$menus		= $app->getMenu();
+		$user		= JFactory::getUser();
+		$login		= $user->get('guest') ? true : false;
+		$title 		= null;
+
+		// Because the application sets a default page title,
+		// we need to get it from the menu item itself
+		$menu = $menus->getActive();
+		if ($menu) {
+			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+		} else {
+			$this->params->def('page_heading', $login ? JText::_('JLOGIN') : JText::_('JLOGOUT'));
+		}
+
+		$title = $this->params->get('page_title', '');
+		if (empty($title)) {
+			$title = $app->getCfg('sitename');
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
+			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
+			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
+		}
+		$this->document->setTitle($title);
+
+		if ($this->params->get('menu-meta_description'))
+		{
+			$this->document->setDescription($this->params->get('menu-meta_description'));
+		}
+
+		if ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
+		{
+			$this->document->setMetadata('robots', $this->params->get('robots'));
+		}
+	}
+}

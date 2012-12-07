@@ -1,219 +1,438 @@
-﻿<?php
+<?php
 /**
- * @version		$Id: reset.php 7399 2007-05-14 04:10:09Z eddieajau $
- * @package		Joomla
- * @subpackage	User
- * @copyright	Copyright (C) 2005 - 2007 Open Source Matters. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant to the
- * GNU General Public License, and as distributed it includes or is derivative
- * of works licensed under the GNU General Public License or other free or open
- * source software licenses. See COPYRIGHT.php for copyright notices and
- * details.
+ * @package		Joomla.Site
+ * @subpackage	com_users
+ * @copyright	Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-// No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.model');
-
+jimport('joomla.application.component.modelform');
+jimport('joomla.event.dispatcher');
+jimport('joomla.database.table');
 /**
- * User Component Reset Model
+ * Rest model class for Users.
  *
- * @author		Rob Schley <rob.schley@joomla.org>
- * @package		Joomla
- * @subpackage	User
+ * @package		Joomla.Site
+ * @subpackage	com_users
  * @since		1.5
  */
-class UserModelReset extends JModel
+class UsersModelReset extends JModelForm
 {
 	/**
-	 * Registry namespace prefix
+	 * Method to get the password reset request form.
 	 *
-	 * @var	string
+	 * @param	array	$data		Data for the form.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
 	 */
-	var $_namespace	= 'com_extendeduser.reset.';
+	public function getForm($data = array(), $loadData = true)
+	{
+		// Get the form.
+		$form = $this->loadForm('com_users.reset_request', 'reset_request', array('control' => 'jform', 'load_data' => $loadData));
+		if (empty($form)) {
+			return false;
+		}
+
+		return $form;
+	}
 
 	/**
-	 * Verifies the validity of a username/e-mail address
-	 * combination and creates a token to verify the request
-	 * was initiated by the account owner.  The token is
-	 * sent to the account owner by e-mail
+	 * Method to get the password reset complete form.
 	 *
-	 * @since	1.5
-	 * @param	string	Username string
-	 * @param	string	E-mail address
-	 * @return	bool	True on success/false on failure
+	 * @param	array	$data		Data for the form.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
 	 */
-	function requestReset($email)
+	public function getResetCompleteForm($data = array(), $loadData = true)
 	{
-		jimport('joomla.utilities.mail');
-		jimport('joomla.user.helper');
-		$db = &JFactory::getDBO();
-
-		// Make sure the e-mail address is valid
-		jimport( 'joomla.mail.helper' );
-
-		if (!JMailHelper::isEmailAddress($email))
-		{
-			$this->setError(JText::_('INVALID_EMAIL_ADDRESS'));
+		// Get the form.
+		$form = $this->loadForm('com_users.reset_complete', 'reset_complete', $options = array('control' => 'jform'));
+		if (empty($form)) {
 			return false;
 		}
 
-		// Build a query to find the user
-		$query	= 'SELECT id FROM #__users'
-				. ' WHERE email = '.$db->Quote($email)
-				. ' AND block = 0';
+		return $form;
+	}
 
-		$db->setQuery($query);
-
-		// Check the results
-		if (!($id = $db->loadResult()))
-		{
-			$this->setError(JText::_('COULD_NOT_FIND_USER'));
+	/**
+	 * Method to get the password reset confirm form.
+	 *
+	 * @param	array	$data		Data for the form.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
+	 */
+	public function getResetConfirmForm($data = array(), $loadData = true)
+	{
+		// Get the form.
+		$form = $this->loadForm('com_users.reset_confirm', 'reset_confirm', $options = array('control' => 'jform'));
+		if (empty($form)) {
 			return false;
 		}
 
-		// Generate a new token
-		$token = md5(JUserHelper::genRandomPassword());
+		return $form;
+	}
 
-		$query	= 'UPDATE #__users'
-				. ' SET activation = '.$db->Quote($token)
-				. ' WHERE id = '.(int) $id
-				. ' AND block = 0';
+	/**
+	 * Override preprocessForm to load the user plugin group instead of content.
+	 *
+	 * @param	object	A form object.
+	 * @param	mixed	The data expected for the form.
+	 * @throws	Exception if there is an error in the form event.
+	 * @since	1.6
+	 */
+	protected function preprocessForm(JForm $form, $data, $group = 'user')
+	{
+		parent::preprocessForm($form, $data, $group);
+	}
 
-		$db->setQuery($query);
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @since	1.6
+	 */
+	protected function populateState()
+	{
+		// Get the application object.
+		$params	= JFactory::getApplication()->getParams('com_users');
 
-		// Save the token
-		if (!$db->query())
-		{
-			$this->setError(JText::_('DATABASE_ERROR'));
+		// Load the parameters.
+		$this->setState('params', $params);
+	}
+
+	/**
+	 * @since	1.6
+	 */
+	function processResetComplete($data)
+	{
+		// Get the form.
+		$form = $this->getResetCompleteForm();
+
+		// Check for an error.
+		if ($form instanceof Exception) {
+			return $form;
+		}
+
+		// Filter and validate the form data.
+		$data	= $form->filter($data);
+		$return	= $form->validate($data);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			return $return;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
 			return false;
 		}
 
-		// Send the token to the user via e-mail
-		if (!$this->_sendConfirmationMail($email, $token))
-		{
+		// Get the token and user id from the confirmation process.
+		$app	= JFactory::getApplication();
+		$token	= $app->getUserState('com_users.reset.token', null);
+		$userId	= $app->getUserState('com_users.reset.user', null);
+
+		// Check the token and user id.
+		if (empty($token) || empty($userId)) {
+			return new JException(JText::_('COM_EXTUSER_RESET_COMPLETE_TOKENS_MISSING'), 403);
+		}
+
+		// Get the user object.
+		$user = JUser::getInstance($userId);
+
+		// Check for a user and that the tokens match.
+		if (empty($user) || $user->activation !== $token) {
+			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
 			return false;
 		}
+
+		// Make sure the user isn't blocked.
+		if ($user->block) {
+			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			return false;
+		}
+
+		// Generate the new password hash.
+		$salt		= JUserHelper::genRandomPassword(32);
+		$crypted	= JUserHelper::getCryptedPassword($data['password1'], $salt);
+		$password	= $crypted.':'.$salt;
+
+		// Update the user object.
+		$user->password			= $password;
+		$user->activation		= '';
+		$user->password_clear	= $data['password1'];
+
+		// Save the user to the database.
+		if (!$user->save(true)) {
+			return new JException(JText::sprintf('COM_EXTUSER_USER_SAVE_FAILED', $user->getError()), 500);
+		}
+
+		// Flush the user data from the session.
+		$app->setUserState('com_users.reset.token', null);
+		$app->setUserState('com_users.reset.user', null);
 
 		return true;
 	}
 
 	/**
-	 * Checks a user supplied token for validity
-	 * If the token is valid, it pushes the token
-	 * and user id into the session for security checks.
-	 *
-	 * @since	1.5
-	 * @param	token	An md5 hashed randomly generated string
-	 * @return	bool	True on success/false on failure
+	 * @since	1.6
 	 */
-	function confirmReset($token)
+	function processResetConfirm($data)
 	{
-		$mainframe = JFactory::getApplication();
+		// Get the form.
+		$form = $this->getResetConfirmForm();
 
-		$db	= &JFactory::getDBO();
-		$db->setQuery('SELECT id FROM #__users WHERE block = 0 AND activation = '.$db->Quote($token));
+		// Check for an error.
+		if ($form instanceof Exception) {
+			return $form;
+		}
+
+		// Filter and validate the form data.
+		$data	= $form->filter($data);
+		$return	= $form->validate($data);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			return $return;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+			return false;
+		}
+
+		// Find the user id for the given token.
+		$db	= $this->getDbo();
+		$query	= $db->getQuery(true);
+		$query->select('activation');
+		$query->select('id');
+		$query->select('block');
+		$query->from($db->quoteName('#__users'));
+		$query->where($db->quoteName('username').' = '.$db->Quote($data['username']));
+
+		// Get the user id.
+		$db->setQuery((string) $query);
+		$user = $db->loadObject();
+
+		// Check for an error.
+		if ($db->getErrorNum()) {
+			return new JException(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
+		}
+
+		// Check for a user.
+		if (empty($user)) {
+			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			return false;
+		}
+
+		$parts	= explode( ':', $user->activation );
+		$crypt	= $parts[0];
+		if (!isset($parts[1])) {
+			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
+			return false;
+		}
+		$salt	= $parts[1];
+		$testcrypt = JUserHelper::getCryptedPassword($data['token'], $salt);
 
 		// Verify the token
-		if (!($id = $db->loadResult()))
+		if (!($crypt == $testcrypt))
 		{
-			$this->setError(JText::_('INVALID_TOKEN'));
+			$this->setError(JText::_('COM_EXTUSER_USER_NOT_FOUND'));
 			return false;
 		}
 
-		// Push the token and user id into the session
-		$mainframe->setUserState($this->_namespace.'token',	$token);
-		$mainframe->setUserState($this->_namespace.'id',	$id);
+		// Make sure the user isn't blocked.
+		if ($user->block) {
+			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			return false;
+		}
+
+		// Push the user data into the session.
+		$app = JFactory::getApplication();
+		$app->setUserState('com_users.reset.token', $crypt.':'.$salt);
+		$app->setUserState('com_users.reset.user', $user->id);
 
 		return true;
 	}
 
 	/**
-	 * Takes the new password and saves it to the database.
-	 * It will only save the password if the user has the
-	 * correct user id and token stored in her session.
+	 * Method to start the password reset process.
 	 *
-	 * @since	1.5
-	 * @param	string	New Password
-	 * @param	string	New Password
-	 * @return	bool	True on success/false on failure
+	 * @since	1.6
 	 */
-	function completeReset($password1, $password2)
+	public function processResetRequest($data)
 	{
-		jimport('joomla.user.helper');
+		$config	= JFactory::getConfig();
 
-		$mainframe = JFactory::getApplication();
+		// Get the form.
+		$form = $this->getForm();
 
-		// Verify that the passwords match
-		if ($password1 != $password2)
-		{
-			$this->setError(JText::_('PASSWORDS_DO_NOT_MATCH_LOW'));
+		// Check for an error.
+		if ($form instanceof Exception) {
+			return $form;
+		}
+
+		// Filter and validate the form data.
+		$data	= $form->filter($data);
+		$return	= $form->validate($data);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			return $return;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
 			return false;
 		}
 
-		// Get the necessary variables
-		$db			= &JFactory::getDBO();
-		$id			= $mainframe->getUserState($this->_namespace.'id');
-		$token		= $mainframe->getUserState($this->_namespace.'token');
-		$salt		= JUserHelper::genRandomPassword(32);
-		$crypt		= JUserHelper::getCryptedPassword($password1, $salt);
-		$password	= $crypt.':'.$salt;
+		// Find the user id for the given email address.
+		$db	= $this->getDbo();
+		$query	= $db->getQuery(true);
+		$query->select('id');
+		$query->from($db->quoteName('#__users'));
+		$query->where($db->quoteName('email').' = '.$db->Quote($data['email']));
 
-		// Build the query
-		$query 	= 'UPDATE #__users'
-				. ' SET password = '.$db->Quote($password)
-				. ' , activation = ""'
-				. ' WHERE id = '.(int) $id
-				. ' AND activation = '.$db->Quote($token)
-				. ' AND block = 0';
+		// Get the user object.
+		$db->setQuery((string) $query);
+		$userId = $db->loadResult();
 
-		$db->setQuery($query);
-
-		// Save the password
-		if (!$db->query())
-		{
-			$this->setError(JText::_('DATABASE_ERROR'));
+		// Check for an error.
+		if ($db->getErrorNum()) {
+			$this->setError(JText::sprintf('COM_EXTUSER_DATABASE_ERROR', $db->getErrorMsg()), 500);
 			return false;
 		}
 
-		// Flush the variables from the session
-		$mainframe->setUserState($this->_namespace.'id',	null);
-		$mainframe->setUserState($this->_namespace.'token',	null);
+		// Check for a user.
+		if (empty($userId)) {
+			$this->setError(JText::_('COM_EXTUSER_INVALID_EMAIL'));
+			return false;
+		}
+
+		// Get the user object.
+		$user = JUser::getInstance($userId);
+
+		// Make sure the user isn't blocked.
+		if ($user->block) {
+			$this->setError(JText::_('COM_EXTUSER_USER_BLOCKED'));
+			return false;
+		}
+
+		// Make sure the user isn't a Super Admin.
+		if ($user->authorise('core.admin')) {
+			$this->setError(JText::_('COM_EXTUSER_REMIND_SUPERADMIN_ERROR'));
+			return false;
+		}
+		
+		// Make sure the user has not exceeded the reset limit
+		if (!$this->checkResetLimit($user)) {
+			$resetLimit = (int) JFactory::getApplication()->getParams()->get('reset_time');
+			$this->setError(JText::plural('COM_EXTUSER_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit));
+			return false;
+		}
+		// Set the confirmation token.
+		$token = JApplication::getHash(JUserHelper::genRandomPassword());
+		$salt = JUserHelper::getSalt('crypt-md5');
+		$hashedToken = md5($token.$salt).':'.$salt;
+
+		$user->activation = $hashedToken;
+
+		// Save the user to the database.
+		if (!$user->save(true)) {
+			return new JException(JText::sprintf('COM_EXTUSER_USER_SAVE_FAILED', $user->getError()), 500);
+		}
+
+		// Assemble the password reset confirmation link.
+		$mode = $config->get('force_ssl', 0) == 2 ? 1 : -1;
+		$itemid = UsersHelperRoute::getLoginRoute();
+		$itemid = $itemid !== null ? '&Itemid='.$itemid : '';
+		$link = 'index.php?option=com_users&view=reset&layout=confirm'.$itemid;
+
+		// Put together the email template data.
+		$data = $user->getProperties();
+		$data['fromname']	= $config->get('fromname');
+		$data['mailfrom']	= $config->get('mailfrom');
+		$data['sitename']	= $config->get('sitename');
+		$data['link_text']	= JRoute::_($link, false, $mode);
+		$data['link_html']	= JRoute::_($link, true, $mode);
+		$data['token']		= $token;
+
+		$subject = JText::sprintf(
+			'COM_EXTUSER_EMAIL_PASSWORD_RESET_SUBJECT',
+			$data['sitename']
+		);
+
+		$body = JText::sprintf(
+			'COM_EXTUSER_EMAIL_PASSWORD_RESET_BODY',
+			$data['sitename'],
+			$data['token'],
+			$data['link_text']
+		);
+
+		// Send the password reset request email.
+		$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body);
+		// Check for an error.
+		if ($return !== true) {
+			return new JException(JText::_('COM_EXTUSER_MAIL_FAILED'), 500);
+		}
 
 		return true;
 	}
-
 	/**
-	 * Sends a password reset request confirmation to the
-	 * specified e-mail address with the specified token.
+	 * Method to check if user reset limit has been exceeded within the allowed time period.
 	 *
-	 * @since	1.5
-	 * @param	string	An e-mail address
-	 * @param	string	An md5 hashed randomly generated string
-	 * @return	bool	True on success/false on failure
+	 * @param   JUser  the user doing the password reset
+	 *
+	 * @return  boolean true if user can do the reset, false if limit exceeded
+	 *
+	 * @since	2.5
 	 */
-	function _sendConfirmationMail($email, $token)
+	public function checkResetLimit($user)
 	{
-		$config		= &JFactory::getConfig();
-		$uri		= &JFactory::getURI();
-		$url		= JURI::base().'index.php?option=com_extendeduser&view=reset&layout=confirm';
-		$sitename	= $config->getValue('sitename');
+		$params = JFactory::getApplication()->getParams();
+		$maxCount = (int) $params->get('reset_count');
+		$resetHours = (int) $params->get('reset_time');
+		$result = true;
 
-		// Set the e-mail parameters
-		$from		= $config->getValue('mailfrom');
-		$fromname	= $config->getValue('fromname');
-		$subject	= JText::sprintf('PASSWORD_RESET_CONFIRMATION_EMAIL_TITLE', $sitename);
-		$body		= JText::sprintf('PASSWORD_RESET_CONFIRMATION_EMAIL_TEXT', $sitename, $token, $url);
+		$lastResetTime = strtotime($user->lastResetTime) ? strtotime($user->lastResetTime) : 0;
+		$hoursSinceLastReset = (strtotime(JFactory::getDate()->toSql()) - $lastResetTime) / 3600;
 
-		// Send the e-mail
-		if (!JUtility::sendMail($from, $fromname, $email, $subject, $body))
+		// If it's been long enough, start a new reset count
+		if ($hoursSinceLastReset > $resetHours)
 		{
-			$this->setError('ERROR_SENDING_CONFIRMATION_EMAIL');
-			return false;
+			$user->lastResetTime = JFactory::getDate()->toSql();
+			$user->resetCount = 1;
 		}
 
-		return true;
+		// If we are under the max count, just increment the counter
+		elseif ($user->resetCount < $maxCount)
+		{
+			$user->resetCount;
+		}
+
+		// At this point, we know we have exceeded the maximum resets for the time period
+		else
+		{
+			$result = false;
+		}
+		return $result;
 	}
 }

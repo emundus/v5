@@ -161,14 +161,7 @@ if ($sent == 0) {
 	$db->setQuery($query);
 	$attachmentsLst = $db->loadResultArray();
 	
-	$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
-				FROM #__fabrik_lists AS fbtables 
-				INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-				INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$this->user->profile.' 
-				WHERE fbtables.state = 1 AND fbtables.created_by_alias = "form" 
-			ORDER BY menu.ordering';
-	$db->setQuery($query);
-	$forms = $db->loadObjectList();
+	$forms = EmundusHelperMenu::buildMenuQuery($this->user->profile);
 	
 	$nb = 0;
 	$formLst = array();
