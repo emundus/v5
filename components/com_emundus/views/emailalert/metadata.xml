@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<view title="Emails">
+		<message>
+			<![CDATA[
+				Emails view
+			]]>
+		</message>
+		<options var="task">
+ 			<default name="Default" msg="Email Preferences" />
+	  </options>
+	</view>
+	<state>
+		<name>Email Preferences Layout</name>
+		<description>Email Preferences Layout for frontend users</description>
+	</state>
+</metadata>

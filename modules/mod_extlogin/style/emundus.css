@@ -1,0 +1,202 @@
+/******************************** 
+ *
+ *        mod_login
+ *
+ *
+ ********************************/
+
+ #log_username {
+	font-weight: bold;
+	color: #fff;
+	margin-right: 5px;
+ } 
+ 
+ #form-login-username input {
+	padding-left:25px;
+	background: url(images/username.png) 0 50% no-repeat;
+ }
+ 
+ #form-login-password input {
+	padding-left:25px;
+	background: url(images/password.png) 0 50% no-repeat;
+ }
+ 
+#form-login-nav {
+	float:right;
+	padding-top: 10px;
+	z-index:90;
+}
+
+ #log_submitbutton {
+	text-align:right;
+ }
+/* #log_photo {
+ 	float: right;
+ }*/
+
+/* login */
+.login {
+	height: 24px;
+}
+
+.username, 
+.password,
+.login-button,
+.home-button,
+.lostpassword, 
+.lostusername,
+.registration,
+.greeting,
+.logout-button,
+.log_updateprofile {
+	margin-right: 5px;
+	margin-left: 5px;
+	float: right;
+	overflow: hidden;
+}
+
+.username,
+.password {
+	width: 74px;
+	height: 16px;
+	padding: 6px 5px 2px 25px;
+	float: left;
+	overflow: hidden;
+}
+
+.username {
+	background: url(images/username_bg.png) 0 0 no-repeat; /* ie6png:crop */
+}
+
+.password {
+	background: url(images/password_bg.png) 0 0 no-repeat; /* ie6png:crop */
+}
+
+.username:hover {
+	background: url(images/username_bg.png) 0 -24px no-repeat;
+}
+
+.password:hover {
+	background: url(images/password_bg.png) 0 -24px no-repeat;
+}
+
+.username input,
+.password input {
+	padding: 0px;
+	width: 100%;
+	background: none;
+	border: none;
+	outline: none;
+	float: left;
+	color: #646464;
+	font-size: 11px;
+}
+
+.username input:hover,
+.password input:hover,
+.username input:focus,
+.password input:focus {
+	color: #000000;
+}
+
+.login-button {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	padding:1px;
+	height: 20px;
+	/*background: url(images/button_bg.png) 0 0 no-repeat;  ie6png:crop */
+	background-color:#3270B7;
+	-moz-border-radius: 10px;border-radius: 10px;
+}
+
+.login-button:hover {
+	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
+	background-color:#FFFFFF;
+}
+
+.login-button button {
+	display: block;
+	padding: 0px 0px 0px 0px;
+	width: 100%;
+	height: 20px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	overflow: hidden;
+	font-size: 11px;
+	line-height: 20px;
+	color: #fff;
+}
+
+.login-button button:hover {
+	color: #000000;
+}
+
+.lostpassword,
+.lostusername,
+.registration{
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.lostpassword {
+	width: 25px;
+	background: url(images/lost_password_bg.png) 0 0px no-repeat; /* ie6png:crop */
+}
+
+.lostusername {
+	width: 25px;
+	background: url(images/lost_username_bg.png) 0 0px no-repeat; /* ie6png:crop */
+}
+
+.registration {
+	width: 31px;
+	background: url(images/registration_bg.png) 0 0px no-repeat; /* ie6png:crop */
+}
+
+.lostpassword a,
+.lostusername a,
+.registration a,
+.log_updateprofile a{
+	/*display: block;*/
+	width: 100%;
+	height: 20px;
+}
+
+.greeting {
+	line-height: 24px;
+}
+
+.logout-button {
+	height: 20px;
+	background-color:#F8ABAD;
+	-moz-border-radius: 10px;border-radius: 10px;
+}
+
+.logout-button:hover { background-color:#F87689; -moz-border-radius: 10px;border-radius: 10px;}
+
+.logout-button button {
+	/*display: block;*/
+	padding: 0px 0px 0px 0px;
+	width: 100%;
+	height: 20px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	overflow: hidden;
+	font-size: 11px;
+	line-height: 20px;
+	color: #646464;
+}
+
+.logout-button button:hover {
+	color: #000000;
+}
+
+.log_updateprofile { width: 50px; height: 20px; background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px;}
+
+.log_updateprofile button {/*display: block;*/ padding: 0px 0px 0px 0px; width: 100%; height: 20px; border: none;
+	background: none; cursor: pointer; overflow: hidden; font-size: 11px; line-height: 20px; color: #000;
+}
+
+.log_updateprofile button:hover {color: #000000; -moz-border-radius: 10px;border-radius: 10px;}

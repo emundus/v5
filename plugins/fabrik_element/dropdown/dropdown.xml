@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="2.5">
+	<name>plg_fabrik_element_dropdown</name>
+	<author>Rob Clayburn</author>
+	<creationDate>${createdate}</creationDate>
+	<copyright>(C) 2005-${year} fabrikar.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>rob@pollen-8.co.uk</authorEmail>
+	<authorUrl>www.fabrikar.com</authorUrl>
+	<version>3.0.7</version>
+	<help url="PLG_ELEMENT_DROPDOWN_HELP_SERVER"/>
+	<description>PLG_ELEMENT_DROPDOWN_DESCRIPTION</description>
+	<files>
+		<filename plugin="dropdown">dropdown.php</filename>
+		<filename>index.html</filename>
+		<filename>dropdown.js</filename>
+		<filename>dropdown-min.js</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	
+	<config>
+		<fields name="params">
+			<fieldset label="PLG_ELEMENT_FABRIK_OPTIONS" name="params">
+				<field default="TEXT" description="PLG_ELEMENT_FABRIK_FIELD_TYPE_DESC" label="PLG_ELEMENT_FABRIK_FIELD_TYPE_LABEL" name="defaultFieldType" size="20" type="text"/>
+			</fieldset>
+		</fields>
+	</config>
+	
+</extension>

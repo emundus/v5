@@ -1,0 +1,35 @@
+#emundusflow {
+    margin-bottom: auto;
+    margin-left: 0px;
+    margin-right: auto;
+    margin-top: -30px;
+    padding-bottom: 0px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0px;
+    text-align: center;
+	/*width:400px; // pour une version flottante en entête
+	text-align:center;
+	margin:auto;
+	margin: -5px 0 20px 310px;
+	position:absolute;*/
+}
+#emundusflow fieldset {
+	padding: 0 2px 0 0;
+}
+#emundusflow fieldset legend {
+	font-size:14px;
+}
+#emundusflow h1 {
+	text-align:center;
+	font-size: 11px;
+	margin:0;
+}
+
+.flowfleche {
+	background: url(images/next.png) 0 50% no-repeat;
+	width:40px;
+}
+#flowsent{
+    vertical-align: central;
+}

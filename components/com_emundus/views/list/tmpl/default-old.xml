@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<state>
+		<name>tmp</name>
+		<description>tmp</description>
+		<params>
+			<param name="em_user_group" value="" type="usergroup" label="User group"/>
+			<param name="em_tables_id" value="" type="textarea" rows="6" cols="40" label="Tables filter"/>
+			<param name="em_elements_id" value="" type="textarea" rows="6" cols="40" label="Elements list"/>
+			<param name="em_elements_values" value="" type="textarea" rows="6" cols="40" label="Elements values"/>
+			<param name="em_filters_names" value="" type="textarea" rows="6" cols="40" label="Filters list"/>
+			<param name="em_filters_values" value="" type="textarea" rows="6" cols="40" label="Filters values"/>
+			<param name="em_filters_options" value="" type="textarea" rows="6" cols="40" label="Filters options"/>
+			<param name="em_blocks_names" value="" type="textarea" rows="6" cols="40" label="Blocks list"/>
+		</params>
+	</state>
+</metadata>

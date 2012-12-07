@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+	<layout title="COM_EMUNDUS_LIST_VIEW_DEFAULT_TITLE">
+		<message>
+			<![CDATA[COM_EMUNDUS_LIST_VIEW_DEFAULT_DESC]]>
+		</message>
+	</layout>
+	
+	<fields name="params">
+		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+			<field name="em_groups" value="" type="usergroup" label="User Groups"/>
+			<field name="em_tables_id" value="" type="textarea" rows="6" cols="40" label="Tables filter"/>
+			<field name="em_elements_id" value="" type="textarea" rows="6" cols="40" label="Elements list"/>
+			<field name="em_elements_values" value="" type="textarea" rows="6" cols="40" label="Elements values"/>
+			<field name="em_filters_names" value="" type="textarea" rows="6" cols="40" label="Filters list"/>
+			<field name="em_filters_values" value="" type="textarea" rows="6" cols="40" label="Filters values"/>
+			<field name="em_filters_options" value="" type="textarea" rows="6" cols="40" label="Filters options"/>
+			<field name="em_blocks_names" value="" type="textarea" rows="6" cols="40" label="Blocks list"/>
+		</fieldset>
+	</fields>
+	
+</metadata>

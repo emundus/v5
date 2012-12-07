@@ -1,0 +1,20 @@
+/******************************** 
+ *
+ *       css mod_login + 
+ *
+ ********************************/
+.required {padding-left:12px;}
+.invalid {color:red;}
+ #profileaff {
+	padding-left:40px;
+	color:grey;
+ }
+/* #profile {
+	display:none;
+ }
+ #profilemsg {
+	display:none;
+ }
+  #profileaff {
+	display:none;
+ }*/

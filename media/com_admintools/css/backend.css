@@ -1,0 +1,323 @@
+/* @override http://dev17.local.web/media/com_admintools/css/backend.css?svn586 */
+
+#cpanel { width: 60%; float: left; }
+#sidepanes { width: 40%; float: left; }
+
+.icon-48-admintools { background-image: url(../images/admintools-48.png) }
+
+
+/*
+ * Joomla! 1.6+ reset horrid styling
+ */
+#atools-container button, #atools-container input, #atools-container select { float: none; }
+#atools-container label { float: left; }
+#atools-container button { margin: 0 0 0 5px; }
+#atools-container fieldset label { clear: none !important; margin-right: 0.4em !important; }
+#atools-container span.radio label,
+#atools-container span.radio input[type=radio] { float: left; }
+
+#waf-countries input[type=checkbox] { float: left; }
+
+/* Control Panel */
+span.update-ok {color: #009900 !important;}
+span.update-warning {color: #990000 !important; font-weight: bold;}
+span.update-manual {color: #999900 !important; font-weight: bold;}
+div.disclaimer, #disclaimer { width: 80%; border: thin solid silver; margin: 0.5em 10%; padding: 1em; background: #f0f0f0; color: gray; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; }
+div.disclaimer h3, #disclaimer h3 { font-size: 9pt; color: gray; font-weight: bold; padding: 0; margin: 0; }
+div.disclaimer p, #disclaimer p { font-size: 8pt; padding: 0; margin: 0.2em 0 0 0; }
+.atlargewarning { font-size: 12pt !important; box-shadow: 0 0 20px 4px #f00;
+	-webkit-animation-name: atwpulsate;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-iteration-count: 10
+}
+
+@-webkit-keyframes atwpulsate {
+	0% { box-shadow: 0 0 20px 4px #f00; }
+	50% { box-shadow: 0 0 10px 0px #ff0; }
+	100% { box-shadow: 0 0 20px 4px #f00; }
+}
+
+.atoolsblock { width: 90%; border: 1px solid #333; margin: 0.4em 3%; padding: 1em; background: #f9f9f9; color: #333; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 5px; }
+.atoolsblock p { font-size: small; padding: 0; margin: 0.2em 0 0 0; }
+.atoolsblock h3 { font-size: medium; color: black; font-weight: bold; padding: 0; margin: 0 0 1em 0; text-shadow: #aaa 1px 1px 2px; }
+/*
+ * Live Update
+ */
+div.disclaimer h3 { color: black; }
+div.ok { background-color: #99ff99; border-color: #009900; color: #009900 !important; }
+div.unsupported { background-color: #ff9999; border-color: #990000; }
+div.update { background-color: #ffff99; border-color: #999900; }
+
+#version_info_table {
+	border: thin solid gray;
+	background: #efefef;
+	padding: 1em;
+	margin: 1em auto;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+#version_info_table td { padding: 3px 10px 3px 0; border-bottom: thin solid #d0d0d0; }
+#version_info_table .label { font-weight: bold; }
+.version { font-weight: bold; color: #333300; }
+.version-status { color: #666666; font-style: italic; }
+
+/*
+ * Editor forms
+ */
+div.editform3-row label { display: inline; float: none; clear: none; }
+div.editform3-row input { display: inline; float: none; }
+
+div.editform-row, div.editform3-row { display:block; margin: 1px 0; padding: 1px; clear: left; }
+div.editform-row-noheight { height: auto; }
+div.editform-row > label, div.editform3-row label.option { display: block; float: left; width: 400px; height: 1.4em; background-color: #ddd; margin: 0 2px 0 0; padding: 2px 0 0px 2px; border-bottom: 1px solid #999; border-top: 1px solid #ddd; overflow: none; }
+div.editform-row > input, div.editform-row .float { display: block; float: left; min-width: 250px; height: 1.6em; }
+div.editform-row > input.checkbox { display: inline; float: none; min-width: 0; height: auto; }
+div.editform-row > option { display: block; float: left; min-width: 90px; height: 1.6em; }
+div.editform-row > span { display: block; float: left; height: 1.6em; margin: 0.2em 0.5em 0; }
+div.editform-row > input.narrow { min-width: 0; }
+
+div.editform-row > label.short { width: 200px; }
+
+div.editform2-row { display: block; margin: 1px 0; padding: 1px; }
+div.editform2-row > label { display: block; float: left; width: 400px; height: 1.4em; background-color: #ddd; margin: 0 2px 0 0; padding: 2px 0 0px 2px; border-bottom: 1px solid #999; border-top: 1px solid #ddd; }
+div.editform2-row > textarea, div.editform-row .float { height: 6em; }
+
+/* Joomla! Core Update */
+#joomla-update-information { width: 80%; margin: 2em 10%; border: thin solid gray; background: #f0f0f0; padding: 0.5em }
+#joomla-update-information td { border-bottom: thin solid silver; }
+#joomla-update-information td.label { font-weight: bold; }
+
+#joomla-update-buttonbar {
+	text-align: center;
+}
+
+#extprogress { background: #f0f0f0; }
+
+.extlabel { display: inline-block; font-weight: bold; width: 200px; }
+.extprogrow { line-height: 150% }
+
+/* Database Tools */
+#progressbar-outer { width: 90%; margin: 0.5em 5%; height: 28px; border: thin solid gray; padding: 2px; background-color: white;  }
+#progressbar-inner { background-color: navy; height: 28px; width: 1%; }
+
+p.admintools-para { font-size: 120%; }
+div.admintools-warning, p.admintools-warning { background-color: #ffdd00; border: medium solid red; color: red; padding: 0.5em; font-size: 110%; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+label.admintools { font-weight: bold; width: 140px; display: inline-block; }
+
+/* Custom file permissions */
+#splitlist { margin: 1em 0 0 0; padding: 0; }
+#splitlist fieldset { width: 48%; float: left; }
+
+/* Common elements */
+#admintools-whatsthis-icon { font-weight: bold; min-height: 16px; font-size: 10pt; padding-left: 22px; background: transparent url(../images/info-16.png) top left no-repeat; cursor: pointer; }
+#admintools-whatsthis-info {
+	display: none;
+	float: left;
+	position: absolute;
+	width: 60%;
+	z-index: 1000;
+	font-size: 10pt;
+	color: black;
+	background-color: rgba(240,255,255,0.85);
+	border: 2px solid black;
+	margin: -0.7em 0 0 16px;
+	padding: 0 0.5em;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	box-shadow: 2px 2px 4px black;
+	-moz-box-shadow: 2px 2px 4px black;
+}
+#admintools-whatsthis-info ul { list-style-type: square; }
+#admintools-whatsthis-info ul li { margin-bottom: 0.5em }
+
+#waf-continents input, #waf-continents label { float: none; display: inline; }
+
+/*
+ * Changelog
+ */
+h3.akeeba-changelog { border-bottom: 2px solid #333; margin-top: 10pt; font-size: 13pt; }
+ul.akeeba-changelog { list-style-type: none; padding: 7px; margin: 3px; font-size: 10pt; border: thin solid #ccc; background-color: #fefefe; border-radius: 5px; }
+ul.akeeba-changelog li { line-height: 16px; padding: 0; margin: 0 3px 3px; }
+li.akeeba-changelog-added		{ color: green; }
+li.akeeba-changelog-removed		{ color: red; }
+li.akeeba-changelog-changed		{ color: #666; }
+li.akeeba-changelog-important	{ color: #cc8833; }
+li.akeeba-changelog-fixed		{ color: blue; }
+ul.akeeba-changelog span			{ display: inline-block; height: 16px; width: 32px; background: transparent url(../images/changelog.png) top left no-repeat; margin-right: 4px; }
+li.akeeba-changelog-removed span	{ background-position: 0 -16px; }
+li.akeeba-changelog-changed	span	{ background-position: 0 -32px; }
+li.akeeba-changelog-important span	{ background-position: 0 -64px; }
+li.akeeba-changelog-fixed span		{ background-position: 0 -48px; }
+
+/*
+ * Post-setup configuration wizard
+ */
+.admintools-postsetup p {
+	font-size: 110%;
+}
+
+div.admintools-postsetup label {
+	float: none !important;
+}
+
+label.postsetup-main {
+	font-weight: bold;
+	font-size: 140%;
+}
+
+div.postsetup-desc {
+	margin: 0.25em 0 1em;
+	padding: 0 1.5em;
+	font-size: small;
+}
+
+/**
+ * File scanner
+ */
+.admintools-files-alert {
+	font-weight: bold;
+	color: red;
+}
+
+.admintools-files-noalert {
+	color: #333;
+	font-style: italic;
+}
+
+.icon-32-scan {
+	background-image: url(../images/scan-32.png);
+}
+
+div#admintools-scan-dim {
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	background-color: rgba(0,0,0,0.6);
+}
+
+div#admintools-scan-container {
+	background-color: whitesmoke;
+	width: 350px;
+	height: 100px;
+	margin: 10em auto;
+	border-radius: 5px;
+	border: medium solid black;
+	box-shadow: 1px 1px 5px black;
+	padding: 1em;
+}
+
+div#admintools-scan-container p {
+	font-size: 14pt;
+	text-align: center;
+}
+
+div#admintools-scan-container span.lastupdate {
+	font-size: 8pt;
+	color: #999;
+	text-overflow: ellipses;
+}
+
+.icon-32-csv {
+	background-image: url(../images/htmaker-32.png);
+}
+
+.icon-32-print {
+	background-image: url(../images/printer-32.png);
+}
+
+.admintools-scanfile-new {
+	font-weight: bold;
+	color: orange;
+}
+
+.admintools-scanfile-modified {
+	font-weight: bold;
+	color: red;
+}
+
+.admintools-scanfile-suspicious {
+	font-weight: bold;
+	color: #933;
+}
+
+.admintools-scanfile-nothreat {
+	font-weight: normal;
+	color: inherit;
+}
+
+.admintools-scanfile-pic {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 2px;
+	background: transparent url(../images/circles.png) left top no-repeat;
+}
+
+.admintools-scanfile-threat-none {
+	color: green;
+}
+
+.admintools-scanfile-threat-low {
+	font-style: italic;
+	color: orange;
+}
+
+.admintools-scanfile-threat-low .admintools-scanfile-pic {
+	background-position: -16px top;
+}
+
+.admintools-scanfile-threat-medium {
+	font-weight: bold;
+	color: red;
+}
+
+.admintools-scanfile-threat-medium .admintools-scanfile-pic {
+	background-position: -32px top;
+}
+
+.admintools-scanfile-threat-high {
+	font-weight: bold;
+	font-style: italic;
+	color: magenta;
+}
+
+.admintools-scanfile-threat-high .admintools-scanfile-pic {
+	background-position: -48px top;
+}
+
+span.admintools-scanfile-markedsafe {
+	font-weight: bold;
+	color: green;
+}
+
+div.editform-row span.admintools-scanfile-path {
+	font-family: Consolas, Courier New, Courier, monospaced;
+	font-weight: bold;
+	font-size: 8pt;
+}
+
+pre.php,
+pre.diff {
+	font-family: Consolas, Courier New, Courier, monospace;
+	font-size: 8pt;
+	background: whitesmoke;
+	padding: 4px;
+	border: thin solid black;
+	border-radius: 5px;
+}
+
+pre.php ol li,
+pre.diff ol li {
+	list-style-position: inside;
+	list-style-type: decimal-leading-zero !important;
+}
+
+pre.php ol li:nth-child(even) {
+	background: #eef;
+}

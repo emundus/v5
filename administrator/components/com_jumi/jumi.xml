@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="1.6" method="upgrade">
+    <name>com_jumi</name>
+    <author>Edvard Ananyan</author>
+    <creationDate>January 2011</creationDate>
+    <copyright>Copyright (c) 2008 - 2011 Edvard Ananyan. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>edo888@gmail.com</authorEmail>
+    <authorUrl>http://edo.webmaster.am/</authorUrl>
+    <version>2.0.7</version>
+    <description><![CDATA[This component includes custom scripts (html, php, js, css, ...) into Joomla! pages.<br />Collaboration between multiple Joomla! pages and other Jumi extensions is easy.<br />For Jumi downloads and guides visit <a href="http://edo.webmaster.am/jumi" target="_blank">http://edo.webmaster.am/jumi</a><br />For Jumi demos, tips and tricks visit <a href="http://edo.webmaster.am/jumi/tutorial" target="_blank">http://edo.webmaster.am/jumi/tutorial</a>]]></description>
+
+    <files>
+        <filename>jumi.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <filename>index.html</filename>
+        <filename>release_notes.txt</filename>
+        <folder>files</folder>
+        <folder>views</folder>
+    </files>
+
+    <scriptfile>scriptfile.php</scriptfile>
+
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">install.jumi.sql</file>
+        </sql>
+    </install>
+
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">uninstall.jumi.sql</file>
+        </sql>
+    </uninstall>
+
+    <url>
+        <linkparts name="fileid" type="sql" default="1" label="FILE" query="SELECT id, title FROM #__jumi" key_field="id" value_field="title" description="PARAMFILE" />
+    </url>
+
+    <administration>
+        <menu img="components/com_jumi/images/jumi.png">COM_JUMI_MENU</menu>
+        <files folder="admin">
+            <filename>admin.jumi.php</filename>
+            <filename>toolbar.jumi.html.php</filename>
+            <filename>toolbar.jumi.php</filename>
+            <filename>install.jumi.sql</filename>
+            <filename>uninstall.jumi.sql</filename>
+            <filename>index.html</filename>
+            <folder>images</folder>
+            <folder>module</folder>
+            <folder>plugin</folder>
+            <folder>router</folder>
+        </files>
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/en-GB.com_jumi.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_jumi.sys.ini</language>
+            <language tag="ru-RU">language/ru-RU/ru-RU.com_jumi.ini</language>
+            <language tag="cs-CZ">language/cs_CZ/cs-CZ.com_jumi.ini</language>
+            <language tag="hy-AM">language/hy-AM/hy-AM.com_jumi.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.com_jumi.ini</language>
+        </languages>
+    </administration>
+</extension>
