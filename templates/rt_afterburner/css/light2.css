@@ -276,9 +276,7 @@ span.attention {display:block;margin:15px 0;padding:8px 10px 8px 10px;background
     margin-top: 3px;
     position: relative;
 }
-dt {
-visibility:hidden;
-}
+
 /*Setup Application Form*/
 #profilebasics th {
     text-align: left;

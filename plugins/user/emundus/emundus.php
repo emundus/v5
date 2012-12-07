@@ -61,12 +61,41 @@ class plgUserEmundus extends JPlugin
 	public function onUserAfterSave($user, $isnew, $success, $msg)
 	{
 		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$config	= JFactory::getConfig();
-		$mail_to_user = $this->params->get('mail_to_user', 1);
+		$jinput 		= JFactory::getApplication()->input;
+
+		$details 		= $jinput->post->get('jform', null, 'none');
+		$app 			= JFactory::getApplication();
+		$config			= JFactory::getConfig();
+		$mail_to_user 	= $this->params->get('mail_to_user', 1);
 
 		if ($isnew) {
-			// TODO: Suck in the frontend registration emails here as well. Job for a rainy day.
+			// @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
+
+			$db = JFactory::getDBO();
+
+			// Update name and fistname from #__users
+			$db->setQuery('UPDATE #__users
+					SET name="'.strtoupper($details['name']).' '.ucfirst($details['firstname']).'"
+					WHERE id='.$user['id']);
+			$db->Query();
+
+			// Insert data in #__emundus_users
+			$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$details['profile']);
+			$schoolyear = $db->loadResult();
+
+			$db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear,registerDate)
+						VALUES ('.$user['id'].',"'.ucfirst($details['firstname']).'","'.strtoupper($details['name']).'",'.$details['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
+			$db->Query();
+
+			// Insert data in #__emundus_users_profiles
+			$db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id)
+						VALUES ('.$user['id'].','.$details['profile'].')');
+			$db->Query();
+
+			// Insert data in #__emundus_users_profiles_history
+			$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var)
+						VALUES ('.$user['id'].','.$details['profile'].',"profile")');
+			$db->Query();
 
 			if ($app->isAdmin()) {
 				if ($mail_to_user) {

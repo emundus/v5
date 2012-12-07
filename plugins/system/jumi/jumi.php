@@ -27,8 +27,6 @@ class plgSystemJumi extends JPlugin {
         return;
 
       $plugin =& JPluginHelper::getPlugin('system', 'jumi');
-      echo 'plugin/system/jumi/jumi.php - line 30<br>';
-      print_r($plugin);
       $pluginParams = json_decode( $plugin->params );
 
       $content = JResponse::getBody();

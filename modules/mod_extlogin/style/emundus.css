@@ -45,7 +45,6 @@
 .home-button,
 .lostpassword, 
 .lostusername,
-.registration,
 .greeting,
 .logout-button,
 .log_updateprofile {
@@ -147,11 +146,6 @@
 .lostusername {
 	width: 25px;
 	background: url(images/lost_username_bg.png) 0 0px no-repeat; /* ie6png:crop */
-}
-
-.registration {
-	width: 31px;
-	background: url(images/registration_bg.png) 0 0px no-repeat; /* ie6png:crop */
 }
 
 .lostpassword a,
