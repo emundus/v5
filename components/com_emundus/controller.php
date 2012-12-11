@@ -195,38 +195,44 @@ class EmundusController extends JController {
 				$paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->name,ENT_NOQUOTES,'UTF-8'))));
 				$paths .= $labels[$i].rand().'.'.end(explode(".", $files['name'][$i]));
 				if (move_uploaded_file(	$files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
-					$can_be_deleted = $post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
-					$can_be_viewed = $post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
+					$can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
+					$can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 					$query .= '('.mysql_real_escape_string($user->id).', '.mysql_real_escape_string($attachments[$i]).', \''.mysql_real_escape_string($paths).'\', \''.mysql_real_escape_string($descriptions[$i]).'\', '.mysql_real_escape_string($can_be_deleted).', '.mysql_real_escape_string($can_be_viewed).'),';
 					$nb++;
 				}
 				if ($labels[$i]=="_photo") {
-					$pathToThumbs = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
-					$file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
-					//$img = imagecreatefromjpeg(EMUNDUS_PATH_ABS.$user->id.DS.$paths);
-					list($w_src, $h_src, $type) = getimagesize($file_src);  // create new dimensions, keeping aspect ratio
-					//$ratio = $w_src/$h_src;
-					//if ($w_dst/$h_dst > $ratio) {$w_dst = floor($h_dst*$ratio);} else {$h_dst = floor($w_dst/$ratio);}
-				
-					switch ($type){
-						case 1:   //   gif -> jpg
-						$img = imagecreatefromgif($file_src);
-						break;
-					  case 2:   //   jpeg -> jpg
-						$img = imagecreatefromjpeg($file_src);
-						break;
-					  case 3:  //   png -> jpg
-						$img = imagecreatefrompng($file_src);
-						break;
-					 }
-					//$width = imagesx( $img );
-					//$height = imagesy( $img );
-					$new_width = 200;
-					$new_height = floor( $h_src * ( $new_width / $w_src ) );
-					$tmp_img = imagecreatetruecolor( $new_width, $new_height );
-					imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src );
-					imagejpeg( $tmp_img, $chemin.$user->id.DS.'tn_'.$paths);
-					$user->avatar = $paths;
+					$checkdouble_query = 'SELECT count(user_id) FROM #__emundus_uploads WHERE attachment_id=(SELECT id FROM #__emundus_setup_attachments WHERE lbl="_photo")';
+					$db->setQuery($checkdouble_query);
+					if ($db->loadResult()) {
+						$query = '';
+					} else {
+						$pathToThumbs = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
+						$file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
+						//$img = imagecreatefromjpeg(EMUNDUS_PATH_ABS.$user->id.DS.$paths);
+						list($w_src, $h_src, $type) = getimagesize($file_src);  // create new dimensions, keeping aspect ratio
+						//$ratio = $w_src/$h_src;
+						//if ($w_dst/$h_dst > $ratio) {$w_dst = floor($h_dst*$ratio);} else {$h_dst = floor($w_dst/$ratio);}
+					
+						switch ($type){
+							case 1:   //   gif -> jpg
+							$img = imagecreatefromgif($file_src);
+							break;
+						  case 2:   //   jpeg -> jpg
+							$img = imagecreatefromjpeg($file_src);
+							break;
+						  case 3:  //   png -> jpg
+							$img = imagecreatefrompng($file_src);
+							break;
+						 }
+						//$width = imagesx( $img );
+						//$height = imagesy( $img );
+						$new_width = 200;
+						$new_height = floor( $h_src * ( $new_width / $w_src ) );
+						$tmp_img = imagecreatetruecolor( $new_width, $new_height );
+						imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src );
+						imagejpeg( $tmp_img, $chemin.$user->id.DS.'tn_'.$paths);
+						$user->avatar = $paths;
+					}
 				}
 			}
 		}

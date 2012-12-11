@@ -14,7 +14,7 @@ if($type == 'logout') : ?>
 		<button value="<?php echo JText::_( 'BUTTON_LOGOUT'); ?>" name="Submit" type="submit" title="<?php echo JText::_('BUTTON_LOGOUT'); ?>"><?php echo JText::_( 'BUTTON_LOGOUT'); ?></button>
 	</span>
 	<span class="log_updateprofile">
-        <button value="<?php echo JText::_( 'PROFILE'); ?>" name="profile" type="button" onclick="self.location.href='index.php?option=com_users&task=edit'" title="<?php echo JText::_('UPDATE_PROFILE'); ?>"><?php echo JText::_( 'PROFILE'); ?></button>
+        <button value="<?php echo JText::_( 'PROFILE'); ?>" name="profile" type="button" onclick="self.location.href='index.php?option=com_users&view=profile&layout=edit'" title="<?php echo JText::_('UPDATE_PROFILE'); ?>"><?php echo JText::_( 'PROFILE'); ?></button>
     </span>
 	<?php if ($params->get('greeting')) { ?><span id="log_username"><?php echo $user->get('firstname'); ?> </span><?php } ?>
 		<input type="hidden" name="option" value="com_users" />
