@@ -14,6 +14,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+
 $user =& JFactory::getUser();
 if($user->get('usertype') != 2 || $user->applicant != 1 ) return;
 $db =& JFactory::getDBO();
@@ -25,14 +27,7 @@ $query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id
 $db->setQuery($query);
 $attachments = floor($db->loadResult());
 
-
-$query = 'SELECT fbtables.db_table_name
-			FROM #__fabrik_lists AS fbtables 
-			INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-			INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$user->profile.'
-			WHERE fbtables.published = 1 AND fbtables.created_by_alias = "form"';
-$db->setQuery($query);
-$forms = $db->loadResultArray();
+$forms =EmundusHelperMenu::buildMenuListQuery($user->profile);
 $nb = 0;
 foreach ($forms as $form) {
 	$query = 'SELECT count(*) FROM '.$form.' WHERE user = '.$user->id;

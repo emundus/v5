@@ -745,7 +745,7 @@ var FbList = new Class({
 	 */
 	getRowIds: function () {
 		var keys = [];
-		this.options.data.each(function (group) {
+		$H(this.options.data).each(function (group) {
 			group.each(function (row) {
 				keys.push(row.data.__pk_val);
 			});
@@ -840,7 +840,7 @@ var FbList = new Class({
 			var counter = 0;
 			var rowcounter = 0;
 			trs = [];
-			this.options.data = data.data;
+			this.options.data = this.options.isGrouped ? $H(data.data) : data.data;
 			if (data.calculations) {
 				this.updateCals(data.calculations);
 			}
@@ -855,6 +855,12 @@ var FbList = new Class({
 			gdata.each(function (groupData, groupKey) {
 				var container, thisrowtemplate;
 				var tbody = this.options.isGrouped ? this.list.getElements('.fabrik_groupdata')[gcounter] : this.tbody;
+				
+				// Set the group by heading
+				if (this.options.isGrouped && tbody) {
+					groupHeading = tbody.getPrevious();
+					groupHeading.getElement('.groupTitle').set('html', groupData[0].groupHeading);
+				}
 				if (typeOf(tbody) !== 'null') {
 					gcounter++;
 					for (i = 0; i < groupData.length; i++) {
@@ -899,6 +905,19 @@ var FbList = new Class({
 				}
 			}.bind(this));
 
+			// Grouped data - show all tbodys, then hide empty tbodys (not going to work for none <table> tpls)
+			var tbodys = this.list.getElements('tbody');
+			tbodys.setStyle('display', '');
+			tbodys.each(function (tbody) {
+				if (!tbody.hasClass('fabrik_groupdata')) {
+					var groupTbody = tbody.getNext();
+					if (groupTbody.getElements('.fabrik_row').length === 0) {
+						tbody.hide();
+						groupTbody.hide();
+					}
+				}
+			});
+			
 			var fabrikDataContainer = this.list.getParent('.fabrikDataContainer');
 			var emptyDataMessage = this.list.getParent('.fabrikForm').getElement('.emptyDataMessage');
 			if (rowcounter === 0) {
@@ -1045,19 +1064,21 @@ var FbList = new Class({
 				window.location = 'index.php?option=com_fabrik&task=list.view&cid=' + e.target.get('value');
 			}.bind(this));
 		}
-		if (this.options.ajax) {
-			if (typeOf(this.form.getElement('.pagination')) !== 'null') {
-				this.form.getElement('.pagination').getElements('.pagenav').each(function (a) {
-					a.addEvent('click', function (e) {
-						e.stop();
-						if (a.get('tag') === 'a') {
-							var o = a.href.toObject();
-							this.fabrikNav(o['limitstart' + this.id]);
-						}
-					}.bind(this));
+		// All nav links should submit the form, if we dont then filters are not taken into account when building the list cache id
+		// Can result in 2nd pages of cached data being shown, but without filters applied
+		// if (this.options.ajax) {
+		if (typeOf(this.form.getElement('.pagination')) !== 'null') {
+			this.form.getElement('.pagination').getElements('.pagenav').each(function (a) {
+				a.addEvent('click', function (e) {
+					e.stop();
+					if (a.get('tag') === 'a') {
+						var o = a.href.toObject();
+						this.fabrikNav(o['limitstart' + this.id]);
+					}
 				}.bind(this));
-			}
+			}.bind(this));
 		}
+		// }
 		
 		if (this.options.admin) {
 			Fabrik.addEvent('fabrik.block.added', function (block) {

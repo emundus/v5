@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="2.5">
+	<name>plg_fabrik_element_emundusreferent</name>
+	<author>Benjamin Rivalland</author>
+	<creationDate>${createdate}</creationDate>
+	<copyright>(C) 2008-${year} emundus.fr</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.0</version>
+	<description>Manage reference letter request</description>
+	<files>
+		<filename fabrikplugin="emundusreferent">emundusreferent.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages folder="administrator/language" >
+		<language tag="en-GB">en-GB/en-GB.com_fabrik.plg.element.emundusreferent.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset label="PLG_ELEMENT_FABRIK_OPTIONS" name="params">
+				<field name="width" type="width" label="Width"/>
+				<field name="hidden" type="hidden" default="" size="3" label="HIDDEN" />
+				<field name="eval" type="eval" default="0" label="Eval" />
+				<field name="default" type="default" default="0" label="Default" />
+			</fieldset>
+			<fieldset group="extra">
+				<field name="attachment_id" type="text" default="4" label="ATTACHMENTID" description="ATTACHMENTIDDESC" />
+				<field name="email" size="60" type="text" default="" label="EMAIL" description="EMAILDESC" />
+				<field name="disable" type="radio" default="1" label="DISABLEELEMENT" description="DISABLEELEMENTDESC">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="readonly" type="radio" default="0" label="READONLY" description="READONLYDESC">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+
+</extension>

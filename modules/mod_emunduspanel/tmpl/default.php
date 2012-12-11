@@ -11,7 +11,7 @@ if (!empty($tab)) {
         $query='SELECT label,id FROM jos_emundus_setup_profiles WHERE id ='.$name;
         $db->setQuery($query);
         $label = $db->loadResult();
-        echo '<a href="index.php?option=com_extendeduser&task=edit"><h2>'.JText::_('YOUR_PROFILE').' : '.$label. '</h2></a>';
+        echo '<a href="index.php?option=com_users&view=profile&layout=edit"><h2>'.JText::_('YOUR_PROFILE').' : '.$label. '</h2></a>';
     }
     
     ?>
