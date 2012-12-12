@@ -146,55 +146,55 @@ class Email{
 	* Verifie la validité de l'email
 	*/
 	public function checkEmail(){
-		if(  $this->checkEmailSyntax($email)  ){
-				$results['checkEmailSyntax'] = 1;
-			}else{
-				$results['checkEmailSyntax'] = 0;
-			}
+		if( $this->checkEmailSyntax($this->email) ){
+			$results['checkEmailSyntax'] = 1;
+		}else{
+			$results['checkEmailSyntax'] = 0;
+		}
 
 			// Effectué uniquement si le test de syntaxe est OK
-			if( $results['checkEmailSyntax'] ){
-				// HOST
-				if( $this->checkEmailWithHost ){
-					$results['gethostbyname'] = 1;
-				}else{
-					$results['gethostbyname'] = 0;
-				}
-
-				if( $this->checkEmailWith_Dnsrr($domain) ){
-					$results['checkEmailWith_Dnsrr'] = 1;
-				}else{
-					$results['checkEmailWith_Dnsrr'] = 0;
-				}
-
-				// Test DNS poussé (Windows inclu)
-				if( $this->customCheckEmailWith_Dnsrr($domain) ){
-					$results['customCheckEmailWith_Dnsrr'] = 1;
-				}else{
-					$results['customCheckEmailWith_Dnsrr'] = 0;
-				}
-
-				// Test MX poussé (Windows exclu)
-				if( $this->customCheckEmailWith_Mxrr($domain) ){
-					$results['customCheckEmailWith_Mxrr'] = 1;
-				}else{
-					$results['customCheckEmailWith_Mxrr'] = 0;
-				}
-
-				if( $this->complete_check ){ 
-                    if( ($results['gethostbyname'] && $results['customCheckEmailWith_Dnsrr'] )
-					||
-					($results['checkEmailWith_Dnsrr'] && $results['customCheckEmailWith_Mxrr'] )
-							){
-					$results['COMPLETE_CHECK'] = 1;
-					$results['CheckEmailWith_Socket'] = $this->CheckEmailWith_Socket($email, $domain, $timeout);
-							}
-				}else{
-					$results['COMPLETE_CHECK'] = 0;
-					$results['CheckEmailWith_Socket'] = "";
-				}
+		if( $results['checkEmailSyntax'] ){
+			// HOST
+			if( $this->checkEmailWithHost() ){
+				$results['gethostbyname'] = 1;
+			}else{
+				$results['gethostbyname'] = 0;
 			}
-			$this->checkEmail_results = $results;
+
+			if( $this->checkEmailWith_Dnsrr($this->domain) ){
+				$results['checkEmailWith_Dnsrr'] = 1;
+			}else{
+				$results['checkEmailWith_Dnsrr'] = 0;
+			}
+
+			// Test DNS poussé (Windows inclu)
+			if( $this->customCheckEmailWith_Dnsrr($this->domain) ){
+				$results['customCheckEmailWith_Dnsrr'] = 1;
+			}else{
+				$results['customCheckEmailWith_Dnsrr'] = 0;
+			}
+			
+			// Test MX poussé (Windows exclu)
+			if( $this->customCheckEmailWith_Mxrr($this->domain) ){
+				$results['customCheckEmailWith_Mxrr'] = 1;
+			}else{
+				$results['customCheckEmailWith_Mxrr'] = 0;
+			}
+
+			if( $this->complete_check ){ 
+				if( ($results['gethostbyname'] && $results['customCheckEmailWith_Dnsrr'] )
+				||
+				($results['checkEmailWith_Dnsrr'] && $results['customCheckEmailWith_Mxrr'] )
+				){
+					$results['COMPLETE_CHECK'] = 1;
+					$results['CheckEmailWith_Socket'] = $this->CheckEmailWith_Socket($this->email, $this->domain, $timeout);
+				}
+			}else{
+				$results['COMPLETE_CHECK'] = 0;
+				$results['CheckEmailWith_Socket'] = "";
+			}
+		}
+		$this->checkEmail_results = $results;
 	}
 	
 	/**

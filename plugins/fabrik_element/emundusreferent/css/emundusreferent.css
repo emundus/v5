@@ -1,7 +1,6 @@
 /* 
    emundusreferent
 ------------------------------------------------------------------- */
-
 .emundusreferent {
 	display: -moz-inline-box; /* FF < 3*/
 	display: inline-block;
@@ -45,7 +44,7 @@
 	text-decoration: none;
 }
 
-.emundusreferent .fabrikElement div { float:right; vertical-align:middle; }
+.emundusreferent .fabrikElement div { float:left; vertical-align:middle; padding: 0 12px 0 1px;}
 
 .emundusreferent_add {
 	background-position: -181px center;

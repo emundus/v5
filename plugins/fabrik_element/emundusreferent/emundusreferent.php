@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
+ * @subpackage	Fabrik.element.emundusreferent
  * @copyright	Copyright (C) 2005 Fabrik. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
  * Plugin element to render button
  *
  * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
+ * @subpackage	Fabrik.element.emundusreferent
  */
 
 class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
@@ -54,6 +54,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		$size 			= $element->width;
 
 		$this->initUser();
+		JHTML::stylesheet('emundusreferent.css', 'plugins/fabrik_element/emundusreferent/css/');
 		$bits = array();
 		$this->_attachment_id = $params->get('attachment_id');
 		$info = $this->getReferentRequestInfo($this->_attachment_id);
@@ -102,21 +103,22 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 				$bits['disabled'] = 'disabled';
 			}
 		}
-		
+		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
 		if ($this->isReferentLetterUploaded($this->_attachment_id))
-			$str = '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
+			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
 		else {
-			$str = "<div id=\"".$id."_error\"></div>";
-			$txt_button = ($value>0)?JText::_('SEND_EMAIL_AGAIN'):JText::_('SEND_EMAIL');
-			$str .= "<div id=\"".$id."_response\"><input type=\"button\" class=\"fabrikinput button\" id=\"".$id."_btn\" name=\"$name\" value=\"$txt_button\" /></div>";
 			$str .= "<input ";
 			foreach ($bits as $key=>$val) {
 				$str.= "$key = \"$val\" ";
 			}
 			$str .= " />\n";
-			$str .= "<img src=\"" . COM_FABRIK_LIVESITE . "media/com_fabrik/images/ajax-loader.gif\" class=\"loader\" id=\"".$id."_loader\" alt=\"" . JText::_('Loading') . "\" style=\"display:none;padding-left:10px;\" />";
+			$txt_button = ($value>0)?JText::_('SEND_EMAIL_AGAIN'):JText::_('SEND_EMAIL');
+			$str .= "<div id=\"".$id."_response\"><input type=\"button\" class=\"fabrikinput button\" id=\"".$id."_btn\" name=\"$name\" value=\"$txt_button\" /></div>";
+			
+			$str .= "<img src=\"".COM_FABRIK_LIVESITE."media/com_fabrik/images/ajax-loader.gif\" class=\"loader\" id=\"".$id."_loader\" alt=\"" . JText::_('Loading') . "\" style=\"display:none;padding-left:10px;\" />";
+			$str .= "<div id=\"".$id."_error\"></div>";
 		}
-		
+		$str .= "</div>";
 		return $str;
 	}
 
@@ -212,73 +214,37 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		return $string;
 	}
 	
-	public function onAjax_getOptions_2()
-	{
-		$app = JFactory::getApplication();
-		$this->loadMeForAjax();
-		$params = $this->getParams();
+	/**
+	 * Ajax request
+	 *
+	 * @return  array  of messages
+	 */
 
-		// $$$ rob commented out for http://fabrikar.com/forums/showthread.php?t=11224
-		// must have been a reason why it was there though?
-
-		// OK its due to table filters so lets test if we are in the table view (posted from filter.js)
-		/*if ($app->input->get('filterview') == 'table')
-		{
-			$params->set('cascadingdropdown_showpleaseselect', true);
-		}*/
-		// $$$ rob testing commenting this out?
-		// $this->table = $this->getFormModel()->getlistModel();
-		$filter = JFilterInput::getInstance();
-		$data = $filter->clean($_POST, 'array');
-		$opts = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
-		//$this->_replaceAjaxOptsWithDbJoinOpts($opts);
-		echo json_encode($opts);
-	}
-
-	public function ajaxGet() {
-		$app = JFactory::getApplication();
-		$this->loadMeForAjax();
-		$params = $this->getParams();
-
-		$filter = JFilterInput::getInstance();
-		$data = $filter->clean($_POST, 'array');
-		$opts = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
-		echo json_encode($opts);
-	}
-	
-	
 	public function onAjax_getOptions()
 	{	
 		$baseurl 		= JURI::root();
 		$db 			=& JFactory::getDBO();
-		
-		$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
-				echo json_encode($response);
+		$this->_user = & JFactory::getUser();
 				
 		$recipient = JRequest::getVar('email');
-		$attachment_id = JRequest::getVar('id');
+		$attachment_id = JRequest::getVar('attachment_id');
 
 		if( !empty($attachment_id) ){ 
 			require(JPATH_LIBRARIES.DS.'emundus'.DS.'email.class.php');
 			$email = new Email( $recipient );
 			$results = $email->checkEmail_results;
-			if ($results[checkEmailSyntax] == 0) {
-				//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>';
+			if ($results['checkEmailSyntax'] == 0) {
 				$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
-				echo json_encode($response);
-				die();
+				die(json_encode($response));
 			}
 			if( !($results['gethostbyname']==1 && $results['customCheckEmailWith_Dnsrr']==1 ) && 
 				!($results['checkEmailWith_Dnsrr']==1 && $results['customCheckEmailWith_Mxrr']==1 ) ){
-					//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>';
 					$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
-					echo json_encode($response);
+					die(json_encode($response));
 			}
 		} else {
-			//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>';
 			$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
-			echo json_encode($response);
-			die();
+			die(json_encode($response));
 		}
 	
 		// Récupération des données du mail
@@ -287,7 +253,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 						WHERE lbl="referent_letter"';
 		$db->setQuery( $query );
 		$db->query();
-		$obj=$db->loadObjectList() or die('ERROR: '.$query);
+		$obj=$db->loadObjectList() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_SETUP_EMAIL').'</span>')));
 		
 		// Récupération de la pièce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
@@ -295,9 +261,8 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 						LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
 						WHERE eu.user_id = '.$this->_user->id;
 		$db->setQuery( $query );
-		$db->query() or die('ERROR: '.$query);
+		$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_REFERENCE_LETTER').'</span>')));
 		$obj_letter=$db->loadRowList();
-		
 		
 		// Reference  /////////////////////////////////////////////////////////////
 		if (!$this->isReferentLetterUploaded($attachment_id)) {
@@ -306,14 +271,14 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id) 
 								  VALUES (NOW(), '.$this->_user->id.', "'.$key1.'", '.$attachment_id.')';
 			$db->setQuery( $query );
-			$db->query() or die('ERROR: '.$query);
+			$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_FILE_REQUEST').'</span>')));
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 			$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key1.'&sid='.$this->_user->id;
 
 			///////////////////////////////////////////////////////
 			$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/');
-			
+
 			// Mail 
 			$from = $obj[0]->emailfrom;
 			$fromname =$obj[0]->name;
@@ -335,7 +300,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			if(JUtility::sendMail($from, $fromname, $recipient, $subject, $body1, $mode, null, null, $attachment, $replyto, $replytoname)) {
 				$sql = 'INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) VALUES (62, -1, "'.$subject.'", "'.$db->quote($body1).'", NOW())';
 				$db->setQuery( $sql );
-				$db->query();
+				$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_MESSAGE').'</span>')));
 				//echo '1|<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>';
 				$response = array("result"=>1, "message"=>'<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>');
 			} else {
@@ -366,4 +331,5 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		$db->query();
 		return ($db->loadResult()>0?true:false);
 	}
+	
 }
