@@ -118,6 +118,7 @@ echo "
 /* END : label spacing for chxbox, radios */
 
 .floating-tip {
+	font-size:20px;
 	background-color: #fff;
 }
 
