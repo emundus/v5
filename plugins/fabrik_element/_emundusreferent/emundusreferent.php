@@ -1,29 +1,27 @@
-<?php
+ï»¿<?php
 /**
- * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
- * @copyright	Copyright (C) 2005 Fabrik. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * Plugin element to manage referent letter request
+ * @package fabrikar
+ * @author Benjamin Rivalland
+ * @copyright (C) eMundus(r)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-/**
- * Plugin element to render button
- *
- * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
- */
+jimport('joomla.application.component.model');
 
-class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
-{
+//require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+
+class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
+
 	var $_pluginName = 'emundusreferent';
 	var $_user;
 	var $_attachment_id;
 
 	/**
-	 * Check access ; user should be registrated
+	 * Constructor
 	 */
 
 	function initUser()
@@ -35,17 +33,31 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 				$accessibility = true;
 		if ($accessibility === false) die("Can not reach this page : Permission denied");
 	}
-	
+
 	/**
-	 * Draws the html form element
-	 *
-	 * @param   array  $data           to preopulate element with
-	 * @param   int    $repeatCounter  repeat group counter
-	 *
-	 * @return  string	elements html
+	 * shows the data formatted for the table view
+	 * @param string data
+	 * @param object all the data in the tables current row
+	 * @return string formatted value
 	 */
 
-	public function render($data, $repeatCounter = 0)
+	function renderTableData($data, $oAllRowsData)
+	{
+		$params =& $this->getParams();
+		$data = $this->numberFormat($data);
+
+		return parent::renderTableData($data, $oAllRowsData);
+	}
+
+
+	/**
+	 * draws the form element
+	 * @param array data to preopulate element with
+	 * @param int repeat group counter
+	 * @return string returns element html
+	 */
+
+	function render($data, $repeatCounter = 0)
 	{
 		$name 			= $this->getHTMLName($repeatCounter);
 		$id 			= $this->getHTMLId($repeatCounter);
@@ -119,144 +131,26 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		
 		return $str;
 	}
-
-	/**
-	 * Get the element's HTML label
-	 *
-	 * @param   int     $repeatCounter  group repeat counter
-	 * @param   string  $tmpl           form template
-	 *
-	 * @return  string  label
-	 */
-
-	public function getLabel($repeatCounter, $tmpl = '')
-	{
-		return '';
-	}
-
-	/**
-	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
-	 *
-	 * @param   int  $repeatCounter  repeat group counter
-	 *
-	 * @return  string
-	 */
-
-	public function elementJavascript($repeatCounter)
-	{
-		$id = $this->getHTMLId($repeatCounter);
-		$filterid = $id . 'value';
-		$opts = $this->elementJavascriptOpts($repeatCounter);
-		return "new FbEmundusreferent('$id', $opts)";
-	}
 	
-	/**
-	 * Get element JS options
-	 *
-	 * @param   int  $repeatCounter  group repeat counter
-	 *
-	 * @return  string  json_encoded options
-	 */
 
-	protected function elementJavascriptOpts($repeatCounter)
+/*	function email_check($email) {
+		require(JPATH_LIBRARIES.DS.'emundus'.DS.'email.class.php');
+		$email = new Email( $email, 30, false );
+		//return $email->checkEmail_results;
+		echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>';
+		return array(3);
+		//if (preg_match('|^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]{2,})+$|i', $email))
+			//return true;
+	}
+*/
+	function email()
 	{
-		$params = $this->getParams();
-		$element = $this->getElement();
-		$data = $this->_form->_data;
-		$opts = $this->getElementJSOptions($repeatCounter);
-		$filterid = $this->getHTMLId($repeatCounter) . 'value';
-		
-		$opts->email = $params->get('email_element');
-		$opts->sending = JText::_('SENDING_EMAIL');
-		$opts->sendmail = JText::_('SEND_EMAIL');
-		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
-		//$opts->emailelement = $params->get('email_element');
-		$opts->attachment_id = $params->get('attachment_id');
-		$opts->id = $this->_id;
-		$opts->fullName = $this->getFullName(false, true, false);
-		$opts->formid = $this->getForm()->getForm()->id;
-		$opts->filterid = $filterid;
-		return json_encode($opts);
-	}
-
-	/**
-	 * Get an array of element html ids and their corresponding
-	 * js events which trigger a validation.
-	 * Examples of where this would be overwritten include timedate element with time field enabled
-	 *
-	 * @param   int  $repeatCounter  repeat group counter
-	 *
-	 * @return  array  html ids to watch for validation
-	 */
-
-	public function getValidationWatchElements($repeatCounter)
-	{
-		$id = $this->getHTMLId($repeatCounter);
-		$ar = array('id' => $id, 'triggerEvent' => 'click');
-		return array($ar);
-	}
-		
-	//////////////////////////  SET FILES REQUEST  /////////////////////////////
-	// 
-	// Génération de l'id du prochain fichier qui devra être ajouté par le referent
-	
-	// 1. Génération aléatoire de l'ID
-	private function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789')
-	{
-		$string = '';
-		for ($i = 0; $i < $len; $i++)
-		{
-			$pos = rand(0, strlen($chars)-1);
-			$string .= $chars{$pos};
-		}
-		return $string;
-	}
-	
-	public function onAjax_getOptions_2()
-	{
-		$app = JFactory::getApplication();
-		$this->loadMeForAjax();
-		$params = $this->getParams();
-
-		// $$$ rob commented out for http://fabrikar.com/forums/showthread.php?t=11224
-		// must have been a reason why it was there though?
-
-		// OK its due to table filters so lets test if we are in the table view (posted from filter.js)
-		/*if ($app->input->get('filterview') == 'table')
-		{
-			$params->set('cascadingdropdown_showpleaseselect', true);
-		}*/
-		// $$$ rob testing commenting this out?
-		// $this->table = $this->getFormModel()->getlistModel();
-		$filter = JFilterInput::getInstance();
-		$data = $filter->clean($_POST, 'array');
-		$opts = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
-		//$this->_replaceAjaxOptsWithDbJoinOpts($opts);
-		echo json_encode($opts);
-	}
-
-	public function ajaxGet() {
-		$app = JFactory::getApplication();
-		$this->loadMeForAjax();
-		$params = $this->getParams();
-
-		$filter = JFilterInput::getInstance();
-		$data = $filter->clean($_POST, 'array');
-		$opts = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
-		echo json_encode($opts);
-	}
-	
-	
-	public function onAjax_getOptions()
-	{	
 		$baseurl 		= JURI::root();
 		$db 			=& JFactory::getDBO();
 		
-		$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
-				echo json_encode($response);
-				
 		$recipient = JRequest::getVar('email');
 		$attachment_id = JRequest::getVar('id');
+		var response = array();
 
 		if( !empty($attachment_id) ){ 
 			require(JPATH_LIBRARIES.DS.'emundus'.DS.'email.class.php');
@@ -264,24 +158,24 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			$results = $email->checkEmail_results;
 			if ($results[checkEmailSyntax] == 0) {
 				//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>';
-				$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
+				$response = ("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_FORMAT_ERROR').'</span>');
 				echo json_encode($response);
 				die();
 			}
 			if( !($results['gethostbyname']==1 && $results['customCheckEmailWith_Dnsrr']==1 ) && 
 				!($results['checkEmailWith_Dnsrr']==1 && $results['customCheckEmailWith_Mxrr']==1 ) ){
 					//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>';
-					$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
+					$response = ("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_DOMAIN_ERROR').'</span>');
 					echo json_encode($response);
 			}
 		} else {
 			//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>';
-			$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
+			$response = ("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
 			echo json_encode($response);
 			die();
 		}
-	
-		// Récupération des données du mail
+		
+		// RÃ©cupÃ©ration des donnÃ©es du mail
 		$query = 'SELECT id, subject, emailfrom, name, message
 						FROM #__emundus_setup_emails
 						WHERE lbl="referent_letter"';
@@ -289,7 +183,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		$db->query();
 		$obj=$db->loadObjectList() or die('ERROR: '.$query);
 		
-		// Récupération de la pièce jointe : modele de lettre
+		// RÃ©cupÃ©ration de la piÃ¨ce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
 						FROM #__emundus_users as eu 
 						LEFT JOIN #__emundus_setup_profiles as esp on esp.id = eu.profile 
@@ -308,7 +202,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			$db->setQuery( $query );
 			$db->query() or die('ERROR: '.$query);
 
-			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
+			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de rÃ©fÃ©rence
 			$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key1.'&sid='.$this->_user->id;
 
 			///////////////////////////////////////////////////////
@@ -337,16 +231,32 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 				$db->setQuery( $sql );
 				$db->query();
 				//echo '1|<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>';
-				$response = array("result"=>1, "message"=>'<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>');
+				$response = ("result"=>1, "message"=>'<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>');
 			} else {
 				//echo '0|<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>';
-				$response = array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
+				$response = ("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
 			}
 		} else {
 			//echo '1|<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'</span>';
-			$response = array("result"=>1, "message"=>'<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'</span>');	
+			$response = ("result"=>1, "message"=>'<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'</span>');	
 		}
 		echo json_encode($response);
+	}
+	
+	//////////////////////////  SET FILES REQUEST  /////////////////////////////
+	// 
+	// GÃ©nÃ©ration de l'id du prochain fichier qui devra Ãªtre ajoutÃ© par le referent
+	
+	// 1. GÃ©nÃ©ration alÃ©atoire de l'ID
+	private function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789')
+	{
+		$string = '';
+		for ($i = 0; $i < $len; $i++)
+		{
+			$pos = rand(0, strlen($chars)-1);
+			$string .= $chars{$pos};
+		}
+		return $string;
 	}
 
 	protected function getReferentRequestInfo($attachment_id)
@@ -366,4 +276,104 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 		$db->query();
 		return ($db->loadResult()>0?true:false);
 	}
+
+	/**
+	 * return the javascript to create an instance of the class defined in formJavascriptClass
+	 * @return string javascript to create instance. Instance name must be 'el'
+	 */
+
+/*	function elementJavascript($repeatCounter)
+	{
+		$id = $this->getHTMLId($repeatCounter);
+		$opts =& $this->getElementJSOptions($repeatCounter);
+		$params =& $this->getParams();
+		
+		$opts->email = $params->get('email_element');
+		$opts->sending = JText::_('SENDING_EMAIL');
+		$opts->sendmail = JText::_('SEND_EMAIL');
+		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
+		$opts->emailelement = $params->get('email_element');
+		$opts->id = $params->get('attachment_id');
+		//die(print_r($opts));
+		$opts = json_encode($opts);
+		return "new emundusreferent('$id', $opts)";
+	}*/
+	public function elementJavascript($repeatCounter)
+	{
+		$id = $this->getHTMLId($repeatCounter);
+		$opts = $this->elementJavascriptOpts($repeatCounter);
+		return "new FBEmundusreferent('$id', $opts)";
+	}
+	
+	/**
+	 * Get element JS options
+	 *
+	 * @param   int  $repeatCounter  group repeat counter
+	 *
+	 * @return  string  json_encoded options
+	 */
+
+	protected function elementJavascriptOpts($repeatCounter)
+	{
+		$params = $this->getParams();
+		$element = $this->getElement();
+		$data = $this->_form->_data;
+		$opts = $this->getElementJSOptions($repeatCounter);
+		
+		$opts->email = $params->get('email_element');
+		$opts->sending = JText::_('SENDING_EMAIL');
+		$opts->sendmail = JText::_('SEND_EMAIL');
+		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
+		//$opts->emailelement = $params->get('email_element');
+		$opts->attachment_id = $params->get('attachment_id');
+		$opts->id = $this->_id;
+		$opts->fullName = $this->getFullName(false, true, false);
+		$opts->formid = $this->getForm()->getForm()->id;
+		return json_encode($opts);
+	}
+
+
+	
+	/**
+	 * Gets the options for the drop down - used in package when forms update
+	 *
+	 * @return  void
+	 
+
+	public function onAjax_getOptions()
+	{
+		// Needed for ajax update (since we are calling this method via dispatcher element is not set
+		$this->_id = JRequest::getInt('element_id');
+		$this->getElement(true);
+		echo json_encode($this->_getOptions(JRequest::get('request')));
+	}*/
+
+	/**
+	 * load the javascript class that manages interaction with the form element
+	 * should only be called once
+	 * @return string javascript class file
+	 */
+
+	function formJavascriptClass()
+	{
+		JHTML::stylesheet('emundusreferent.css', 'plugins/fabrik_element/emundusreferent/css/');
+		//FabrikHelperHTML::script('plugins/fabrik_element/emundusreferent/emundusreferent.js');
+	}
+
+	/**
+	 * defines the type of database table field that is created to store the element's data
+	 */
+
+	function getFieldDescription()
+	{
+		$p = $this->getParams();
+		$group =& $this->getGroup();
+		if ($group->isJoin() == 0 && $group->canRepeat()) {
+			return "TEXT";
+		}
+
+		return "INT(6)";
+	}
+
 }
+?>
