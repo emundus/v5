@@ -201,7 +201,7 @@ class EmundusController extends JController {
 					$nb++;
 				}
 				if ($labels[$i]=="_photo") {
-					$checkdouble_query = 'SELECT count(user_id) FROM #__emundus_uploads WHERE attachment_id=(SELECT id FROM #__emundus_setup_attachments WHERE lbl="_photo")';
+					$checkdouble_query = 'SELECT count(user_id) FROM #__emundus_uploads WHERE attachment_id=(SELECT id FROM #__emundus_setup_attachments WHERE lbl="_photo") AND user_id='.$user->id;
 					$db->setQuery($checkdouble_query);
 					if ($db->loadResult()) {
 						$query = '';
