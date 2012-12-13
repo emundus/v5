@@ -165,3 +165,5 @@ pip-log.txt
 # Joomla!
 cache/*
 configuration.php
+logs/*
+tmp/*
