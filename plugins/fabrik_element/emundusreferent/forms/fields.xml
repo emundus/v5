@@ -1,25 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
-	<fields name="params">
-		<fieldset label="field" name="plg-element-emundusreferent-field-params">
-			<field name="width" size="2" type="text" default="2" label="PLG_ELEMENT_EMUNDUSREFERENT_WIDTH_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_WIDTH_LABELDESC" />
-			<field default="0" description="PLG_ELEMENT_EMUNDUSREFERENT_HIDDEN_DESC" label="PLG_ELEMENT_EMUNDUSREFERENT_HIDDEN_LABEL" name="hidden" type="radio">
+	<fields>
+		<fieldset name="plg-element-emundusreferent">
+			<field label="PLG_ELEMENT_EMUNDUSREFERENT_WIDTH_LABEL" name="width" size="3" type="text"/>
+				
+			<field default="0" label="PLG_ELEMENT_EMUNDUSREFERENT_HIDDEN_LABEL" name="hidden" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
-			</field>
+				</field>
+				
 			<field default="0" label="PLG_ELEMENT_EMUNDUSREFERENT_EVAL_LABEL" name="eval" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
-			<field name="default" type="textarea" default="0" label="DEFAULT" description="DEFAULTDESC" />
 			
-			<field name="attachment_id" size="2" type="text" default="4" label="ATTACHMENTID" description="ATTACHMENTIDDESC" />
-			<field name="email_element" size="40" type="text" default="jos_emundus_references___Email_1" label="EMAIL" description="EMAILDESC" />
-			<field name="disable" type="radio" default="1" label="DISABLEELEMENT" description="DISABLEELEMENTDESC">
+			<field cols="45" label="PLG_ELEMENT_EMUNDUSREFERENT_DEFAULT_LABEL" name="default" rows="6" type="textarea"/>
+		
+		</fieldset>
+	</fields>
+	<fields name="params">
+		<fieldset label="PLG_ELEMENT_EMUNDUSREFERENT_HEADING" name="plg-element-emundusreferent-extra">
+			<field name="attachment_id" size="2" type="text" default="4" label="PLG_ELEMENT_EMUNDUSREFERENT_ATTACHMENTID_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_ATTACHMENTID_DESC" />
+			<field name="email_element" size="40" type="text" default="jos_emundus_references___Email_1" label="PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_DESC" />
+			<field name="disable" type="radio" default="1" label="PLG_ELEMENT_EMUNDUSREFERENT_DISABLEELEMENT_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_DISABLEELEMENT_DESC">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
-			<field name="readonly" type="radio" default="0" label="READONLY" description="READONLYDESC">
+			<field name="readonly" type="radio" default="0" label="PLG_ELEMENT_EMUNDUSREFERENT_READONLY_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_READONLY_DESC">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
