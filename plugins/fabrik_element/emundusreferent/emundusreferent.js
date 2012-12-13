@@ -6,7 +6,7 @@
 		this.observer = document.id(element);
 		this.options = options;
 		this.btn = element+'_btn';
-		this.btn_action = document.id(element+'_btn');
+		//this.btn_action = document.id(element+'_btn');
 		this.response = element+'_response';
 		this.error = element+'_error';
 		this.loader = element+'_loader';
@@ -18,14 +18,19 @@
 			//$(this.btn).addEvent('click', function () {
 			//window.addEvent('domready',function () {
 			//document.getElementById(this.btn).onclick=function(){alert("button2 clicked");};
-			//$(this.btn).addEventListener( 'click', function() { 
-			this.observer.addEvent('click', function () {
+			$(this.btn).addEventListener( 'click', function() { 
+			//this.observer.addEvent('click', function () {
 			//this.btn_action.addEvent('click', function () {
 				var v = this.observer.get('value');
 				var email = document.getElementById(options['email']).value;
 				var attachment_id = this.options.attachment_id;
 				//var url = "index.php?option=com_fabrik&format=raw&controller=plugin&task=pluginAjax&plugin=emundusreferent&method=email&email="+email+"&id="+attachment_id;
-						
+				
+				if (email=="") {
+					$(this.options['email']).setStyle('border', '4px solid #ff0000');
+					this.endAjax();
+				}
+				
 				this.myAjax = new Request({url: '', method: 'get',
 						'data': {
 							'option': 'com_fabrik',
