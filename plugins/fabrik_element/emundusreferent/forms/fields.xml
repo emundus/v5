@@ -2,18 +2,18 @@
 <form>
 	<fields name="params">
 		<fieldset label="field" name="plg-element-emundusreferent-field-params">
-			<field name="width" type="text" default="2" label="PLG_ELEMENT_FIELD_WIDTH_LABEL" description="PLG_ELEMENT_FIELD_WIDTH_LABELDESC" />
-			<field name="hidden" type="radio" default="" size="3" label="HIDDEN"  description="HIDDENDESC">
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
+			<field name="width" size="2" type="text" default="2" label="PLG_ELEMENT_EMUNDUSREFERENT_WIDTH_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_WIDTH_LABELDESC" />
+			<field default="0" description="PLG_ELEMENT_EMUNDUSREFERENT_HIDDEN_DESC" label="PLG_ELEMENT_EMUNDUSREFERENT_HIDDEN_LABEL" name="hidden" type="radio">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 			</field>
-			<field name="eval" type="radio" default="0" label="EVAL" description="EVALDESC">
+			<field default="0" label="PLG_ELEMENT_EMUNDUSREFERENT_EVAL_LABEL" name="eval" type="radio">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
 			<field name="default" type="textarea" default="0" label="DEFAULT" description="DEFAULTDESC" />
 			
-			<field name="attachment_id" type="text" default="4" label="ATTACHMENTID" description="ATTACHMENTIDDESC" />
+			<field name="attachment_id" size="2" type="text" default="4" label="ATTACHMENTID" description="ATTACHMENTIDDESC" />
 			<field name="email_element" size="40" type="text" default="jos_emundus_references___Email_1" label="EMAIL" description="EMAILDESC" />
 			<field name="disable" type="radio" default="1" label="DISABLEELEMENT" description="DISABLEELEMENTDESC">
 				<option value="0">JNO</option>
