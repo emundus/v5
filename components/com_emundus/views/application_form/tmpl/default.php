@@ -133,7 +133,7 @@ function age($naiss) {
 		}
 	   ?></td>
         <td align="center" valign="middle">
-		<?php echo $this->user->time_date!=''?strftime(JText::_('DATE_FORMAT_LC2'), strtotime($this->user->time_date)):JText::_('NOT_SENT'); ?></td>
+		<?php echo $this->user->time_date!=''?strftime("%d/%m/%Y %H:%M", strtotime($this->user->time_date)):JText::_('NOT_SENT'); ?></td>
       </tr>
       
     </tbody>
@@ -339,7 +339,7 @@ if ($sent == 0) {
 			echo $itemt->label;
 			echo '</h3>';
 			// liste des groupes pour le formulaire d'une table
-			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,\'"repeat_group_button":"1"\') as repeated
+			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":1") as repeated
 						FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 						WHERE ff.group_id = fg.id AND
 							  ff.form_id = "'.$itemt->form_id.'" 
@@ -351,7 +351,7 @@ if ($sent == 0) {
 			foreach($groupes as $keyg => $itemg) {
 
 				// liste des items par groupe
-				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin
+				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
 							FROM #__fabrik_elements fe
 							WHERE fe.published=1 AND 
 								  fe.hidden=0 AND 
@@ -375,8 +375,10 @@ if ($sent == 0) {
      <?php 
      foreach($elements as &$element) {
 		if(!empty($element->label) && $element->label!=' ') {
-			$elt = ($element->plugin=='fabrikdate' && $element->content>0)?strftime(JText::_('DATE_FORMAT_LC3'),strtotime ($element->content)):
-			$element->content;
+			if ($element->plugin=='date' && $element->content>0) {
+				$date_params = json_decode($element->params);
+				$elt = strftime($date_params->date_form_format, strtotime($element->content));
+			} else $elt = $element->content;
 			echo '<b>'.$element->label.': </b>'.$elt.'<br/>';
 		}
 	 }
@@ -388,7 +390,11 @@ if ($sent == 0) {
 				echo '<table class="adminlist">
 					  <thead>
 					  <tr> ';
-						
+				
+				$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
+								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$this->user->user_id.')';
+				$db->setQuery($query);
+				$repeated_elements = $db->loadObjectList();
 				//-- Entrée du tableau -- */
 				$nb_lignes = 0;
 				foreach($elements as &$element) { 
@@ -398,27 +404,32 @@ if ($sent == 0) {
 				}
 				unset($element);
 				echo '</tr></thead><tbody>';
-				// -- Ligne du tableau -- */
-				for($i=0 ; $i<$nb_lignes ;$i++) {
+				// -- Ligne du tableau -- 
+				foreach ($repeated_elements as $r_element) {
 					echo '<tr>';
-					foreach($elements as &$element) {
-						if(isset($element->content[$i])) {
-							$elt = ($element->plugin=='fabrikdate' && $element->content[$i]>0)?strftime(JText::_('DATE_FORMAT_LC3'),
-							strtotime ($element->content[$i])):$element->content[$i];
-							echo '<td>'.$elt.'</td>';
+						$j = 0;
+						foreach ($r_element as $key => $r_elt) {
+							if ($key != 'id' && $key != 'parent_id') {
+								if ($elements[$j - 2]->plugin=='date') {
+									$date_params = json_decode($elements[$j - 2]->params);
+									$elt = strftime($date_params->date_form_format, strtotime($r_elt));
+								} else $elt = $r_elt;
+								echo '<td>'.$elt.'</td>';
+							}
+							$j++;
 						}
+						echo '</tr>';
 					}
-					echo '</tr>';
-					unset($element);
-				}
-				echo '</tobdy></table>';
+				echo '</tbody></table>';
 
 			// AFFICHAGE EN LIGNE
 			} else { 
 				foreach($elements as &$element) {
 					if(!empty($element->label) && $element->label!=' ') {
-						$elt = ($element->plugin=='fabrikdate' && $element->content>0)?strftime(JText::_('DATE_FORMAT_LC3'),
-						strtotime ($element->content)):$element->content;
+						if ($element->plugin=='date' && $element->content>0) {
+							$date_params = json_decode($element->params);
+							$elt = strftime($date_params->date_form_format, strtotime($element->content));
+						} else $elt = $element->content;
 						echo '<b>'.$element->label.': </b>'.$elt.'<br/>';
 					}
 				}

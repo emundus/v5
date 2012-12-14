@@ -103,10 +103,10 @@ if(isset($item->maiden_name))
 $htmldata .= '
   <div class="nationality">'.JText::_('ID_CANDIDAT').' : #'.$item->user_id.'</div>
   <div class="nationality">'.JText::_('NATIONALTY').' : '.$item->nationality.'</div>
-  <div class="birthday">'.JText::_('BIRTH_DATE').' : '.strftime(JText::_('DATE_FORMAT_LC3'),strtotime($item->birth_date)).' ('.age($item->birth_date).')</div>
+  <div class="birthday">'.JText::_('BIRTH_DATE').' : '.strftime("%d/%m/%Y", strtotime($item->birth_date)).' ('.age($item->birth_date).')</div>
   <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$item->time_date.'</div>
-  <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime(JText::_('DATE_FORMAT_LC3'),time()).'</div>
+  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.strftime("%d/%m/%Y 	%H:%M", strtotime($item->time_date)).'</div>
+  <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y 	%H:%M", time()).'</div>
 </td>
 </tr>
 </table>
@@ -256,7 +256,7 @@ $htmldata .= '
 			$htmldata .= '</h1>';
 			
 			// liste des groupes pour le formulaire d'une table
-			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated
+			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, INSTR(fg.params,"\"repeat_group_button\":1") as repeated
 						FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 						WHERE ff.group_id = fg.id AND
 						ff.form_id = "'.$itemt->form_id.'" 
@@ -272,6 +272,7 @@ $htmldata .= '
 							WHERE fe.published=1 AND 
 								  fe.hidden=0 AND 
 								  fe.group_id = "'.$itemg->group_id.'" 
+							AND fe.name NOT IN ("id", "parent_id")
 							ORDER BY fe.ordering';
 				$db->setQuery( $query );
 				$elements = EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
@@ -315,35 +316,48 @@ $htmldata .= '
 					if ($itemg->group_id == 14) {
 						 foreach($elements as &$element) {
 							if(!empty($element->label) && $element->label!=' ') {
-								$elt = ($element->plugin=='fabrikdate' && $element->content>0)?strftime(JText::_('DATE_FORMAT_LC3'),strtotime ($element->content)):$element->content;
+								if ($element->plugin=='date' && $element->content>0) {
+									$date_params = json_decode($element->params);
+									$elt = strftime($date_params->date_form_format, strtotime($element->content));
+								} else $elt = $element->content;
 								$htmldata .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
 							}
 						 }
 				// TABLEAU DE PLUSIEURS LIGNES
 					} elseif ($itemg->repeated>0){
-						$nbl = count(explode('//..*..//', $elements[0]->content));
-						$nbc = count($elements);
-						//die($nbl.' '.$nbc.' '.print_r(explode('//..*..//', $elements[0]->content)));
-						
-						for ($i=0 ; $i<$nbl ; $i++){
-							for ($j=0 ; $j<$nbc ; $j++){
-								$element = explode('//..*..//', $elements[$j]->content);
-								$elt = ($elements[$j]->plugin=='fabrikdate' && $element[$i]>0)?strftime(JText::_('DATE_FORMAT_LC3'),strtotime ($element[$i])):$element[$i];
-								$htmldata .= '<b>'.$elements[$j]->label.': </b>'.$elt.'<br/>';
+						$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
+								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$item->user.')';
+						$db->setQuery($query);
+						$repeated_elements = $db->loadObjectList();
+
+						foreach ($repeated_elements as $r_element) {
+							$j = 0;
+							foreach ($r_element as $key => $r_elt) {
+								if ($key != 'id' && $key != 'parent_id') {
+									if ($elements[$j - 2]->plugin=='date') {
+										$date_params = json_decode($elements[$j - 2]->params);
+										$elt = strftime($date_params->date_form_format, strtotime($r_elt));
+									} else $elt = $r_elt;
+									$htmldata .= '<b>'.$elements[$j - 2]->label.': </b>'.$elt.'<br/>';
+								}
+								$j++;
 							}
-							$htmldata .= '____<br />';
+							$htmldata .= '____<br/>';
 						}
 					// AFFICHAGE EN LIGNE
 					} else { 
 						foreach($elements as &$element) {
 							if(!empty($element->label) && $element->label!=' ') {
-								$elt = ($element->plugin=='fabrikdate' && $element->content>0)?strftime(JText::_('DATE_FORMAT_LC3'),strtotime ($element->content)):$element->content;
+								if ($element->plugin=='date' && $element->content>0) {
+									$date_params = json_decode($element->params);
+									$elt = strftime($date_params->date_form_format, strtotime($element->content));
+								} else $elt = $element->content;
 								$htmldata .= '<b>'.$element->label.': </b>'.$elt.'<br/>';
 							}
 						}
 					}
 					$htmldata .= '</fieldset>';
-				}		
+				}
 /// Add a page
 			}
 			if (!empty($htmldata)) {
@@ -366,7 +380,7 @@ $htmldata .= '
 ///			
 		}	
 	}
-	
+
 	@chdir('tmp');
 	if($output){
 		if($current_user->usertype != $registered){

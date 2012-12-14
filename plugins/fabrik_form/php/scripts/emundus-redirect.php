@@ -14,17 +14,18 @@ defined( '_JEXEC' ) or die();
  */
 $db =& JFactory::getDBO();
 $user = & JFactory::getUser();
-$tableid = JRequest::getVar('tableid', null, 'GET', 'none',0);
+$jinput = JFactory::getApplication()->input;
+$formid = $jinput->get('formid');
 
 $query = 'SELECT CONCAT(link,"&Itemid=",id) 
 		FROM #__menu 
 		WHERE published=1 AND menutype = "'.$user->menutype.'" 
-		AND parent != 0
+		AND parent_id != 1
 		AND ordering = 1+(
 				SELECT menu.ordering 
 				FROM `#__menu` AS menu 
-				WHERE menu.published=1 AND menu.parent>0 AND menu.menutype="'.$user->menutype.'" 
-				AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)='.$tableid.')';
+				WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'" 
+				AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
 
 $db->setQuery( $query );
 $link = $db->loadResult();

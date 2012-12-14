@@ -167,22 +167,24 @@ class plgUserEmundus extends JPlugin
 		$db		 =& JFactory::getDBO();
 		
 		
-		$query = '	SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, esp.label AS profile_label, esp.menutype, esp.published, esp.candidature_start, esp.candidature_end, esp.schoolyear
+		$query = '	SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, esp.label AS profile_label, esp.menutype, esp.published, esp.candidature_start, esp.candidature_end, esp.schoolyear, count(ed.id) as candidature_posted
 						FROM #__emundus_users AS eu 
 						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
+						LEFT JOIN #__emundus_declaration AS ed ON ed.user = eu.user_id
 						WHERE eu.user_id = '.$current_user->id;
 		$db->setQuery($query);
 		$res = $db->loadObject();
 		
-		$current_user->firstname 		= @$res->firstname;
-		$current_user->lastname	 		= @$res->lastname;
-		$current_user->profile	 		= @$res->profile;
-		$current_user->profile_label 	= @$res->profile_label;
-		$current_user->menutype	 		= @$res->menutype;
-		$current_user->university_id	= @$res->university_id;
-		$current_user->applicant		= @$res->published;
-		$current_user->candidature_start= @$res->candidature_start;
-		$current_user->candidature_end	= @$res->candidature_end;
+		$current_user->firstname 			= @$res->firstname;
+		$current_user->lastname	 			= @$res->lastname;
+		$current_user->profile	 			= @$res->profile;
+		$current_user->profile_label 		= @$res->profile_label;
+		$current_user->menutype	 			= @$res->menutype;
+		$current_user->university_id		= @$res->university_id;
+		$current_user->applicant			= @$res->published;
+		$current_user->candidature_start	= @$res->candidature_start;
+		$current_user->candidature_end		= @$res->candidature_end;
+		$current_user->candidature_posted 	= @$res->candidature_posted;
 		
 		return true;
 	}

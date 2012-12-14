@@ -19,7 +19,7 @@ echo "
 /* BEGIN - Your CSS styling starts here */
 
 .floating-tip {
-	font-size: 15px;
+	font-size: 18px;
 }
 
 #{$view}_$c .fabrikGroupRepeater{
