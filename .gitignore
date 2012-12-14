@@ -167,3 +167,4 @@ cache/*
 configuration.php
 logs/*
 tmp/*
+images/emundus/files/*
