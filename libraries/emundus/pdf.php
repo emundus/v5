@@ -16,6 +16,8 @@ function age($naiss) {
 		return $annees;
 	}
 function application_form_pdf($user_id, $output = true) {
+	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
 	$current_user = & JFactory::getUser();
 	// --- CONFIGURATION --- //
 	$group_personal_infos = 14;
@@ -31,6 +33,10 @@ function application_form_pdf($user_id, $output = true) {
 	$pdf->SetTitle('Application Form');
 	$db = &JFactory::getDBO();
 	
+	$query = 'SELECT id FROM #__usergroups WHERE title="Registered"';
+	$db->setQuery($query);
+	$registered = $db->loadResult();
+
 	// Users informations
 	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, p.schoolyear AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ed.time_date
 				FROM #__users AS u
@@ -44,7 +50,7 @@ function application_form_pdf($user_id, $output = true) {
 	$item = $db->loadObject();
 	
 	//get logo
-	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 44';
+	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
 	$db->setQuery($query);
 	$logo = $db->loadResult();
 	preg_match('#src="(.*?)"#i', $logo,$tab);
@@ -117,8 +123,14 @@ $htmldata .= '
 //______________________________________________________//
 // Récupération des tables qui doivent contenir un enregistrement de candidat
 	$eMConfig =& JComponentHelper::getParams('com_emundus');
-	$tableusers = $eMConfig->get('export_pdf', ''); 
-	if(count($tableusers) > 1) $tableusers = implode(',',$tableusers);	
+	$query = 'SELECT ff.id, ff.label
+                        FROM #__fabrik_forms ff
+                        LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.id
+                        WHERE ft.created_by_alias IN ( "form", "eval" )
+                        OR ft.db_table_name = "jos_emundus_declaration"
+                        ORDER BY ff.label';
+	$db->setQuery($query);
+	$tableusers = implode(',', $db->loadResultArray());
 	
 	//get profile or result for 
 	$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;	
@@ -130,22 +142,21 @@ $htmldata .= '
 	$query = 'SELECT evaluation FROM #__emundus_setup_profiles WHERE id = '.$user_profile;
 	$db->setQuery( $query );
 	$eval_form = $db->loadResult();
-	
-	if($current_user->usertype != 'Registered' || ($output == false && !empty($item->user))){
-		$query = 'SELECT DISTINCT(fbtables.form_id), fbtables.id, fbtables.label, fbtables.db_table_name, fbtables.created_by_alias 
-						FROM #__fabrik_lists AS fbtables 
-						LEFT JOIN #__fabrik_forms ff ON ff.id = fbtables.form_id 
-						LEFT JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1) 
-						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.menutype = menu.menutype 
+	if($current_user->usertype != $registered || ($output == false && !empty($item->user))){
+		$query = 'SELECT DISTINCT(fbtables.form_id), fbtables.id, fbtables.label, fbtables.db_table_name, fbtables.created_by_alias
+						FROM #__menu AS menu 
+						INNER JOIN #__emundus_setup_profiles AS esp ON esp.menutype = menu.menutype
+						INNER JOIN #__fabrik_forms AS ff ON ff.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+						LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = ff.id
 						WHERE fbtables.form_id IN ('.$tableusers.') AND esp.id = '.$user_profile.'
 						OR (fbtables.created_by_alias = "eval" AND (ff.id = '.$eval_form.' OR ff.id = 39)) 
 						ORDER BY fbtables.created_by_alias DESC, menu.ordering ASC, fbtables.label ASC';
 	}else{
 		$query = 'SELECT DISTINCT(fbtables.form_id), fbtables.id, fbtables.label, fbtables.db_table_name, fbtables.created_by_alias 
-						FROM #__fabrik_lists AS fbtables 
-						LEFT JOIN #__fabrik_forms ff ON ff.id = fbtables.form_id 
-						LEFT JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1) 
-						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.menutype = menu.menutype 
+						FROM #__menu AS menu 
+						INNER JOIN #__emundus_setup_profiles AS esp ON esp.menutype = menu.menutype
+						INNER JOIN #__fabrik_forms AS ff ON ff.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+						LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = ff.id
 						WHERE fbtables.form_id IN ('.$tableusers.')
 						AND esp.id = '.$user_profile.'
 					ORDER BY fbtables.created_by_alias DESC, menu.ordering';
@@ -154,7 +165,7 @@ $htmldata .= '
 	$tableuser = $db->loadObjectList();
 	if(isset($tableuser)) {
 		foreach($tableuser as $key => $itemt) {
-			if($current_user->usertype != 'Registered' || ($output == false && !empty($item->user))){
+			if($current_user->usertype != $registered || ($output == false && !empty($item->user))){
 				// EVALUATION & COMMENTS (Only for != Registered usertype
 				if($itemt->db_table_name == 'jos_emundus_evaluations'){
 
@@ -245,7 +256,7 @@ $htmldata .= '
 			$htmldata .= '</h1>';
 			
 			// liste des groupes pour le formulaire d'une table
-			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.attribs,"repeat_group_button=1") as repeated
+			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated
 						FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 						WHERE ff.group_id = fg.id AND
 						ff.form_id = "'.$itemt->form_id.'" 
@@ -256,14 +267,14 @@ $htmldata .= '
 			/*-- Liste des groupes -- */
 			foreach($groups as $keyg => $itemg) {
 				// liste des items par groupe
-				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.attribs, fe.sub_values, fe.sub_labels
+				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
 							FROM #__fabrik_elements fe
-							WHERE fe.state=1 AND 
+							WHERE fe.published=1 AND 
 								  fe.hidden=0 AND 
 								  fe.group_id = "'.$itemg->group_id.'" 
 							ORDER BY fe.ordering';
 				$db->setQuery( $query );
-				$elements = $db->loadObjectList();
+				$elements = EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
 				if(count($elements)>0) {
 					$htmldata .= '<fieldset><h2>';
 					$htmldata .= $itemg->label;
@@ -272,7 +283,7 @@ $htmldata .= '
 						if($iteme->name == 'result_for'){	
 							//Attribs columns from jos_fabrik_elements (to have the label of 'result for')
 							$paramsdefs = JPATH_BASE.DS.'components'.DS.'com_fabrik'.DS.'plugins'.DS.'element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml';
-							$params = new JParameter( $iteme->attribs, $paramsdefs );
+							$params = new JParameter( $iteme->params, $paramsdefs );
 							$params = $params->_registry['_default']['data'];
 							//die(print_r($params->database_join_where_sql));
 							$params->database_join_where_sql = preg_replace('#id in#','join_t.id in',$params->database_join_where_sql);
@@ -358,7 +369,7 @@ $htmldata .= '
 	
 	@chdir('tmp');
 	if($output){
-		if($current_user->usertype != 'Registered'){
+		if($current_user->usertype != $registered){
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'_'.rand(1000,9999).'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');

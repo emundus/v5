@@ -9,6 +9,8 @@
 defined('_JEXEC') or die('Restricted access'); 
 
 $current_user = & JFactory::getUser();
+require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 $allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
 if (!in_array($current_user->usertype, $allowed)) die("You are not allowed to access to this report.");
 	 
@@ -42,13 +44,13 @@ function age($naiss) {
 	//$dFormat	 = $this->params->get( 'dformat', '%c' );
 	
 	$db =& JFactory::getDBO();
-	$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+	$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 	$db->setQuery( $query );
-	$result = $db->loadRowList();
-	$sub_values = explode('|', $result[0][0]);
+	$result = EmundusHelperFilters::insertValuesInQueryResult($db->loadAssocList(), array("sub_values","sub_labels"));
+	$sub_values = explode('|', $result[0]['sub_values']);
 	foreach($sub_values as $sv)
 		$p_grade[]="/".$sv."/";
-	$grade = explode('|', $result[0][1]);
+	$grade = explode('|', $result[0]['sub_labels']);
 
 ?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data"/>
@@ -330,7 +332,6 @@ if ($sent == 0) {
 					
 	$db->setQuery( $query );
 	$tableuser = $db->loadObjectList();*/
-//echo str_replace('#_','jos',$query);
 	$tableuser = EmundusHelperList::getFormsList($this->user->id);
 	if(isset($tableuser)) {
 		foreach($tableuser as $key => $itemt) {
@@ -343,7 +344,6 @@ if ($sent == 0) {
 						WHERE ff.group_id = fg.id AND
 							  ff.form_id = "'.$itemt->form_id.'" 
 						ORDER BY ff.ordering';
-						
 			$db->setQuery( $query );
 			$groupes = $db->loadObjectList();
 			
@@ -353,7 +353,7 @@ if ($sent == 0) {
 				// liste des items par groupe
 				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin
 							FROM #__fabrik_elements fe
-							WHERE fe.state=1 AND 
+							WHERE fe.published=1 AND 
 								  fe.hidden=0 AND 
 								  fe.group_id = "'.$itemg->group_id.'" 
 							ORDER BY fe.ordering';

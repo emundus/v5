@@ -207,6 +207,7 @@ class EmundusHelperList{
 	
 	// get forms list to create action block for each users
 	function getFormsList($user_id){
+		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		$profile = & EmundusHelperList::getProfile($user_id);
 		return EmundusHelperMenu::buildMenuQuery($profile);;
 	}

@@ -75,8 +75,8 @@ class EmundusHelperFilters{
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
 	}
 	/*
-	* @param : query results
-	* @param array : values to extract and insert
+	* @param 			query results
+	* @param 	array 	values to extract and insert
 	*/
 	function insertValuesInQueryResult($results, $options) {
 		foreach ($results as $key=>$result) {
