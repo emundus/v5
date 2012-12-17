@@ -7,21 +7,21 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' )
 $document   =& JFactory::getDocument();
 
 defined('_JEXEC') or die('Restricted access'); 
-$current_user = JFactory::getUser();
-$current_p = JRequest::getVar('profile', null, 'POST', 'none',0);
-$current_u = JRequest::getVar('user', null, 'POST', 'none',0);
-$current_au = JRequest::getVar('user', null, 'POST', 'none',0);
-$current_s = JRequest::getVar('s', null, 'POST', 'none',0);
-$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-$limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
-$ls = JRequest::getVar('limitstart', null, 'GET', 'none',0);
-$filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
-$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
-$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
-$v = JRequest::getVar('view', null, 'GET', 'none',0);
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none',0);
+$current_user 		= JFactory::getUser();
+$current_p 			= JRequest::getVar('profile', null, 'POST', 'none',0);
+$current_u 			= JRequest::getVar('user', null, 'POST', 'none',0);
+$current_au 		= JRequest::getVar('user', null, 'POST', 'none',0);
+$current_s 			= JRequest::getVar('s', null, 'POST', 'none',0);
+$search 			= JRequest::getVar('elements', null, 'POST', 'array', 0);
+$search_values 		= JRequest::getVar('elements_values', null, 'POST', 'array', 0);
+$limitstart 		= JRequest::getVar('limitstart', null, 'GET', 'none',0);
+$ls 				= JRequest::getVar('limitstart', null, 'GET', 'none',0);
+$filter_order 		= JRequest::getVar('filter_order', null, 'GET', 'none',0);
+$filter_order_Dir 	= JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
+$tmpl 				= JRequest::getVar('tmpl', null, 'GET', 'none',0);
+$v 					= JRequest::getVar('view', null, 'GET', 'none',0);
+$itemid 			= JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
 $session =& JFactory::getSession();
@@ -226,7 +226,7 @@ foreach ($this->users as $user) { ?>
 			echo '</span>';
 			if($current_user->profile!=16) {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			}
 			echo '</span>#'.$user->id.'</div>';
 		?>

@@ -12,23 +12,26 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Envoi automatique d'un email à l'étudiant lors d'un upload de document demandé par consortium à une tierce personne 
  *						(Banque ou Professeur Référent). 
- *						Une copie est envoyée aux coordinators
  */
-global $mainframe;
+/*$this->formModel->_arErrors['jos_emundus_uploads___filename'][] = 'woops!';
+return false;
+*/
+$mainframe = JFactory::getApplication();
+$jinput = $mainframe->input;
 $baseurl = JURI::base();
 $db =& JFactory::getDBO();
 $files 	= JRequest::get('FILES');
 $key_id=JRequest::getVar('keyid', null,'get');
-$user_id = $_REQUEST['jos_emundus_uploads___user_id'];
+$user_id = $jinput->get('jos_emundus_uploads___user_id');
 $sid=JRequest::getVar('sid', null,'get');
-$attachment_id = $_REQUEST['jos_emundus_uploads___attachment_id'];
-
+$attachment_id = $jinput->get('jos_emundus_uploads___attachment_id');
+//$params =& $this->getParams();
 
 $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid="'.mysql_real_escape_string($key_id).'"');
 $file_request=$db->loadObject();
 
 if($files['jos_emundus_uploads___filename']['size'] == 0){
-		$link_upload = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&rowid=&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id;
+		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id;
 		if($files['jos_emundus_uploads___filename']['error'] == 4)
 			JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file','error')); // no file
 		else

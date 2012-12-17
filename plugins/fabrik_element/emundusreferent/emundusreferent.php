@@ -274,7 +274,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element
 			$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_FILE_REQUEST').'</span>')));
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-			$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key1.'&sid='.$this->_user->id;
+			$link_upload1 = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key1.'&sid='.$this->_user->id;
 
 			///////////////////////////////////////////////////////
 			$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/');

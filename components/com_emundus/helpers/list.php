@@ -250,7 +250,7 @@ class EmundusHelperList{
 				}
 				if(in_array('upload',$params)){
 					@$actions[$user['user_id']] .= '<div class="em_upload" id="em_upload_'.$user['user_id'].'">';
-					$actions[$user['user_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a></span> ';
+					$actions[$user['user_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&jos_emundus_uploads___user_id[value]='. $user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a></span> ';
 					$actions[$user['user_id']] .= '</div>';
 				}
 				if(in_array('attachments',$params)){

@@ -14,22 +14,25 @@ defined( '_JEXEC' ) or die();
  *						Une copie est envoyée au user qui upload le document
  */
 
-$can_be_view = $_REQUEST['jos_emundus_uploads___can_be_viewed'];
+$mainframe 		= JFactory::getApplication();
+$jinput 		= $mainframe->input;
+$baseurl 		= JURI::base();
+$db 			=& JFactory::getDBO();
 
-$baseurl = JURI::base();
-$db =& JFactory::getDBO();
-$db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$_REQUEST['jos_emundus_uploads___id']);
-$upload=$db->loadObject();
+$can_be_view 	= $jinput->get('jos_emundus_uploads___can_be_viewed');
+$db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id');
+$upload = $db->loadObject();
 $student = & JUser::getInstance($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id.'';
+die(str_replace("#_", "jos", $query));
 $db->setQuery( $query );
 $profile=$db->loadResult();
 $query = 'SELECT ap.displayed, attachment.lbl 
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile.'
-			WHERE attachment.id ='.$_REQUEST['jos_emundus_uploads___attachment_id'].' ';
+			WHERE attachment.id ='.$jinput->get('jos_emundus_uploads___attachment_id').' ';
 $db->setQuery( $query );
-$attachement_params=$db->loadObject();
+$attachement_params = $db->loadObject();
 
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0') $nom.= "_locked";

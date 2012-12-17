@@ -409,7 +409,7 @@ if ($sent == 0) {
 					echo '<tr>';
 						$j = 0;
 						foreach ($r_element as $key => $r_elt) {
-							if ($key != 'id' && $key != 'parent_id') {
+							if ($key != 'id' && $key != 'parent_id' && isset($elements[$j - 2])) {
 								if ($elements[$j - 2]->plugin=='date') {
 									$date_params = json_decode($elements[$j - 2]->params);
 									$elt = strftime($date_params->date_form_format, strtotime($r_elt));
