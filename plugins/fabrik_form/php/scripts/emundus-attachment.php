@@ -24,7 +24,6 @@ $db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$
 $upload = $db->loadObject();
 $student = & JUser::getInstance($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id.'';
-die(str_replace("#_", "jos", $query));
 $db->setQuery( $query );
 $profile=$db->loadResult();
 $query = 'SELECT ap.displayed, attachment.lbl 
