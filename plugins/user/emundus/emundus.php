@@ -167,11 +167,12 @@ class plgUserEmundus extends JPlugin
 		$db		 =& JFactory::getDBO();
 		
 		
-		$query = '	SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, esp.label AS profile_label, esp.menutype, esp.published, esp.candidature_start, esp.candidature_end, esp.schoolyear, count(ed.id) as candidature_posted
+		$query = '	SELECT count(ed.id) as candidature_posted, eu.firstname, eu.lastname, eu.profile, eu.university_id, esp.label AS profile_label, esp.menutype, esp.published, esp.candidature_start, esp.candidature_end, esp.schoolyear 
 						FROM #__emundus_users AS eu 
 						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
 						LEFT JOIN #__emundus_declaration AS ed ON ed.user = eu.user_id
-						WHERE eu.user_id = '.$current_user->id;
+						WHERE eu.user_id = '.$current_user->id.' 
+						GROUP BY eu.user_id';
 		$db->setQuery($query);
 		$res = $db->loadObject();
 		
