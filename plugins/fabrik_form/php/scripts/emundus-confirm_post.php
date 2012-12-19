@@ -22,7 +22,6 @@ $db->query();
 $obj=$db->loadObject();
 
 $student = & JFactory::getUser();
-$student->candidature_posted = 1;
 
 $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[DEADLINE\]/','/\n/');
 $replacements = array ($student->id, $student->name, $student->email, strftime("%A %d %B %Y %H:%M", strtotime($student->candidature_end) ).' (GMT)', '<br />');
@@ -50,4 +49,5 @@ $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `mes
 				VALUES ('".$from_id."', '".$student->id."', '".$subject."', ".$db->quote($body).", NOW())";
 $db->setQuery( $sql );
 $db->query();
+$student->candidature_posted = 1;
 ?>

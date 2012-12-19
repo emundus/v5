@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Vérification de l'autorisation de mettre à jour le formulaire
  */
-$user = & JFactory::getUser();
+$user =& JFactory::getUser();
 $db =& JFactory::getDBO();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
