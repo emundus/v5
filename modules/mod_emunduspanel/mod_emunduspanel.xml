@@ -70,6 +70,14 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
+
+                <field name="@spacer" type="spacer" default="&lt;b&gt;Applicant for Hight Level Scientific vacation&lt;b&gt;" label="" description="" />
+				<field name="menu_profile12" type="multilist" default="" label="menu_profile12"/>
+				<field name="menu_profile12_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu_profile12_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
 			</fieldset>
 		</fields>
 	</config>

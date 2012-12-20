@@ -97,6 +97,12 @@ class plgUserEmundus extends JPlugin
 						VALUES ('.$user['id'].','.$details['profile'].',"profile")');
 			$db->Query();
 
+			$db->setQuery('UPDATE #__users
+						SET usertype=(SELECT u.title FROM #__usergroups AS u
+						LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
+						WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) WHERE id='.$user['id']);
+			$db->Query();
+
 			if ($app->isAdmin()) {
 				if ($mail_to_user) {
 
@@ -186,6 +192,7 @@ class plgUserEmundus extends JPlugin
 		$current_user->candidature_start	= @$res->candidature_start;
 		$current_user->candidature_end		= @$res->candidature_end;
 		$current_user->candidature_posted 	= @$res->candidature_posted;
+		$current_user->schoolyear			= @$res->schoolyear;
 		
 		return true;
 	}

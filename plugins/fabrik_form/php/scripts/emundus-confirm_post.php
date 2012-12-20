@@ -44,10 +44,10 @@ $attachment[] = $path_file;
 $replyto = $obj->emailfrom;
 $replytoname = $obj->name;
 
+$student->candidature_posted = 1;
 $res = JUtility::sendMail( $from, $fromname, $recipient, $subject, $body, true );
 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
 				VALUES ('".$from_id."', '".$student->id."', '".$subject."', ".$db->quote($body).", NOW())";
 $db->setQuery( $sql );
 $db->query();
-$student->candidature_posted = 1;
 ?>

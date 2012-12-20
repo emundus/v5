@@ -43,7 +43,7 @@ class  plgSystemEmundus_period extends JPlugin
 	}
 
 	function onAfterInitialise() {
-		global $mainframe;
+		$jinput = JFactory::getApplication()->input;
 		$user = & JFactory::getUser();
 		
 		// Global variables
@@ -56,10 +56,10 @@ class  plgSystemEmundus_period extends JPlugin
 			$db = & JFactory::getDBO();
 			$app =& JFactory::getApplication();
 			
-			$id = @$_REQUEST['id'];
-			$option = @$_REQUEST['option'];
-			$task = @$_REQUEST['task'];
-			$view = @$_REQUEST['view'];
+			$id = @$jinput->get('id');
+			$option = @$jinput->get('option');
+			$task = @$jinput->get('task');
+			$view = @$jinput->get('view');
 
 			date_default_timezone_set('Europe/London');
 			$script_tz = date_default_timezone_get();

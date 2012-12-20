@@ -16,11 +16,9 @@ $user =& JFactory::getUser();
 $db =& JFactory::getDBO();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
-$query = 'SELECT id FROM #__usergroups
- 		WHERE title="Registered"';
-$db->setQuery($query);
+
 $registered = $db->loadResult();
-if ($jinput->get('view') == 'form' && $user->usertype == $registered) {
+if ($jinput->get('view') == 'form' && $user->usertype == "Registered") {
 	$itemid = $jinput->get('Itemid');
 	
 	// Si l'application Form a été envoyée : affichage vue details

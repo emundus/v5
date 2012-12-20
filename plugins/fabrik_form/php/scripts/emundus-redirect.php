@@ -33,7 +33,7 @@ $link = $db->loadResult();
 if(empty($link)) {
 	$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 	FROM #__menu 
-	WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias = "checklist"';
+	WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
 	$db->setQuery( $query );
 	$link = $db->loadResult();
 }

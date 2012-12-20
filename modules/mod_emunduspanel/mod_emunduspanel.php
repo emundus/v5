@@ -27,7 +27,7 @@ $user =& JFactory::getUser();
 	$t__ = '';
 	$i = 1;
 	
-	if(count($text) >= 1){
+	if(is_array($text) && !empty($text)){
 		foreach($text as $t){
 			if(count($text) != $i) $t__ .= $t.',';
 			else $t__ .= $t;
