@@ -23,7 +23,8 @@ defined('_JEXEC') or die('RESTRICTED');
     <p align="center"><?php echo JText::_("AUTHOR"); ?> <em>Benjamin Rivalland </em></p>
 	<p align="center"><?php echo JText::_("DEVELOPER"); ?> <em>Benjamin Rivalland (2008-2012)</em>,<br />
 	<em>Jonas Lerebours (2010)</em>,<br>
-	<em>Mathilde Guillossou (2011-2012)</em>
+	<em>Mathilde Guillossou (2011-2012)</em>,<br>
+  <em>Riwal Le Buhan (2012)</em>
 	</p></td>
   </tr>
 </table>
