@@ -331,11 +331,11 @@ if (in_array($current_user->usertype, $allowed)) {
 		$row = $db->loadObject();
 		$evaluation=(count($row) > 0);
 		if($evaluation) {
-			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=29&random=0&rowid='.$row->id.'&usekey=id&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" name="" class="modal">'.JText::_( 'UPDATE_EVALUATION' ).'</a><br />';
+			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=29&random=0&rowid='.$row->id.'&usekey=id&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" name="" class="modal">'.JText::_( 'UPDATE_EVALUATION' ).'</a><br />';
 			if(in_array(@$evalu['category'],$this->published)) 
 				$link .='<input type="image" src="'.$this->baseurl.'/images/emundus/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete|'.$evalu['user_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 		} else {
-			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$evalu['user_id'].'&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'.JText::_( 'EVALUATION').'</a>'; 
+			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$evalu['user_id'].'&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'.JText::_( 'EVALUATION').'</a>'; 
 	}
 		echo $link;
 		?>

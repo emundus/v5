@@ -302,11 +302,6 @@ class EmundusModelEvaluation extends JModel
 			else { $and = true; $query .='WHERE '; }
 			$query.= '(esp.id = '.$profile.' OR efg.result_for = '.$profile.' OR eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id = '.$profile.'))';
 		}
-		if(isset($schoolyears) &&  !empty($schoolyears)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= 'eu.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
-		}
 		
 		if(isset($miss_doc) &&  !empty($miss_doc)) {
 			if($and) $query .= ' AND ';
@@ -369,7 +364,6 @@ class EmundusModelEvaluation extends JModel
 				$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user ';
 			$query .= ' WHERE ed.validated=1';
 			$query .= $this->_buildFilters();
-			echo str_replace('#_','jos',$query);
 			$this->_db->setQuery($query);
 			$applicants=$this->_db->loadObjectlist();
 		}
@@ -493,7 +487,7 @@ class EmundusModelEvaluation extends JModel
 				FROM #__fabrik_elements 
 				WHERE group_id=41
 				AND hidden != 1
-				
+				AND show_in_list_summary=1
 				ORDER BY ordering';
 		$this->_db->setQuery( $query );
 		return EmundusHelperFilters::insertValuesInQueryResult($this->_db->loadAssocList('name'), array("sub_values", "sub_labels"));

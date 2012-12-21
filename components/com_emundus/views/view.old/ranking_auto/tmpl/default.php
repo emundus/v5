@@ -293,7 +293,7 @@ if($tmpl == 'component') {
 									echo '</a>';
 									echo ' <input type="image" src="'.$this->baseurl.'/images/emundus/icones/b_drop.png" name="delete_eval" onclick="document.pressed=\'delete_eval|'.$evalu['user_id'].'\'" alt="'.JText::_('DELETE_SELECTION_OUTCOME').'" title="'.JText::_('DELETE_SELECTION_OUTCOME').'" />';
 								} else 
-									echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=39&tableid=41&rowid='.$evalu['row_id'].'&jos_emundus_final_grade___student_id[value]='.$evalu['user_id'].'&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'.JText::_('SET_FINAL_GRADE').'</a>'; 
+									echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=39&tableid=41&rowid='.$evalu['row_id'].'&jos_emundus_final_grade___student_id[value]='.$evalu['user_id'].'&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'.JText::_('SET_FINAL_GRADE').'</a>'; 
 							}
 							echo '</div>';?>
 						</td>	

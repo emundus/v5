@@ -229,7 +229,7 @@ foreach ($this->users as $user) { ?>
 			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view==application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
 			echo '</span>';
 			//echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-			//echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+			//echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span></div>#'.$user->id;
 		?>
 <div id="container" class="emundusraw"> 
@@ -332,12 +332,12 @@ if (in_array($current_user->usertype, $allowed)) {
 	}
 	if($evaluation) {
 			echo '</span>';
-			$link = '<br /><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=29&random=0&rowid='.$row->id.'&usekey=id&student_id='. $user->id.'&tmpl=component" target="_self" class="modal">'.JText::_( 'UPDATE_EVALUATION' ).'</a>'; 
+			$link = '<br /><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=29&random=0&rowid='.$row->id.'&usekey=id&student_id='. $user->id.'&tmpl=component" target="_self" class="modal">'.JText::_( 'UPDATE_EVALUATION' ).'</a>'; 
 			echo '<br/><strong>'.JText::_('MEAN').' = '.number_format($user->moyenne, 3, ',', '').'/'.$quotient.' </strong>'; 
 			if($row->user == $current_user->id)
 				echo '<input type="image" src="'.$this->baseurl.'/images/emundus/icones/b_drop.png" name="delete_eval" onclick="document.pressed=\'delete_eval|'.$user->id.'\'" alt="'.JText::_('DELETE_EVAL').'" title="'.JText::_('DELETE_EVAL').'" />';
 	} else {
-			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal">'.JText::_( 'EVALUATION').'</a>'; 
+			$link = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal">'.JText::_( 'EVALUATION').'</a>'; 
 	}
 	echo '<div class="emundusraw">';
 	echo $link;
@@ -365,7 +365,7 @@ if (in_array($current_user->usertype, $allowed)) {
 		} 
 		echo '</a>';
 	} else 
-		echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&fabrik=39&tableid=41&rowid='.$user->id.'&usekey=student_id&jos_emundus_final_grade___student_id[value]='.$user->id.'&student_id='.$user->id.'&tmpl=component" target="_self" class="modal">'.JText::_('SET_FINAL_GRADE').'</a>'; 
+		echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=39&tableid=41&rowid='.$user->id.'&usekey=student_id&jos_emundus_final_grade___student_id[value]='.$user->id.'&student_id='.$user->id.'&tmpl=component" target="_self" class="modal">'.JText::_('SET_FINAL_GRADE').'</a>'; 
 }
 echo '</div>';
 

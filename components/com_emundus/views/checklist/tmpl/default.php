@@ -17,7 +17,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                 if ($this->sent && count($this->result) == 0) echo '<h2>'.JText::_('APPLICATION_SENT').'</h2>';
 				else echo $this->text;
                 if(!$this->need) { ?>
-                    <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':'index.php?option=com_fabrik&c=form&view=form&fabrik=22&tableid=22'; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h2><?php 
+                    <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':'index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22'; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h2><?php 
                 } ?>
         </div>
     </fieldset>

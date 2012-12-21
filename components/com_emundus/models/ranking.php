@@ -74,7 +74,7 @@ class EmundusModelRanking extends JModel
 		if(!empty($select_list))
 			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
 		
-		$this->_applicants = $this->multi_array_sort($this->_applicants, 'overall', SORT_DESC);
+		$this->_applicants = $this->multi_array_sort($this->_applicants, 'name', SORT_ASC);
 		$rank=1;
 		for($i=0 ; $i<count($this->_applicants) ; $i++) {
 			$this->_applicants[$i]['ranking']=$rank;
@@ -98,7 +98,7 @@ class EmundusModelRanking extends JModel
 	
 	function multi_array_sort($multi_array=array(),$sort_key,$sort=SORT_ASC){  
         if(is_array($multi_array)){  
-            foreach ($multi_array as $key=>$row_array){  
+            foreach ($multi_array as $key=>$row_array){
                 if(is_array($row_array)){  
                     $key_array[$key] = $row_array[$sort_key]; 
                 }else{  

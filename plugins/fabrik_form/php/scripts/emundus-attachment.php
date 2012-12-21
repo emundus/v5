@@ -20,7 +20,7 @@ $baseurl 		= JURI::base();
 $db 			=& JFactory::getDBO();
 
 $can_be_view 	= $jinput->get('jos_emundus_uploads___can_be_viewed');
-$db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id');
+$db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id'));
 $upload = $db->loadObject();
 $student = & JUser::getInstance($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id.'';

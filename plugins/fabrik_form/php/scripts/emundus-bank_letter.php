@@ -80,7 +80,7 @@ $db->setQuery( $query );
 $db->query();
 
 // 3. Envoi du lien vers lequel la bank va pouvoir uploader le RIB
-$link_upload = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=46&tableid=48&keyid='.$key.'&sid='.$student_id;
+$link_upload = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=46&tableid=48&keyid='.$key.'&sid='.$student_id;
 $link_html = 'Cliquez <a href="'.$link_upload.'">ICI</a> pour acc&eacute;der à l\'interface d\'upload du RIB<br /><br />';
 $link_html .= 'Si ce lien ne fonctionne pas merci de copier-coller l\'adresse suivante dans votre navigateur : <br />'.$link_upload.'<br />';
 

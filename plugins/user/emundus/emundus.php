@@ -168,10 +168,9 @@ class plgUserEmundus extends JPlugin
 		// In this example the boolean variable $success would be set to true if the login routine succeeds
 		// ThirdPartyApp::loginUser($user['username'], $user['password']);
 		
-		
-		$current_user	 =& JFactory::getUser();
-		$db		 =& JFactory::getDBO();
-		
+		$current_user	=& JFactory::getUser();
+		$db		 		=& JFactory::getDBO();
+		$mainframe 		=  JFactory::getApplication();
 		
 		$query = '	SELECT count(ed.id) as candidature_posted, eu.firstname, eu.lastname, eu.profile, eu.university_id, esp.label AS profile_label, esp.menutype, esp.published, esp.candidature_start, esp.candidature_end, esp.schoolyear 
 						FROM #__emundus_users AS eu 
@@ -194,6 +193,8 @@ class plgUserEmundus extends JPlugin
 		$current_user->candidature_posted 	= @$res->candidature_posted;
 		$current_user->schoolyear			= @$res->schoolyear;
 		
+		$mainframe->redirect("index.php");
+
 		return true;
 	}
 

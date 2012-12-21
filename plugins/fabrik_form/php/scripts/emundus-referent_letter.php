@@ -67,7 +67,7 @@ if ($is_uploaded1==0) {
 	$db->query();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key1.'&sid='.$student->id;
+	$link_upload1 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key1.'&sid='.$student->id;
 	$link_html1 = '<p>Click <a href="'.$link_upload1.'">HERE</a> to upload reference letter<br><br>';
 	$link_html1 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload1.'</p>';
 } 
@@ -87,7 +87,7 @@ if ($is_uploaded2==0) {
 	$db->query();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload2 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key2.'&sid='.$student->id;
+	$link_upload2 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key2.'&sid='.$student->id;
 	$link_html2 = '<p>Click <a href="'.$link_upload2.'">HERE</a> to upload reference letter<br><br>';
 	$link_html2 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload2.'</p>';
 }
@@ -107,7 +107,7 @@ if ($is_uploaded3==0) {
 	$db->query();
 	
 	// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-	$link_upload3 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&fabrik=68&tableid=71&keyid='.$key3.'&sid='.$student->id;
+	$link_upload3 = $baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid='.$key3.'&sid='.$student->id;
 	$link_html3 = '<p>Click <a href="'.$link_upload3.'">HERE</a> to upload reference letter<br><br>';
 	$link_html3 .= 'If link does not work, please copy and paste that hyperlink in your browser : <br />'.$link_upload3.'</p>';
 }
