@@ -41,7 +41,38 @@ class plgUserEmundus extends JPlugin
 			' WHERE '.$db->quoteName('userid').' = '.(int) $user['id']
 		);
 		$db->Query();
-
+		
+		$db->setQuery('SHOW TABLES');
+		$tables = $db->LoadResultArray();
+		foreach($tables as $table) {
+			if(strpos($table, 'emundus_')===FALSE) continue;
+			if(strpos($table, '_repeat')>0) continue;
+			if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_evaluation_weight')>0) continue;
+			if(strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0 || strpos($table, '_emundus_academic_transcrip')>0 || strpos($table, '_emundus_mobility')>0) {
+				$db->setQuery('DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id']);
+			} elseif(strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_confirmed_applicants')>0 || strpos($table, '_emundus_learning_agreement')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0) { 
+				$db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
+			} elseif(strpos($table, '_emundus_comments')>0) { 
+				$db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
+			} elseif(strpos($table, '_groups_eval')>0) { 
+				$db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id'].' OR applicant_id = '.(int) $user['id']);
+			} else {
+				$db->setQuery('DELETE FROM '.$table.' WHERE user = '.(int) $user['id']);
+			}
+			$db->Query();
+		}
+		foreach($ids as $id) {
+			$dir = EMUNDUS_PATH_ABS.$id.DS;
+			if(!$dh = @opendir($dir)) continue;
+			while (false !== ($obj = readdir($dh))) {
+				if($obj == '.' || $obj == '..') continue;
+				if(!@unlink($dir.$obj)) { 
+					JFactory::getApplication()->enqueueMessage(JText::_("File not found")." : ".$obj."\n", 'error');  
+				}
+			}
+			closedir($dh);
+			@rmdir($dir);
+		}
 		return true;
 	}
 

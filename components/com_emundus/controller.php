@@ -435,36 +435,6 @@ function updateprofile() {
 				if (!$userToDelete->delete())
 					die(JText::_('CANNOT_DELETE_USER'). ' : '.$userToDelete->name);
 			}
-			$db->setQuery('SHOW TABLES');
-			$tables = $db->LoadResultArray();
-			foreach($tables as $table) {
-				if(strpos($table, 'emundus_')===FALSE) continue;
-				if(strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0) continue;
-				if(strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0) {
-					$db->setQuery('DELETE FROM '.$table.' WHERE student_id IN ('.implode(',',$ids).')');
-				} elseif(strpos($table, '_uploads')>0) { 
-					$db->setQuery('DELETE FROM '.$table.' WHERE user_id IN ('.implode(',',$ids).')');
-				} elseif(strpos($table, '_groups_eval')>0) { 
-					$db->setQuery('DELETE FROM '.$table.' WHERE (user_id IN ('.implode(',',$ids).') OR applicant_id IN ('.implode(',',$ids).'))');
-				} elseif(strpos($table, '_groups')>0) { 
-					$db->setQuery('DELETE FROM '.$table.' WHERE user_id IN ('.implode(',',$ids).')');
-				} else {
-					$db->setQuery('DELETE FROM '.$table.' WHERE user IN ('.implode(',',$ids).')');
-				}
-				$db->Query();
-			}
-			foreach($ids as $id) {
-				$dir = EMUNDUS_PATH_ABS.$id.DS;
-				if(!$dh = @opendir($dir)) continue;
-				while (false !== ($obj = readdir($dh))) {
-					if($obj == '.' || $obj == '..') continue;
-					if(!@unlink($dir.$obj)) { 
-						JFactory::getApplication()->enqueueMessage(JText::_("File not found")." : ".$obj."\n", 'error');  
-					}
-				}
-				closedir($dh);
-				@rmdir($dir);
-			}
 		}
 		$this->setRedirect('index.php?option=com_emundus&view=users', JText::_('Users and their data have been successfully deleted. Total : ').count($ids), 'message');
 	}
@@ -539,14 +509,14 @@ function updateprofile() {
 		$rowid = JRequest::getVar('rowid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		if(!empty($uid) && is_numeric($uid)) {
-			if($uid == 62) JError::raiseError(500, JText::_('You cannot delete administrator'));
+			if($uid == 62) JError::raiseError(500, JText::_('YOU_CANNOT_DELETE_SYSTEM_ADMINISTRATOR'));
 			$db =& JFactory::getDBO();
 			$db->setQuery('UPDATE #__users SET block = 0 WHERE id = '.mysql_real_escape_string($uid));
 			$db->Query();
 			$db->setQuery('UPDATE #__emundus_users SET disabled = 0 WHERE user_id = '.mysql_real_escape_string($uid));
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart, JText::_('User successfully unblocked'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart, JText::_('USER_SUCCESSFULLY_UNBLOCKED'), 'message');
 	}
 
 	function delincomplete() {
@@ -556,7 +526,8 @@ function updateprofile() {
 			return;
 		}
 		$db =& JFactory::getDBO();
-		$db->setQuery('SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_declaration AS d ON u.id=d.user WHERE u.usertype = "Registered" AND d.user IS NULL');
+		$query = 'SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_declaration AS d ON u.id=d.user WHERE u.usertype = "Registered" AND d.user IS NULL';
+		$db->setQuery($query);
 		$this->delusers($db->loadResultArray());
 	}
 
@@ -568,6 +539,7 @@ function updateprofile() {
 		}
 		$db =& JFactory::getDBO();
 		$db->setQuery('SELECT student_id FROM #__emundus_final_grade WHERE Final_grade=2 AND type_grade ="candidature"');
+		$users = $db->loadResultArray();
 		$this->delusers($db->loadResultArray());
 	}
 	
@@ -579,6 +551,7 @@ function updateprofile() {
 		}
 		$db =& JFactory::getDBO();
 		$db->setQuery('SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_final_grade AS efg ON u.id=efg.student_id WHERE u.usertype = "Registered" AND efg.student_id IS NULL');
+		$users = $db->loadResultArray();
 		$this->delusers($db->loadResultArray());
 	}
 

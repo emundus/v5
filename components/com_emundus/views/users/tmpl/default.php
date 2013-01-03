@@ -261,8 +261,9 @@ foreach ($this->users as $user) { ?>
                 <input type="submit" name="delusers" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_SELECTED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
            <?php if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {?> |        
                 <input type="submit" name="delincomplete" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_INCOMPLETE'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" /> 
+				<input type="submit" name="delnonevaluated" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_NON_EVALUATED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
                 <input type="submit" name="delrefused" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_REFUSED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
-                <input type="submit" name="delnonevaluated" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_NON_EVALUATED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
+              
             <?php } ?>
             </div>
         </td>
