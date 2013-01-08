@@ -53,6 +53,9 @@ var FbForm = new Class({
 		this.fx.validations = {};
 		this.setUpAll();
 		this._setMozBoxWidths();
+		(function () {
+			this.duplicateGroupsToMin();
+		}.bind(this)).delay(1000);
 	},
 	
 	_setMozBoxWidths: function () {
@@ -151,9 +154,28 @@ var FbForm = new Class({
 				}.bind(this));
 			}
 		}.bind(this));
+		
+		this.watchGoBackButton();
 	},
 
-	watchAddOptions : function () {
+	// Go back button in ajax pop up window should close the window
+	
+	watchGoBackButton: function () {
+		if (this.options.ajax) {
+			var goback = this.getForm().getElement('input[name=Goback]');
+			if (typeOf(goback) === 'null') {
+				return;
+			}
+			goback.addEvent('click', function (e) {
+				e.stop();
+				if (Fabrik.Windows[this.options.fabrik_window_id]) {
+					Fabrik.Windows[this.options.fabrik_window_id].close();
+				}
+			}.bind(this));
+		}
+	},
+	
+	watchAddOptions: function () {
 		this.fx.addOptions = [];
 		this.getForm().getElements('.addoption').each(function (d) {
 			var a = d.getParent('.fabrikElementContainer').getElement('.toggle-addoption');
@@ -880,7 +902,7 @@ var FbForm = new Class({
 		var apply = this._getButton('apply');
 		if (this.form.getElement('input[name=delete]')) {
 			this.form.getElement('input[name=delete]').addEvent('click', function (e) {
-				if (confirm(Joomla.JText._('COM_FABRIK_CONFIRM_DELETE'))) {
+				if (confirm(Joomla.JText._('COM_FABRIK_CONFIRM_DELETE_1'))) {
 					this.form.getElement('input[name=task]').value = this.options.admin ? 'form.delete' : 'delete';
 				} else {
 					return false;
@@ -1162,6 +1184,29 @@ var FbForm = new Class({
 			}
 		}.bind(this));
 	},
+	
+	/**
+	 * When editing a new form and when min groups set we need to duplicate each group
+	 * by the min repeat value.
+	 */
+	duplicateGroupsToMin: function () {
+		// Check for new form
+		if (this.options.rowid.toInt() === 0) {
+			Object.each(this.options.minRepeat, function (min, groupId) {
+				
+				// Create mock event
+				var btn = this.form.getElement('#group' + groupId + ' .addGroup');
+				if (typeOf(btn) !== 'null') {
+					var e = new Event.Mock(btn, 'click');
+					
+					// Duplicate group
+					for (var i = 0; i < min - 1; i ++) {
+						this.duplicateGroup(e);
+					}
+				}
+			}.bind(this));
+		}
+	},
 
 	deleteGroup: function (e) {
 		Fabrik.fireEvent('fabrik.form.group.delete', [this, e]);
@@ -1170,8 +1215,10 @@ var FbForm = new Class({
 			return;
 		}
 		e.stop();
+		
 		var group = e.target.getParent('.fabrikGroup');
-		// find which repeat group was deleted
+		
+		// Find which repeat group was deleted
 		var delIndex = 0;
 		group.getElements('.deleteGroup').each(function (b, x) {
 			if (b.getElement('img') === e.target) {
@@ -1179,6 +1226,12 @@ var FbForm = new Class({
 			}
 		}.bind(this));
 		var i = group.id.replace('group', '');
+		
+		var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
+		if (repeats <= this.options.minRepeat[i] && this.options.minRepeat[i] !== 0) {
+			return;
+		}
+		
 		delete this.duplicatedGroups.i;
 		if (document.id('fabrik_repeat_group_' + i + '_counter').value === '0') {
 			return;

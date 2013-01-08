@@ -1171,7 +1171,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			{
 				// $joinidsName .= '[' . $repeatCounter . '][]';
 				$joinidsName .= '[' . $repeatCounter . ']';
-				$joinids = FArrayHelper::getNestedValue($data, 'join.' . $joinId . '.' . $rawname . '.' . $repeatCounter, 'not found');
+				$joinids = FArrayHelper::getNestedValue($data, 'join.' . $join->id . '.' . $rawname . '.' . $repeatCounter, 'not found');
 			}
 			else
 			{
@@ -1194,10 +1194,27 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				}
 				$tmpids[] = $o;
 			}
+
 			$html[] = '<div class="fabrikHide">';
 			$attribs = 'class="fabrikinput inputbox" size="1" id="' . $id . '"';
 			$html[] = FabrikHelperHTML::aList('checkbox', $tmpids, $joinidsName, $attribs, $joinids, 'value', 'text', $optsPerRow, $editable);
+
+
+
 			$html[] = '</div>';
+
+			if (empty($tmp))
+			{
+				$tmpids= array();
+				$o = new stdClass;
+				$o->text = 'dummy';
+				$o->value = 'dummy';
+				$tmpids[] = $o;
+				$tmp = $tmpids;
+				$dummy = FabrikHelperHTML::aList('checkbox', $tmp, $thisElName, $attribs, $defaults, 'value', 'text', 1, true);
+				$dummyId = FabrikHelperHTML::aList('checkbox', $tmpids, $joinidsName, $attribs, $joinids, 'value', 'text', 1, true);
+				$html[] = '<div class="chxTmplNode">' . $dummy . '</div><div class="chxTmplIDNode">' . $dummyId . '</div>';
+			}
 		}
 	}
 
@@ -1694,6 +1711,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$where .= $prefilterWhere;
 
 		$sql .= $where;
+
 		if (!JString::stristr($where, 'order by'))
 		{
 			$sql .= $this->getOrderBy('filter');
@@ -1721,14 +1739,40 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			$params = $this->getParams();
 			$joinKey = $this->getJoinValueColumn();
 			$joinLabel = $this->getJoinLabelColumn();
-			$order = $params->get('filter_groupby', 'text') == 'text' ? $joinLabel : $joinKey;
+			$order = '';
+			switch ($params->get('filter_groupby', 'text'))
+			{
+				case 'text':
+					$oder = $joinLabel . 'ASC ';
+					break;
+				case 'value':
+					$order = $joinKey . 'ASC ';
+					break;
+				case '-1':
+				default:
+					// Check if the 'Joins where and/or order by statement' has an order by
+					$joinWhere = $params->get('database_join_where_sql');
+					if (JString::stristr($joinWhere, 'ORDER BY'))
+					{
+						$joinWhere = str_replace('order by', 'ORDER BY', $joinWhere);
+						$joinWhere = explode('ORDER BY', $joinWhere);
+						if (count($joinWhere) > 1)
+						{
+							$order = $joinWhere[count($joinWhere) - 1];
+						}
+					}
+					break;
+			}
 			if (!$query)
 			{
-				return " ORDER BY $order ASC ";
+				return $order === '' ? '' : ' ORDER BY ' . $order;
 			}
 			else
 			{
-				$query->order($order . ' ASC');
+				if ($order !== '')
+				{
+					$query->order($order);
+				}
 				return $query;
 			}
 		}

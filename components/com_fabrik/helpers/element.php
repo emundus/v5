@@ -31,7 +31,7 @@ class FabrikHelperElement
 	 * @return  plgFabrik_ElementInternalid
 	 */
 
-	public function makeIdElement($baseElement)
+	public static function makeIdElement($baseElement)
 	{
 
 		$pluginManager = FabrikWorker::getPluginManager();
@@ -54,7 +54,7 @@ class FabrikHelperElement
 	 * @return  plgFabrik_ElementField
 	 */
 
-	public function makeParentElement($baseElement)
+	public static function makeParentElement($baseElement)
 	{
 		$pluginManager = FabrikWorker::getPluginManager();
 		$groupModel = $baseElement->getGroupModel();
@@ -66,5 +66,29 @@ class FabrikHelperElement
 		$elementModel->_joinModel = $groupModel->getJoinModel();
 
 		return $elementModel;
+	}
+
+	/**
+	 * Short cut for getting the element's filter value
+	 *
+	 * @param   int  $elementId  Element id
+	 *
+	 * @since   3.0.7
+	 *
+	 * @return  string
+	 */
+
+	public static function filterValue($elementId)
+	{
+		$app = JFactory::getApplication();
+		$pluginManager = FabrikWorker::getPluginManager();
+		$model = $pluginManager->getElementPlugin($elementId);
+		$listModel = $model->getListModel();
+		$listid = $listModel->getId();
+		$key = 'com_fabrik.list' . $listid . '_com_fabrik_' . $listid . '.filter';
+		$filters = JArrayHelper::fromObject($app->getUserState($key));
+		$index = array_search($elementId, $filters['elementid']);
+		$value = $filters['value'][$index];
+		return $value;
 	}
 }

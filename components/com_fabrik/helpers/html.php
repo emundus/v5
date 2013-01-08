@@ -371,8 +371,9 @@ EOD;
 
 	public static function printURL($formModel)
 	{
-		$form = $formModel->getForm();
 		$app = JFactory::getApplication();
+		$input = $app->input;
+		$form = $formModel->getForm();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$table = $formModel->getTable();
 		if (isset(self::$printURL))
@@ -383,10 +384,10 @@ EOD;
 		. "&rowid=" . $formModel->_rowId . '&iframe=1&print=1';
 		/* $$$ hugh - @TODO - FIXME - if they were using rowid=-1, we don't need this, as rowid has already been transmogrified
 		 * to the correct (PK based) rowid.  but how to tell if original rowid was -1???
-		*/
-		if (JRequest::getVar('usekey') !== null)
+		 */
+		if ($input->get('usekey') !== null)
 		{
-			$url .= "&usekey=" . JRequest::getVar('usekey');
+			$url .= "&usekey=" . $input->get('usekey');
 		}
 		$url = JRoute::_($url);
 
@@ -443,6 +444,7 @@ EOD;
 			return self::$emailURL;
 		}
 		$app = JFactory::getApplication();
+		$input = $app->input;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		if ($app->isAdmin())
 		{
@@ -455,9 +457,9 @@ EOD;
 			. $formModel->getRowId();
 		}
 
-		if (JRequest::getVar('usekey') !== null)
+		if ($input->get('usekey') !== null)
 		{
-			$url .= '&usekey=' . JRequest::getVar('usekey');
+			$url .= '&usekey=' . $input->get('usekey');
 		}
 		$url .= '&referrer=' . urlencode(JFactory::getURI()->toString());
 		self::$emailURL = $url;
@@ -479,7 +481,7 @@ EOD;
 		$conditions[] = JHTML::_('select.option', 'AND', JText::_('COM_FABRIK_AND'));
 		$conditions[] = JHTML::_('select.option', 'OR', JText::_('COM_FABRIK_OR'));
 		$name = 'fabrik___filter[list_' . $listid . '][join][]';
-		return JHTML::_('select.genericlist', $conditions, $name, 'class="inputbox" size="1" ', 'value', 'text', $sel);
+		return JHTML::_('select.genericlist', $conditions, $name, 'class="inputbox input-mini" size="1" ', 'value', 'text', $sel);
 	}
 
 	/**
@@ -547,9 +549,10 @@ EOD;
 			{
 				if (!strstr($file, 'fabrik.css'))
 				{
-					echo "<script type=\"text/javascript\">var v = new Asset.css('" . $file . "', {});
-				</script>\n";
-
+					$opts = new stdClass;
+					echo "<script type=\"text/javascript\">
+					var v = new Asset.css('" . $file . "', " . json_encode($opts) . ");
+					</script>\n";
 					self::$ajaxCssFiles[] = $file;
 				}
 			}
@@ -574,11 +577,13 @@ EOD;
 
 	public static function cssAsAsset()
 	{
-		$tpl = JRequest::getVar('tmpl');
-		$iframe = JRequest::getVar('iframe');
-		$print = JRequest::getVar('print');
-		$format = JRequest::getVar('format');
-		return JRequest::getVar('format') == 'raw' || ($tpl == 'component' && $iframe != 1) && $print != 1 && $format !== 'pdf';
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$tpl = $input->get('tmpl');
+		$iframe = $input->get('iframe');
+		$print = $input->get('print');
+		$format = $input->get('format');
+		return $input->get('format') == 'raw' || ($tpl == 'component' && $iframe != 1) && $print != 1 && $format !== 'pdf';
 	}
 
 	/**
@@ -800,7 +805,9 @@ EOD;
 
 				JText::script('COM_FABRIK_LOADING');
 				$navigator = JBrowser::getInstance();
-				if ($navigator->getBrowser() == 'msie')
+				$config = JComponentHelper::getParams('com_fabrik');
+
+				if ($navigator->getBrowser() == 'msie' && $config->get('flexie', true))
 				{
 					$src[] = 'media/com_fabrik/js/lib/flexiejs/flexie.js';
 				}
@@ -886,7 +893,8 @@ EOD;
 
 	public static function addScriptDeclaration($script)
 	{
-		if (JRequest::getCmd('format') == 'raw')
+		$app = JFactory::getApplication();
+		if ($app->input->get('format') == 'raw')
 		{
 			echo '<script type="text/javascript">' . $script . '</script>';
 		}
@@ -906,7 +914,8 @@ EOD;
 
 	public static function addStyleDeclaration($style)
 	{
-		if (JRequest::getCmd('format') == 'raw')
+		$app = JFactory::getApplication();
+		if ($app->input->get('format') == 'raw')
 		{
 			echo '<style type="text/css">' . $style . '</script>';
 		}
@@ -929,7 +938,9 @@ EOD;
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 
 		// Are we in fabrik or a content view, if not return false (things like com_config need to load in mootools)
-		$option = JRequest::getCmd('option');
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$option = $input->get('option');
 		if ($option !== 'com_' . $package && $option !== 'com_content')
 		{
 			return false;
@@ -944,8 +955,8 @@ EOD;
 				return false;
 			}
 		}
-		return JRequest::getVar('format') == 'raw'
-			|| (JRequest::getVar('tmpl') == 'component' && JRequest::getInt('iframe') != 1 && JRequest::getVar('format') !== 'pdf');
+		return $input->get('format') == 'raw'
+			|| ($input->get('tmpl') == 'component' && $input->get('iframe') != 1 && $input->get('format') !== 'pdf');
 	}
 
 	/**
@@ -960,6 +971,7 @@ EOD;
 
 	public static function isDebug($enabled = false)
 	{
+		$app = JFactory::getApplication();
 		$config = JComponentHelper::getParams('com_fabrik');
 		if ($enabled && $config->get('use_fabrikdebug') == 0)
 		{
@@ -971,7 +983,7 @@ EOD;
 		}
 		$config = JFactory::getConfig();
 		$debug = (int) $config->get('debug');
-		return $debug === 1 || JRequest::getInt('fabrikdebug', 0) == 1;
+		return $debug === 1 || $app->input->get('fabrikdebug', 0) == 1;
 	}
 
 	/**
@@ -1159,15 +1171,17 @@ EOD;
 	public static function debug($content, $title = 'output:')
 	{
 		$config = JComponentHelper::getParams('com_fabrik');
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		if ($config->get('use_fabrikdebug') == 0)
 		{
 			return;
 		}
-		if (JRequest::getBool('fabrikdebug', 0, 'request') != 1)
+		if ($input->getBool('fabrikdebug', 0, 'request') != 1)
 		{
 			return;
 		}
-		if (JRequest::getVar('format') == 'raw')
+		if ($input->get('format') == 'raw')
 		{
 			return;
 		}
@@ -1394,7 +1408,7 @@ EOD;
 				case 'image':
 					if ($app->isAdmin())
 					{
-						self::$helperpaths[$type][] = JPATH_SITE . '/administrator/templates/' . $template . '/images/';
+						self::$helperpaths[$type][] = JPATH_SITE . DIRECTORY_SEPARATOR . 'administrator/templates/' . $template . '/images/';
 					}
 					self::$helperpaths[$type][] = COM_FABRIK_BASE . 'templates/' . $template . '/html/com_fabrik/' . $view . '/%s/images/';
 					self::$helperpaths[$type][] = COM_FABRIK_BASE . 'templates/' . $template . '/html/com_fabrik/' . $view . '/images/';
@@ -1426,7 +1440,7 @@ EOD;
 
 	public static function getImagePath($file, $type = 'form', $tmpl = '')
 	{
-		$file = JString::ltrim($file, DS);
+		$file = JString::ltrim($file, DIRECTORY_SEPARATOR);
 		$paths = self::addPath('', 'image', $type, true);
 		$src = '';
 		foreach ($paths as $path)

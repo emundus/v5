@@ -21,7 +21,6 @@ var FbDatabasejoin = new Class({
 		this.activeSelect = false;
 		this.plugin = 'databasejoin';
 		this.parent(element, options);
-		this.changeEvents = []; // workaround for change events getting zapped on clone
 		this.init();
 		this.start();
 	},
@@ -121,6 +120,9 @@ var FbDatabasejoin = new Class({
 			chxed = (v === this.options.value) ? true : false;
 			subOpts = this.element.getElements('> .fabrik_subelement');
 			opt = this.getCheckboxTmplNode().clone();
+			var i = opt.getElement('input');
+			i.name = i.name.replace(/\[\d+\]$/, '[' + subOpts.length + ']');
+			
 			opt.getElement('span').set('text', l);
 			opt.getElement('input').set('value', v);
 			last = subOpts.length === 0 ? this.element : subOpts.getLast();
@@ -134,6 +136,10 @@ var FbDatabasejoin = new Class({
 			newid.getElement('input').set('value', 0); // to add a new join record set to 0
 			last = ids.length === 0 ? this.element.getElement('.fabrikHide') : ids.getLast();
 			newid.inject(last, injectWhere);
+			
+			i = newid.getElement('input');
+			// Update end [n]
+			i.name = i.name.replace(/\[\d+\]$/, '[' + ids.length + ']');
 			newid.getElement('input').checked = chxed;
 			
 			break;
@@ -169,7 +175,12 @@ var FbDatabasejoin = new Class({
 		if (!this.chxTmplIDNode && this.options.displayType === 'checkbox')
 		{
 			var chxs = this.element.getElements('.fabrikHide > .fabrik_subelement');
-			this.chxTmplIDNode = chxs.getLast().clone();
+			if (chxs.length === 0) {
+				this.chxTmplIDNode = this.element.getElement('.chxTmplIDNode').getChildren()[0].clone();
+				this.element.getElement('.chxTmplIDNode').destroy();
+			} else {
+				this.chxTmplIDNode = chxs.getLast().clone();
+			}
 		}
 		return this.chxTmplIDNode;
 	},
@@ -185,8 +196,13 @@ var FbDatabasejoin = new Class({
 		if (!this.chxTmplNode && this.options.displayType === 'checkbox')
 		{
 			var chxs = this.element.getElements('> .fabrik_subelement');
+			if (chxs.length === 0) {
+				this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
+				this.element.getElement('.chxTmplNode').destroy();
+			} else {
+				this.chxTmplNode = chxs.getLast().clone();
+			}
 			
-			this.chxTmplNode = chxs.getLast().clone();
 		}
 		return this.chxTmplNode;
 	},
@@ -223,7 +239,7 @@ var FbDatabasejoin = new Class({
 			'data': data,
 			onSuccess: function (json) {
 				var existingValues = this.getOptionValues();
-				//if duplicating an element in a repeat group when its auto-complete we dont want to update its value
+				// If duplicating an element in a repeat group when its auto-complete we dont want to update its value
 				if (this.options.displayType === 'auto-complete' && v === '' && existingValues.length === 0) {
 					return;
 				}
@@ -424,7 +440,6 @@ var FbDatabasejoin = new Class({
 			}
 		}
 		if (!found) {
-			//if (this.element.get('tag') === 'input') {
 			if (this.options.displayType === 'auto-complete') {
 				this.element.value = val;
 				this.updateFromServer(val);
@@ -446,7 +461,7 @@ var FbDatabasejoin = new Class({
 	},
 	
 	/**
-	 * optionally show a description which is another field from the joined table.
+	 * Optionally show a description which is another field from the joined table.
 	 */
 	
 	showDesc: function (e) {
@@ -527,19 +542,12 @@ var FbDatabasejoin = new Class({
 	
 	cloned: function (c) {
 		//c is the repeat group count
-		// @TODO this is going to wipe out any user added change events to the element
-		// cant' figure out how to just remove the cdd change events.
-		// $$$ hugh - added workaround for change events, by storing them during addNewEvent
-		// and re-adding them after we do this. 
-		this.element.removeEvents('change');
 		this.activePopUp = false;
-		this.changeEvents.each(function (js) {
-			this.addNewEventAux('change', js);
-		}.bind(this));
+		this.parent(c);
 		this.init();
 		this.watchSelect();
 		if (this.options.displayType === 'auto-complete') {
-			//update auto-complete fields id and create new autocompleter object for duplicated element
+			// Update auto-complete fields id and create new autocompleter object for duplicated element
 			var f = this.getAutoCompleteLabelField();
 			f.id = this.element.id + '-auto-complete';
 			f.name = this.element.name.replace('[]', '') + '-auto-complete';
@@ -552,16 +560,19 @@ var FbDatabasejoin = new Class({
 		
 		this.getCheckboxTmplNode();
 		this.getCheckboxIDTmplNode();
-		//if users can add records to the database join drop down
+		
+		// If users can add records to the database join drop down
 		if (this.options.allowadd === true && this.options.editable !== false) {
 			this.startEvent = this.start.bindWithEvent(this);
 			this.watchAdd();
 			Fabrik.addEvent('fabrik.form.submitted', function (form, json) {
-				//fired when form submitted - enables element to update itself with any new submitted data
+
+				// Fired when form submitted - enables element to update itself with any new submitted data
 				if (this.options.popupform === form.id) {
 					// rob previously we we doing appendInfo() but that didnt get the concat labels for the database join
 					if (this.options.displayType === 'auto-complete') {
-						//need to get v if autocomplete and updating from posted popup form as we only want to get ONE 
+						
+						// Need to get v if autocomplete and updating from posted popup form as we only want to get ONE 
 						// option back inside updateFromServer;
 						var myajax = new Request.JSON({
 							'url': Fabrik.liveSite + 'index.php?option=com_fabrik&view=form&format=raw',
@@ -622,7 +633,7 @@ var FbDatabasejoin = new Class({
 				this.element.addEvent(action, function (e) {
 					e.stop();
 					(typeOf(js) === 'function') ? js.delay(0) : eval(js);
-				});
+				}.bind(this));
 			}
 			break;
 		case 'radio':
@@ -630,8 +641,8 @@ var FbDatabasejoin = new Class({
 			this.subElements.each(function (el) {
 				el.addEvent(action, function (e) {
 					(typeOf(js) === 'function') ? js.delay(0) : eval(js);
-				});
-			});
+				}.bind(this));
+			}.bind(this));
 			break;
 		case 'auto-complete':
 			var f = this.getAutoCompleteLabelField();
@@ -639,24 +650,10 @@ var FbDatabasejoin = new Class({
 				f.addEvent(action, function (e) {
 					e.stop();
 					(typeOf(js) === 'function') ? js.delay(700) : eval(js);
-				});
+				}.bind(this));
 			}
 			break;
 		}		
-	},
-	
-	addNewEvent: function (action, js) {
-		if (action === 'load') {
-			this.loadEvents.push(js);
-			this.runLoadEvent(js);
-			return;
-		}
-		// $$$ hugh - workaround for change events getting zapped on clone, where
-		// we have to remove change events added by CDD's watching us
-		if (action === 'change') {
-			this.changeEvents.push(js);
-		}
-		this.addNewEventAux(action, js);
 	},
 	
 	decreaseName: function (delIndex) {

@@ -188,6 +188,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			return $this->canView;
 		}
+		$params = $this->getParams();
 		$elementModels = $this->getPublishedElements();
 		$this->canView = false;
 		foreach ($elementModels as $elementModel)
@@ -199,6 +200,22 @@ class FabrikFEModelGroup extends FabModel
 				continue;
 			}
 			$this->canView = true;
+			break;
+		}
+
+		// Get the group access level
+		$user = JFactory::getUser();
+		$groups = $user->getAuthorisedViewLevels();
+		$groupAccess = $params->get('access', '');
+		if ($groupAccess !== '')
+		{
+			$this->canView = in_array($groupAccess, $groups);
+
+			// If the user can't access the group return that and ingore repeat_group_show_first option
+			if (!$this->canView)
+			{
+				return $this->canView;
+			}
 		}
 
 		/*
@@ -209,8 +226,7 @@ class FabrikFEModelGroup extends FabModel
 		 * multi page forms where we were trying to set/check errors in groups which were not attached to the form.
 		 */
 		$formModel = $this->getFormModel();
-		$params = $this->getParams();
-		$showGroup = $params->get('repeat_group_show_first', '');
+		$showGroup = $params->get('repeat_group_show_first', '1');
 		if ($showGroup == 0)
 		{
 			$this->canView = false;
@@ -778,6 +794,7 @@ class FabrikFEModelGroup extends FabModel
 		$group->name = $groupTable->name;
 		$group->displaystate = ($group->canRepeat == 1 && $formModel->isEditable()) ? 1 : 0;
 		$group->maxRepeat = (int) $params->get('repeat_max');
+		$group->minRepeat = (int) $params->get('repeat_min');
 		$group->showMaxRepeats = $params->get('show_repeat_max', '0') == '1';
 		$group->canAddRepeat = $this->canAddRepeat();
 		$group->canDeleteRepeat = $this->canDeleteRepeat();

@@ -649,7 +649,10 @@ class FabrikFEModelForm extends FabModelForm
 					$r->$k = $v;
 				}
 				unset($r->params);
-				$this->jsActions[$r->element_id][] = $r;
+				if (!isset($r->js_published) || (int) $r->js_published === 1)
+				{
+					$this->jsActions[$r->element_id][] = $r;
+				}
 			}
 		}
 		return $this->jsActions;
@@ -1491,6 +1494,8 @@ class FabrikFEModelForm extends FabModelForm
 
 	public function processToDB()
 	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		$listModel = $this->getListModel();
 		$listModel->setBigSelects();
 		$item = $listModel->getTable();
@@ -1561,7 +1566,7 @@ class FabrikFEModelForm extends FabModelForm
 
 		// $$$ hugh - pretty sure we need to unset 'usekey' now, as it is not relavent to joined data,
 		// and it messing with storeRow of joins
-		JRequest::setVar('usekey', '');
+		$input->set('usekey', '');
 		$_POST['usekey'] = '';
 		$_REQUEST['usekey'] = '';
 
@@ -1684,10 +1689,32 @@ class FabrikFEModelForm extends FabModelForm
 						{
 							$repeatTotals['el' . $elementModel->getId()][$r] = count($dataPks[$r]);
 						}
+						// $$$ hugh - need to re-index data
+						foreach ($data as &$d)
+						{
+							if (is_array($d))
+							{
+								foreach ($d as &$d2)
+								{
+									if (is_array($d2))
+									{
+										$d2 = array_values($d2);
+									}
+								}
+							}
+						}
 					}
 					else
 					{
 						$repeatTotals[$oJoin->group_id] = $elementModel->getJoinRepeatCount($data, $oJoin);
+						// $$$ hugh - need to re-index data
+						foreach ($data as &$d)
+						{
+							if (is_array($d))
+							{
+								$d = array_values($d);
+							}
+						}
 					}
 				}
 				else
@@ -2038,6 +2065,7 @@ class FabrikFEModelForm extends FabModelForm
 
 	protected function submitToDatabase($rowId = '0')
 	{
+		$app = JFactory::getApplication();
 		$this->getGroupsHiarachy();
 		$pluginManager = FabrikWorker::getPluginManager();
 		/*
@@ -2102,7 +2130,7 @@ class FabrikFEModelForm extends FabModelForm
 		$item = $listModel->getTable();
 		$listModel->storeRow($this->_formData, $rowId);
 
-		$usekey = JRequest::getVar('usekey', '');
+		$usekey = $app->input->get('usekey', '');
 		if (!empty($usekey))
 		{
 			return $listModel->lastInsertId;
@@ -2226,8 +2254,8 @@ class FabrikFEModelForm extends FabModelForm
 									/* $$$ hugh - things like elementlist elements (radios, etc) seem to use
 									 * their JSON data for encrypted read only vals, need to decode.
 									 */
-									$v = FabrikWorker::JSONtoData($v);
-									foreach ($v as $tmpV)
+									$v = FabrikWorker::JSONtoData($v, true);
+									foreach ($v as &$tmpV)
 									{
 										$tmpV = $w->parseMessageForPlaceHolder($tmpV, $post);
 									}
@@ -3871,7 +3899,8 @@ class FabrikFEModelForm extends FabModelForm
 					else
 					{
 						// $$$ hugh - if it's a one-to-one, it should be a single value
-						$jdata[$key] = JArrayHelper::getValue(array_values($array), 0, '');
+						$aVals = array_values($array);
+						$jdata[$key] = JArrayHelper::getValue($aVals, 0, '');
 					}
 				}
 			}
@@ -4486,7 +4515,8 @@ class FabrikFEModelForm extends FabModelForm
 						}
 						else
 						{
-							if (!$groupParams->get('repeat_group_show_first'))
+							//if (!$groupParams->get('repeat_group_show_first'))
+							if ($groupModel->canView() === false)
 							{
 								continue;
 							}
@@ -4623,7 +4653,7 @@ class FabrikFEModelForm extends FabModelForm
 			$group->startHidden = $startHidden;
 
 			// Only create the group if there are some element inside it
-			if (count($aElements) != 0)
+			if (count($aElements) != 0 && $groupModel->canView() !== false)
 			{
 				// 28/01/2011 $$$rob and if it is published
 				$showGroup = (int) $groupParams->get('repeat_group_show_first');
@@ -5030,7 +5060,9 @@ class FabrikFEModelForm extends FabModelForm
 		 * without the array_shift the custom message is never attached to the redirect page.
 		 * use case 'redirct plugin with jump page pointing to a J page and thanks message selected.
 		 */
-		$custommsg = JArrayHelper::getValue($smsg, array_shift(array_keys($smsg)));
+		$custommsg = array_keys($smsg);
+		$custommsg = array_shift($custommsg);
+		$custommsg = JArrayHelper::getValue($smsg, $custommsg);
 		if ($custommsg != '')
 		{
 			$msg = $custommsg;
@@ -5052,7 +5084,8 @@ class FabrikFEModelForm extends FabModelForm
 			$msg = null;
 		}
 		$session->set($context . 'msg', $smsg);
-		$showmsg = array_shift($session->get($context . 'showsystemmsg', array(true)));
+		$showmsg = $session->get($context . 'showsystemmsg', array(true));
+		$showmsg = array_shift($showmsg);
 		$msg = $showmsg == 1 ? $msg : null;
 		return $msg;
 	}

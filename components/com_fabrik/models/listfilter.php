@@ -72,8 +72,9 @@ class FabrikFEModelListfilter extends FabModel
 	{
 		unset($this->request);
 	}
+
 	/**
-	 * this merges session data for the fromForm with any request data
+	 * This merges session data for the fromForm with any request data
 	 * allowing us to filter data results from both search forms and filters
 	 *
 	 * @return array
@@ -1336,7 +1337,7 @@ class FabrikFEModelListfilter extends FabModel
 			}
 			else
 			{
-				$elementModel = $elements[$elid];
+				$elementModel = JArrayHelper::getValue($elements, $elid);
 				if (!is_a($elementModel, 'plgFabrik_Element') && !in_array($elid, $pluginKeys))
 				{
 					continue;

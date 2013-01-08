@@ -1524,7 +1524,12 @@ class plgFabrik_Element extends FabrikPlugin
 		{
 			$data = $this->getFormModel()->_data;
 		}
+		$model = $this->getFormModel();
 		$params = $this->getParams();
+		if (!$model->isEditable() && !$params->get('labelindetails'))
+		{
+			return '';
+		}
 		$w = new FabrikWorker;
 		$tip = $w->parseMessageForPlaceHolder($params->get('rollover'), $data);
 		if ($params->get('tipseval'))
@@ -2334,6 +2339,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$params = $this->getParams();
 		$validations = (array) $params->get('validations', 'array');
 		$usedPlugins = JArrayHelper::getValue($validations, 'plugin', array());
+		$published = JArrayHelper::getValue($validations, 'plugin_published', array());
 		$pluginManager = FabrikWorker::getPluginManager();
 		$pluginManager->getPlugInGroup('validationrule');
 		$c = 0;
@@ -2341,20 +2347,26 @@ class plgFabrik_Element extends FabrikPlugin
 
 		$dispatcher = JDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
+		$i = 0;
 		foreach ($usedPlugins as $usedPlugin)
 		{
 			if ($usedPlugin !== '')
 			{
-				$class = 'plgFabrik_Validationrule' . JString::ucfirst($usedPlugin);
-				$conf = array();
-				$conf['name'] = JString::strtolower($usedPlugin);
-				$conf['type'] = JString::strtolower('fabrik_Validationrule');
-				$plugIn = new $class($dispatcher, $conf);
-				$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
-				$plugIn->elementModel = $this;
-				$this->_aValidations[] = $plugIn;
-				$c++;
+				$isPublished = JArrayHelper::getValue($published, $i, true);
+				if ($isPublished)
+				{
+					$class = 'plgFabrik_Validationrule' . JString::ucfirst($usedPlugin);
+					$conf = array();
+					$conf['name'] = JString::strtolower($usedPlugin);
+					$conf['type'] = JString::strtolower('fabrik_Validationrule');
+					$plugIn = new $class($dispatcher, $conf);
+					$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
+					$plugIn->elementModel = $this;
+					$this->_aValidations[] = $plugIn;
+					$c ++;
+				}
 			}
+			$i ++;
 		}
 		return $this->_aValidations;
 	}
@@ -2445,6 +2457,14 @@ class plgFabrik_Element extends FabrikPlugin
 					elseif ($jsAct->js_e_condition == 'shown')
 					{
 						$js = "if (this.getContainer().getStyle('display') !== 'none') {";
+					}
+					elseif ($jsAct->js_e_condition == 'CONTAINS')
+					{
+						$js = "if (Array.from(this.get('value')).contains('$jsAct->js_e_value')) {";
+					}
+					elseif ($jsAct->js_e_condition == '!CONTAINS')
+					{
+						$js = "if (!Array.from(this.get('value')).contains('$jsAct->js_e_value')) {";
 					}
 					else
 					{
@@ -4891,6 +4911,10 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 			$s = '<ul>';
 			foreach ($o as $k => $v)
 			{
+				if (!is_string($v))
+				{
+					$v = json_encode($v);
+				}
 				$s .= '<li>' . $v . '</li>';
 			}
 			$s .= '</ul>';

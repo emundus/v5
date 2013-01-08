@@ -49,7 +49,7 @@ class fabrikViewCalendar extends JView
 		$this->params = $params;
 		$this->containerId = $model->getJSRenderContext();
 		$this->filters = $this->get('Filters');
-		$this->showFilters = $input->getInt('showfilters', $params->get('show_filters')) === 1 ? 1 : 0;
+		$this->showFilters = $input->getInt('showfilters', (int) $params->get('show_filters', 1)) === 1 ? 1 : 0;
 		$this->showTitle = $input->getInt('show-title', 1);
 		$this->filterFormURL = $this->get('FilterFormURL');
 
@@ -80,6 +80,7 @@ class fabrikViewCalendar extends JView
 		unset($urlfilters['Itemid']);
 		unset($urlfilters['visualizationid']);
 		unset($urlfilters['format']);
+		unset($urlfilters['id']);
 		if (empty($urlfilters))
 		{
 			$urlfilters = new stdClass;
@@ -134,7 +135,7 @@ class fabrikViewCalendar extends JView
 		$options->monthday = new stdClass;
 		$options->monthday->width = (int) $params->get('calendar-monthday-width', 90);
 		$options->monthday->height = (int) $params->get('calendar-monthday-height', 80);
-		$options->greyscaledweekend = $params->get('greyscaled-week-end', 0);
+		$options->greyscaledweekend = $params->get('greyscaled-week-end', 0) === '1';
 		$options->viewType = $params->get('calendar_default_view', 'monthView');
 
 		$options->weekday = new stdClass;
@@ -164,16 +165,20 @@ class fabrikViewCalendar extends JView
 		$ref = $model->getJSRenderContext();
 
 		// Hack until we replace head.js with require.js
-		$js = "Fabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
-		$js .= " $ref = new fabrikCalendar('$ref');\n";
-		$js .= " $ref.render($json);\n";
-		$js .= "  Fabrik.addBlock('" . $ref . "', $ref);\n";
-		$js .= $legend . "\n";
-		$js .= $model->getFilterJs();
+		$js = array();
+		$js[] = "Fabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
+
+		// Need var decalaration for IE8
+		$js[] = "var $ref = new fabrikCalendar('$ref');";
+		$js[] = " $ref.render($json);";
+		$js[] = "  Fabrik.addBlock('" . $ref . "', $ref);";
+		$js[] = $legend;
+		$js[] = $model->getFilterJs();
 
 		$srcs = FabrikHelperHTML::framework();
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 		$srcs[] = 'plugins/fabrik_visualization/calendar/calendar.js';
+		$js = implode("\n", $js);
 		FabrikHelperHTML::script($srcs, $js);
 
 		$viewName = $this->getName();
@@ -223,8 +228,9 @@ class fabrikViewCalendar extends JView
 		$prefix = $config->get('dbprefix');
 		$this->_eventTypeDd = JHTML::_('select.genericlist', array_merge($options, $rows), 'event_type', 'class="inputbox" size="1" ', 'value', 'text', '', 'fabrik_event_type');
 
-		/*tried loading in iframe and as an ajax request directly - however
-		 *in the end decided to set a call back to the main calendar object (via the package manager)
+		/*
+		 * Tried loading in iframe and as an ajax request directly - however
+		 * in the end decided to set a call back to the main calendar object (via the package manager)
 		 * to load up the new add event form
 		 */
 		$ref = $model->getJSRenderContext();

@@ -397,58 +397,75 @@ class FabrikFEModelList extends JModelForm
 	/**
 	 * Set the navigation limit and limitstart
 	 *
+	 * @param   int  $limitstart_override  specific limitstart to use, if both start and length are specified
+	 * @param   int  $limitlength_override  specific limitlength to use, if both start and length are specified
+	 *
 	 * @return  void
 	 */
 
-	public function setLimits()
+	public function setLimits($limitstart_override = null, $limitlength_override = null)
 	{
-		$app = JFactory::getApplication();
-		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$item = $this->getTable();
-		$params = $this->getParams();
-		$id = $this->getId();
-		$this->randomRecords = JRequest::getVar('fabrik_random', $this->randomRecords);
-
-		// $$$ rob dont make the key list.X as the registry doesnt seem to like keys with just '1' a
-		$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.';
-		$limitStart = $this->randomRecords ? $this->getRandomLimitStart() : 0;
-
-		// Deal with the fact that you can have more than one table on a page so limitstart has to be
-		// specfic per table
-
-		// Deal with the fact that you can have more than one table on a page so limitstart has to be  specfic per table
-
-		// If table is rendered as a content plugin dont set the limits in the session
-		if ($app->scope == 'com_content')
+		/*
+		 * $$$ hugh - added the overrides, so things like visualizations can just turn
+		 * limits off, by passing 0's, without having to go round the houses setting
+		 * the request array before calling this method.
+		 */
+		if (!is_null($limitstart_override) && !is_null($limitlength_override))
 		{
-			$limitLength = JRequest::getInt('limit' . $id, $item->rows_per_page);
-
-			if (!$this->randomRecords)
-			{
-				$limitStart = JRequest::getInt('limitstart' . $id, $limitStart);
-			}
+			// might want to set the request vars here?
+			$limitStart = $limitstart_override;
+			$limitLength = $limitlength_override;
 		}
 		else
 		{
-			$rowsPerPage = FabrikWorker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
-			$limitLength = $app->getUserStateFromRequest($context . 'limitlength', 'limit' . $id, $rowsPerPage);
-			if (!$this->randomRecords)
+			$app = JFactory::getApplication();
+			$package = $app->getUserState('com_fabrik.package', 'fabrik');
+			$item = $this->getTable();
+			$params = $this->getParams();
+			$id = $this->getId();
+			$this->randomRecords = JRequest::getVar('fabrik_random', $this->randomRecords);
+
+			// $$$ rob dont make the key list.X as the registry doesnt seem to like keys with just '1' a
+			$context = 'com_' . $package . '.list' . $this->getRenderContext() . '.';
+			$limitStart = $this->randomRecords ? $this->getRandomLimitStart() : 0;
+
+			// Deal with the fact that you can have more than one table on a page so limitstart has to be
+			// specfic per table
+
+			// Deal with the fact that you can have more than one table on a page so limitstart has to be  specfic per table
+
+			// If table is rendered as a content plugin dont set the limits in the session
+			if ($app->scope == 'com_content')
 			{
-				$limitStart = $app->getUserStateFromRequest($context . 'limitstart', 'limitstart' . $id, $limitStart, 'int');
+				$limitLength = JRequest::getInt('limit' . $id, $item->rows_per_page);
+
+				if (!$this->randomRecords)
+				{
+					$limitStart = JRequest::getInt('limitstart' . $id, $limitStart);
+				}
 			}
-		}
-		if ($this->outPutFormat == 'feed')
-		{
-			$limitLength = JRequest::getVar('limit', $params->get('rsslimit', 150));
-			$maxLimit = $params->get('rsslimitmax', 2500);
-			if ($limitLength > $maxLimit)
+			else
 			{
-				$limitLength = $maxLimit;
+				$rowsPerPage = FabrikWorker::getMenuOrRequestVar('rows_per_page', $item->rows_per_page, $this->isMambot);
+				$limitLength = $app->getUserStateFromRequest($context . 'limitlength', 'limit' . $id, $rowsPerPage);
+				if (!$this->randomRecords)
+				{
+					$limitStart = $app->getUserStateFromRequest($context . 'limitstart', 'limitstart' . $id, $limitStart, 'int');
+				}
 			}
-		}
-		if ($limitStart < 0)
-		{
-			$limitStart = 0;
+			if ($this->outPutFormat == 'feed')
+			{
+				$limitLength = JRequest::getVar('limit', $params->get('rsslimit', 150));
+				$maxLimit = $params->get('rsslimitmax', 2500);
+				if ($limitLength > $maxLimit)
+				{
+					$limitLength = $maxLimit;
+				}
+			}
+			if ($limitStart < 0)
+			{
+				$limitStart = 0;
+			}
 		}
 		$this->limitLength = $limitLength;
 		$this->limitStart = $limitStart;
@@ -516,8 +533,10 @@ class FabrikFEModelList extends JModelForm
 		if ($bigSelects)
 		{
 			$fabrikDb = $this->getDb();
-			$fabrikDb->setQuery("SET OPTION SQL_BIG_SELECTS=1");
+			// $$$ hugh - added bumping up GROUP_CONCAT_MAX_LEN here, rather than adding YAFO for it
+			$fabrikDb->setQuery("SET OPTION SQL_BIG_SELECTS=1, GROUP_CONCAT_MAX_LEN=10240");
 			$fabrikDb->query();
+
 		}
 	}
 
@@ -822,11 +841,15 @@ class FabrikFEModelList extends JModelForm
 		{
 			$w = new FabrikWorker;
 			// 3.0 if not group by template spec'd by group but assigned in qs then use that as the group by tmpl
-			$requestGroupBy = JRequest::getCmd('group_by');
+			$requestGroupBy = JRequest::getCmd('group_by', '');
 			if ($requestGroupBy == '')
 			{
 
 				$groupTemplate = $tableParams->get('group_by_template');
+				if ($groupTemplate == '')
+				{
+					$groupTemplate = '{' . $groupBy . '}';
+				}
 			}
 			else
 			{
@@ -850,7 +873,16 @@ class FabrikFEModelList extends JModelForm
 			{
 				if (isset($data[$i]->$groupBy))
 				{
-					$sdata = strip_tags($data[$i]->$groupBy);
+					$sdata = $data[$i]->$groupBy;
+
+					// Test if its just an <a>*</a> tag - if so allow HTML (enables use of icons)
+					$xml = new SimpleXMLElement('<div>' . $sdata . '</div>');
+					$children = $xml->children();
+					if (!($xml->count() === 1 && $children[0]->getName() == 'a'))
+					{
+						$sdata = strip_tags($sdata);
+					}
+
 					if (!in_array($sdata, $aGroupTitles))
 					{
 						$aGroupTitles[] = $sdata;
@@ -1222,7 +1254,7 @@ class FabrikFEModelList extends JModelForm
 			$query->select('*')->from('#__menu');
 			foreach ($joinsToThisKey as $element)
 			{
-				$linkWhere[] = "link LIKE 'index.php?option=com_' . $package . '&view=list&listid=" . (int) $element->list_id . "%'";
+				$linkWhere[] = 'link LIKE "index.php?option=com_' . $package . '&view=list&listid=' . (int) $element->list_id . '%"';
 			}
 			$where = 'type = "component" AND (' . implode(' OR ', $linkWhere) . ')';
 			$query->where($where);
@@ -2088,7 +2120,10 @@ class FabrikFEModelList extends JModelForm
 			{
 				$orderbys = json_decode($table->order_by, true);
 			}
-
+			// $$$ not sure why, but sometimes $orderbys is NULL at this point.
+			if (!isset($orderbys)) {
+				$orderbys = array();
+			}
 			// Covert ids to names (were stored as names but then stored as ids)
 			foreach ($orderbys as &$orderby)
 			{
@@ -2724,10 +2759,12 @@ class FabrikFEModelList extends JModelForm
 		$db = FabrikWorker::getDbo();
 
 		// If the group by element isnt in the fields (IE its not published) add it (otherwise group by wont work)
-		$longGroupBy = $db->quoteName(FabrikString::safeColNameToArrayKey($table->group_by));
+		//$longGroupBy = $db->quoteName(FabrikString::safeColNameToArrayKey($table->group_by));
+		$longGroupBy = $db->quoteName($this->getGroupBy());
+
 		if (!in_array($longGroupBy, $searchAllFields) && trim($table->group_by) != '')
 		{
-			$this->searchAllAsFields[] = FabrikString::safeColName($table->group_by) . ' AS ' . $longGroupBy;
+			$this->searchAllAsFields[] = FabrikString::safeColName($this->getGroupBy()) . ' AS ' . $longGroupBy;
 			$searchAllFields[] = $longGroupBy;
 		}
 
@@ -2770,15 +2807,18 @@ class FabrikFEModelList extends JModelForm
 		foreach ($gkeys as $x)
 		{
 			$groupModel = $groups[$x];
-			$elementModels = $mode === 'list' ? $groupModel->getListQueryElements() : $groupModel->getPublishedElements();
-			foreach ($elementModels as $elementModel)
+			if ($groupModel->canView() !== false)
 			{
-				$method = 'getAsField_' . $this->outPutFormat;
-				if (!method_exists($elementModel, $method))
+				$elementModels = $mode === 'list' ? $groupModel->getListQueryElements() : $groupModel->getPublishedElements();
+				foreach ($elementModels as $elementModel)
 				{
-					$method = 'getAsField_html';
+					$method = 'getAsField_' . $this->outPutFormat;
+					if (!method_exists($elementModel, $method))
+					{
+						$method = 'getAsField_html';
+					}
+					$elementModel->$method($this->asfields, $this->fields);
 				}
-				$elementModel->$method($this->asfields, $this->fields);
 			}
 		}
 		/*temporaraily add in the db key so that the edit links work, must remove it before final return
@@ -3417,7 +3457,9 @@ class FabrikFEModelList extends JModelForm
 					* our connection details, or vice versa, which is not uncommon for 'locahost' setups,
 					* so at least I'll know what the problem is when they post in the forums!
 					*/
-					JError::raiseError(500, JText::_('COM_FABRIK_ERR_JOIN_TO_OTHER_DB'));
+
+					// $$$rob - Unfortunaly the user element relies on canUse returning false, when used in a non-default connection so we can't raise an error so commenting out
+					//JError::raiseError(500, JText::_('COM_FABRIK_ERR_JOIN_TO_OTHER_DB'));
 					$join->canUse = false;
 				}
 			}
@@ -5417,6 +5459,11 @@ class FabrikFEModelList extends JModelForm
 			$groupHeadingKey = $w->parseMessageForPlaceHolder($groupModel->getGroup()->label, array(), false);
 			$groupHeadings[$groupHeadingKey] = 0;
 			$elementModels = $groupModel->getPublishedListElements();
+
+			if ($groupModel->canView() === false)
+			{
+				continue;
+			}
 			foreach ($elementModels as $key => $elementModel)
 			{
 				$element = $elementModel->getElement();
@@ -7821,13 +7868,15 @@ class FabrikFEModelList extends JModelForm
 
 	public function findRow($key, $val, $format = false)
 	{
-		$usekey = JRequest::getVar('usekey');
-		$usekey_comparison = JRequest::getVar('usekey_comparison');
-		JRequest::setVar('usekey', $key);
-		JRequest::setVar('usekey_comparison', 'like');
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$usekey = $input->get('usekey');
+		$usekey_comparison = $input->get('usekey_comparison');
+		$input->set('usekey', $key);
+		$input->set('usekey_comparison', 'like');
 		$row = $this->getRow($val, $format);
-		JRequest::setVar('usekey', $usekey);
-		JRequest::setVar('usekey_comparison', $usekey_comparison);
+		$input->set('usekey', $usekey);
+		$input->set('usekey_comparison', $usekey_comparison);
 		return $row;
 	}
 

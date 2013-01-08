@@ -61,13 +61,19 @@
 		
 		<fieldset name="details2" >
 		
-		<field name="intro"
-			type="editor"
-			filter="FabrikAdminHelper::filterText"
-			rows="6"
-			cols="20"
-			label="COM_FABRIK_FIELD_GROUP_INTRO_LABEL"
-			description="COM_FABRIK_FIELD_GROUP_INTRO_DESC" />
+			<field name="access" 
+				type="accesslevel"
+				default="1"
+				label="COM_FABRIK_FIELD_GROUP_ACCESS_LABEL" 
+				description="COM_FABRIK_FIELD_GROUP_ACCESS_DESC" />
+				
+			<field name="intro"
+				type="editor"
+				filter="FabrikAdminHelper::filterText"
+				rows="6"
+				cols="20"
+				label="COM_FABRIK_FIELD_GROUP_INTRO_LABEL"
+				description="COM_FABRIK_FIELD_GROUP_INTRO_DESC" />
 			
 		</fieldset>
 	
@@ -95,6 +101,12 @@
 				type="text"
 				label="COM_FABRIK_REPEAT_GROUP_MAX_LABEL"
 				description="COM_FABRIK_REPEAT_GROUP_MAX_DESC"
+				size="2" />
+			
+			<field name="repeat_min"
+				type="text"
+				label="COM_FABRIK_REPEAT_GROUP_MIN_LABEL"
+				description="COM_FABRIK_REPEAT_GROUP_MIN_DESC"
 				size="2" />
 			
 			<field name="repeat_add_access" 
@@ -147,7 +159,7 @@
 				description="COM_FABRIK_COLUMNS_DESC" />
 		
 			<field name="group_column_widths" 
-				type="text" default="44%,44%" 
+				type="text" default="" 
 				label="COM_FABRIK_FIELD_COLUMN_WIDTHS_LABEL" 
 				description="COM_FABRIK_FIELD_COLUMN_WIDTHS_DESC" />
 			

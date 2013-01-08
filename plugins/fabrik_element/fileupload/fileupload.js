@@ -35,7 +35,11 @@ var FbFileUpload = new Class({
 				// hack to reposition the hidden input field over the 'ad' button
 				var c = document.id(this.options.element + '_container');
 				var diff = document.id(this.options.element + '_browseButton').getPosition().y - c.getPosition().y;
-				c.getParent('.fabrikElement').getElement('input[type=file]').getParent().setStyle('top', diff);
+				// $$$ hugh - working on some IE issues
+				var file_element = c.getParent('.fabrikElement').getElement('input[type=file]');
+				if (file_element) {
+					c.getParent('.fabrikElement').getElement('input[type=file]').getParent().setStyle('top', diff);
+				}
 			}
 		}
 		
@@ -71,8 +75,14 @@ var FbFileUpload = new Class({
 					if (confirm(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE'))) {
 						this.makeDeletedImageField(this.groupid, b.get('data-file')).inject(this.getContainer(), 'inside');
 					}
+					/*
 					b.getNext().destroy();
 					b.destroy();
+					*/
+					var delete_span = document.id(this.element.id + '_delete_span');
+					if (delete_span) {
+						delete_span.destroy();
+					}
 				}
 			}.bind(this));
 		}
@@ -166,8 +176,8 @@ var FbFileUpload = new Class({
 			url: 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=fileupload&method=ajax_upload&element_id=' + this.options.elid,
 			max_file_size: this.options.max_file_size + 'kb',
 			unique_names: false,
-			flash_swf_url: '/plugins/element/fileupload/plupload/js/plupload.flash.swf',
-			silverlight_xap_url: '/plugins/element/fileupload/plupload/js/plupload.silverlight.xap',
+			flash_swf_url: this.options.ajax_flash_path,
+			silverlight_xap_url: this.options.ajax_silverlight_path,
 			chunk_size: this.options.ajax_chunk_size + 'kb',
 			multipart: true
 		};

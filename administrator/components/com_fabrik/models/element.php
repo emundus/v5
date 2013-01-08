@@ -260,7 +260,16 @@ class FabrikModelElement extends JModelAdmin
 	{
 		$item = $this->getItem();
 		$plugins = FArrayHelper::getNestedValue($item->params, 'validations.plugin', array());
-		return $plugins;
+		$published = FArrayHelper::getNestedValue($item->params, 'validations.plugin_published', array());
+		$return = array();
+		for ($i = 0; $i < count($plugins); $i ++)
+		{
+			$o = new stdClass;
+			$o->plugin = $plugins[$i];
+			$o->published = JArrayHelper::getValue($published, $i, 1);
+			$return[] = $o;
+		}
+		return $return;
 	}
 
 	/**
@@ -375,10 +384,7 @@ class FabrikModelElement extends JModelAdmin
 			return false;
 		}
 		$db = FabrikWorker::getDbo(true);
-		if (FabrikWorker::isReserved($data['name']))
-		{
-			$this->setError(JText::_('COM_FABRIK_RESEVED_NAME_USED'));
-		}
+
 		$elementModel = $this->getElementPluginModel($data);
 		$nameChanged = $data['name'] !== $elementModel->getElement()->name;
 		$elementModel->getElement()->bind($data);
@@ -393,12 +399,20 @@ class FabrikModelElement extends JModelAdmin
 			{
 				$this->setError(JText::_('COM_FABRIK_ERR_CANT_ADD_FIELDS'));
 			}
+			if (FabrikWorker::isReserved($data['name']))
+			{
+				$this->setError(JText::_('COM_FABRIK_RESEVED_NAME_USED'));
+			}
 		}
 		else
 		{
 			if ($listModel->canAlterFields() === false && $nameChanged && $listModel->noTable() === false)
 			{
 				$this->setError(JText::_('COM_FABRIK_ERR_CANT_ALTER_EXISTING_FIELDS'));
+			}
+			if ($nameChanged && FabrikWorker::isReserved($data['name'], false))
+			{
+				$this->setError(JText::_('COM_FABRIK_RESEVED_NAME_USED'));
 			}
 		}
 		$listModel = $elementModel->getListModel();
@@ -920,6 +934,7 @@ class FabrikModelElement extends JModelAdmin
 				$params->js_e_trigger = $post['js_e_trigger'][$c];
 				$params->js_e_condition = $post['js_e_condition'][$c];
 				$params->js_e_value = $post['js_e_value'][$c];
+				$params->js_published = $post['jform']['js_publised'][$c];
 				$params = json_encode($params);
 				if ($jsAction != '')
 				{

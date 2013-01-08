@@ -478,15 +478,18 @@ class FabrikViewFormBase extends JView
 		// For editing groups with joined data and an empty joined record (ie no joined records)
 		$hidden = array();
 		$maxRepeat = array();
+		$minRepeat = array();
 		$showMaxRepeats = array();
 		foreach ($this->groups as $g)
 		{
 			$hidden[$g->id] = $g->startHidden;
 			$maxRepeat[$g->id] = $g->maxRepeat;
+			$minRepeat[$g->id] = $g->minRepeat;
 			$showMaxRepeats[$g->id] = $g->showMaxRepeats;
 		}
 		$opts->hiddenGroup = $hidden;
 		$opts->maxRepeat = $maxRepeat;
+		$opts->minRepeat = $minRepeat;
 		$opts->showMaxRepeats = $showMaxRepeats;
 
 		// $$$ rob 26/04/2011 joomfish translations of password validation error messages
@@ -521,7 +524,7 @@ class FabrikViewFormBase extends JView
 			JText::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
 			JText::script('COM_FABRIK_VALIDATION_ERROR');
 			JText::script('COM_FABRIK_FORM_SAVED');
-			Jtext::script('COM_FABRIK_CONFIRM_DELETE');
+			Jtext::script('COM_FABRIK_CONFIRM_DELETE_1');
 		}
 
 		// $$$ rob dont declare as var $bkey, but rather assign to window, as if loaded via ajax window the function is wrapped
@@ -541,10 +544,14 @@ class FabrikViewFormBase extends JView
 		$gs = array();
 		foreach ($groups as $groupModel)
 		{
-			$showGroup = $groupModel->getParams()->get('repeat_group_show_first');
+			/* $showGroup = $groupModel->getParams()->get('repeat_group_show_first');
 			if ($showGroup == -1 || ($showGroup == 2 && $model->isEditable()))
 			{
 				// $$$ rob unpublished group so dont include the element js
+				continue;
+			} */
+			if (!$groupModel->canView())
+			{
 				continue;
 			}
 			$aObjs = array();
@@ -718,8 +725,9 @@ class FabrikViewFormBase extends JView
 			? '<input type="' . $applyButtonType . '" class="btn button" name="apply" value="' . $params->get('apply_button_label') . '" />' : '';
 		$form->deleteButton = $params->get('delete_button', 0) && $canDelete && $this->editable && $this_rowid != 0
 			? '<input type="submit" value="' . $params->get('delete_button_label', 'Delete') . '" class="btn button" name="delete" />' : '';
+		$goBack = $model->isAjax() ? '' : FabrikWorker::goBackAction();
 		$form->gobackButton = $params->get('goback_button', 0) == "1"
-			? '<input type="button" class="btn button" name="Goback" ' . FabrikWorker::goBackAction() . ' value="' . $params->get('goback_button_label')
+			? '<input type="button" class="btn button" name="Goback" ' . $goBack . ' value="' . $params->get('goback_button_label')
 				. '" />' : '';
 		if ($model->isEditable() && $params->get('submit_button', 1))
 		{
