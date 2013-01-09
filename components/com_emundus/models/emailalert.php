@@ -50,13 +50,14 @@ class EmundusModelEmailalert extends JModel{
 		$remind_mail = $this->_eMConfig->get('reminder_mail_id');
 		
 		//specific reminder email
-		$reminder_date = $this->_eMConfig->get('reminder_element_date_id');
-		$end_candidature = $this->getDate($reminder_date);
-		$remind_days = $this->_eMConfig->get('remind_days');
-		$reminder_attachment = $this->_eMConfig->get('reminder_attanchment_id');
-		$remind_report_mail = $this->_eMConfig->get('report_remind_mail_id');
-		$reminder_profile = $this->_eMConfig->get('reminder_profile_id');
-		
+		if(isset($reminder_date) && !empty($reminder_date)) {
+			$reminder_date = $this->_eMConfig->get('reminder_element_date_id');
+			$end_candidature = $this->getDate($reminder_date);
+			$remind_days = $this->_eMConfig->get('remind_days');
+			$reminder_attachment = $this->_eMConfig->get('reminder_attanchment_id');
+			$remind_report_mail = $this->_eMConfig->get('report_remind_mail_id');
+			$reminder_profile = $this->_eMConfig->get('reminder_profile_id');
+		}
 		
 		//liste d'envoi -- Rappel periodique ou rappel plus frequent avant fin de candidature
 		$query = 'SELECT u.id, u.name, u.email, ee.date_time, ee.email_id, ee.periode, esp.candidature_end, ed.validated, ese.subject, ed.time_date
