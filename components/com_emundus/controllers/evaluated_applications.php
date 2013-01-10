@@ -15,15 +15,6 @@ defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
  */
 class EmundusControllerEvaluated_applications extends JController
 {
-
-	function ACR($allowed){
-		$user =& JFactory::getUser();
-		if (!in_array($user->usertype, $allowed)) {
-			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
-			return false;
-		}
-		return true;
-	}
 	
 	function clear() {
 		unset($_SESSION['s_elements']);
@@ -35,8 +26,13 @@ class EmundusControllerEvaluated_applications extends JController
 	}
 	
 	function export_zip() {
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		require_once('libraries/emundus/zip.php');
 		$db	= &JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -56,8 +52,12 @@ class EmundusControllerEvaluated_applications extends JController
 	
 	function delete_eval() {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		
 		$sid = JRequest::getVar('sid', null, 'GET', 'int', 0);
 		$db	= &JFactory::getDBO();

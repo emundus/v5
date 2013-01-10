@@ -30,8 +30,11 @@ class EmundusViewAdmission extends JView
 		$model=new EmundusModelCheck;
 		
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
-		if (!in_array($current_user->usertype, $allowed)) {
+		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die(JText::_('You are not allowed to access to this page...').$current_user->usertype);
 			//return false;
 		}

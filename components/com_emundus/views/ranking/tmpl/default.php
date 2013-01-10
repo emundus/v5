@@ -1,7 +1,7 @@
 <?php 
 defined('_JEXEC') or die('Restricted access'); 
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
-$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$itemid = JRequest::getVar('itemid', null, 'GET', 'none',0);
 $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 $v = JRequest::getVar('view', null, 'GET', 'none',0);
 ?>

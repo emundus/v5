@@ -57,6 +57,7 @@ $db = JFactory::getDBO();
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 
@@ -339,7 +340,7 @@ echo '</li>';
 <div class="emundusraw">
 <?php
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->id) || EmundusHelperAccess::isCoordinator($user->id)) { 
+if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id)) {
 ?>
   <fieldset>
   <legend> 
@@ -390,8 +391,8 @@ function is_check() {
 	else return false;
 }
 
-<?php 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) || !EmundusHelperAccess::isCoordinator($user->get('id')) || !EmundusHelperAccess::isPartner($user->get('id')) ) { 
+<?php
+if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) ) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

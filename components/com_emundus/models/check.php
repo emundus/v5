@@ -26,6 +26,7 @@ class EmundusModelCheck extends JModel
 	 *
 	 * @since 1.5
 	 */
+	 
 	function __construct()
 	{
 		parent::__construct();
@@ -148,10 +149,11 @@ class EmundusModelCheck extends JModel
 		if(!empty($profile)) 
 			$query .= ' AND eu.user_id IN ('.implode(',',$this->getApplicantsByProfile($profile)).')';
 		
-		$no_filter = array("Super Administrator", "Administrator");
-		if (!in_array($user->usertype, $no_filter)) 
-			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($user->id)).')) ';
-			
+		//$no_filter = array("Super Administrator", "Administrator");
+		if (!EmundusHelperAccess::isAdministrator($user->id)){
+			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0;
+			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';
+			}
 			$and = true;
 			if(!empty($search)) {
 				$i = 0;

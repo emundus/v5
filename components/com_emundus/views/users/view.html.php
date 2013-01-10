@@ -84,16 +84,6 @@ class EmundusViewUsers extends JView
 		$lists['order']     = $state->get( 'filter_order' );
 		$this->assignRef( 'lists', $lists );
 		
-		
-		
-		
-		
-		
-		
-		
-		
-        
-
 		parent::display($tpl);
     }
 }

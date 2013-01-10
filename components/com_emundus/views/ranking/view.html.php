@@ -56,8 +56,8 @@ class EmundusViewRanking extends JView
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 		
-		$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
-		$this->assignRef( 'isallowed', $isallowed );
+		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
+		//$this->assignRef( 'isallowed', $isallowed );
 		
 		$tables 		= array(41);
 		$filts_details	= array('profile'			=> '',
@@ -118,7 +118,7 @@ class EmundusViewRanking extends JView
 		unset($options);
 		
 		//Email
-		if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id')) ||  EmundusHelperAccess::isEvaluator($user->get('id')) ) { 
+		if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id) ||  EmundusHelperAccess::isEvaluator($user->id) ) { 
 			if($this->_user->profile!=16){
 				$options = array('applicants');
 				$email =& EmundusHelperEmails::createEmailBlock($options);

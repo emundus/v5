@@ -84,7 +84,6 @@ class EmundusViewCheck extends JView
 		$statut = EmundusHelperList::createApplicationStatutblock($options);
         $this->assignRef('statut', $statut);
 		unset($options);
-
 		parent::display($tpl);
     }
 }

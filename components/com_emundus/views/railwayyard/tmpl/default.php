@@ -286,7 +286,7 @@ function check_all() {
 }
 
 <?php 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) { 
+if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

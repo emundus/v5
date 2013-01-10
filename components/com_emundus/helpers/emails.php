@@ -110,8 +110,12 @@ class EmundusHelperEmails{
 	
 	function sendDefaultEmail(){
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($current_user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$mainframe =& JFactory::getApplication();
 		$db =& JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
@@ -249,8 +253,13 @@ class EmundusHelperEmails{
 	}
 	
 	function sendCustomEmail(){
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$mainframe =& JFactory::getApplication();
 		
 		$db =& JFactory::getDBO();
@@ -374,8 +383,13 @@ class EmundusHelperEmails{
 	}
 	
 	function sendApplicantEmail() {
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		
 		$mainframe =& JFactory::getApplication();
 

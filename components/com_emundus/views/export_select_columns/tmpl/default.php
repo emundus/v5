@@ -129,7 +129,7 @@ function check_all(box, obj, level) {
 }
 
 <?php 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) { 
+if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
 	function hidden_all() {
 		document.getElementById('checkall').style.visibility='hidden';

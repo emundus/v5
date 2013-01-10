@@ -58,9 +58,9 @@ class EmundusViewEvaluation extends JView
 		$multi_eval = $eMConfig->get('multi_eval', '0');
 		$this->assignRef( 'multi_eval', $multi_eval );
 		
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
-		$this->assignRef( 'isallowed', $isallowed );
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
+		//$this->assignRef( 'isallowed', $isallowed );
 
 		$users=& $this->get('Users');
 		$this->assignRef( 'users', $users );
@@ -76,8 +76,10 @@ class EmundusViewEvaluation extends JView
 		
 		$profiles_label = $this->get('Profiles');
 		$this->assignRef( 'profiles_label', $profiles_label );
-
-		$state			= $isallowed  ? '' : NULL;
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$state			= EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)  ? '' : NULL;
 		$filts_details	= array('profile'			=> $state,
 								'evaluator'			=> $state,
 								'evaluator_group'	=> $state,
@@ -116,7 +118,10 @@ class EmundusViewEvaluation extends JView
 		$eval_cols['evaluator'] = array('name' =>'evaluator', 'label'=>JText::_('EVALUATOR')); 
 		
 		$rank_cols =& $this->get('RankingColumns');
-		if($isallowed)
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			$rank_cols[] = array('name' =>'assoc_evaluators', 'label'=>JText::_('ASSOCIATED_EVAL')); 
 			
 		$header_values = EmundusHelperList::aggregation($appl_cols, $filter_cols, $eval_cols, $rank_cols);
@@ -165,11 +170,17 @@ class EmundusViewEvaluation extends JView
 		$this->assignRef('evalUsers', $evalUsers);
 		
 		$options = array('delete');
-		if ($isallowed)
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access))
 			$evaluator =& EmundusHelperList::createEvaluatorBlock($users, $options);
 		$this->assignRef('evaluator', $evaluator);
 		unset($options);
-		if($isallowed) if($this->_user->profile!=16) $affectEval =& EmundusHelperList::affectEvaluators();
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) if($this->_user->profile!=16) $affectEval =& EmundusHelperList::affectEvaluators();
 		$this->assignRef('affectEval', $affectEval);
 
 		//Comments
@@ -184,7 +195,10 @@ class EmundusViewEvaluation extends JView
 		unset($options);
 		
 		//Emails
-		if($isallowed){
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)){
 			if($this->_user->profile!=16){
 				$options = array('default', 'custom');
 				$email =& EmundusHelperEmails::createEmailBlock($options);

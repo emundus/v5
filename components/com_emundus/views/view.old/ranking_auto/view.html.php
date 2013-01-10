@@ -28,8 +28,11 @@ class EmundusViewRanking_auto extends JView
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
 		
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
-		if (!in_array($current_user->usertype, $allowed)) die("You are not allowed to access to this page.");
+		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) die("You are not allowed to access to this page.");
 		
 		//require_once(JPATH_COMPONENT.DS.'models'.DS.'check.php');
 		//$model=new EmundusModelCheck;

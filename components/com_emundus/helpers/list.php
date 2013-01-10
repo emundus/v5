@@ -355,7 +355,7 @@ class EmundusHelperList{
 			$delete = '<input type="image" src="'.$this->baseurl.'/images/emundus/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 			
 			//$allowed = array("Super Administrator", "Administrator", "Editor");
-			if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))|| $this->eval_access > 1) {
+			if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && $this->eval_access > 1) {
 				$canview = true;
 				$canedit = true;
 			} elseif ($this->eval_access > 0) {
@@ -365,7 +365,7 @@ class EmundusHelperList{
 				$canview = false;
 				$canedit = false;
 			}
-			if(EmundusHelperAccess::isAdministrator($user->get('id')) OR EmundusHelperAccess::isCoordinator($user->get('id'))) { 
+			if(EmundusHelperAccess::isAdministrator($user->id) && EmundusHelperAccess::isCoordinator($user->id)) { 
 				$candelete = true;
 			}else{
 				$candelete = false;

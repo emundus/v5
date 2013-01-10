@@ -28,8 +28,13 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport{
 	
 	function export_zip(){
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$db	= &JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);

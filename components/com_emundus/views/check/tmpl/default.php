@@ -48,7 +48,7 @@ $db = JFactory::getDBO();
 
 <!-- <div class="componentheading"><?php echo JText::_( 'ADMINISTRATIVE_VALIDATION' ); ?></div> -->
 
-<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
+<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component&Itemid='.$itemid; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" />
 <input type="hidden" name="option" value="com_emundus"/>
 <input type="hidden" name="view" value="check"/>
@@ -70,12 +70,16 @@ $db = JFactory::getDBO();
     </td>
     <td>
       <select name="profile" onChange="javascript:submit()">
-        <option value=""> <?php echo JText::_('ALL'); ?> </option><?php 
-            foreach($this->applicantsProfiles as $applicantsProfiles) { 
+        <option value=""> <?php echo JText::_('ALL'); ?> </option><?php
+		$profil_list=$this->applicantsProfiles;
+		if(count($profil_list)>0){
+            foreach($profil_list as $applicantsProfiles) { 
                 echo '<option value="'.$applicantsProfiles->id.'"';
                 if($current_p==$applicantsProfiles->id) echo ' selected';
                 echo '>'.$applicantsProfiles->label.'</option>'; 
-            } ?> 
+            } 
+		}
+		?> 
         </select>
     </td>
     <td>
@@ -97,6 +101,7 @@ $db = JFactory::getDBO();
   <th align="left">
   	<?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>'; ?>
     <input type="hidden" value="0" id="theValue" />
+
   	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
   </th>
  </tr>
@@ -222,11 +227,11 @@ foreach ($this->users as $user) { ?>
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a>';
 			echo '</span>';
 			echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
+			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
 			echo '</span>';
 			if($current_user->profile!=16) {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			}
 			echo '</span>#'.$user->id.'</div>';
 		?>
@@ -276,7 +281,7 @@ foreach ($this->users as $user) { ?>
 	<ul>';
 		foreach ( $tableuser as $row ) {
 echo '<li>';
-echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user->id.'&usekey=user" target="_blank">'.$row->label.'</a>';
+echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user->id.'&usekey=user&Itemid='.$itemid.'" target="_blank">'.$row->label.'</a>';
 echo '</li>';
 		}
 		echo '</ul>
@@ -321,7 +326,7 @@ echo '</li>';
 		<td><?php echo strftime(JText::_('DATE_FORMAT_LC2'), strtotime($user->time_date)); ?></td>
 		<td align="center">
         <?php
-		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
 			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/components/com_emundus/style/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>"  width='30' height='30' onclick="document.pressed=this.name" >
         <?php echo '</span>'; 
@@ -343,7 +348,7 @@ echo '</li>';
 ?>
 <div class="emundusraw">
 <?php
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id)) {
 	//batch block
 	echo $this->batch;
 ?>
@@ -395,9 +400,8 @@ function is_check() {
 	if(cpt > 0) return true;
 	else return false;
 }
-
-<?php 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
+<?php
+if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) ) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';
@@ -442,14 +446,14 @@ function OnSubmitForm() {
 	switch(button_name[0]) {
 		
 		case 'export_zip': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=export_zip";
+			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=export_zip&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'export_to_xls': 
 			document.adminForm.action ="index.php?option=com_emundus&task=transfert_view&v=<?php echo $v; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'set_status':
 			if(is_check()){ 
-				if (confirm('<?php echo JText::_( 'SET_STATUT_CONFIRM' ); ?>')){ document.adminForm.action ="index.php?option=com_emundus&controller=check&task=administrative_check&limitstart=<?php echo $ls; ?>";
+				if (confirm('<?php echo JText::_( 'SET_STATUT_CONFIRM' ); ?>')){ document.adminForm.action ="index.php?option=com_emundus&controller=check&task=administrative_check&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 				}else{ return false;}
 			}else{
 				alert("<?php echo JText::_('NO_APPLICANT_SELECTED'); ?>");
@@ -457,10 +461,10 @@ function OnSubmitForm() {
 			}	
 		break;
 		case 'validate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=validate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=validate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'unvalidate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=unvalidate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=unvalidate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'push_false': 
 			if(is_check()){
@@ -473,13 +477,13 @@ function OnSubmitForm() {
 			}
 		break;
 		case 'custom_email': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=customEmail";
+			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=customEmail&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'search_button': 
-			document.adminForm.action ="index.php?option=com_emundus&view=check";
+			document.adminForm.action ="index.php?option=com_emundus&view=check&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'clear_button': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=clear";
+			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=clear&Itemid=<?php echo $itemid; ?>";
 		break;
 		default: return false;
 	}

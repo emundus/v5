@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Users Model for eMundus Component
  * 
@@ -66,7 +66,7 @@ class EmundusModelIncomplete extends JModel
         /* Error handling is never a bad thing*/
         if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
-        }
+		}
  
         return $orderby;
 	}
@@ -146,10 +146,11 @@ class EmundusModelIncomplete extends JModel
 			
 		$query .= ' AND eu.user_id NOT IN (SELECT ed.user FROM #__emundus_declaration AS ed)';
 		
-		$no_filter = array("Super Administrator", "Administrator");
-		if (!in_array($user->usertype, $no_filter)) 
-			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($user->id)).')) ';
-			
+		//$no_filter = array("Super Administrator", "Administrator");
+		if (!EmundusHelperAccess::isAdministrator($user->id)){
+			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0; 
+			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';
+		}
 		if(!empty($search)) {
 			$i = 0;
 			foreach ($search as $s) {
@@ -186,10 +187,9 @@ class EmundusModelIncomplete extends JModel
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			$query.= 'eu.schoolyear="'.mysql_real_escape_string(implode(",", $schoolyears)).'"';
+			//$user_school=count($schoolyears)>0?implode(',',$schoolyears):0; 
+			$query.= 'eu.schoolyear="'.mysql_real_escape_string($schoolyears/* $user_school */).'"';
 		}	
-		//echo str_replace('#_', 'jos',$query).'<br /><br />';
-
 		return $query;
 	} 
 	
@@ -198,8 +198,8 @@ class EmundusModelIncomplete extends JModel
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-		//echo str_replace('#_', 'jos',$query).'<br /><br />';
-		return $this->_getList( $query ,$this->getState('limitstart'), $this->getState('limit'));
+		// echo str_replace('#_', 'jos',$query).'<br /><br />';
+		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
 	} 
 
 

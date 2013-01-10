@@ -84,7 +84,7 @@ $db = JFactory::getDBO();
  </tr> 
 <?php
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 <tr>
    <th align="left"><?php echo JText::_('ASSESSOR_GROUP_FILTER'); ?></th>
@@ -98,7 +98,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAcces
   
 <?php
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
   <td>
   <select name="groups" onChange="javascript:submit()">
@@ -286,7 +286,7 @@ if($current_user->profile!=16){
             <?php if($current_user->profile!="16"){ ?> <th><?php echo JText::_('EVALUATION'); ?></th> <?php } ?>
 <?php
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
             <th><?php echo JText::_('ASSESSOR'); ?></th>
 <?php } unset($allowed); ?>
@@ -342,7 +342,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAcces
 						</td>	
                 <?php }
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 				?>
 						<td>
 							<?php 
@@ -402,7 +402,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAcces
 <?php
 unset($allowed);
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 <?php if($current_user->profile!="16"){ ?>
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_ASSESSORS'); ?></legend>
@@ -458,7 +458,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAcces
 <?php if ($current_user->profile!="16") { ?>
 <div class="emundusraw">
 <?php
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
   <fieldset>
   <legend> 
@@ -535,7 +535,7 @@ function check_all() {
 //unset($allowed);
 //$allowed = array("Super Administrator", "Administrator", "Editor");
 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) {
+if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

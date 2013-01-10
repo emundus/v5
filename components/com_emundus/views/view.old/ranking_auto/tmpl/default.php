@@ -276,7 +276,7 @@ if($tmpl == 'component') {
                 		<td><?php 
 							echo '<div class="emundusraw">';
 							//$allowed = array("Super Administrator", "Administrator", "Editor");
-							if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+							if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 								if (isset($evalu['final_grade'])) {
 									$fg_txt = preg_replace($p_grade, $grade, $evalu['final_grade']);
 									echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=39&random=0&rowid='.$evalu['row_id'].'&usekey=id&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'; 
@@ -316,7 +316,7 @@ if($tmpl == 'component') {
 <?php
 //unset($allowed);
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_ASSESSORS'); ?></legend>
@@ -368,7 +368,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAcces
 <?php } ?>
 <div class="emundusraw">
 <?php
-if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
+if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
   <fieldset>
   <legend> 
@@ -445,7 +445,7 @@ function check_all() {
 //unset($allowed);
 //$allowed = array("Super Administrator", "Administrator", "Editor");
 
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) {
+if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

@@ -67,7 +67,7 @@ class EmundusModelEmailalert extends JModel{
 					LEFT JOIN #__emundus_setup_emails ese ON ese.id = ee.email_id
 					JOIN #__emundus_users eu ON u.id = eu.user_id
 					JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
-					WHERE  ed.validated IS NULL AND u.usertype ="registered" AND eu.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'") 
+					WHERE  ed.validated IS NULL AND u.usertype ="Registered" AND eu.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'") 
 					AND ( 
 						 (ed.time_date IS NULL AND (DATEDIFF( esp.candidature_end , now()) > 0) AND (DATEDIFF( now() , ee.date_time ) >= ee.periode) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')
 						 OR ((DATEDIFF( esp.candidature_end , now()) IN ('.$p_remind.')) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')';

@@ -21,7 +21,22 @@ jimport('joomla.application.component.controller');
  * @subpackage Components
  */
 class EmundusControllerCheck extends JController {
-
+	var $_user = null;
+	var $_db = null;
+	
+	function __construct($config = array()){
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		
+		$this->_user = JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		
+		parent::__construct($config);
+	}
 	function display() {
 		// Set a default view if none exists
 		if ( ! JRequest::getCmd( 'view' ) ) {
@@ -48,17 +63,6 @@ class EmundusControllerCheck extends JController {
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 	}
 	
-	function ACR(){
-		$user=& JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
-			return false;
-		}
-		return true;
-	}
-	
 	function getCampaign()
 	{
 		$db =& JFactory::getDBO();
@@ -71,7 +75,12 @@ class EmundusControllerCheck extends JController {
 
 	function unvalidate() {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -94,7 +103,12 @@ class EmundusControllerCheck extends JController {
 	
 	function validate() {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");		
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', null, 0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -116,7 +130,12 @@ class EmundusControllerCheck extends JController {
 	
 	function administrative_check($reqids = null) {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$validation_list = JRequest::getVar('validation_list', null, 'POST', 'none',0);
@@ -150,8 +169,13 @@ class EmundusControllerCheck extends JController {
 	 * push false to complete application form status
 	 */
 	/*function push_false() {
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR($allowed);
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$validation_list = JRequest::getVar('validation_list', null, 'POST', 'none',0);
@@ -203,7 +227,11 @@ class EmundusControllerCheck extends JController {
 	function push_false() {
 		$user =& JFactory::getUser();
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$comment = JRequest::getVar('comments', null, 'POST');
@@ -232,7 +260,12 @@ class EmundusControllerCheck extends JController {
 	 */
 	function export_complete() {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		require_once('libraries/emundus/excel.php');
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
@@ -241,7 +274,7 @@ class EmundusControllerCheck extends JController {
 		JArrayHelper::toInteger( $cid, 0 );
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=check&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=check&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			exit;
 		} 
 		export_complete($cid);
@@ -252,7 +285,11 @@ class EmundusControllerCheck extends JController {
 	function export_complete_to_xls ($reqids = null) {
 		$user =& JFactory::getUser();
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		$mainframe =& JFactory::getApplication();
 		require_once('libraries/emundus/xls.php');
 		$db	= &JFactory::getDBO();
@@ -282,7 +319,11 @@ class EmundusControllerCheck extends JController {
 	function export_incomplete_to_xls() {
 		$user =& JFactory::getUser();
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		require_once('libraries/emundus/excel.php');
 
 		$db	= &JFactory::getDBO();
@@ -308,7 +349,12 @@ class EmundusControllerCheck extends JController {
 	
 	function export_zip() {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		require_once('libraries/emundus/zip.php');
 		$db	= &JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -329,7 +375,12 @@ class EmundusControllerCheck extends JController {
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
 		//$allowed = array("Super Administrator", "Administrator", "Editor");
-		$this->ACR();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
 		
 		$mainframe =& JFactory::getApplication();
 

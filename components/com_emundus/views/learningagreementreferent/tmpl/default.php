@@ -51,7 +51,7 @@ if (count($search)==0 && isset($s_elements)) {
  <tr>
   <th align="left"><?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span>'; ?></th>
 <?php 
-if(EmundusHelperAccess::isAdministrator($user->get('id'))) { 
+if(EmundusHelperAccess::isAdministrator($user->id)) { 
 ?>
   <th align="left"><?php echo JText::_('TEACHER_USER_FILTER'); ?></th>
 <?php 
@@ -65,7 +65,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id'))) {
 	<td align="left"><input type="text" name="s" size="30" value="<?php echo $current_s; ?>"/></td>
 
 <?php 
-if(EmundusHelperAccess::isAdministrator($user->get('id'))) { 
+if(EmundusHelperAccess::isAdministrator($user->id)) { 
 ?> 
  <td>
   <select name="user" onChange="javascript:submit()">
@@ -268,12 +268,12 @@ innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checkl
 		$db->setQuery( $query );
 		$teacher = $db->loadObjectList('id');
 		
-		$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Administrator", "Administrator");
 		//print_r($teacher);
 		foreach($teacher as $t) {
 			if(!empty($t->evaluator_id) && isset($t->evaluator_id)) {
 				$img = '';
-				if(EmundusHelperAccess::isAdministrator($user->get('id'))) { 
+				if(EmundusHelperAccess::isAdministrator($user->id)) { 
 					$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_COORDINATOR_TEACHER').'::'.JText::_('DELETE_COORDINATOR_TEACHER_TXT').'"><a href="index.php?option=com_emundus&controller=learningagreementreferent&task=delAssessor&aid='.$t->evaluator_id.'&uid='.$t->user_id.'&limitstart='.$ls.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'"><img src="'.JURI::Base().'images/emundus/icones/clear_left_16x16.png" alt="'.JText::_('DELETE_COORDINATOR_TEACHER').'" align="absbottom" /></a></span> ';
 				}
 				echo JFactory::getUser($t->evaluator_id)->name.' '.$img.'<br />';	
@@ -325,8 +325,8 @@ innerHeight}}" href="index.php?option=com_emundus&view=academicTranscript&studen
 ?>
 <div class="emundusraw">
 <?php
-unset($allowed);
-if(EmundusHelperAccess::isAdministrator($user->get('id'))) { 
+//unset($allowed);
+if(EmundusHelperAccess::isAdministrator($user->id)) { 
 ?>
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_TEACHER_OR_LOCAL'); ?></legend>
@@ -391,7 +391,7 @@ if(EmundusHelperAccess::isAdministrator($user->get('id'))) {
 <?php } ?>
 <div class="emundusraw">
 <?php
-if(EmundusHelperAccess::isAdministrator($user->get('id'))) { 
+if(EmundusHelperAccess::isAdministrator($user->id)) { 
 ?>
   <fieldset>
   <legend> 
@@ -451,7 +451,7 @@ function check_all() {
 
 <?php 
 //$allowed = array("Super Administrator", "Administrator", "Editor");
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) { 
+if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

@@ -36,6 +36,7 @@ class EmundusViewProfile extends JView
     {		
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
+		//print_r($access);
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)){
 			die("You are not allowed to access to this page.");
 		}

@@ -29,14 +29,16 @@ class EmundusControllerUsers extends JController {
 			JRequest::setVar('view', $default );
 		}
 		$user =& JFactory::getUser();
-		if ($this->ACR($allowed)) {
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			parent::display();
 		}
     }
 
 	function _blockuser($uid) {
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->get('id'))) {
+		if(!EmundusHelperAccess::isAdministrator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -56,7 +58,7 @@ class EmundusControllerUsers extends JController {
 	
 	function _unblockuser($uid) {
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->get('id'))) {
+		if(!EmundusHelperAccess::isAdministrator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -82,15 +84,6 @@ class EmundusControllerUsers extends JController {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', null, 0);
 		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
-	}
-	
-	function ACR($allowed){
-		$user =& JFactory::getUser();
-		if (!in_array($user->usertype, $allowed)) {
-			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
-			return false;
-		}
-		return true;
 	}
 	
 	function setSchoolyear(){
@@ -145,7 +138,7 @@ class EmundusControllerUsers extends JController {
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$syear = JRequest::getVar('schoolyear', null, 'POST', null, 0);
-		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator and Administrator can access this function.'), 'error');
 			return;
 		}

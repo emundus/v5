@@ -12,7 +12,7 @@ $current_user = & JFactory::getUser();
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 //$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
-if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isEvaluator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) die("You are not allowed to access to this report.");
+if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die("You are not allowed to access to this report.");
 	 
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 

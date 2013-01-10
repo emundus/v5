@@ -43,9 +43,9 @@ class EmundusViewList extends JView
     {
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
-		$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
 		
-		$menu = &JSite::getMenu();
+		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		
@@ -67,8 +67,8 @@ class EmundusViewList extends JView
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 		
-		$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
-		$this->assignRef( 'isallowed', $isallowed );
+		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
+		//$this->assignRef( 'isallowed', $isallowed );
 
 		//Filters
 		
@@ -125,12 +125,18 @@ class EmundusViewList extends JView
 		$this->assignRef( 'users', $users );
 		
 		//Check rights
-		$rights	= $menu_params->get('em_groups');
+		/*$rights	= $menu_params->get('em_groups');
 		$accessibility = false;
 		foreach ($this->_user->groups as $group)
 			if ($rights == $group)
 				$accessibility = true;
-		if ($accessibility === false) die("Can not reach this page : Permission denied");
+		if ($accessibility === false) die("Can not reach this page : Permission denied");*/
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("Can not reach this page : Permission denied");
+		}
 		
 		//Call the state object 
 		if (($state =& $this->get( 'state' )) === false)
@@ -167,8 +173,11 @@ class EmundusViewList extends JView
 		$this->assignRef('export_icones', $export_icones);
 		unset($options);
 		
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
 		//Administrative validation
-		if ($isallowed && in_array('batch', $blocks_list)) $batch = EmundusHelperList::createBatchBlock();
+		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('batch', $blocks_list)) $batch = EmundusHelperList::createBatchBlock();
 		else $batch = '';
 		$this->assignRef('batch', $batch);
 		
@@ -177,7 +186,7 @@ class EmundusViewList extends JView
 		$this->assignRef( 'evaluators', $evaluators );
 		$groups = EmundusHelperFilters::getGroups();
 		$this->assignRef( 'groups', $groups );
-		if($isallowed && in_array('evaluator', $blocks_list)) {
+		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('evaluator', $blocks_list)) {
 			if($this->_user->profile!=16) $affectEval =& EmundusHelperList::affectEvaluators();
 		}
 		else $affectEval = '';
@@ -197,7 +206,7 @@ class EmundusViewList extends JView
 		unset($options);
 		
 		//Email
-		if($isallowed && in_array('email_evaluator', $blocks_list)){
+		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('email_evaluator', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('default', 'custom');
 				$email_evaluator =& EmundusHelperEmails::createEmailBlock($options);
@@ -205,7 +214,7 @@ class EmundusViewList extends JView
 		}
 		else $email_evaluator = '';
 		$this->assignRef('email_evaluator', $email_evaluator);
-		if($isallowed && in_array('email_applicant', $blocks_list)){
+		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('email_applicant', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('applicants','default');
 				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);

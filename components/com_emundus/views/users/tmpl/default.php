@@ -15,7 +15,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Administrator", "Administrator", "Editor");
 if($edit!=1) {
 ?>
 <?php 
@@ -49,7 +49,7 @@ function submitenter(myfield,e) {
 
 <div class="emundusraw">
 <?php
-if ($current_user->get('usertype') == "Administrator" || $current_user->get('usertype') == "Super Administrator") { 
+if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 	if ( isset($this->schoolyear) && $this->schoolyear!='' ) {
 		$url = JURI::getInstance()->toString();
 		echo '
@@ -249,10 +249,10 @@ foreach ($this->users as $user) { ?>
 		<td align="center">
         	<div class="emundusraw"><?php 
         	/* @TODO : gestion des accès à l'édition d'un utilisateur en fonction des niveaux d'accès */
-				if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) { ?>
-                	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
+				//if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) { ?>
+                	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $Itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
                     </a><?php 
-				} ?>
+				// } ?>
         	</div>
         </td>
   	</tr>
@@ -261,12 +261,12 @@ foreach ($this->users as $user) { ?>
         <td height="1975" colspan="8" align="left">
             <div class="emundusraw">
                 <input type="submit" name="delusers" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_SELECTED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
-           <?php if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {?> |        
+           <?php //if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {?> |        
                 <input type="submit" name="delincomplete" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_INCOMPLETE'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" /> 
 				<input type="submit" name="delnonevaluated" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_NON_EVALUATED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
                 <input type="submit" name="delrefused" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_REFUSED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
               
-            <?php } ?>
+            <?php //} ?>
             </div>
         </td>
     </tr>
@@ -274,7 +274,7 @@ foreach ($this->users as $user) { ?>
 </table>
 </fieldset>
 <div class="emundusraw"><?php 
-	if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {
+	//if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {
 	?><fieldset>
 		  <legend> 
 			<span class="editlinktip hasTip" title="<?php echo JText::_('ARCHIVE').'::'.JText::_('ARCHIVE_TIP'); ?>">
@@ -283,7 +283,7 @@ foreach ($this->users as $user) { ?>
 		  </legend>
 		  <input type="submit" name="archive" onclick="document.pressed=this.name" value="<?php echo JText::_( 'ARCHIVE_SELECTED_USERS' );?>" />
 	</fieldset>
-<?php } ?>
+<?php//} ?>
 </div>
 <?php } else { ?>
 <h2><?php echo JText::_('NO_RESULT'); ?></h2>

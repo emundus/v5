@@ -1,9 +1,10 @@
 <?php 
 JHTML::_('behavior.modal'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
-
 defined('_JEXEC') or die('Restricted access'); 
 $user =& JFactory::getUser();
+$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+
 ?>
 <dl id="system-message">
 	<dt class="message">
@@ -18,8 +19,10 @@ $user =& JFactory::getUser();
 	<tr><th><?php echo JText::_('SCHOOLYEAR'); ?></th><td><?php echo $this->profile->schoolyear; ?></td></tr>
 	<tr><th><?php echo JText::_('CANDIDATURE_PERIOD'); ?></th><td><?php echo JText::printf('CANDIDATURE_PERIOD_TEXT',$this->profile->candidature_start,$this->profile->candidature_end); ?></td></tr>
 </table>
-<form action="index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0); ?>" method="POST"/>
+<form action="index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0); ?>&Itemid=<?php echo $Itemid; ?>" method="POST"/>
 <input type="hidden" name="pid" value="<?php echo $this->profile->id; ?>" />
+<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
+<!--<input type="hidden" name="Itemid" value="<?php// echo $Itemid; ?>" />-->
 <table id="attachmentlist">
 	<tr><th colspan="4"><h1><?php echo JText::_('ATTACHMENTS'); ?>  <a href="index.php?option=com_fabrik&view=table&tableid=36&calculations=0&resetfilters=0&Itemid=46&lang=en"><?php echo '['.JText::_('SETUP_ATTACHMENTS').']';?></a></h1></th></tr>
 	<tr height="30px">

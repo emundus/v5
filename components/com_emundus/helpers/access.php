@@ -38,7 +38,7 @@ class EmundusHelperAccess{
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,8);
 	}
 	
-	function isPatner($user_id){
+	function isPartner($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,6);
 	}
 	

@@ -36,7 +36,7 @@ class EmundusModelTrombi extends JModel
 					LEFT JOIN #__emundus_setup_profiles AS s ON s.id = e.profile
 					LEFT JOIN #__emundus_uploads AS f ON f.user_id = u.id AND f.attachment_id = '.EMUNDUS_PHOTO_AID.'
 					LEFT JOIN #__emundus_final_grade AS g ON g.student_id = u.id
-					WHERE u.usertype != "Super Administrator" ';
+					WHERE u.usertype != "Super Users" ';
 		if(!empty($finalgrade) && is_numeric($finalgrade) && $finalgrade>0) $query .= ' AND g.Final_grade = '.mysql_real_escape_string($finalgrade) ;
 		if(!empty($profile) && is_numeric($profile) && $profile>0) $query .= ' AND e.profile = '.mysql_real_escape_string($profile);
 		if(!empty($schoolyear)) $query .= ' AND e.schoolyear = "'.mysql_real_escape_string($schoolyear).'"';
