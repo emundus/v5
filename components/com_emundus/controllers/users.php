@@ -36,7 +36,7 @@ class EmundusControllerUsers extends JController {
 
 	function _blockuser($uid) {
 		$user =& JFactory::getUser();
-		if($user->get('usertype') != 'Super Administrator' && $user->get('usertype') != 'Administrator') {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -56,7 +56,7 @@ class EmundusControllerUsers extends JController {
 	
 	function _unblockuser($uid) {
 		$user =& JFactory::getUser();
-		if($user->get('usertype') != 'Super Administrator' && $user->get('usertype') != 'Administrator') {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -80,7 +80,8 @@ class EmundusControllerUsers extends JController {
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+		$Itemid = JRequest::getVar('Itemid', null, 'POST', null, 0);
+		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 	}
 	
 	function ACR($allowed){
@@ -144,8 +145,7 @@ class EmundusControllerUsers extends JController {
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$syear = JRequest::getVar('schoolyear', null, 'POST', null, 0);
-		$allowed = array("Super Administrator", "Administrator", "Publisher");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator and Administrator can access this function.'), 'error');
 			return;
 		}

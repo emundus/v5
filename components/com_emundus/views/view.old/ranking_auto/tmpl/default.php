@@ -275,8 +275,8 @@ if($tmpl == 'component') {
 				} ?>
                 		<td><?php 
 							echo '<div class="emundusraw">';
-							$allowed = array("Super Administrator", "Administrator", "Editor");
-							if (in_array($current_user->usertype, $allowed)) {
+							//$allowed = array("Super Administrator", "Administrator", "Editor");
+							if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 								if (isset($evalu['final_grade'])) {
 									$fg_txt = preg_replace($p_grade, $grade, $evalu['final_grade']);
 									echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$evalu['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=39&random=0&rowid='.$evalu['row_id'].'&usekey=id&student_id='. $evalu['user_id'].'&tmpl=component&iframe=1" target="_self" class="modal">'; 
@@ -314,9 +314,9 @@ if($tmpl == 'component') {
 ?>
 <div class="emundusraw">
 <?php
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, @$allowed)) {
+//unset($allowed);
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_ASSESSORS'); ?></legend>
@@ -368,7 +368,7 @@ if (in_array($current_user->usertype, @$allowed)) {
 <?php } ?>
 <div class="emundusraw">
 <?php
-if (@in_array($current_user->usertype, @$allowed)) {
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
   <fieldset>
   <legend> 
@@ -442,10 +442,10 @@ function check_all() {
 }
 
 <?php 
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
+//unset($allowed);
+//$allowed = array("Super Administrator", "Administrator", "Editor");
 
-if (!in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

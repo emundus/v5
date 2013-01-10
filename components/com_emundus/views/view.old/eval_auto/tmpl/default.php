@@ -83,8 +83,8 @@ $db = JFactory::getDBO();
   	</td>
  </tr> 
 <?php
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, $allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
 <tr>
    <th align="left"><?php echo JText::_('ASSESSOR_GROUP_FILTER'); ?></th>
@@ -97,8 +97,8 @@ if (in_array($current_user->usertype, $allowed)) {
  <tr>
   
 <?php
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, $allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
   <td>
   <select name="groups" onChange="javascript:submit()">
@@ -285,8 +285,8 @@ if($current_user->profile!=16){
 			}?>
             <?php if($current_user->profile!="16"){ ?> <th><?php echo JText::_('EVALUATION'); ?></th> <?php } ?>
 <?php
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, $allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
             <th><?php echo JText::_('ASSESSOR'); ?></th>
 <?php } unset($allowed); ?>
@@ -341,8 +341,8 @@ if (in_array($current_user->usertype, $allowed)) {
 		?>
 						</td>	
                 <?php }
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, $allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 				?>
 						<td>
 							<?php 
@@ -401,8 +401,8 @@ if (in_array($current_user->usertype, $allowed)) {
 <div class="emundusraw">
 <?php
 unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, @$allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
 <?php if($current_user->profile!="16"){ ?>
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_ASSESSORS'); ?></legend>
@@ -458,7 +458,7 @@ if (in_array($current_user->usertype, @$allowed)) {
 <?php if ($current_user->profile!="16") { ?>
 <div class="emundusraw">
 <?php
-if (@in_array($current_user->usertype, @$allowed)) {
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
   <fieldset>
   <legend> 
@@ -532,10 +532,10 @@ function check_all() {
 }
 
 <?php 
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
+//unset($allowed);
+//$allowed = array("Super Administrator", "Administrator", "Editor");
 
-if (!in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id'))) {
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

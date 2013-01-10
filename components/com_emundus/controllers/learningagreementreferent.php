@@ -277,7 +277,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	function export_all_to_xls ($reqids = null) {
 		$user =& JFactory::getUser();
 		$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator and Administrator can access this function.'), 'error');
 			return;
 		}

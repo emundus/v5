@@ -28,5 +28,26 @@ class EmundusHelperAccess{
 	function isAllowed($usertype,$allowed){
 		return in_array($usertype, $allowed);
 	}
+	
+	function isAllowedAccessLevel($user_id,$current_menu_access){
+		$user_access_level=JAccess::getAuthorisedViewLevels($user_id);
+		return in_array($current_menu_access, $user_access_level);
+	}
+	
+	function isAdministrator($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,8);
+	}
+	
+	function isPatner($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,6);
+	}
+	
+	function isCoordinator($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,7);
+	}
+	
+	function isEvaluator($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,5);
+	}
 }
 ?>

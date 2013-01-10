@@ -354,8 +354,8 @@ class EmundusHelperList{
 			$view = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=details&fabrik='.$form_eval.'&random=0&rowid='.@$evaluation->id.'&usekey=id&student_id='. $user['user_id'].'&tmpl=component" target="_self" name="" class="modal"><img title="'.JText::_( 'VIEW_EVALUATION' ).'" src="'.$this->baseurl.'/images/emundus/icones/zoom_application.png" /></a>';
 			$delete = '<input type="image" src="'.$this->baseurl.'/images/emundus/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 			
-			$allowed = array("Super Administrator", "Administrator", "Editor");
-			if (in_array($this->_user->usertype, $allowed) || $this->eval_access > 1) {
+			//$allowed = array("Super Administrator", "Administrator", "Editor");
+			if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))|| $this->eval_access > 1) {
 				$canview = true;
 				$canedit = true;
 			} elseif ($this->eval_access > 0) {
@@ -365,10 +365,11 @@ class EmundusHelperList{
 				$canview = false;
 				$canedit = false;
 			}
-			if (in_array($this->_user->usertype, $allowed)) 
+			if(EmundusHelperAccess::isAdministrator($user->get('id')) OR EmundusHelperAccess::isCoordinator($user->get('id'))) { 
 				$candelete = true;
-			else
+			}else{
 				$candelete = false;
+			}
 			
 			if(count($evaluation) > 0) {
 					if($isEvalByMe) {

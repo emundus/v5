@@ -51,8 +51,7 @@ class EmundusControllerRailwayyard extends JController {
 	
 	function set_profile(){
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -80,8 +79,7 @@ class EmundusControllerRailwayyard extends JController {
 	////// Export complete application form with evaluation ///////////////////
 	function export_to_xls($reqids = null) {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -107,8 +105,7 @@ class EmundusControllerRailwayyard extends JController {
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}

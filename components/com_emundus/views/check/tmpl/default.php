@@ -321,8 +321,7 @@ echo '</li>';
 		<td><?php echo strftime(JText::_('DATE_FORMAT_LC2'), strtotime($user->time_date)); ?></td>
 		<td align="center">
         <?php
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (in_array($current_user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
 			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/components/com_emundus/style/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>"  width='30' height='30' onclick="document.pressed=this.name" >
         <?php echo '</span>'; 
@@ -344,7 +343,7 @@ echo '</li>';
 ?>
 <div class="emundusraw">
 <?php
-if (in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 	//batch block
 	echo $this->batch;
 ?>
@@ -398,10 +397,7 @@ function is_check() {
 }
 
 <?php 
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
-
-if (!in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

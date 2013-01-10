@@ -304,8 +304,7 @@ echo '</li>';
 		<td><?php  
 // Tableau des evaluations
 $fg = preg_replace($p_grade, $grade, $user->Final_grade);
-$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
-if (in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isPartner($user->get('id')) OR !EmundusHelperAccess::isEvaluator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 	$query = 'SELECT '.implode(',',$elements_evaluation_liste).',id, user FROM #__emundus_evaluations WHERE student_id  ='.$user->id.' AND user = '.$current_user->id;
 	$db->setQuery( $query ); 
 	$row = $db->loadObject();
@@ -348,8 +347,7 @@ if (in_array($current_user->usertype, $allowed)) {
     </div>
     <?php 
 echo '<div class="emundusraw">';
-$allowed = array("Super Administrator", "Administrator");
-if (in_array($current_user->usertype, $allowed)) {
+if(EmundusHelperAccess::isAdministrator($user->get('id'))) {
 	if (isset($user->Final_grade)) {
 		echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=39&random=0&rowid='.$user->id.'&usekey=student_id&student_id='.$user->id.'&tmpl=component" target="_self" class="modal">'; 
 		if ($user->Final_grade!= -1 && $user->Final_grade != '') {

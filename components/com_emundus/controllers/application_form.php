@@ -48,8 +48,8 @@ class EmundusControllerApplication_form extends JController
 	function delete_attachment() {
 		$mainframe =& JFactory::getApplication();
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) die("You are not allowed to access to this action.");
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) die("You are not allowed to access to this action.");
 		
 		$mainframe =& JFactory::getApplication();
 		$db	= &JFactory::getDBO();
@@ -91,7 +91,7 @@ class EmundusControllerApplication_form extends JController
 		$user =& JFactory::getUser();
 		$db =& JFactory::getDBO();
 		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -111,7 +111,7 @@ class EmundusControllerApplication_form extends JController
 		$user =& JFactory::getUser();
 		$db =& JFactory::getDBO();
 		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -133,8 +133,8 @@ class EmundusControllerApplication_form extends JController
             $user =& JFactory::getUser();
             $model = $this->getModel('application_form');
             $comments = $model->getComments();
-            $allowed = array("Super Administrator", "Administrator", "Editor");
-            if (!in_array($user->usertype, $allowed)) {
+            //$allowed = array("Super Administrator", "Administrator", "Editor");
+            if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
                     die("You are not allowed to access to this action.");
             }
             echo $comments;

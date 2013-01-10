@@ -147,8 +147,7 @@ class EmundusControllerGroups extends JController {
 	
 	function delassessor() {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
 			return;
 		}

@@ -45,8 +45,11 @@ class EmundusViewRanking extends JView
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		$allowed = array("Super Administrator", "Administrator", "Editor");
 		
-		if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator")))
-			die("You are not allowed to access to this page.");
+		//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator")))
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
+		$user=$this->_user;
 		
 		JHTML::_('behavior.modal');
 		JHTML::_('behavior.tooltip'); 
@@ -115,7 +118,7 @@ class EmundusViewRanking extends JView
 		unset($options);
 		
 		//Email
-		if($isallowed){
+		if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id')) ||  EmundusHelperAccess::isEvaluator($user->get('id')) ) { 
 			if($this->_user->profile!=16){
 				$options = array('applicants');
 				$email =& EmundusHelperEmails::createEmailBlock($options);

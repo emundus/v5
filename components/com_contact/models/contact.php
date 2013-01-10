@@ -304,7 +304,6 @@ class ContactModelContact extends JModelForm
 				$query->select('a.state');
 				$query->select('a.access');
 				$query->select('a.created');
-
 				// SQL Server changes
 				$case_when = ' CASE WHEN ';
 				$case_when .= $query->charLength('a.alias');

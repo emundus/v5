@@ -40,9 +40,11 @@ class EmundusViewEvaluation extends JView
 	}
 	
 	function display($tpl = null){
-		if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator"))) 
-			die("You are not allowed to access to this page.");
-			
+		//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator"))) 
+		//	die("You are not allowed to access to this page.");
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");	
 		
 		JHTML::_('behavior.modal');
 		JHTML::_('behavior.tooltip'); 

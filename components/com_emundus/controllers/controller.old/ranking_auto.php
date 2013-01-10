@@ -102,8 +102,7 @@ class EmundusControllerRanking_auto extends JController {
 	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
 	function custom_email() {
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($current_user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -279,8 +278,7 @@ class EmundusControllerRanking_auto extends JController {
 	
 	function delassessor() {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
 			return;
 		}
@@ -307,8 +305,7 @@ class EmundusControllerRanking_auto extends JController {
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
 		$user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
@@ -363,8 +360,7 @@ class EmundusControllerRanking_auto extends JController {
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
 	function defaultEmail($reqids = null) {
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Editor");
-		if (!in_array($current_user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}

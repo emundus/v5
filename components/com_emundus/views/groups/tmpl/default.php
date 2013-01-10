@@ -261,7 +261,7 @@ innerHeight-40}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=app
 		$assessors = $db->loadObjectList('id');
 		
 		//print_r($assessors);
-		$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Administrator", "Administrator", "Editor");
 		foreach($assessors as $ass) {
 			if(!empty($ass->group_id) && isset($ass->group_id)) {
 				$uList = '<ul>';
@@ -273,7 +273,7 @@ innerHeight-40}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=app
 				}
 				$uList .= '</ul>';
 				
-				if (in_array($current_user->usertype, $allowed)) {
+				if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id')) ||  EmundusHelperAccess::isPartner($user->get('id'))) { 
 					$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->groups[$ass->group_id]->label.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=groups&task=delassessor&aid='.$user->id.'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&limitstart='.$ls.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'"><img src="'.JURI::Base().'images/emundus/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
 				} else $img="";
 				echo '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span> '.$img.'<br />'; 
@@ -302,9 +302,7 @@ innerHeight-40}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=app
 ?>
 <div class="emundusraw">
 <?php
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, @$allowed)) {
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id'))) { 
 ?>
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_ASSESSORS'); ?></legend>
@@ -357,7 +355,7 @@ if (in_array($current_user->usertype, @$allowed)) {
 <?php } ?>
 <div class="emundusraw">
 <?php
-if (@in_array($current_user->usertype, @$allowed)) {
+if(EmundusHelperAccess::isAdministrator($user->get('id')) ||  EmundusHelperAccess::isCoordinator($user->get('id'))) { 
 ?>
   <fieldset>
   <legend> 
@@ -431,8 +429,7 @@ function check_all() {
 }
 
 <?php 
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (!in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';

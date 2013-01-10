@@ -22,14 +22,33 @@ jimport( 'joomla.application.component.view');
  
 class EmundusViewLearningAgreementReferent extends JView
 {
+	var $_user = null;
+	var $_db = null;
+	
+	function __construct($config = array()){
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		
+		$this->_user = JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		
+		parent::__construct($config);
+	}
+	
     function display($tpl = null)
     {
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
 		
-		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
-		if (!in_array($current_user->usertype, $allowed)) {
+		//$current_user =& JFactory::getUser();
+		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) {
 			die(JText::_('You are not allowed to access to this page...').$current_user->usertype);
 			//return false;
 		}

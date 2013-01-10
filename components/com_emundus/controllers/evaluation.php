@@ -197,7 +197,7 @@ class EmundusControllerEvaluation extends JController {
 		$sid = JRequest::getVar('sid', null, 'GET', 'int', 0);
 		$db =& JFactory::getDBO();
 		
-		if (!in_array($user->usertype, $allowed)) {
+		if(!EmundusHelperAccess::isAdministrator($user->get('id')) OR !EmundusHelperAccess::isCoordinator($user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}elseif($user->usertype == "Author"){

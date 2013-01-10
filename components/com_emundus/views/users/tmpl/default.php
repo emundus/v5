@@ -14,6 +14,7 @@ $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
+$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $allowed = array("Super Administrator", "Administrator", "Editor");
 if($edit!=1) {
 ?>
@@ -82,6 +83,7 @@ if ($current_user->get('usertype') == "Administrator" || $current_user->get('use
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
 <fieldset>
 <legend><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 <table width="100%">
@@ -304,8 +306,8 @@ foreach ($this->users as $user) { ?>
 					echo @$this->users[0]->profile==$profile->id?'" selected':'"';
 					echo '>'.$profile->label;'</option>'; 
 				} ?></select></td></tr>
-     <tr>
-       <th><?php echo JText::_('OTHER_PROFILES'); ?></th><td><hr />
+     <!-- <tr>
+       <th><?php /*echo JText::_('OTHER_PROFILES'); ?></th><td><hr />
 			<?php 
 			foreach($this->edit_profiles as $profile) { 
 					echo '<label><input type="checkbox" name="cb_profiles[]" value="'.$profile->id.'" ';
@@ -317,7 +319,7 @@ foreach ($this->users as $user) { ?>
 					}
 					echo ' />'.$profile->label.'</label><br />';
 				}
-			?></td></tr>
+			*/ ?></td></tr>-->
 	 <tr><th><?php echo JText::_('UNIVERSITY_FROM'); ?></th><td><select name="university_id">
 			<?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 			foreach($this->universities as $university) { 
@@ -418,7 +420,7 @@ function OnSubmitForm() {
 		break;
 		case 'search': 
 			document.adminForm.task.value = "";
-			document.adminForm.action ="index.php?option=com_emundus&view=users";
+			document.adminForm.action ="index.php?option=com_emundus&view=users&Itemid=<?php echo $Itemid; ?>";
 		break;
 		case 'clear': 
 			document.adminForm.task.value = "clear";

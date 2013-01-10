@@ -338,8 +338,8 @@ echo '</li>';
 ?>
 <div class="emundusraw">
 <?php
-$allowed = array("Super Administrator", "Administrator", "Editor");
-if (in_array($current_user->usertype, $allowed)) {
+//$allowed = array("Super Administrator", "Administrator", "Editor");
+if(EmundusHelperAccess::isAdministrator($user->id) || EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
   <fieldset>
   <legend> 
@@ -391,10 +391,7 @@ function is_check() {
 }
 
 <?php 
-unset($allowed);
-$allowed = array("Super Administrator", "Administrator", "Editor");
-
-if (!in_array($current_user->usertype, $allowed)) {
+if(!EmundusHelperAccess::isAdministrator($user->get('id')) || !EmundusHelperAccess::isCoordinator($user->get('id')) || !EmundusHelperAccess::isPartner($user->get('id')) ) { 
 ?>
 function hidden_all() {
   document.getElementById('checkall').style.visibility='hidden';
