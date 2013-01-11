@@ -51,7 +51,11 @@ class  plgSystemEmundus_period extends JPlugin
 		define('EMUNDUS_PATH_REL', './images/emundus/files/');
 		define('EMUNDUS_PHOTO_AID', 10);
 		
-		if ($user->usertype == 'Registered' ) {
+		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$id_applicants = $eMConfig->get('id_applicants', '0');
+		$applicants = explode(',',$id_applicants);
+		
+		if ($user->usertype == 'Registered' && !in_array($user->id, $applicants)) {	
 			$baseurl = JURI::base();
 			$db = & JFactory::getDBO();
 			$app =& JFactory::getApplication();

@@ -69,7 +69,7 @@ class EmundusModelEmailalert extends JModel{
 					JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
 					WHERE  ed.validated IS NULL AND u.usertype ="registered" AND eu.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'") 
 					AND ( 
-						 (ed.time_date IS NULL AND (DATEDIFF( now() , ee.date_time ) >= ee.periode) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')
+						 (ed.time_date IS NULL AND (DATEDIFF( esp.candidature_end , now()) > 0) AND (DATEDIFF( now() , ee.date_time ) >= ee.periode) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')
 						 OR ((DATEDIFF( esp.candidature_end , now()) IN ('.$p_remind.')) AND (ed.validated is null OR ed.validated!=1) AND ee.email_id = '.$remind_mail.')';
 		//if necessary report remind
 		if(!empty($remind_days)){

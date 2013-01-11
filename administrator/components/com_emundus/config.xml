@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset label="COM_EMUNDUS_OPTIONS" name="options">
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Settings for Evaluators&lt;/b&gt;"  /> 
+	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
+		<field name="multi_eval" type="radio" default="0" label="Allow multiple evaluations" description="An applicant can be evaluated several times">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
 		<field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
 			<option value="0">No</option>
 			<option value="1">Can see all applicants</option>
 			<option value="2">Can see and evaluate all applicants</option>
-		</field>  
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Settings for emailing&lt;/b&gt;"  />
+		</field> 
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
+		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
-		<field name="@spacer" type="spacer" />  
-		
-		<!-- end of candidature remind -->
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Settings for reminder email (end of candidature period)&lt;/b&gt;"/>
-		<field name="reminder" type="text" default="30" label="Number of days between each remind" description="" />
+		<field
+			name="spacer1"
+			type="spacer"
+			hr="true"
+			/>
+		<field name="reminder" type="text" default="30" label="Number of days between each remind" />
 		<field name="reminder_mail_id" type="text" default="" label="Email sent to applicants" description="Put only the id of the email" />
 		<field name="particular_remind" type="text" default="14,7,1" label="Particular remind before the end of candidature" description="Separated by comma (ex: 14,7,1)" />
-		
-		<!-- Specific remind -->
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Settings for specifics reminder email&lt;/b&gt;"/>
+		<field
+			name="spacer2"
+			type="spacer"
+			hr="true"
+			/>
 		<field name="reminder_element_date_id" type="text" default="" label="Date of begin remind" description="Put only the id of the 'fabrik element'" />
 		<field name="report_remind_mail_id" type="text" default="16" label="Email sent to applicants" description="Put only the id of the email" />
 		<field name="remind_days" type="text" default="90,120,150" label="Remind days since beginning of the application" description="Separated by comma (Example for first remind one year after begin and second remind one month later: 365,395)" /> 
 		<field name="reminder_attanchment_id" type="text" default="" label="Verify is this attachment exist" description="Put only the id of the attachment" />  
 		<field name="reminder_profile_id" type="text" default="" label="Profiles concerned by the remind" description="Put only the id of profiles" /> 
-		
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Key remind&lt;/b&gt;"/> 
-		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />
-                
-        <field name="@spacer" type="spacer" />  
-		<field name="@spacer" type="spacer" default="&lt;b&gt;Settings for export to pdf file&lt;/b&gt;"/>  
+		<field
+			name="spacer3"
+			type="spacer"
+			hr="true"
+			/>
+		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />        
+    </fieldset>
+	<fieldset label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
         <field name="export_pdf" type="multilist" default="" label="Select items for the pdf export"/>
-		<field name="multi_eval" type="radio" default="0" label="Allow multiple evaluations" description="An applicant can be evaluated several times">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</field>
 	</fieldset>
 </config>
