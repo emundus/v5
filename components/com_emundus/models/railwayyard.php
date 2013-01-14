@@ -168,9 +168,10 @@ class EmundusModelRailwayyard extends JModel
 							OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%" )';
 			}
 			if(isset($schoolyears) &&  !empty($schoolyears)) {
+				$s=is_array($schoolyears)?implode(',',$schoolyears):$schoolyears;
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
-				$query.= 'eu.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
+				$query.= 'eu.schoolyear="'.$s.'"';
 			}
 			
 			//echo str_replace('#_','jos',$query);

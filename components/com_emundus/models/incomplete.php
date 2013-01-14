@@ -185,10 +185,10 @@ class EmundusModelIncomplete extends JModel
 			$query.= 'ege.user_id='.mysql_real_escape_string($uid);
 		}
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
+			$s=is_array($schoolyears)?implode(',',$schoolyears):$schoolyears;
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			//$user_school=count($schoolyears)>0?implode(',',$schoolyears):0; 
-			$query.= 'eu.schoolyear="'.mysql_real_escape_string($schoolyears/* $user_school */).'"';
+			$query.= 'eu.schoolyear="'.$s.'"';
 		}	
 		return $query;
 	} 
