@@ -28,7 +28,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperExport{
 	
 	function export_zip(){
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

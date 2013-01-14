@@ -268,7 +268,7 @@ innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checkl
 		$db->setQuery( $query );
 		$teacher = $db->loadObjectList('id');
 		
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		//print_r($teacher);
 		foreach($teacher as $t) {
 			if(!empty($t->evaluator_id) && isset($t->evaluator_id)) {
@@ -450,7 +450,7 @@ function check_all() {
 }
 
 <?php 
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) { 
 ?>
 function hidden_all() {

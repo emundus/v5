@@ -1,6 +1,6 @@
 <?php
 function age($naiss) {
-		list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
+		@list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
 		$today['mois'] = date('n');
 		$today['jour'] = date('j');
 		$today['annee'] = date('Y');

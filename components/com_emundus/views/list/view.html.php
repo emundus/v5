@@ -43,7 +43,7 @@ class EmundusViewList extends JView
     {
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();

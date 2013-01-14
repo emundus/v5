@@ -149,7 +149,7 @@ class EmundusModelCheck extends JModel
 		if(!empty($profile)) 
 			$query .= ' AND eu.user_id IN ('.implode(',',$this->getApplicantsByProfile($profile)).')';
 		
-		//$no_filter = array("Super Administrator", "Administrator");
+		//$no_filter = array("Super Users", "Administrator");
 		if (!EmundusHelperAccess::isAdministrator($user->id)){
 			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0;
 			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';
@@ -178,9 +178,10 @@ class EmundusModelCheck extends JModel
 							OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%" )';
 			}
 			if(isset($schoolyears) &&  !empty($schoolyears)) {
+				$s=is_array($schoolyears)?implode(',',$schoolyears):$schoolyears;
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
-				$query.= 'eu.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
+				$query.= 'eu.schoolyear="'.$s.'"';
 			}
 			//echo str_replace('#_','jos',$query);
 		return $query;
@@ -244,7 +245,7 @@ class EmundusModelCheck extends JModel
 		$db =& JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp 
 				  WHERE esp.published=1 ';
-		$no_filter = array("Super Administrator", "Administrator");
+		$no_filter = array("Super Users", "Administrator");
 		if (!in_array($user->usertype, $no_filter)) 
 			$query .= ' AND esp.id IN (select profile_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($user->id)).')) ';
 		$query .= ' ORDER BY esp.label';

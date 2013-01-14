@@ -26,7 +26,7 @@ class EmundusControllerEvaluated_applications extends JController
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -52,7 +52,7 @@ class EmundusControllerEvaluated_applications extends JController
 	
 	function delete_eval() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {

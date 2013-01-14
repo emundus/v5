@@ -66,7 +66,7 @@ class EmundusControllerRanking extends JController {
 	
    ////// EXPORT ALL XLS ///////////////////	
 	function export_to_xls($reqids=array(),$el=array()) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -78,7 +78,7 @@ class EmundusControllerRanking extends JController {
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -218,7 +218,7 @@ class EmundusControllerRanking extends JController {
 	
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -278,7 +278,7 @@ class EmundusControllerRanking extends JController {
 	
 	function delassessor() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
 			return;
@@ -346,7 +346,7 @@ class EmundusControllerRanking extends JController {
 	
 	function delete_eval() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -505,7 +505,7 @@ class EmundusControllerRanking extends JController {
 	
 	////// EMAIL ASSESSORS WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

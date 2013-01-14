@@ -25,7 +25,7 @@ class EmundusControllerCandidate_evaluate extends JController
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -74,7 +74,7 @@ class EmundusControllerCandidate_evaluate extends JController
 	
 		////// EMAIL /////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

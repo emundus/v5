@@ -8,7 +8,7 @@ $eMConfig =& JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
 $view = JRequest::getVar('v', null, 'GET', 'none',0);
 $comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
-
+$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 // Starting a session.
 $session =& JFactory::getSession();
 $s_elements = $session->get('s_elements');
@@ -23,7 +23,7 @@ foreach($s_elements as $s){
 ?>
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
-	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
+	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
 	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/><?php
 		echo JText::_('SELECT_ALL');
 		echo '<input type="checkbox" id="emundus_checkall" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /><div id="emundus_elements">';
@@ -129,7 +129,7 @@ function check_all(box, obj, level) {
 }
 
 <?php 
-if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
+if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) { 
 ?>
 	function hidden_all() {
 		document.getElementById('checkall').style.visibility='hidden';
@@ -146,7 +146,7 @@ function OnSubmitForm() {
 //alert(button_name[0]);
 	switch(button_name[0]) {
 		case 'send_incomplete_elements': 
-			document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>";	
+			document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";	
 		break;
 		default: return false;
 	}

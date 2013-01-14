@@ -49,7 +49,7 @@ foreach($sub_values as $sv)
 $grade = explode('|', $result[0][1]);
 ?>
 
-<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
+<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component&Itemid='.$itemid; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
 <input type="hidden" name="option" value="com_emundus"/>
@@ -57,6 +57,7 @@ $grade = explode('|', $result[0][1]);
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 
 <fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 <table width="100%">
@@ -73,11 +74,14 @@ $grade = explode('|', $result[0][1]);
             <select name="profile" onChange="javascript:submit()">
             <option value=""> <?php echo JText::_('ALL'); ?> </option>
             <?php 
+			$profil_list=$this->profiles;
+			if(count($profil_list)>0){
                 foreach($this->profiles as $applicantsProfiles) { 
                     echo '<option value="'.$applicantsProfiles->id.'"';
                     if($current_p==$applicantsProfiles->id) echo ' selected';
                         echo '>'.$applicantsProfiles->label.'</option>'; 
                 } 
+			}
             ?>  
             </select>
         </td>
@@ -210,7 +214,7 @@ foreach ($this->users as $user) { ?>
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a> ';
 			echo '</span>';
 			echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->user.'&tmpl=component" target="_blank" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
+			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->user.'&tmpl=component&Itemid='.$itemid.'" target="_blank" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span>#'.$user->user.'</div>';
 		?>
         </td>

@@ -38,7 +38,7 @@ class EmundusControllerLearningAgreement extends JController {
 
 	////// UPDATE LEARNING AGREEMENT ///////////////////
 	function update() {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -62,7 +62,7 @@ class EmundusControllerLearningAgreement extends JController {
 	
 	////// VALIDATE LEARNING AGREEMENT ///////////////////
 	function validate() {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -91,7 +91,7 @@ class EmundusControllerLearningAgreement extends JController {
 
 	////// UNVALIDATE LEARNING AGREEMENT ///////////////////
 	function unvalidate() {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

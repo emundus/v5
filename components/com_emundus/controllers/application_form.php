@@ -48,7 +48,7 @@ class EmundusControllerApplication_form extends JController
 	function delete_attachment() {
 		$mainframe =& JFactory::getApplication();
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) die("You are not allowed to access to this action.");
 		
 		$mainframe =& JFactory::getApplication();
@@ -90,7 +90,7 @@ class EmundusControllerApplication_form extends JController
 	function set_comment(){
 		$user =& JFactory::getUser();
 		$db =& JFactory::getDBO();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
@@ -110,7 +110,7 @@ class EmundusControllerApplication_form extends JController
 	function delete_comment(){
 		$user =& JFactory::getUser();
 		$db =& JFactory::getDBO();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
@@ -133,7 +133,7 @@ class EmundusControllerApplication_form extends JController
             $user =& JFactory::getUser();
             $model = $this->getModel('application_form');
             $comments = $model->getComments();
-            //$allowed = array("Super Administrator", "Administrator", "Editor");
+            //$allowed = array("Super Users", "Administrator", "Editor");
             if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
                     die("You are not allowed to access to this action.");
             }

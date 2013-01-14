@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 $current_user = & JFactory::getUser();
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die("You are not allowed to access to this report.");
 	 
 jimport( 'joomla.utilities.date' );
@@ -235,7 +235,7 @@ if ($sent == 0) {
           $db->setQuery( $query );
           $filestypes=$db->loadObjectList();
           
-          $can_delete = array("Super Administrator", "Administrator");
+          $can_delete = array("Super Users", "Administrator");
           foreach ( $filestypes as $row ) {
             $link = $row->value;
             if (!empty($row->description)) 

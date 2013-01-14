@@ -203,7 +203,7 @@ function check_all() {
 }
 
 <?php 
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
 ?>
 function hidden_all() {

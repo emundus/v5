@@ -48,7 +48,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -93,7 +93,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 // 
 // put applicant as enrolled student ; profile=7
 	function registration($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -128,7 +128,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 // 
 // put applicant as Selected Applicant ; profile=8
 	function unregistration($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -163,7 +163,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 // 
 // put Student as Applicant ; profile=9
 	function setApplicant($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -200,7 +200,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 // 
 // put Student as selected profile : from Joomla Registred profile
 	function setPID() {
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -238,7 +238,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -272,7 +272,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	
 	function delassessor() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -304,7 +304,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	////// Export application form  to XLS  ///////////////////
 	function export_all_to_xls ($reqids = null) {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator and Administrator can access this function.'), 'error');
 			return;
@@ -334,7 +334,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
 	function defaultEmail($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -412,7 +412,7 @@ class EmundusControllerLearningAgreementReferent extends JController {
 	
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

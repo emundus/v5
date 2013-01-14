@@ -28,7 +28,7 @@ class EmundusControllerEvaluation extends JController {
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
@@ -77,9 +77,10 @@ class EmundusControllerEvaluation extends JController {
 	
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
+		//$itemid=JSite::getMenu()->getActive()->id;
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
@@ -91,7 +92,7 @@ class EmundusControllerEvaluation extends JController {
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		
+		$itemid = JRequest::getVar('itemid', null, 'POST', null, 0);
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
 		}
@@ -128,16 +129,16 @@ class EmundusControllerEvaluation extends JController {
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	/**/
 	function delassessor() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -148,7 +149,7 @@ class EmundusControllerEvaluation extends JController {
 		$pid = JRequest::getVar('pid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		$filter_order = JRequest::getVar('filter_order', null, 'GET', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
+		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);$itemid = JRequest::getVar('itemid', null, 'GET', null, 0);
 		
 		if(!empty($aid) && is_numeric($aid)) {
 			$db =& JFactory::getDBO();
@@ -160,13 +161,13 @@ class EmundusControllerEvaluation extends JController {
 			$db->setQuery($query);
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('ACTION_DONE'), 'message');
 	}
 	
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -178,7 +179,7 @@ class EmundusControllerEvaluation extends JController {
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);$itemid = JRequest::getVar('itemid', null, 'POST', null, 0);
 		
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
@@ -199,16 +200,16 @@ class EmundusControllerEvaluation extends JController {
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=evaluation&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
 	function delete_eval(){
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {

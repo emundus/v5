@@ -275,7 +275,7 @@ if($tmpl == 'component') {
 				} ?>
                 		<td><?php 
 							echo '<div class="emundusraw">';
-							//$allowed = array("Super Administrator", "Administrator", "Editor");
+							//$allowed = array("Super Users", "Administrator", "Editor");
 							if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 								if (isset($evalu['final_grade'])) {
 									$fg_txt = preg_replace($p_grade, $grade, $evalu['final_grade']);
@@ -315,7 +315,7 @@ if($tmpl == 'component') {
 <div class="emundusraw">
 <?php
 //unset($allowed);
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 
@@ -443,7 +443,7 @@ function check_all() {
 
 <?php 
 //unset($allowed);
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 
 if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
 ?>

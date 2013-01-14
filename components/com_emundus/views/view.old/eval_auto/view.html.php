@@ -28,7 +28,7 @@ class EmundusViewEval_auto extends JView
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
 		
 		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author", "Observator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

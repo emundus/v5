@@ -28,7 +28,7 @@ class EmundusViewRanking_auto extends JView
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
 		
 		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

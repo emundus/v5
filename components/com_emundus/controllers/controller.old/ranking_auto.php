@@ -72,7 +72,7 @@ class EmundusControllerRanking_auto extends JController {
 	
    ////// EXPORT ALL XLS ///////////////////	
 	function export_to_xls($reqids=array(),$el=array()) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -84,7 +84,7 @@ class EmundusControllerRanking_auto extends JController {
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -224,7 +224,7 @@ class EmundusControllerRanking_auto extends JController {
 	
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -351,7 +351,7 @@ class EmundusControllerRanking_auto extends JController {
 	
 	function delete_eval() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -505,7 +505,7 @@ class EmundusControllerRanking_auto extends JController {
 	
 	////// EMAIL ASSESSORS WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

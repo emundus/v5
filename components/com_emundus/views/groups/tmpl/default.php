@@ -261,7 +261,7 @@ innerHeight-40}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=app
 		$assessors = $db->loadObjectList('id');
 		
 		//print_r($assessors);
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		foreach($assessors as $ass) {
 			if(!empty($ass->group_id) && isset($ass->group_id)) {
 				$uList = '<ul>';

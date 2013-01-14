@@ -21,6 +21,7 @@ $filter_order_Dir 	= JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0)
 $tmpl 				= JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $v 					= JRequest::getVar('view', null, 'GET', 'none',0);
 $itemid 			= JRequest::getVar('Itemid', null, 'GET', 'none',0);
+//$itemid=JSite::getMenu()->getActive()->id;
 $schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
@@ -49,7 +50,7 @@ $db = JFactory::getDBO();
 
 <!-- <div class="componentheading"><?php echo JText::_( 'ADMINISTRATIVE_VALIDATION' ); ?></div> -->
 
-<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
+<a href="<?php echo JURI::getInstance()->toString().'&tmpl=component&Itemid='.$itemid; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data"/>
 <input type="hidden" name="option" value="com_emundus"/>
@@ -223,11 +224,11 @@ foreach ($this->users as $user) { ?>
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a>';
 			echo '</span>';
 			echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
+			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
 			echo '</span>';
 			if($current_user->profile!=16) {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			}
 			echo '</span>#'.$user->id.'</div>';
 		?>
@@ -277,7 +278,7 @@ foreach ($this->users as $user) { ?>
 	<ul>';
 		foreach ( $tableuser as $row ) {
 echo '<li>';
-echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user->id.'&usekey=user" target="_blank" >'.$row->label.'</a>';
+echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user->id.'&usekey=user&Itemid='.$itemid.'" target="_blank" >'.$row->label.'</a>';
 echo '</li>';
 		}
 		echo '</ul>
@@ -290,7 +291,7 @@ echo '</li>';
 			<?php 	
 			if (strlen($user->avatar) != 0) {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('OPEN_PHOTO_IN_NEW_WINDOW').'::">';
-				echo '<a href="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/'.$user->avatar.'" target="_blank" class="modal"><img src="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/tn_'.$user->avatar.'" width="60" /></a>'; 
+				echo '<a href="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/'.$user->avatar.'" target="_blank" class="modal"><img src="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/tn_'.$user->avatar.'&Itemid='.$itemid.'" width="60" /></a>'; 
 				echo '</span>';
 			} else {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('NOT_SET').'::">';
@@ -339,7 +340,7 @@ echo '</li>';
 ?>
 <div class="emundusraw">
 <?php
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id)) {
 ?>
   <fieldset>
@@ -439,13 +440,13 @@ function OnSubmitForm() {
 			document.adminForm.action ="index.php?option=com_emundus&task=transfert_view&v=<?php echo $v; ?>&as=0&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'set_status': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=administrative_check&limitstart=<?php echo $ls; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=administrative_check&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'validate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=validate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=validate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'unvalidate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=unvalidate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=unvalidate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'push_true': 
 			if(is_check()){
@@ -458,13 +459,13 @@ function OnSubmitForm() {
 			}
 		break;
 		case 'custom_email': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=customEmail";
+			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=customEmail&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'search_button': 
-			document.adminForm.action ="index.php?option=com_emundus&view=incomplete";
+			document.adminForm.action ="index.php?option=com_emundus&view=incomplete&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'clear_button': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=clear";
+			document.adminForm.action ="index.php?option=com_emundus&controller=incomplete&task=clear&Itemid=<?php echo $itemid; ?>";
 		break;
 		default: return false;
 	}

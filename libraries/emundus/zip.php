@@ -20,11 +20,11 @@ function return_bytes($val) {
 function zip_file($users) {
 	//clearstatcache();
 	$current_user =& JFactory::getUser();
-	$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+	//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
 	$view = JRequest::getCmd( 'view' );
 	
 	//JRequest::getVar('view', null, 'GET', 'none',0);
-	if (!in_array($current_user->usertype, $allowed) && $view != 'renew_application') die( JText::_('RESTRICTED_ACCESS') );
+	if ((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id)) && $view != 'renew_application') die( JText::_('RESTRICTED_ACCESS') );
 	
 	$form_pdf = "application.pdf";
 	$zip = new ZipArchive();

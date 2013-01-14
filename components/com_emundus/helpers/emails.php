@@ -110,7 +110,7 @@ class EmundusHelperEmails{
 	
 	function sendDefaultEmail(){
 		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($current_user->id,$access)) {
@@ -253,7 +253,7 @@ class EmundusHelperEmails{
 	}
 	
 	function sendCustomEmail(){
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -383,7 +383,7 @@ class EmundusHelperEmails{
 	}
 	
 	function sendApplicantEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

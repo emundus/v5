@@ -152,7 +152,7 @@ class EmundusModelEval extends JModel
 			$query .= 'WHERE eu.schoolyear like "%'.$this->getCampaign().'%"';
 			$and = true;
 			
-			$no_filter = array("Super Administrator", "Administrator");
+			$no_filter = array("Super Users", "Administrator");
 			if (!in_array($user->usertype, $no_filter)) 
 				$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($user->id)).')) ';
 				

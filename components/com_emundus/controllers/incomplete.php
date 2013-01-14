@@ -65,7 +65,8 @@ class EmundusControllerIncomplete extends JController {
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid=JSite::getMenu()->getActive()->id;
-		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$ItemId);
+		
+		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 	}
 	
 	function getCampaign()
@@ -79,7 +80,7 @@ class EmundusControllerIncomplete extends JController {
 	}
 
 	function unvalidate() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -103,11 +104,12 @@ class EmundusControllerIncomplete extends JController {
 			$db->setQuery('UPDATE #__emundus_declaration SET validated = 0 WHERE user = '.mysql_real_escape_string($uid));
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('Application form unvalidated'), 'message');
+		$Itemid=JSite::getMenu()->getActive()->id;
+		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('Application form unvalidated'), 'message');
 	}
 	
 	function validate() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -130,11 +132,12 @@ class EmundusControllerIncomplete extends JController {
 			$db->setQuery('UPDATE #__emundus_declaration SET validated = 1 WHERE user = '.mysql_real_escape_string($uid));
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('Application form validated'), 'message');
+		$Itemid=JSite::getMenu()->getActive()->id;
+		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('Application form validated'), 'message');
 	}
 	
 	function administrative_check($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -164,10 +167,11 @@ class EmundusControllerIncomplete extends JController {
 				$db->Query() or die($db->getErrorMsg());
 			}
 		}
+		$Itemid=JSite::getMenu()->getActive()->id;
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE').' : '.count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid'.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE').' : '.count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
 	}
 	
 	/**
@@ -175,7 +179,7 @@ class EmundusControllerIncomplete extends JController {
 	 */
 	/*function push_true() {
 				
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -229,7 +233,7 @@ class EmundusControllerIncomplete extends JController {
 	
 	function push_true(){
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -252,14 +256,15 @@ class EmundusControllerIncomplete extends JController {
 			$db->setQuery( $query );
 			$db->query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&Itemid='.$itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
+		$Itemid=JSite::getMenu()->getActive()->id;
+		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
 	}
 	
 	/**
 	 * export selected to xls
 	 */
 	function export_incompletes_xls() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -286,7 +291,7 @@ class EmundusControllerIncomplete extends JController {
 	////// Export incomplete application form ///////////////////
 	function export_incomplete_to_xls() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -304,7 +309,7 @@ class EmundusControllerIncomplete extends JController {
 				  AND u.id NOT IN (
 								   SELECT user 
 								   FROM #__emundus_declaration) ';
-		$no_filter = array("Super Administrator", "Administrator");
+		$no_filter = array("Super Users", "Administrator");
 		if (!in_array($user->usertype, $no_filter)) {
 			$model = &$this->getModel('check');
 			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$model->getProfileAcces($user->id)).')) ';
@@ -314,15 +319,15 @@ class EmundusControllerIncomplete extends JController {
 		$cid = $db->loadResultArray();
 		
 		export_incompletes_xls($cid);
-		
+		$Itemid=JSite::getMenu()->getActive()->id;
 		if (count($cid)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('ACTION_DONE').count($ids), 'message');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -336,10 +341,10 @@ class EmundusControllerIncomplete extends JController {
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		JArrayHelper::toInteger( $cid, 0 );
-
+		$Itemid=JSite::getMenu()->getActive()->id;
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 			exit;
 		}
 		zip_file($cid);
@@ -348,7 +353,7 @@ class EmundusControllerIncomplete extends JController {
 	
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -372,25 +377,25 @@ class EmundusControllerIncomplete extends JController {
 		$session =& JFactory::getSession();
 		$session->set('s_elements', $elements_items);
 		$session->set('s_elements_values', $elements_values);
-
+		$Itemid=JSite::getMenu()->getActive()->id;
 		if ($captcha !== 1) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 			return;
 		}
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 			return;
 		}
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 			return;
 		}
 		if ($message == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
 			return;
 		}
 
@@ -448,11 +453,12 @@ class EmundusControllerIncomplete extends JController {
 				$error++;
 			}
 		}
+		$Itemid=JSite::getMenu()->getActive()->id;
 		if ($error>0) {
 			JError::raiseWarning( 500, JText::_( 'ACTION_ABORDED' ) );
 			return;
 		} else {
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('REPORTS_MAILS_SENT'), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('REPORTS_MAILS_SENT'), 'message');
 		}
 		
 	}

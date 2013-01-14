@@ -122,7 +122,7 @@ class EmundusControllerAdmission extends JController {
 // 
 // put Student as selected profile : from Joomla Registred profile
 	function setPID() {
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -160,7 +160,7 @@ class EmundusControllerAdmission extends JController {
 	
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -194,7 +194,7 @@ class EmundusControllerAdmission extends JController {
 	
 	function delassessor() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -255,7 +255,7 @@ class EmundusControllerAdmission extends JController {
 	
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
 	function defaultEmail($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -334,7 +334,7 @@ class EmundusControllerAdmission extends JController {
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {

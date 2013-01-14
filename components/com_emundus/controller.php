@@ -73,7 +73,7 @@ class EmundusController extends JController {
 	function pdf(){
 		$user =& JFactory::getUser();
 		$student_id = JRequest::getVar('user', null, 'GET', 'none',0);
-		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author", "Registered");
+		//$allowed = array("Super Users", "Administrator", "Editor", "Author", "Registered");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -81,7 +81,7 @@ class EmundusController extends JController {
 		}
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 		unset($allowed);
-		//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		if(EmundusHelperAccess::isAdministrator($user->id) || EmundusHelperAccess::isCoordinator($user->id) || EmundusHelperAccess::isPartner($user->id) || EmundusHelperAccess::isEvaluator($user->id)) { 
 			application_form_pdf(!empty($student_id)?$student_id:$user->id);
 		}else{
@@ -110,7 +110,7 @@ class EmundusController extends JController {
 		$db 	=& JFactory::getDBO();
 		$id 	= JRequest::get('get');
 		$id 	= $id['aid'];
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -573,7 +573,7 @@ function updateprofile() {
 
 	function delincomplete() {
 		$current_user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -585,7 +585,7 @@ function updateprofile() {
 
 	function delrefused() {
 		$current_user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -597,7 +597,7 @@ function updateprofile() {
 	
 	function delnonevaluated() { /* ----------------- */
 		$current_user =& JFactory::getUser();
-		if($current_user->get('usertype') != 'Super Administrator' && $current_user->get('usertype') != 'Administrator') {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -611,7 +611,7 @@ function updateprofile() {
 		$db =& JFactory::getDBO();
 		$current_user =& JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -743,7 +743,7 @@ function updateprofile() {
 			break;
 			case "send":
 				if (!$this->need) {
-					$Itemid=JSite::getMenu()->getActive()->id;
+					//$Itemid=JSite::getMenu()->getActive()->id;
 					$end_link='fabrik&view=form&fabrik=22&tableid=22&rowid=&r=1&Itemid='.$itemid;
 				}else{
 					$end_link='fabrik&view=form&fabrik=16&tableid=15&rowid=&r=1&Itemid=860';
@@ -764,10 +764,10 @@ function updateprofile() {
 		$quick_search = $session->get( 'quick_search' );
 		
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
 		
@@ -778,7 +778,7 @@ function updateprofile() {
 	}
 	
 	function transfert_view($reqids=array()){
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$view = JRequest::getVar('v', null, 'GET');
 		
@@ -827,8 +827,8 @@ function updateprofile() {
 		$cpt = count($urltab);
 		$uid = $urltab[$cpt-2];
 		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isEvaluator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
 			JError::raiseWarning( 500, JText::_( 'RESTRICTED_ACCESS' ) );
 			$Itemid=JSite::getMenu()->getActive()->id;
 			$this->setRedirect('index.php?option=com_emundus&Itemid='.$Itemid);
@@ -862,7 +862,7 @@ function updateprofile() {
 		$db	= &JFactory::getDBO();
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$keyid = JRequest::getVar('keyid', null, 'GET', 'none',0);
-		//$allowed = array("Super Administrator", "Administrator");
+		//$allowed = array("Super Users", "Administrator");
 		$eMConfig =& JComponentHelper::getParams('com_emundus');
 
 		$model =& $this->getModel('emailalert');

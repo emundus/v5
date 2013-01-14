@@ -19,8 +19,8 @@ function return_bytes($val) {
 
 function export_xls($uids, $element_id) {
 		$current_user =& JFactory::getUser();
-		$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
-		if (!in_array($current_user->usertype, $allowed)) die( JText::_('RESTRICTED_ACCESS') );
+		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
 
 		@set_time_limit(10800);
 		global $mainframe;

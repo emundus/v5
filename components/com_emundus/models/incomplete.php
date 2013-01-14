@@ -146,7 +146,7 @@ class EmundusModelIncomplete extends JModel
 			
 		$query .= ' AND eu.user_id NOT IN (SELECT ed.user FROM #__emundus_declaration AS ed)';
 		
-		//$no_filter = array("Super Administrator", "Administrator");
+		//$no_filter = array("Super Users", "Administrator");
 		if (!EmundusHelperAccess::isAdministrator($user->id)){
 			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0; 
 			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';

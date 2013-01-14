@@ -15,7 +15,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if($edit!=1) {
 ?>
 <?php 

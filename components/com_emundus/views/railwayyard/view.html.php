@@ -46,7 +46,7 @@ class EmundusViewRailwayyard extends JView
 		
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
 		
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'check.php');

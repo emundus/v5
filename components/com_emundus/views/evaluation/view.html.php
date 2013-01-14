@@ -40,7 +40,7 @@ class EmundusViewEvaluation extends JView
 	}
 	
 	function display($tpl = null){
-		//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Administrator", "Administrator", "Publisher", "Editor", "Author", "Observator"))) 
+		//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Users", "Administrator", "Publisher", "Editor", "Author", "Observator"))) 
 		//	die("You are not allowed to access to this page.");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -58,7 +58,7 @@ class EmundusViewEvaluation extends JView
 		$multi_eval = $eMConfig->get('multi_eval', '0');
 		$this->assignRef( 'multi_eval', $multi_eval );
 		
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
 		//$this->assignRef( 'isallowed', $isallowed );
 

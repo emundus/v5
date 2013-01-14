@@ -134,12 +134,14 @@ class EmundusModelRailwayyard extends JModel
 			
 			$and = true;
 			
-			if(!empty($profile)) 
-				$query .= ' AND eu.user_id IN ('.implode(',',$this->getApplicantsByProfile($profile)).')';
-			
-			if($user->usertype != "Administrator")
-				$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($user->id)).')) ';
-			
+			if(!empty($profile)) {
+				$user_profil=count($this->getApplicantsByProfile($profile))>0?implode(',',$this->getApplicantsByProfile($profile)):0;
+				$query .= ' AND eu.user_id IN ('.$user_profil.')';
+			}
+			if($user->usertype != "Administrator"){
+			$user_profilAccess=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0;
+				$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_profilAccess.')) ';
+			}
 	
 			if(!empty($search)) {
 				$i = 0;

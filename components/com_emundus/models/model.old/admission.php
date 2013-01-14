@@ -131,7 +131,7 @@ class EmundusModelAdmission extends JModel
 			if ($current_user->profile > 5) 
 				$query .= 'AND eca.evaluator_id='.$current_user->id.' ';
 			
-			$no_filter = array("Super Administrator", "Administrator");
+			$no_filter = array("Super Users", "Administrator");
 			if (!in_array($current_user->usertype, $no_filter)) 
 				$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$this->getProfileAcces($current_user->id)).')) ';
 			

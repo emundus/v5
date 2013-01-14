@@ -74,7 +74,7 @@ class EmundusControllerCheck extends JController {
 	}
 
 	function unvalidate() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -102,7 +102,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	function validate() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");		
+		//$allowed = array("Super Users", "Administrator", "Editor");		
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -129,7 +129,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	function administrative_check($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -169,7 +169,7 @@ class EmundusControllerCheck extends JController {
 	 * push false to complete application form status
 	 */
 	/*function push_false() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -226,7 +226,7 @@ class EmundusControllerCheck extends JController {
 	
 	function push_false() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -259,7 +259,7 @@ class EmundusControllerCheck extends JController {
 	 * export selected to xls
 	 */
 	function export_complete() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -284,7 +284,7 @@ class EmundusControllerCheck extends JController {
 	////// Export complete application form ///////////////////
 	function export_complete_to_xls ($reqids = null) {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -299,7 +299,7 @@ class EmundusControllerCheck extends JController {
 				  LEFT JOIN #__emundus_users AS eu ON eu.user_id=ed.user  
 				  WHERE schoolyear like "%'.$this->getCampaign().'%"'; //Applicants
 				  
-		$no_filter = array("Super Administrator", "Administrator");
+		$no_filter = array("Super Users", "Administrator");
 		if (!in_array($user->usertype, $no_filter)) {
 			$model = &$this->getModel('check');
 			$query .= ' AND ed.user IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$model->getProfileAcces($user->id)).')) ';
@@ -318,7 +318,7 @@ class EmundusControllerCheck extends JController {
 	////// Export incomplete application form ///////////////////
 	function export_incomplete_to_xls() {
 		$user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -331,7 +331,7 @@ class EmundusControllerCheck extends JController {
 			 	  LEFT JOIN #__emundus_users AS eu on eu.user_id=u.id
 				  LEFT JOIN #__emundus_setup_profiles AS esp on (esp.published=1 AND eu.profile=esp.id)
 				  WHERE u.block = 0 AND u.id NOT IN (SELECT user FROM #__emundus_declaration) ';
-		$no_filter = array("Super Administrator", "Administrator");
+		$no_filter = array("Super Users", "Administrator");
 		if (!in_array($user->usertype, $no_filter)) {
 			$model = &$this->getModel('check');
 			$query .= ' AND ed.user IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$model->getProfileAcces($user->id)).')) ';
@@ -348,7 +348,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
@@ -374,7 +374,7 @@ class EmundusControllerCheck extends JController {
 	
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();

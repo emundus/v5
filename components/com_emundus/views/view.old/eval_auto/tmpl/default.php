@@ -83,7 +83,7 @@ $db = JFactory::getDBO();
   	</td>
  </tr> 
 <?php
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 <tr>
@@ -97,7 +97,7 @@ if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCo
  <tr>
   
 <?php
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
   <td>
@@ -285,7 +285,7 @@ if($current_user->profile!=16){
 			}?>
             <?php if($current_user->profile!="16"){ ?> <th><?php echo JText::_('EVALUATION'); ?></th> <?php } ?>
 <?php
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
             <th><?php echo JText::_('ASSESSOR'); ?></th>
@@ -341,7 +341,7 @@ if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCo
 		?>
 						</td>	
                 <?php }
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 				?>
 						<td>
@@ -401,7 +401,7 @@ if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCo
 <div class="emundusraw">
 <?php
 unset($allowed);
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id)) {
 ?>
 <?php if($current_user->profile!="16"){ ?>
@@ -533,7 +533,7 @@ function check_all() {
 
 <?php 
 //unset($allowed);
-//$allowed = array("Super Administrator", "Administrator", "Editor");
+//$allowed = array("Super Users", "Administrator", "Editor");
 
 if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id)) {
 ?>

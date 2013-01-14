@@ -45,7 +45,7 @@ class EmundusViewIncomplete extends JView
 		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
 		
 		//$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
+		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access))  die("You are not allowed to access to this page.");

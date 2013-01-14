@@ -83,7 +83,7 @@ class EmundusControllerEval_auto extends JController {
 	}
 	
 	function export_zip() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -111,7 +111,7 @@ class EmundusControllerEval_auto extends JController {
 	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
 	function custom_email() {
 		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($current_user->get('id')) && !EmundusHelperAccess::isCoordinator($current_user->get('id'))) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
@@ -224,7 +224,7 @@ class EmundusControllerEval_auto extends JController {
 	
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -510,7 +510,7 @@ class EmundusControllerEval_auto extends JController {
 	
 	////// EMAIL ASSESSORS WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
-		//$allowed = array("Super Administrator", "Administrator", "Editor");
+		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

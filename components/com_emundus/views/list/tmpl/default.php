@@ -13,7 +13,8 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
     <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
     <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
     <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
-    <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/><?php
+    <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
+<?php
     echo $this->filters;
 	if(!empty($this->users)) { ?>
 		<div class="emundusraw">
