@@ -93,7 +93,7 @@ function return_bytes($val) {
 						AND element.id IN ("'.implode('","', $element_id).'") 
 						ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering'; 
 			$db->setQuery( $query );
-			//die(str_replace("#_","jos",$query));
+			// die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 			
 			// @TODO : générer une chaine de caractère avec tous les user_id
@@ -157,7 +157,7 @@ function return_bytes($val) {
 						FROM `#__users` 
 						LEFT JOIN `#__emundus_users` ON `#__emundus_users`.`user_id`=`#__users`.`id`';
 			$query .= $join_comment;
-			$query .= ' WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
+			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
 			$db->setQuery( $query );
 			$comments = $db->loadObjectList();
@@ -203,7 +203,8 @@ function return_bytes($val) {
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $element->element_label);
 					$colonne++;
 				}
-			}			$objPHPExcel->getActiveSheet()->freezePane('B2');
+			}			
+			$objPHPExcel->getActiveSheet()->freezePane('B2');
 			$objPHPExcel->getActiveSheet()->getStyle('A1:'.$colonne_by_id[$colonne].'1')->getFont()->setBold(true);
 			$objPHPExcel->getActiveSheet()->getStyle('A3:'.$colonne_by_id[$colonne].'2')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
 			$i=2;

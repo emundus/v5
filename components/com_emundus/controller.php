@@ -74,9 +74,7 @@ class EmundusController extends JController {
 		$user =& JFactory::getUser();
 		$student_id = JRequest::getVar('user', null, 'GET', 'none',0);
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author", "Registered");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id) && !EmundusHelperAccess::isEvaluator($user->id)) {
 			die("You are not allowed to access to this page.");
 		}
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
@@ -268,7 +266,7 @@ class EmundusController extends JController {
  ***********************************/
 function updateprofile() {
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -463,7 +461,7 @@ function updateprofile() {
 	function delusers($reqids = null) {
 		$Itemid=JSite::getMenu()->getActive()->id;
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id)&& !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -491,7 +489,7 @@ function updateprofile() {
 	function blockuser() {
 		$user =& JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -512,7 +510,7 @@ function updateprofile() {
 	function unblockuser() {
 		$user =& JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -532,7 +530,7 @@ function updateprofile() {
 	
 	function _blockuser($uid) {
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -553,7 +551,7 @@ function updateprofile() {
 	function _unblockuser($uid) {
 		$user =& JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -573,7 +571,7 @@ function updateprofile() {
 
 	function delincomplete() {
 		$current_user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -585,7 +583,7 @@ function updateprofile() {
 
 	function delrefused() {
 		$current_user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -597,7 +595,7 @@ function updateprofile() {
 	
 	function delnonevaluated() { /* ----------------- */
 		$current_user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -611,7 +609,7 @@ function updateprofile() {
 		$db =& JFactory::getDBO();
 		$current_user =& JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
-		if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -867,7 +865,7 @@ function updateprofile() {
 
 		$model =& $this->getModel('emailalert');
 		
-		if(EmundusHelperAccess::isAdministrator($user->id)) {
+		if(EmundusHelperAccess::isAdministrator($user->id) && EmundusHelperAccess::isCoordinator($user->id) && EmundusHelperAccess::isPartner($user->id) && EmundusHelperAccess::isEvaluator($user->id)) {
 			if ($nb_email_per_batch == null)
 				$nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
 					

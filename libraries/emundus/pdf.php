@@ -25,8 +25,8 @@ function application_form_pdf($user_id, $output = true) {
 	$htmldata = '';
 	// --------------------- //
 	set_time_limit(0);
-	require(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
-	require(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('Decision Publique');
@@ -58,7 +58,7 @@ function application_form_pdf($user_id, $output = true) {
 	//get title
 	$config =& JFactory::getConfig(); 
 	$title = $config->getValue('config.sitename');
-	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	$pdf->SetHeaderData(JPATH_ROOT.DS.$logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 	unset($logo);
 	unset($title);
 	
@@ -326,10 +326,10 @@ $htmldata .= '
 				// TABLEAU DE PLUSIEURS LIGNES
 					} elseif ($itemg->repeated>0){
 						$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
-								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$item->user.')';
+								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$item->user_id.')';
 						$db->setQuery($query);
 						$repeated_elements = $db->loadObjectList();
-
+//echo str_replace('#_','jos',$query);
 						foreach ($repeated_elements as $r_element) {
 							$j = 0;
 							foreach ($r_element as $key => $r_elt) {

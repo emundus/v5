@@ -242,9 +242,9 @@ class EmundusHelperFilters{
 	
 	function getElementsValuesOther($element_id){
 		$db =& JFactory::getDBO();
-		$query = 'SELECT sub_labels, sub_values FROM #__fabrik_elements element WHERE id='.$element_id;
+		$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements element WHERE id='.$element_id;
 		$db->setQuery($query);
-//		die(str_replace("#_", "jos", $query));
+		// echo str_replace("#_", "jos", $query);
 		return $db->loadObjectList();
 	}
 
@@ -295,6 +295,7 @@ class EmundusHelperFilters{
 			$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
 			<option value="">'.JText::_('PLEASE_SELECT').'</option>';
 			$j = 0;
+
 			foreach($sub_values as $value) {
 				$current_filter .= '<option value="'.$value.'"';
 				if($value == $search_value) $current_filter .= ' selected';
@@ -330,7 +331,8 @@ class EmundusHelperFilters{
 		$search_values_other	= $mainframe->getUserStateFromRequest(  $option.'elements_values_other', 'elements_values_other' );
 		$complete_application	= $mainframe->getUserStateFromRequest(  $option.'complete', 'complete', $params['complete'] );
 		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', $params['validate'] );
-
+		
+		$option;
 		$filters = '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
 		
 		$quick = '<div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
@@ -496,7 +498,7 @@ class EmundusHelperFilters{
         $adv_filter .= '<input type="hidden" value="0" id="theValue" />';
         $adv_filter .= '<img src="'.JURI::Base().'images/emundus/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 		$adv_filter .= '<div id="myDiv">';
-		
+		//var_dump($search);
 		if (count($search)>0 && isset($search) && is_array($search)) {
 			$i=0;
 			$selected_adv = "";
@@ -510,6 +512,7 @@ class EmundusHelperFilters{
 						$groupe_tmp = $element->group_label;
 						$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
 						$dot_elm = strlen($element->element_label)>=$length?'...':'';
+						
 						if ($groupe != $groupe_tmp) {
 							$adv_filter .= '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
 							$groupe = $groupe_tmp;
@@ -529,7 +532,9 @@ class EmundusHelperFilters{
 				$i++; 
 				$adv_filter .= '</div>';
 			} 
-		}
+		}//else{
+		//echo 'ici';
+		//}
         $adv_filter .= '</div></div>';
 		$filters .= $adv_filter;
 
@@ -559,7 +564,7 @@ class EmundusHelperFilters{
 								$other_filter .= '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
 								$groupe = $groupe_tmp;
 							}
-						$other_filter .= '<option class="emundus_search_elm_other" value="'.$element_other->table_name.'.'.$element_other->element_name.'"';
+						$other_filter .= '<option class="emundus_search_elm_other" value="'.$element_other->table_name.'.'.$element_other->element_name.'"'; // = result_for; engaged; scholarship...
 						if($element_other->table_name.'.'.$element_other->element_name == $sf){
 							$other_filter .= ' selected';
 							$selected_other = $element_other;
@@ -569,6 +574,9 @@ class EmundusHelperFilters{
 					$other_filter .= '</select>';
 					if(empty($search_values_other[$i])) $search_values_other[$i] = "";
 					if ($selected_other != "")
+					//var_dump($selected_other);
+					echo'<BR />';
+					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
 					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2)"><img src="'.JURI::Base().'images/emundus/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 					$i++; 

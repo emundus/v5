@@ -38,7 +38,7 @@ class EmundusControllerUsers extends JController {
 
 	function _blockuser($uid) {
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -53,12 +53,14 @@ class EmundusControllerUsers extends JController {
 			$db->setQuery('UPDATE #__emundus_users SET disabled = 1, disabled_date = NOW() WHERE user_id = '.mysql_real_escape_string($uid));
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart.'&Itemid='.$itemid, JText::_('ACTION_DONE'), 'message');
 	}
 	
 	function _unblockuser($uid) {
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid=JSite::getMenu()->getActive()->id;
 		$user =& JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
@@ -73,20 +75,24 @@ class EmundusControllerUsers extends JController {
 			$db->setQuery('UPDATE #__emundus_users SET disabled = 0 WHERE user_id = '.mysql_real_escape_string($uid));
 			$db->Query();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart.'&Itemid='.$itemid, JText::_('ACTION_DONE'), 'message');
 	}
 	
 	function clear() {
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid=JSite::getMenu()->getActive()->id;
 		unset($_SESSION['s_elements']);
 		unset($_SESSION['s_elements_values']);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', null, 0);
-		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
 	function setSchoolyear(){
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid=JSite::getMenu()->getActive()->id;
 		$mainframe =& JFactory::getApplication();
 		$user =& JFactory::getUser();
 		if($user->profile <= 2) {
@@ -101,10 +107,13 @@ class EmundusControllerUsers extends JController {
 			//die ($query);
 			$this->setRedirect($url);
 		}
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd('view').'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+		echo $itemid;
+		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd('view').'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
 	function archive() {
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid=JSite::getMenu()->getActive()->id;
 		$db =& JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -121,7 +130,7 @@ class EmundusControllerUsers extends JController {
 			}
 		}
 		
-		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 
 	////// Export selected application form to XLS ///////////////////
@@ -133,6 +142,8 @@ class EmundusControllerUsers extends JController {
 	
 	////// EXPORT XLS ///////////////////
 	function export_to_xls($reqids = null) {
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid=JSite::getMenu()->getActive()->id;
 		$mainframe =& JFactory::getApplication();
 		require_once('libraries/emundus/excel.php');
 		$db =& JFactory::getDBO();
@@ -152,10 +163,10 @@ class EmundusControllerUsers extends JController {
 		$cpt = $db->loadResult();
 		
 			if($cpt == 0) {
-				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('NO_RESULT').'<br />'.sprintf(JText::_('NO_APPLICANT_FOR_THIS_CAMPAIGN'),$syear), 'notice');
+				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('NO_RESULT').'<br />'.sprintf(JText::_('NO_APPLICANT_FOR_THIS_CAMPAIGN'),$syear), 'notice');
 			} else {
 				current_campaign();
-				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
+				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 			}
 		}
 	}
