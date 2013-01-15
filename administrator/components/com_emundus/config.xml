@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
-		<field name="multi_eval" type="radio" default="0" label="Allow multiple evaluations" description="An applicant can be evaluated several times">
+		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
@@ -22,19 +22,19 @@
 			type="spacer"
 			hr="true"
 			/>
-		<field name="reminder" type="text" default="30" label="Number of days between each remind" />
-		<field name="reminder_mail_id" type="text" default="" label="Email sent to applicants" description="Put only the id of the email" />
-		<field name="particular_remind" type="text" default="14,7,1" label="Particular remind before the end of candidature" description="Separated by comma (ex: 14,7,1)" />
+		<field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
+		<field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+		<field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
 		<field
 			name="spacer2"
 			type="spacer"
 			hr="true"
 			/>
-		<field name="reminder_element_date_id" type="text" default="" label="Date of begin remind" description="Put only the id of the 'fabrik element'" />
-		<field name="report_remind_mail_id" type="text" default="16" label="Email sent to applicants" description="Put only the id of the email" />
-		<field name="remind_days" type="text" default="90,120,150" label="Remind days since beginning of the application" description="Separated by comma (Example for first remind one year after begin and second remind one month later: 365,395)" /> 
-		<field name="reminder_attanchment_id" type="text" default="" label="Verify is this attachment exist" description="Put only the id of the attachment" />  
-		<field name="reminder_profile_id" type="text" default="" label="Profiles concerned by the remind" description="Put only the id of profiles" /> 
+		<field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
+		<field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+		<field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" /> 
+		<field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />  
+		<field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" /> 
 		<field
 			name="spacer3"
 			type="spacer"

@@ -15,7 +15,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-//$allowed = array("Super Users", "Administrator", "Editor");
+
 if($edit!=1) {
 ?>
 <?php 
@@ -218,7 +218,7 @@ foreach ($this->users as $user) { ?>
 			if (isset($user->gender)) {
 				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_'.$user->gender.'.png" width="22" height="22" align="bottom" /></a></span> ';
 				echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$Itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span>';
 			} else
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a></span> ';
@@ -247,12 +247,13 @@ foreach ($this->users as $user) { ?>
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
 		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&rowid=<?php echo $current_p; ?>&uid=<?php echo $user->id; ?>"><img src="<?php JURI::Base(); ?>components/com_emundus/style/images/<?php echo $user->block>0?'button_cancel.png':'button_ok.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">
-        	<div class="emundusraw"><?php 
-        	/* @TODO : gestion des accès à l'édition d'un utilisateur en fonction des niveaux d'accès */
-				//if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) { ?>
+        	<div class="emundusraw">
+<?php 
+        	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
+?>
                 	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $Itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
                     </a><?php 
-				// } ?>
+				 } ?>
         	</div>
         </td>
   	</tr>
@@ -261,12 +262,12 @@ foreach ($this->users as $user) { ?>
         <td height="1975" colspan="8" align="left">
             <div class="emundusraw">
                 <input type="submit" name="delusers" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_SELECTED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
-           <?php //if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {?> |        
+           <?php if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { ?> |        
                 <input type="submit" name="delincomplete" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_INCOMPLETE'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" /> 
 				<input type="submit" name="delnonevaluated" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_NON_EVALUATED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
                 <input type="submit" name="delrefused" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_REFUSED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
               
-            <?php //} ?>
+            <?php } ?>
             </div>
         </td>
     </tr>
@@ -274,7 +275,7 @@ foreach ($this->users as $user) { ?>
 </table>
 </fieldset>
 <div class="emundusraw"><?php 
-	//if (array_key_exists(7, $current_user->groups) || array_key_exists(8, $current_user->groups)) {
+	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 	?><fieldset>
 		  <legend> 
 			<span class="editlinktip hasTip" title="<?php echo JText::_('ARCHIVE').'::'.JText::_('ARCHIVE_TIP'); ?>">
@@ -283,7 +284,7 @@ foreach ($this->users as $user) { ?>
 		  </legend>
 		  <input type="submit" name="archive" onclick="document.pressed=this.name" value="<?php echo JText::_( 'ARCHIVE_SELECTED_USERS' );?>" />
 	</fieldset>
-<?php//} ?>
+<?php } ?>
 </div>
 <?php } else { ?>
 <h2><?php echo JText::_('NO_RESULT'); ?></h2>

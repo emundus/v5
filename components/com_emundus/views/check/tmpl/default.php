@@ -231,13 +231,13 @@ foreach ($this->users as $user) { ?>
 			echo '</span>';
 			if($current_user->profile!=16) {
 				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			}
 			echo '</span>#'.$user->id.'</div>';
 		?>
 <div id="container" class="emundusraw"> 
 	<ul id="emundus_nav">
-		<?php // Tableau des pi�ces jointes envoy�es
+		<?php // Tableau des pieces jointes envoyees
 		$query = 'SELECT attachments.id, uploads.filename, uploads.description, attachments.lbl, attachments.value
 					FROM #__emundus_uploads AS uploads
 					LEFT JOIN #__emundus_setup_attachments AS attachments ON uploads.attachment_id=attachments.id
