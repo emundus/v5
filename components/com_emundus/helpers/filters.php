@@ -84,7 +84,7 @@ class EmundusHelperFilters{
 				if (is_array($result)) {
 					$params = json_decode($result['params']);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->	sub_options))
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
 							$results[$key][$option] = implode('|', $params->sub_options->$option);
 						else
 							$results[$key][$option] = '';
@@ -93,7 +93,7 @@ class EmundusHelperFilters{
 				else {
 					$params = json_decode($result->params);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->	sub_options))
+						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
 							$results[$key]->$option = implode('|', $params->sub_options->$option);
 						else
 							$results[$key]->$option = '';
@@ -199,7 +199,8 @@ class EmundusHelperFilters{
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
-				INNER JOIN #__menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
+				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 				WHERE tab.published = 1 
 				AND (tab.created_by_alias = "form")
 					AND element.published=1 
@@ -207,7 +208,7 @@ class EmundusHelperFilters{
 					AND element.label!=" " 
 					AND element.label!=""  
 				ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering';
-		$db->setQuery( $query );	
+		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
 	
@@ -241,11 +242,14 @@ class EmundusHelperFilters{
 	}
 	
 	function getElementsValuesOther($element_id){
+		//jimport( 'joomla.registry.format.json' );
 		$db =& JFactory::getDBO();
-		$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements element WHERE id='.$element_id;
+		$query = 'SELECT params FROM #__fabrik_elements element WHERE id='.$element_id;
 		$db->setQuery($query);
-		// echo str_replace("#_", "jos", $query);
-		return $db->loadObjectList();
+		$res = $db->loadResult();
+		$sub = json_decode($res);//JRegistryFormatJson::stringToObject($res);
+
+		return $sub->sub_options;
 	}
 
 	function getElementsName($elements_id){
@@ -270,14 +274,17 @@ class EmundusHelperFilters{
 		return $db->loadObjectList();
 	}
 	
-	function setSearchBox($selected, $search_value, $elements_values) {
+	function setSearchBox($selected, $search_value, $elements_values) { 
+		jimport( 'joomla.html.parameter' );
+	//echo $selected->element_plugin;
 		$current_filter = "";
-		if(!empty($selected) and ($selected->element_plugin == "fabriktextarea" or $selected->element_plugin == "fabrikfield"))
+		if(!empty($selected) and ($selected->element_plugin == "textarea" or $selected->element_plugin == "field"))
 			$current_filter .= '<input name="'.$elements_values.'[]" width="30" value="'.$search_value.'" />';
-		else if(!empty($selected) and ($selected->element_plugin == "fabrikdatabasejoin")){
-			$query_paramsdefs = JPATH_BASE.DS.'components'.DS.'com_fabrik'.DS.'plugins'.DS.'element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml';
+		else if(!empty($selected) and ($selected->element_plugin == "databasejoin")){
+			$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
+			echo $query_paramsdefs;
 			$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
-			$query_params = $query_params->_registry['_default']['data'];
+			$query_params = json_decode($query_params);
 			$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 			$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
 			<option value="">'.JText::_('PLEASE_SELECT').'</option>';
@@ -290,8 +297,8 @@ class EmundusHelperFilters{
 		}
 		else if (!empty($selected)){
 			$elements_att =& EmundushelperFilters::getElementsValuesOther($selected->id);
-			$sub_values = explode('|', $elements_att[0]->sub_values);
-			$sub_labels = explode('|', $elements_att[0]->sub_labels);
+			$sub_values = $elements_att->sub_values;//explode('|', $elements_att[0]->sub_values);
+			$sub_labels = $elements_att->sub_labels;//explode('|', $elements_att[0]->sub_labels);
 			$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
 			<option value="">'.JText::_('PLEASE_SELECT').'</option>';
 			$j = 0;
