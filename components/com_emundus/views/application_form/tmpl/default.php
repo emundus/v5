@@ -299,11 +299,11 @@ if ($sent == 0) {
 	<?php 
 	if($current_user->profile!="16"){
 	if($this->can_evaluate){ 
-			if($this->is_evaluated)
-				$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid='.$this->user->user_id.'&usekey=student_id&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
-			else
-				$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
-			echo '<iframe src="'.$url.'" scrolling="auto" frameborder="0" height="850" width="100%" ></iframe>';
+		if($this->is_evaluated > 0)
+			$url = 'index.php?option=com_fabrik&c=form&view=form&fabrik=29&tableid=31&rowid='.$this->is_evaluated.'&usekey=id&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
+		else
+			$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
+		echo '<iframe src="'.$url.'" scrolling="auto" frameborder="0" height="850" width="100%" ></iframe>';
 	} }
 	?>
 	</td>

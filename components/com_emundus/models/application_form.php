@@ -57,10 +57,22 @@ class EmundusModelApplication_form extends JModel
 		$user_id=JRequest::getVar('sid',null,'GET');
 	    $query='SELECT count(ee.student_id) FROM 
 				#__emundus_evaluations AS ee 
-				where ee.student_id='.$user->id;
+				where ee.student_id='.$user_id;
 	    $db->setQuery($query);
 		$isEvaluated=$db->loadObjectList();
 		return $isEvaluated>0?true:false;
+	}
+	
+	function getAsBeenEvaluatedByMe(){
+		$db=& JFactory::getDBO();
+		$current_user =& JFactory::getUser();
+		$user_id=JRequest::getVar('sid',null,'GET');
+	    $query='SELECT ee.id FROM 
+				#__emundus_evaluations AS ee 
+				where ee.user='.$current_user->id.' AND ee.student_id='.$user_id;
+	    $db->setQuery($query); 
+		$idEvaluation=$db->loadResult();
+		return $idEvaluation>0?$idEvaluation:0;
 	}
 	
 	function getComments(){ 
