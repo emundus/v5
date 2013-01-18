@@ -319,7 +319,7 @@ opacity: 1;
 }
 
 
-/*Tooltips */
+/*Tooltips J1.5*/
 .tool-tip {
 	float: left;
 	background: #ffc;
@@ -331,7 +331,7 @@ opacity: 1;
 .tool-title {
 	padding: 0;
 	margin: 0;
-	font-size: 100%;
+	font-size: 110%;
 	font-weight: bold;
 	margin-top: -15px;
 	padding-top: 15px;
@@ -340,8 +340,35 @@ opacity: 1;
 }
 
 .tool-text {
-	font-size: 100%;
+	font-size: 150%;
 	margin: 0;
+}
+/*Tooltips J2.5*/
+.tip-wrap{
+    z-index: 10000;
+}
+.tip {
+   float: left;
+   background: #ffc;
+   border: 1px solid #D4D5AA;
+   padding: 5px;
+   max-width: 200px;
+}
+ 
+.tip-title {
+   padding: 0;
+   margin: 0;
+   font-size: 150%;
+   font-weight: bold;
+   margin-top: -15px;
+   padding-top: 15px;
+   padding-bottom: 5px;
+   background: url(../images/selector-arrow.png) no-repeat;
+}
+ 
+.tip-text {
+   font-size: 150%;
+   margin: 0;
 }
 
 /** ScrollToTop **/

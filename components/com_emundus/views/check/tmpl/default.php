@@ -3,7 +3,7 @@ jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 
 $document   =& JFactory::getDocument();
 
@@ -187,7 +187,6 @@ if(!empty($this->users)) {
 		<?php } ?>
         <?php echo JHTML::_('grid.sort', JText::_('#'), 'id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
-		<th><?php echo JText::_('PHOTO'); ?></th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
@@ -210,91 +209,12 @@ $i=0;
 $j=0;
 foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
-        <td>
-        <div class="emundusraw">
-		<?php 
-			echo ++$i+$limitstart;
-			if($current_user->profile!=16) {
-				if($user->id != 62)  ?> <input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" value="<?php echo $user->id; ?>"/>
-		<?php
-			}
-			echo '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user->email.'">';
-			if ($user->gender == 'male')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
-			elseif ($user->gender == 'female')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
-			else
-				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a>';
-			echo '</span>';
-			echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
-			echo '</span>';
-			if($current_user->profile!=16) {
-				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $user->id.'&student_id='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
-			}
-			echo '</span>#'.$user->id.'</div>';
-		?>
-<div id="container" class="emundusraw"> 
-	<ul id="emundus_nav">
-		<?php // Tableau des pieces jointes envoyees
-		$query = 'SELECT attachments.id, uploads.filename, uploads.description, attachments.lbl, attachments.value
-					FROM #__emundus_uploads AS uploads
-					LEFT JOIN #__emundus_setup_attachments AS attachments ON uploads.attachment_id=attachments.id
-					WHERE uploads.user_id = '.$user->id.'
-					ORDER BY attachments.ordering';
-		$db->setQuery( $query );
-		$filestypes=$db->loadObjectList();
-		echo '<li><a href="#"><img src="'.$this->baseurl.'/images/emundus/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>
-		<ul>';
-		foreach ( $filestypes as $row ) {
-			echo '<li>';
-			if ($row->description != '')
-				$link = $row->value.' (<em>'.$row->description.'</em>)';
-			else
-				$link = $row->value;
-			echo '<a href="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/'.$row->filename.'" target="_new">'.$link.'</a>';
-			echo '</li>';
-		}
-		echo '</ul>
-</li>';
-		//
-		// Tableau des formulaires
-		// contenu dans $forms[$profile_id]
-		/*$query = 'SELECT fbtables.id, fbtables.form_id, fbtables.label, fbtables.db_table_name, profile.id AS profile
-					FROM #__fabrik_lists AS fbtables 
-					INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
-					INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
-					WHERE fbtables.state = 1 AND fbtables.created_by_alias = "form" ORDER BY profile.id, menu.ordering';
-		$db->setQuery( $query );
-		$temps = $db->loadObjectList();
-		$forms = array();*/
-		/*foreach($temps as $temp) {
-			$p = $temp->profile;
-			$forms[$p][] = $temp;
-			unset($temp);
-		}
-		unset($temps);
-		$tableuser = $forms[$user->profile];*/
-		$tableuser = EmundusHelperList::getFormsList($user->id);
-		echo '<li><a href="#"><img src="'.$this->baseurl.'/images/emundus/icones/folder_documents.png" alt="'.JText::_('FORMS').'" title="'.JText::_('FORMS').'" width="22" height="22" align="absbottom" /></a>
-	<ul>';
-		foreach ( $tableuser as $row ) {
-echo '<li>';
-echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user->id.'&usekey=user&Itemid='.$itemid.'" target="_blank">'.$row->label.'</a>';
-echo '</li>';
-		}
-		echo '</ul>
-		</li>';
-		?>
-	</ul>
-</div> 
-        </td>
-        <td align="center" valign="middle">
-    <?php 	echo '<span class="editlinktip hasTip" title="'.JText::_('OPEN_PHOTO_IN_NEW_WINDOW').'::">';
-					echo '<a href="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/'.$user->avatar.'" target="_blank" class="modal"><img src="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->id.'/tn_'.$user->avatar.'" width="60" /></a>'; 
-					echo '</span>';
-?></td>
+        <td> <?php 
+		echo ++$i+$limitstart; $i++;
+		echo "<div class='em_user_id'>#".$user->id."<div>";
+        echo $this->actions[$user->id];
+		?> 
+		</td>
 		<td><?php 
 			if(strtoupper($user->name) == strtoupper($user->firstname).' '.strtoupper($user->lastname)) 
 				echo '<strong>'.strtoupper($user->lastname).'</strong><br />'.$user->firstname; 
@@ -383,110 +303,9 @@ if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAcces
 @$j++;
 } 
 ?>
-
-<script>
-function check_all() {
- var checked = document.getElementById('checkall').checked;
-<?php foreach ($this->users as $user) { ?>
-  document.getElementById('cb<?php echo $user->id; ?>').checked = checked;
-<?php } ?>
-}
-
-function is_check() {
-	var cpt = 0;
-	<?php foreach ($this->users as $user) { ?>
-  		if(document.getElementById('cb<?php echo $user->id; ?>').checked == true) cpt++;
-	<?php } ?>
-	if(cpt > 0) return true;
-	else return false;
-}
-<?php
-if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) ) { 
-?>
-function hidden_all() {
-  document.getElementById('checkall').style.visibility='hidden';
-<?php foreach ($this->users as $user) { ?>
-  document.getElementById('cb<?php echo $user->id; ?>').style.visibility='hidden';
-<?php } ?>
-}
-hidden_all();
-<?php 
-}
-?>
-
-function addElement() {
-  var ni = document.getElementById('myDiv');
-  var numi = document.getElementById('theValue');
-  var num = (document.getElementById('theValue').value -1)+ 2;
-  numi.value = num;
-  var newdiv = document.createElement('div');
-  var divIdName = 'my'+num+'Div';
-  newdiv.setAttribute('id',divIdName);
-  newdiv.innerHTML = '<select name="elements[]" id="elements"><option value=""> <?php echo JText::_("PLEASE_SELECT"); ?> </option><?php $groupe =""; $i=0; foreach($this->elements as $elements) { $groupe_tmp = $elements->group_label; $length = 50; $dot_grp = strlen($groupe_tmp)>=$length?'...':''; $dot_elm = strlen($elements->element_label)>=$length?'...':''; if ($groupe != $groupe_tmp) { echo "<option class=\"emundus_search_grp\" disabled=\"disabled\" value=\"\">".substr(strtoupper($groupe_tmp), 0, $length).$dot_grp."</option>"; $groupe = $groupe_tmp; } echo "<option class=\"emundus_search_elm\" value=\"".$elements->table_name.'.'.$elements->element_name."\">".substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm."</option>"; $i++; } ?></select><input name="elements_values[]" width="30" /> <a href=\'#\' onclick=\'removeElement("'+divIdName+'")\'><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>';
-  ni.appendChild(newdiv);
-}
-
-function removeElement(divNum) {
-  var d = document.getElementById('myDiv');
-  var olddiv = document.getElementById(divNum);
-  d.removeChild(olddiv);
-}
-
-function tableOrdering( order, dir, task ) {
-  var form = document.adminForm;
-  //var form = document.getElementById('adminForm')[0];
-  form.filter_order.value = order;
-  form.filter_order_Dir.value = dir;
-  document.adminForm.submit( task );
-}
-
-function OnSubmitForm() {
-	var button_name=document.pressed.split("|");
-	// alert(button_name[0]);
-	switch(button_name[0]) {
-		
-		case 'export_zip': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=export_zip&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'export_to_xls': 
-			document.adminForm.action ="index.php?option=com_emundus&task=transfert_view&v=<?php echo $v; ?>&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'set_status':
-			if(is_check()){ 
-				if (confirm('<?php echo JText::_( 'SET_STATUT_CONFIRM' ); ?>')){ document.adminForm.action ="index.php?option=com_emundus&controller=check&task=administrative_check&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
-				}else{ return false;}
-			}else{
-				alert("<?php echo JText::_('NO_APPLICANT_SELECTED'); ?>");
-				return false;
-			}	
-		break;
-		case 'validate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=validate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'unvalidate': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=unvalidate&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'push_false': 
-			if(is_check()){
-				if(document.getElementById('comments').value == document.getElementById('comments').defaultValue) document.getElementById('comments').value = null;
-				if (confirm('<?php echo JText::_( 'PUSH_FALSE_CONFIRM' ); ?>')) document.adminForm.action ="index.php?option=com_emundus&controller=check&task=push_false&limitstart=<?php echo $ls; ?>&Itemid=<?php echo $itemid; ?>";
-				else return false;
-			}else{
-				alert('NO_APPLICANT_SELECTED');
-				return false;
-			}
-		break;
-		case 'custom_email': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=customEmail&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'search_button': 
-			document.adminForm.action ="index.php?option=com_emundus&view=check&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'clear_button': 
-			document.adminForm.action ="index.php?option=com_emundus&controller=check&task=clear&Itemid=<?php echo $itemid; ?>";
-		break;
-		default: return false;
-	}
-	return true;
-} 
+<script><?php 
+	echo $this->addElement;
+	echo $this->onSubmitForm; 
+	echo $this->delayAct;
+	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>
 </script>

@@ -224,7 +224,7 @@ if ($sent == 0) {
   <tbody>
   	<tr>
         <td valign="top" id="attachements" align="left">
-          <fieldset style="float:left; width:45%"><legend>Attachments</legend>
+          <fieldset style="float:left; width:45%"><legend><?php echo JText::_('ATTACHMENTS'); ?></legend>
 		  <?php 				
           // Tableau des pièce jointes 
           $query = 'SELECT upload.id AS aid, attachment.id, upload.filename, upload.description, attachment.value
@@ -264,7 +264,7 @@ if ($sent == 0) {
 		  ?>
           </fieldset>
 		   <?php if($current_user->profile!="16"){  ?>
-          <fieldset style="float:right; width:30%; margin-right:15%;"><legend>Comments</legend>
+          <fieldset style="float:right; width:30%; margin-right:15%;"><legend><?php echo JText::_('COMMENTS'); ?></legend>
 			  <?php  // Table of comments
 				  echo '<div id="comment_tab">';
                                   echo $this->comments;

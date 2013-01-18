@@ -124,7 +124,7 @@ class EmundusModelCheck extends JModel
 		$user =& JFactory::getUser();
 		
 		
-		$query = 'SELECT ed.user, a.filename AS avatar , eu.firstname, eu.lastname, u.username, u.email, epd.gender, epd.nationality, eu.profile, eu.schoolyear,  ed.validated, ed.time_date, u.id, u.name,u.usertype, u.registerDate, u.block
+		$query = 'SELECT ed.user, ed.user as user_id, a.filename AS avatar , eu.firstname, eu.lastname, u.username, u.email, epd.gender, epd.nationality, eu.profile, eu.schoolyear,  ed.validated, ed.time_date, u.id, u.name,u.usertype, u.registerDate, u.block
 					FROM #__emundus_declaration ed 
 					LEFT JOIN #__emundus_users AS eu ON ed.user = eu.user_id 
 					LEFT JOIN #__emundus_personal_detail AS epd ON ed.user = epd.user 

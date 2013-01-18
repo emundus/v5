@@ -26,9 +26,9 @@ class EmundusViewCheck extends JView
 	var $_db = null;
 	
 	function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
@@ -83,7 +83,25 @@ class EmundusViewCheck extends JView
 		$options = array('incomplete');
 		$statut = EmundusHelperList::createApplicationStatutblock($options);
         $this->assignRef('statut', $statut);
+		//die(print_r($users));
+		//List
+		$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
+		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		$this->assignRef('actions', $actions);
+
+		// Javascript
+        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
+		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
+		$this->assignRef('onSubmitForm', $onSubmitForm);
+		$addElement =& EmundusHelperJavascript::addElement();
+		$this->assignRef('addElement', $addElement);
+		/*$addElementFinalGrade =& EmundusHelperJavascript::addElementFinalGrade($tables);
+		$this->assignRef('addElementFinalGrade', $addElementFinalGrade);*/
+		$delayAct =& EmundusHelperJavascript::delayAct();
+		$this->assignRef('delayAct', $delayAct);
+		
 		unset($options);
+		
 		parent::display($tpl);
     }
 }

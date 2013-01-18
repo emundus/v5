@@ -228,7 +228,7 @@ class EmundusViewList extends JView
 		$options = array('checkbox', 'gender', 'details');
 		$actions =& EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
-		unset($options);
+		unset($options); 
 		
 		//Profile
 		$profile = EmundusHelperList::createProfileBlock($users,'profile');

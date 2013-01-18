@@ -220,17 +220,17 @@ class EmundusControllerEvaluation extends JController {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
 		$view = JRequest::getVar('view', null, 'GET', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
-		$sid = JRequest::getVar('sid', null, 'GET', 'int', 0);
+		$sid = JRequest::getVar('sid', null, 'GET', 'null', 0);
+		$sids = explode('-',$sid);
+
 		$db =& JFactory::getDBO();
 		
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
-			return;
-		}elseif($user->usertype == "Author"){
-			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sid.' AND user='.$user->id;
+		if(EmundusHelperAccess::isEvaluator($user->id)){
+			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$user->id;
 		}else{
-			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sid;
+			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];
 		}
+		
 		$db->setQuery($query);
 		$db->query();
 		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
