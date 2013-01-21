@@ -202,7 +202,7 @@ class FabrikString extends JString
 	/**
 	 * Santize db fields names, can't just do regex on A-Z as languages like Chinese should be allowed
 	 *
-	 * @param   string  $name
+	 * @param   string  $str  Field name
 	 *
 	 * @since   3.0.7
 	 *
@@ -448,4 +448,56 @@ class FabrikString extends JString
 		// Show umlauts correctly in ajax error messages.
 		$string = mb_convert_encoding($string, 'HTML-ENTITIES', "UTF-8");
 	}
+
+	/**
+	 * See if it looks like a string uses {table___element} placeholders
+	 * Doesn't do any sanity testing to see if it's actually a valid element
+	 * name, just goes by pattern patching word___word
+	 *
+	 * @params   string  $str  String to test
+	 *
+	 * @return   bool
+	 *
+	 * @since   3.0.1
+	 */
+
+	public static function usesElementPlaceholders($str)
+	{
+		return preg_match("#\{\w+___\w+\}#", $str);
+	}
+
+	/**
+	 * Convert standard Fabrik coords string into lat, long, zoom object.
+	 * Copied from map element, as we end up needing this elsewhere.
+	 *
+	 * @param   string  $v          coordinates
+	 * @param   int     $zoomlevel  default zoom level
+	 *
+	 * @return  object  coords array and zoomlevel int
+	 */
+
+	public static function mapStrToCoords($v, $zoomlevel = 0)
+	{
+		$o = new stdClass;
+		$o->coords = array('', '');
+		$o->zoomlevel = (int) $zoomlevel;
+		if (strstr($v, ","))
+		{
+			$ar = explode(":", $v);
+			$o->zoomlevel = count($ar) == 2 ? array_pop($ar) : 4;
+			$v = FabrikString::ltrimword($ar[0], "(");
+			$v = rtrim($v, ")");
+			$o->coords = explode(",", $v);
+		}
+		else
+		{
+			$o->coords = array(0, 0);
+		}
+		// $$$ hugh - added these as I always think it's what they are!
+		$o->lat = $o->coords[0];
+		$o->long = $o->coords[1];
+		$o->zoom = $o->zoomlevel;
+		return $o;
+	}
+
 }

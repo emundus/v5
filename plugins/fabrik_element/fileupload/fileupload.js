@@ -149,7 +149,11 @@ var FbFileUpload = new Class({
 			return;
 		}
 		var a, title;
-		var c = this.getElement().getParent('.fabrikSubElementContainer');
+		var el = this.getElement();
+		if (typeOf(el) === 'null') {
+			return;
+		}
+		var c = el.getParent('.fabrikSubElementContainer');
 		this.container = c;
 		var canvas = c.getElement('canvas');
 		if (typeOf(canvas) === 'null') {
@@ -268,7 +272,7 @@ var FbFileUpload = new Class({
 		});
 
 		this.uploader.bind('Error', function (up, err) {
-			fconsole('Error:' + err);
+			fconsole('Plupload Error:' + err.message);
 		});
 
 		this.uploader.bind('ChunkUploaded', function (up, file, response) {
@@ -289,7 +293,7 @@ var FbFileUpload = new Class({
 			}
 			var f = document.id(file.id);
 			if (typeOf(f) === 'null') {
-				console.log('Filuploaded didnt find: ' + file.id);
+				fconsole('Filuploaded didnt find: ' + file.id);
 				return;
 			}
 			document.id(file.id).getElement('.plupload_resize').show();

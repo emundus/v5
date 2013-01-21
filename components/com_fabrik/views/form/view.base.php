@@ -186,13 +186,7 @@ class FabrikViewFormBase extends JView
 		$params = $model->getParams();
 		if ($params->get('process-jplugins') == 1 || ($params->get('process-jplugins') == 2 && $model->isEditable() === false))
 		{
-			$opt = $input->get('option');
-			$input->set('option', 'com_content');
-			jimport('joomla.html.html.content');
-			$text .= '{emailcloak=off}';
-			$text = JHTML::_('content.prepare', $text);
-			$text = preg_replace('/\{emailcloak\=off\}/', '', $text);
-			$input->set('option', $opt);
+			FabrikHelperHTML::runConentPlugins($text);
 		}
 
 		// Allows you to use {placeholders} in form template.
@@ -336,9 +330,15 @@ class FabrikViewFormBase extends JView
 			}
 			else
 			{
-				$this->pdfURL = JRoute::_('index.php?option=com_' . $package . '&view=details&format=pdf&formid=' . $model->getId() . '&rowid=' . $model->_rowId);
-				$this->pdfLink = '<a href="' . JRoute::_('index.php?option=com_' . $package . '&view=details&format=pdf&formid=' . $model->getId())
-				. '&rowid=' . $this->rowid . '">' . FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties) . '</a>';
+				if ($app->isAdmin())
+				{
+					$this->pdfURL = JRoute::_('index.php?option=com_' . $package . '&task=details.view&format=pdf&formid=' . $model->getId() . '&rowid=' . $model->_rowId);
+				}
+				else
+				{
+					$this->pdfURL = JRoute::_('index.php?option=com_' . $package . '&view=details&format=pdf&formid=' . $model->getId() . '&rowid=' . $model->_rowId);
+				}
+				$this->pdfLink = '<a href="' . $this->pdfURL . '">' . FabrikHelperHTML::image('pdf.png', 'list', $this->tmpl, $buttonProperties) . '</a>';
 			}
 		}
 	}

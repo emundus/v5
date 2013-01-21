@@ -1,5 +1,7 @@
 <?php
 /**
+ * Approval HTML View
+ *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.visualization.approvals
  * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
@@ -12,10 +14,11 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 /**
-* Approval HTML View 
-*
-* @package		Joomla.Plugin
-* @subpackage	Fabrik.visualization.slideshow
+ * Approval HTML View
+ *
+ * @package		Joomla.Plugin
+ * @subpackage	Fabrik.visualization.slideshow
+ * @since        3.0.6
 */
 
 class fabrikViewApprovals extends JView
@@ -66,15 +69,7 @@ class fabrikViewApprovals extends JView
 		FabrikHelperHTML::script($srcs, $js);
 
 		$text = $this->loadTemplate();
-		$opt = JRequest::getVar('option');
-		$view = JRequest::getCmd('view');
-		JRequest::setVar('view', 'article');
-		JRequest::setVar('option', 'com_content');
-		jimport('joomla.html.html.content');
-		$text .= '{emailcloak=off}';
-		$text = JHTML::_('content.prepare', $text);
-		$text = preg_replace('/\{emailcloak\=off\}/', '', $text);
-		JRequest::setVar('option', $opt);
+		FabrikHelperHTML::runConentPlugins($text);
 		echo $text;
 	}
 

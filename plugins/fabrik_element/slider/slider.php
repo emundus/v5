@@ -26,14 +26,22 @@ class plgFabrik_ElementSlider extends plgFabrik_Element
 	/**
 	* If the element 'Include in search all' option is set to 'default' then this states if the
 	* element should be ignored from search all.
-	* @var bool  True, ignore in advanced search all.
+	* @var bool  True, ignore in extended search all.
 	*/
 	protected $ignoreSearchAllDefault = true;
 
-	/** @var  string  db table field type */
+	/**
+	 * Db table field type
+	 *
+	 * @var string
+	 */
 	protected $fieldDesc = 'INT(%s)';
 
-	/** @var  string  db table field size */
+	/**
+	 * Db table field size
+	 *
+	 * @var string
+	 */
 	protected $fieldSize = '6';
 
 	/**
