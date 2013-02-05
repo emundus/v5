@@ -74,7 +74,7 @@ class EmundusController extends JController {
 		$user =& JFactory::getUser();
 		$student_id = JRequest::getVar('user', null, 'GET', 'none',0);
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author", "Registered");
-		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id) && !EmundusHelperAccess::isEvaluator($user->id)) {
+		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id) && !EmundusHelperAccess::isEvaluator($user->id) && !EmundusHelperAccess::isApplicant($user->id)) {
 			die("You are not allowed to access to this page.");
 		}
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');

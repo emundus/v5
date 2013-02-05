@@ -38,16 +38,19 @@ class EmundusHelperAccess{
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,8);
 	}
 	
+	function isCoordinator($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,7);
+	}
 	function isPartner($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,6);
 	}
 	
-	function isCoordinator($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,7);
-	}
-	
 	function isEvaluator($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,5);
+	}
+	
+	function isApplicant($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id,4);
 	}
 }
 ?>

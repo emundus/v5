@@ -52,6 +52,7 @@ $db = JFactory::getDBO();
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" />
 <input type="hidden" name="option" value="com_emundus"/>
 <input type="hidden" name="view" value="check"/>
+<input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
@@ -212,7 +213,7 @@ foreach ($this->users as $user) { ?>
         <td> <?php 
 		echo ++$i+$limitstart; $i++;
 		echo "<div class='em_user_id'>#".$user->id."<div>";
-        echo $this->actions[$user->id];
+        echo $this->actions[$user->id][$user->id];
 		?> 
 		</td>
 		<td><?php 

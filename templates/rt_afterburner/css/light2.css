@@ -1,3 +1,4 @@
+@charset "utf-8";
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,blockquote,pre,a,ul,abbr,acronym,address,big,cite,code,del,dfn,font,img,ins,kbd,q,s,samp,small,strike,sub,sup,tt,var,center,dl,dt,dd,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,tr,th,td {background:transparent;border:0px;font-family:inherit;font-size:100%;font-style:inherit;font-weight:inherit;margin:0;padding:0;outline:0;
 }
 
@@ -372,12 +373,12 @@ opacity: 1;
 }
 
 /** ScrollToTop **/
-/*La diffÈrence d'opacitÈ va permettre d'obtenir du gris 
-puis du noir lorsque la souris passe sur l'ÈlÈment*/
+/*La diff√©rence d'opacit√© va permettre d'obtenir du gris 
+puis du noir lorsque la souris passe sur l'√©l√©ment*/
 #scrollToTop a{
-position: fixed;/*l'ÈlÈment est toujours ‡ la mÍme place dans l'Ècran*/
-right: 30px;/*dÈcalage du bord droit*/
-top: 200px;/*dÈcalage du bord haut*/
+position: fixed;/*l'√©l√©ment est toujours √† la m√™me place dans l'√©cran*/
+right: 30px;/*d√©calage du bord droit*/
+top: 200px;/*d√©calage du bord haut*/
 border-radius: 10px 10px 10px 10px;/*arrondi les angles*/
 background: url(/images/emundus/icones/fleche_haut.png) no-repeat;
 width:45px;
@@ -386,7 +387,7 @@ padding: 7px 10px;
 opacity: .3;
 }
 #scrollToTop a:hover{
-box-shadow: 0px 0px 5px #222; /*Permet de gÈrer l'ombre : droite bas contour couleur*/
+box-shadow: 0px 0px 5px #222; /*Permet de g√©rer l'ombre : droite bas contour couleur*/
 -moz-box-shadow: 0px 0px 5px #222; /*pour Firefox*/
 -webkit-box-shadow: 0px 0px 5px #222; /*Pour le navigateurs webkit*/
 opacity: 1;
@@ -484,3 +485,89 @@ i.button:active, button:active, input[type="submit"]:active, input[type="reset"]
 }
 .validate {background-color:#9F0;}
 .validate:hover {background-color:#00FF40;}
+
+/* Login form */
+.component-content .login-fields {
+    margin-bottom: 5px;
+}
+.component-content .login-fields #remember-lbl {
+    display: inline-block;
+    margin-right: 5px;
+}
+.component-content .login-fields #remember {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+}
+.component-content .login-fields #username, .login-fields #password, #contact-form dd input, #contact-form dd textarea, #modlgn-username, #modlgn-passwd, #jform_email, #member-registration dd input, #search-searchword, .finder .inputbox {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    line-height: 1.6em;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.component-content .login + div {
+    margin-top: 12px;
+}
+.component-content .login + div ul li, #login-form li {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+}
+.component-content .login + div ul li a:before, #login-form a:before {
+    content: "ÔÅô";
+    font-family: FontAwesome;
+    margin-right: 4px;
+}
+.component-content .login + div ul {
+    margin-left: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+}
+.component-content .login-description {
+    margin-bottom: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 10px;
+}
+#login-form .userdata {
+    margin-bottom: 12px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 12px;
+}
+#login-form ul {
+    margin-left: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+}
+#login-form ul li a {
+    font-size: 14px;
+}
+#login-form input[type="text"], #login-form input[type="password"] {
+    width: 94%;
+}
+#login-form #form-login-remember label {
+    display: inline-block;
+}
+#login-form #form-login-remember input {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+}
+#password-lbl, #username-lbl {
+    display: block;
+    /*float: left;*/
+    font-size: 1.2em;
+    line-height: 2em;
+    width: 130px;
+}

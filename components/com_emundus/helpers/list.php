@@ -214,11 +214,17 @@ class EmundusHelperList{
 	
 	// get icone on first column
 	function createActionsBlock($users, $params){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$actions = array();
-		$ids = array();
+		//$ids = array();
 		foreach($users as $user) {
 			//if(!in_array($user['user_id'],$ids)){
 				//$ids[] = $user['user_id'];
+				if (is_object($user)) {
+					$json  = json_encode($user); 
+					$user = json_decode($json, true);
+				}
+				//print_r($user);
 				$user_info = & EmundusHelperList::getUserInfo($user['user_id']);
 				$avatar =& EmundusHelperList::getAvatar($user['user_id']);
 				if(in_array('checkbox',$params)){
@@ -227,9 +233,9 @@ class EmundusHelperList{
 				if(in_array('gender',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_gender" id="em_gender_'.$user['user_id'].'">';
 					$actions[$user['user_id']][$user['user']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';
-					if ($user_info[0]->gender == 'male')
+					if (strtolower($user_info[0]->gender) == 'male')
 						$actions[$user['user_id']][$user['user']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
-					elseif ($user_info[0]->gender == 'female')
+					elseif (strtolower($user_info[0]->gender) == 'female')
 						$actions[$user['user_id']][$user['user']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
 					else
 						$actions[$user['user_id']][$user['user']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
@@ -245,8 +251,16 @@ class EmundusHelperList{
 				}				
 				if(in_array('details',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_details" id="em_details_'.$user['user_id'].'">';
-					$actions[$user['user_id']][$user['user']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="index.php?option=com_emundus&view=application_form&sid='.$user['user_id'].'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png"/></a>';
+					$actions[$user['user_id']][$user['user']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="index.php?option=com_emundus&view=application_form&sid='.$user['user_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png"/></a>';
 					$actions[$user['user_id']][$user['user']] .= '</div>';
+				}
+				if(in_array('photo',$params)){
+					if(!empty($avatar)){
+						@$actions[$user['user_id']][$user['user']] .= '<div class="em_photo" id="em_photo_'.$user['user_id'].'"><span class="editlinktip hasTip" title="'.JText::_('OPEN_PHOTO_IN_NEW_WINDOW').'::">';
+						$folder = $this->baseurl.EMUNDUS_PATH_REL.$user['user_id'];
+						$actions[$user['user_id']][$user['user']] .= '<a href="'.$folder.'/'.$avatar.'" target="_blank" class="modal"><img src="'.$folder.'/tn_'.$avatar.'" width="60" /></a>'; 
+						$actions[$user['user_id']][$user['user']] .= '</span></div>';
+					}
 				}
 				if(in_array('upload',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_upload" id="em_upload_'.$user['user_id'].'">';
@@ -275,20 +289,12 @@ class EmundusHelperList{
 					$actions[$user['user_id']][$user['user']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/images/emundus/icones/folder_documents.png" alt="'.JText::_('FORMS').'" title="'.JText::_('FORMS').'" width="22" height="22" align="absbottom" /></a><ul>';
 					foreach ( $forms as $row ) {
 						$actions[$user['user_id']][$user['user']] .= '<li>';
-						$actions[$user['user_id']][$user['user']] .= '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user['user_id'].'&usekey=user" target="_blank" >'.$row->label.'</a>';
+						$actions[$user['user_id']][$user['user']] .= '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user['user_id'].'&usekey=user&Itemid='.$itemid.'" target="_blank" >'.$row->label.'</a>';
 						$actions[$user['user_id']][$user['user']] .= '</li>';
 					}
 					$actions[$user['user_id']][$user['user']] .= '</ul></li>';
 					$actions[$user['user_id']][$user['user']] .= '</ul>';
 					$actions[$user['user_id']][$user['user']] .= '</div></div>';
-				}
-				if(in_array('photo',$params)){
-					if(!empty($avatar)){
-						@$actions[$user['user_id']][$user['user']] .= '<div class="em_photo" id="em_photo_'.$user['user_id'].'"><span class="editlinktip hasTip" title="'.JText::_('OPEN_PHOTO_IN_NEW_WINDOW').'::">';
-						$folder = $this->baseurl.EMUNDUS_PATH_REL.$user['user_id'];
-						$actions[$user['user_id']][$user['user']] .= '<a href="'.$folder.'/'.$avatar.'" target="_blank" class="modal"><img src="'.$folder.'/tn_'.$avatar.'" width="60" /></a>'; 
-						$actions[$user['user_id']][$user['user']] .= '</span></div>';
-					}
 				}
 				if(in_array('evaluation',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_evaluation" id="em_evaluation_'.$user['user_id'].'">';
@@ -437,7 +443,7 @@ class EmundusHelperList{
 						}
 						$uList .= '</ul>';
 						if(in_array('delete',$params)){
-							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->groups[$ass->group_id]->label.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'"><img src="'.JURI::Base().'images/emundus/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
+							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->groups[$ass->group_id]->label.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::Base().'images/emundus/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
 							@$evaluator[$user['user_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span> '.$img.'<br />';
 						}else  
 							@$evaluator[$user['user_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span></br>';
