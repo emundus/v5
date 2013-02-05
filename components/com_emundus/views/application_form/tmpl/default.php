@@ -224,7 +224,7 @@ if ($sent == 0) {
   <tbody>
   	<tr>
         <td valign="top" id="attachements" align="left">
-          <fieldset style="float:left; width:45%"><legend>Attachments</legend>
+          <fieldset style="float:left; width:45%"><legend><?php echo JText::_('ATTACHMENTS'); ?></legend>
 		  <?php 				
           // Tableau des pièce jointes 
           $query = 'SELECT upload.id AS aid, attachment.id, upload.filename, upload.description, attachment.value
@@ -264,7 +264,7 @@ if ($sent == 0) {
 		  ?>
           </fieldset>
 		   <?php if($current_user->profile!="16"){  ?>
-          <fieldset style="float:right; width:30%; margin-right:15%;"><legend>Comments</legend>
+          <fieldset style="float:right; width:30%; margin-right:15%;"><legend><?php echo JText::_('COMMENTS'); ?></legend>
 			  <?php  // Table of comments
 				  echo '<div id="comment_tab">';
                                   echo $this->comments;
@@ -299,11 +299,11 @@ if ($sent == 0) {
 	<?php 
 	if($current_user->profile!="16"){
 	if($this->can_evaluate){ 
-			if($this->is_evaluated)
-				$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid='.$this->user->user_id.'&usekey=student_id&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
-			else
-				$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
-			echo '<iframe src="'.$url.'" scrolling="auto" frameborder="0" height="850" width="100%" ></iframe>';
+		if($this->is_evaluated > 0)
+			$url = 'index.php?option=com_fabrik&c=form&view=form&fabrik=29&tableid=31&rowid='.$this->is_evaluated.'&usekey=id&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
+		else
+			$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
+		echo '<iframe src="'.$url.'" scrolling="auto" frameborder="0" height="850" width="100%" ></iframe>';
 	} }
 	?>
 	</td>

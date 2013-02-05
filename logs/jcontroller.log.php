@@ -1098,3 +1098,8 @@
 2013-01-15T19:36:13+00:00	INFO	controller	Holding edit ID com_fabrik.edit.element.1523 Array (     [0] => 1523 ) 
 2013-01-15T19:36:25+00:00	INFO	controller	Checking edit ID com_fabrik.edit.element.1523: 1 Array (     [0] => 1523 ) 
 2013-01-15T19:36:25+00:00	INFO	controller	Releasing edit ID com_fabrik.edit.element.1523 Array ( ) 
+2013-01-21T17:38:23+00:00	INFO	controller	Holding edit ID com_menus.edit.item.1135 Array (     [0] => 1135 ) 
+2013-01-21T17:38:23+00:00	INFO	controller	Checking edit ID com_menus.edit.item.1135: 1 Array (     [0] => 1135 ) 
+2013-01-21T17:38:30+00:00	INFO	controller	Checking edit ID com_menus.edit.item.1135: 1 Array (     [0] => 1135 ) 
+2013-01-21T17:38:39+00:00	INFO	controller	Checking edit ID com_menus.edit.item.1135: 1 Array (     [0] => 1135 ) 
+2013-01-21T17:38:39+00:00	INFO	controller	Releasing edit ID com_menus.edit.item.1135 Array ( ) 

@@ -1,5 +1,7 @@
 <?php
 /**
+ * Plugin element to render cascading dropdown
+ *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.cascadingdropdown
  * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
@@ -359,7 +361,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 			if (is_array($ids))
 			{
 				array_walk($ids, create_function('&$val', '$db = JFactory::getDbo();$val = $db->quote($val);'));
-				$this->_autocomplete_where = empty($ids) ? '1 = 1' : $key . ' IN (' . implode(',', $ids) . ')';
+				$this->_autocomplete_where = empty($ids) ? '1 = -1' : $key . ' IN (' . implode(',', $ids) . ')';
 			}
 		}
 		$filter = JFilterInput::getInstance();

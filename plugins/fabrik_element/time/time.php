@@ -23,7 +23,11 @@ class plgFabrik_ElementTime extends plgFabrik_Element
 
 	public $hasSubElements = true;
 
-	/** @var  string  db table field type */
+	/**
+	 * Db table field type
+	 *
+	 * @var string
+	 */
 	protected $fieldDesc = 'TIME';
 
 	/**
@@ -257,7 +261,7 @@ class plgFabrik_ElementTime extends plgFabrik_Element
 	{
 		if (is_array($val) && implode($val) != '')
 		{
-			return str_replace('', '00', $val[0]) . ':' . str_replace('', '00', $val[1]) . ':' . str_replace('', '00', $val[2]);
+			return rtrim(str_replace('', '00', $val[0]) . ':' . str_replace('', '00', $val[1]) . ':' . str_replace('', '00', $val[2]), ':');
 		}
 		return $val;
 	}

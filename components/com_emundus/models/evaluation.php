@@ -351,12 +351,12 @@ class EmundusModelEvaluation extends JModel
 		$s_elements = $session->get('s_elements');
 		if (count($search)==0) $search = $s_elements;
 		
-		if($this->_user->usertype=='Author'){
+		if(EmundusHelperAccess::isEvaluator($this->_user->id)){
 			if($eval_access>0)
 				$applicants = $this->union($this->_buildQuery_myGroup(),$this->_buildQuery_myAffect());
 			else
 				$applicants = $this->_buildQuery_myAffect();		
-		}elseif ($this->_user->usertype=='Editor'){
+		}elseif (EmundusHelperAccess::isPartner($this->_user->id)){
 			$applicants = $this->_buildQuery_myGroup();
 		}else{
 			$query = $this->_buildSelect();
@@ -401,7 +401,8 @@ class EmundusModelEvaluation extends JModel
 						$sub_val[$sub_value] = $sub_labels[$i];
 						$i++;
 					}
-					$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND user = '.$applicant->user;
+					//$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND user = '.$applicant->user;
+					$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id;
 					$this->_db->setQuery( $query );
 					$val = $this->_db->loadResult();
 					

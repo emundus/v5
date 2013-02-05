@@ -14,6 +14,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.model');
 
 require_once JPATH_SITE . '/components/com_fabrik/models/visualization.php';
+require_once JPATH_SITE . '/components/com_fabrik/helpers/googlemap.php';
 
 /**
  * Fabrik Google Map Plug-in Model
@@ -114,6 +115,10 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 		$opts->groupTemplates = $this->getGroupTemplates();
 		$opts->zoomStyle = (int) $params->get('fb_gm_zoom_control_style', 0);
 		$opts->zoom = $params->get('fb_gm_zoom', 1);
+		$opts->show_radius = $params->get('fb_gm_use_radius', '1') == '1' ? true : false;
+		$opts->radius_defaults = (array) $params->get('fb_gm_radius_default');
+		$opts->radius_fill_colors = (array) $params->get('fb_gm_radius_fill_color');
+		$opts->styles = FabGoogleMapHelper::styleJs($params);
 		$opts = json_encode($opts);
 		$ref = $this->getJSRenderContext();
 		$str .= "$ref = new FbGoogleMapViz('table_map', $opts)";
@@ -248,6 +253,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 		$uri = JURI::getInstance();
 		$params = $this->getParams();
 		$templates = (array) $params->get('fb_gm_detailtemplate');
+		$templates_nl2br = (array) $params->get('fb_gm_detailtemplate_nl2br');
 		$listids = (array) $params->get('googlemap_table');
 
 		// Images for file system
@@ -261,6 +267,9 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 		$aFirstIcons = (array) $params->get('fb_gm_first_iconimage');
 		$aLastIcons = (array) $params->get('fb_gm_last_iconimage');
 		$titleElements = (array) $params->get('fb_gm_title_element');
+		$radiusElements = (array) $params->get('fb_gm_radius_element');
+		$radiusDefaults = (array) $params->get('fb_gm_radius_default');
+		$radiusUnits = (array) $params->get('fb_gm_radius_unit');
 		$groupClass = (array) $params->get('fb_gm_group_class');
 
 		$c = 0;
@@ -271,11 +280,22 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 		$limitMessageShown = false;
 		$limitMessage = $params->get('fb_gm_markermax_message');
 		$groupedIcons = array();
-		$k = 0;
+		$lc = 0;
 		foreach ($listids as $listid)
 		{
-			$template = JArrayHelper::getValue($templates, $c, '');
 			$listModel = $this->getlistModel($listid);
+
+			$template = JArrayHelper::getValue($templates, $c, '');
+			/**
+			* One day we should get smarter about how we decide which elements to render
+			* but for now all we can do is set formatAll(), in case they use an element
+			* which isn't set for list display, which then wouldn't get rendered unless we do this.
+			*/
+			if (FabrikString::usesElementPlaceholders($template)) {
+				$listModel->formatAll(true);
+			}
+			$template_nl2br = JArrayHelper::getValue($templates_nl2br, $c, '1') == '1';
+
 			$table = $listModel->getTable();
 
 			try
@@ -333,20 +353,32 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 					 */
 					if (empty($html) && (array_key_exists('fabrik_view', $rowdata) || array_key_exists('fabrik_edit', $rowdata)))
 					{
-						$html .= "<br />";
+						//Don't insert linebreak in empty bubble without links $html .= "<br />";
 
 						// Use edit link by preference
 						if (array_key_exists('fabrik_edit', $rowdata))
 						{
+							if ($rowdata['fabrik_edit']!="") $html .= "<br />";
 							$html .= $rowdata['fabrik_edit'];
 						}
 						else
 						{
+							if ($rowdata['fabrik_view']!="") $html .= "<br />";
 							$html .= $rowdata['fabrik_view'];
 						}
 					}
-					$html = str_replace(array("\n\r"), "<br />", $html);
-					$html = str_replace(array("\n", "\r"), "<br />", $html);
+					if ($template_nl2br)
+					{
+						// $$$ hugh - not sure why we were doing this rather than nl2br?
+						// If there was a reason, this is still broken, as it ends up inserting
+						// two breaks.  So if we can't use nl2br ... I need fix this before using it again!
+						/*
+						$html = str_replace(array("\n\r"), "<br />", $html);
+						$html = str_replace(array("\r\n"), "<br />", $html);
+						$html = str_replace(array("\n", "\r"), "<br />", $html);
+						*/
+						$html = nl2br($html, true);
+					}
 					$html = str_replace("'", '"', $html);
 					$this->txt[] = $html;
 					if ($iconImg == '')
@@ -404,8 +436,10 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 							/* $$$ hugh - this inserts label between multiple record $html, but not at the top.
 							 * If they want to insert label, they can do it themselves in the template.
 							 * $icons[$v[0].$v[1]][2] = $icons[$v[0].$v[1]][2] . "<h6>$table->label</h6>" . $html;
+							 * Don't insert linebreaks in empty bubble
 							 */
-							$icons[$v[0] . $v[1]][2] = $icons[$v[0] . $v[1]][2] . "<br />" . $html;
+							 if ($html!="") $html = "<br />" . $html;
+							$icons[$v[0] . $v[1]][2] = $icons[$v[0] . $v[1]][2] .  $html;
 							if ($customimagefound)
 							{
 								$icons[$v[0] . $v[1]][3] = $iconImg;
@@ -427,6 +461,26 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 						$icons[$v[0] . $v[1]] = array($v[0], $v[1], $html, $iconImg, $width, $height, 'groupkey' => $groupKey, 'listid' => $listid,
 							'title' => $title, 'groupClass' => 'type' . $gClass);
 					}
+
+					if ($params->get('fb_gm_use_radius', '0') == '1')
+					{
+						$radiusElement = JArrayHelper::getValue($radiusElements, $c, '');
+						$radiusUnits = JArrayHelper::getValue($radiusUnits, $c, 'k');
+						$radiusMeters = $radiusUnits == 'k' ? 1000 : 1609.34;
+						if (!empty($radiusElement))
+						{
+							$radius = (float) $row->$radiusElement;
+							$radius *= $radiusMeters;
+							$icons[$v[0].$v[1]]['radius'] = $radius;
+						}
+						else
+						{
+							$default = (float) JArrayHelper::getvalue($radiusDefaults, $c, 50);
+							$default *= $radiusMeters;
+							$icons[$v[0].$v[1]]['radius'] = $default;
+						}
+					}
+					$icons[$v[0] . $v[1]]['c'] = $c;
 					$this->recordCount++;
 					$k++;
 				}

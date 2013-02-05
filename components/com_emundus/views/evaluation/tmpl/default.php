@@ -55,7 +55,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                                     <td> 
 										<?php 
                                         echo $i+$limitstart; $i++; 
-                                        echo $this->actions[$value];  
+                                        echo $this->actions[$value][$evalu['user']];
                                         echo "#".$value;  
                                         ?>  
                                     </td><?php 	

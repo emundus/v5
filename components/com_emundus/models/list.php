@@ -337,7 +337,7 @@ class EmundusModelList extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade');
 		
-		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__users.name, #__emundus_setup_profiles.id as profile';
+		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__users.email, #__users.name, #__emundus_setup_profiles.id as profile';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -529,6 +529,7 @@ class EmundusModelList extends JModel
 				foreach($head_values as $head){
 					$head_val[] = $head['name'];
 					$eval_list[$head['name']] = $applicant->$head['name'];
+					$eval_list['user'] = $applicant->user_id;
 				}
 				/** add an advance filter columns only if not already exist **/
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);
@@ -587,6 +588,8 @@ class EmundusModelList extends JModel
 	function getApplicantColumns(){
 		$cols = array();
 		$cols[] = array('name' =>'user_id', 'label'=>'User id');
+		$cols[] = array('name' =>'user', 'label'=>'User id');
+		$cols[] = array('name' =>'email', 'label'=>'Email');
 		$cols[] = array('name' =>'name', 'label'=>'Name'); 
 		$cols[] = array('name' =>'profile', 'label'=>'Profile'); 
 

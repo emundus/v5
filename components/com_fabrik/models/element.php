@@ -125,7 +125,7 @@ class plgFabrik_Element extends FabrikPlugin
 	 * If the element 'Include in search all' option is set to 'default' then this states if the
 	 * element should be ignored from search all.
 	 *
-	 * @var bool  True, ignore in advanced search all.
+	 * @var bool  True, ignore in extended search all.
 	 */
 	protected $ignoreSearchAllDefault = false;
 
@@ -1027,6 +1027,7 @@ class plgFabrik_Element extends FabrikPlugin
 
 	public function getDefaultValue($data = array())
 	{
+
 		if (!isset($this->_default))
 		{
 			$w = new FabrikWorker;
@@ -1034,9 +1035,25 @@ class plgFabrik_Element extends FabrikPlugin
 			$default = $w->parseMessageForPlaceHolder($element->default, $data);
 			if ($element->eval == "1")
 			{
-				FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
-				$default = @eval(stripslashes($default));
-				FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
+				/**
+				 * Inline edit with a default eval'd "return FabrikHelperElement::filterValue(290);"
+				 * was causing the default to be eval'd twice (no idea y) - add in check for 'return' into eval string
+				 * see http://fabrikar.com/forums/showthread.php?t=30859
+				 */
+				if (!stristr($default, 'return'))
+				{
+					$this->_default = $default;
+				}
+				else
+				{
+					FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
+					$default = stripslashes($default);
+					$default = @eval($default);
+					FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
+
+					// test this does stop error
+					$this->_default = $default === false ? '' : $default;
+				}
 			}
 			$this->_default = $default;
 		}
@@ -1426,7 +1443,7 @@ class plgFabrik_Element extends FabrikPlugin
 						$validationHovers[] = '<li>' . $validation->getHoverText($this, $pluginc, $tmpl) . '</li>';
 					}
 					$validationHovers[] = '</ul></div>';
-					$title = implode('', $validationHovers);
+					$title = htmlspecialchars(implode('', $validationHovers),ENT_QUOTES);
 					$opts = new stdClass;
 					$opts->position = 'top';
 					$opts = json_encode($opts);
@@ -2925,9 +2942,22 @@ class plgFabrik_Element extends FabrikPlugin
 
 	protected function getSubOptionValues()
 	{
-		$params = $this->getParams();
-		$opts = $params->get('sub_options', '');
-		return $opts == '' ? array() : (array) @$opts->sub_values;
+		$phpOpts = $this->getPhpOptions();
+		if (!$phpOpts)
+		{
+			$params = $this->getParams();
+			$opts = $params->get('sub_options', '');
+			$opts = $opts == '' ? array() : (array) @$opts->sub_values;
+		}
+		else
+		{
+			$opts = array();
+			foreach ($phpOpts as $phpOpt)
+			{
+				$opts[] = $phpOpt->value;
+			}
+		}
+		return $opts;
 	}
 
 	/**
@@ -2938,9 +2968,41 @@ class plgFabrik_Element extends FabrikPlugin
 
 	protected function getSubOptionLabels()
 	{
+		$phpOpts = $this->getPhpOptions();
+		if (!$phpOpts)
+		{
+			$params = $this->getParams();
+			$opts = $params->get('sub_options', '');
+			$opts = $opts == '' ? array() : (array) @$opts->sub_labels;
+		}
+		else
+		{
+			$opts = array();
+			foreach ($phpOpts as $phpOpt)
+			{
+				$opts[] = $phpOpt->text;
+			}
+		}
+		return $opts;
+	}
+
+	/**
+	 * Should we get the elements sub options via the use of eval'd parameter setting
+	 *
+	 * @since  3.0.7
+	 *
+	 * @return mixed  false if no, otherwise needs to return array of JHTML::options
+	 */
+
+	protected function getPhpOptions()
+	{
 		$params = $this->getParams();
-		$opts = $params->get('sub_options', '');
-		return $opts == '' ? array() : (array) @$opts->sub_labels;
+		$pop = $params->get('dropdown_populate', '');
+		if ($pop !== '')
+		{
+			return eval($pop);
+		}
+		return false;
 	}
 
 	/**
@@ -5300,7 +5362,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	/**
 	 * Should the element's data be returned in the search all?
 	 *
-	 * @param   bool  $advancedMode  is the elements' list is advanced search all mode?
+	 * @param   bool  $advancedMode  is the elements' list is extended search all mode?
 	 *
 	 * @return  bool	true
 	 */
@@ -6264,6 +6326,21 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	protected function _buildQueryWhere($data = array(), $incWhere = true, $thisTableAlias = null, $opts = array(), $query = false)
 	{
 		return '';
+	}
+
+	/**
+	 *
+	 * Is the element set to always render in list contexts
+	 *
+	 * @param    bool  $not_shown_only
+	 *
+	 * @return   bool
+	 */
+	public function isAlwaysRender($not_shown_only = true)
+	{
+		$params = $this->getParams();
+		$element = $this->getElement();
+		return $not_shown_only ? $element->show_in_list_summary == 0 && $params->get('always_render', '0') == '1' : $params->get('always_render', '0') == '1';
 	}
 
 }

@@ -56,13 +56,22 @@ class FabrikFEModelList extends JModelForm
 	 */
 	protected $_table = null;
 
-	/** @var object table's form model */
+	/**
+	 * List's form model
+	 * @var FabrikFEModelForm
+	 */
 	protected $_oForm = null;
 
-	/** @var array joins */
+	/**
+	 * Joins
+	 * @var array
+	 */
 	protected $_aJoins = null;
 
-	/** @var array column calculations */
+	/**
+	 * Column calculations
+	 * @var array
+	 */
 	protected $_aRunCalculations = array();
 
 	/**
@@ -72,92 +81,231 @@ class FabrikFEModelList extends JModelForm
 	*/
 	protected $outPutFormat = 'html';
 
+	/**
+	 * Is rendered as a J content plugin
+	 *
+	 * @var bool
+	 */
 	public $isMambot = false;
 
-	/** @var object to contain access rights **/
+	/**
+	 * Contain access rights
+	 *
+	 * @var object
+	 */
 	protected $_access = null;
 
-	/** @var int the id of the last inserted record (or if updated the last record updated) **/
+	/**
+	 * Id of the last inserted record (or if updated the last record updated)
+	 *
+	 * @var int
+	 */
 	public $lastInsertId = null;
 
-	/** @var array store data to create joined records from */
+	/**
+	 * Store data to create joined records from
+	 *
+	 * @var array
+	 */
 	protected $_joinsToProcess = null;
 
-	/** @var array database fields */
+	/**
+	 * Database fields
+	 *
+	 * @var array
+	 */
 	protected $_dbFields = null;
 
-	/** @var bool force reload table calculations **/
+	/**
+	 * Force reload table calculations
+	 *
+	 * @var bool
+	 */
 	protected $_reloadCalculations = false;
 
-	/** @var array data contains request data **/
+	/**
+	 * Data contains request data
+	 *
+	 * @var array
+	 */
 	protected $_aData = null;
 
+	/**
+	 * Used when making custom links to determine if we need to append the rowid to the url
+	 *
+	 * @var bool
+	 */
 	protected $rowIdentifierAdded = false;
 
-	/**  @var bool is ajax used */
+	/**
+	 * Is ajax used
+	 *
+	 * @var bool
+	 */
 	public $ajax = null;
 
-	/** @var object plugin manager */
+	/**
+	 * Plugin manager
+	 *
+	 * @var FabrikFEModelPluginmanager
+	 */
 	protected $_pluginManager = null;
 
-	/** @var string join sql **/
+	/**
+	 * Join sql
+	 *
+	 * @var string
+	 */
 	protected $_joinsSQL = null;
 
-	/** @var array order by column names **/
+	/**
+	 * Order by column names
+	 *
+	 * @var array
+	 */
 	var $orderByFields = null;
 
-	/** @var bol is the object inside a package? */
+	/**
+	 * Is the object inside a package?
+	 *
+	 * @bar bool
+	 */
 	//var $_inPackage  = false;
 
 	protected $_joinsToThisKey = null;
 
+	/**
+	 * Used to determine which filter action to use.
+	 * If a filter is a range then override lists setting with onsubmit
+	 *
+	 * @var string
+	 */
 	protected $_real_filter_action = null;
 
-	/** array merged request and session data used to potentially filter the table **/
+	/**
+	 * Merged request and session data used to potentially filter the list
+	 *
+	 * @var array
+	 */
 	protected $_request = null;
 
+	/**
+	 * Internally used when using parseMessageForRowHolder();
+	 *
+	 * @var array
+	 */
 	protected $_aRow = null;
 
-	/** array rows to delete **/
+	/**
+	 * Rows to delete
+	 *
+	 * @var array
+	 */
 	protected $_rowsToDelete = null;
 
-	/** @var array original table data BEFORE form saved - used to ensure uneditable data is stored */
+	/**
+	 * Original list data BEFORE form saved - used to ensure uneditable data is stored
+	 *
+	 * @var array
+	 */
 	protected $_origData = null;
 
-	/** @var bol set to true to load records STARTING from a random id (used in the getPageNav func) **/
+	/**
+	 * Set to true to load records STARTING from a random id (used in the getPageNav func)
+	 *
+	 * @var bool
+	 */
 	public $randomRecords = false;
 
+	/**
+	 * List data
+	 *
+	 * @var array
+	 */
 	protected $_data = null;
 
-	/** @var string template name */
+	/**
+	 * Template name
+	 *
+	 * @var string
+	 */
 	protected $tmpl = null;
 
+	/**
+	 * Pagination
+	 *
+	 * @var FPagination
+	 */
 	var $nav = null;
+
+	/**
+	 * List field names
+	 *
+	 * @var array
+	 */
 	var $fields = null;
 
-	/** @var array prefilters */
+	/**
+	 * Prefilters
+	 *
+	 * @var array
+	 */
 	var $prefilters = null;
 
-	/** @var array filters */
+	/**
+	 * Filters
+	 *
+	 * @var array
+	 */
 	var $filters = null;
+
+	/**
+	 * Db element joins whose fk's point to the list's primary key
+	 *
+	 * @var array
+	 */
 	var $aJoinsToThisKey = null;
 
-	/** @var bool can rows be selected */
+	/**
+	 * Can rows be selected
+	 *
+	 * @var bool
+	 */
 	var $canSelectRows = null;
 
-	/** @var array as fields */
+	/**
+	 * As fields - used in query to build list data
+	 *
+	 * @var array
+	 */
 	var $asfields = null;
 
-	/** @var bool an element which is the db key has already been added to the list of fields to select*/
+	/**
+	 * Has an element, which is the db key, already been added to the list of fields to select
+	 *
+	 * @var bool
+	 */
 	var $_temp_db_key_addded = false;
 
-	/** @var bool group by statement added to the list query */
+	/**
+	 * Has the group by statement been added to the list query
+	 *
+	 * @var bool
+	 */
 	var $_group_by_added = false;
 
-	/** @var array list of where conditions added by list plugins */
+	/**
+	 * List of where conditions added by list plugins
+	 *
+	 * @var array
+	 */
 	var $_pluginQueryWhere = array();
 
-	/** @var array list of group by statements added by list plugins */
+	/**
+	 * List of group by statements added by list plugins
+	 *
+	 * @var array
+	 */
 	var $_pluginQueryGroupBy = array();
 
 	/**
@@ -167,29 +315,67 @@ class FabrikFEModelList extends JModelForm
 	*/
 	public $groupTemplates = array();
 
-	/** @var bool is the table a view **/
+	/**
+	 * Is the list a view
+	 *
+	 * @var bool
+	 */
 	protected $isView = null;
 
-	/** @var array index objects **/
+	/**
+	 * Index objects
+	 *
+	 * @var array
+	 */
 	var $_indexes = null;
 
-	/** @var array previously submitted advanced search data */
+	/**
+	 * Previously submitted advanced search data
+	 *
+	 * @var array
+	 */
 	var $advancedSearchRows = null;
 
-	/** @var string table action url */
+	/**
+	 * List action url
+	 *
+	 * @var string
+	 */
 	var $tableAction = null;
 
-	/** @var bool doing CSV import */
+	/**
+	 * Doing CSV import
+	 *
+	 * @var bool
+	 */
 	public $importingCSV = false;
 
-	var $encrypt = array();
+	/**
+	 * Element names to encrypt
+	 *
+	 * @var array
+	 */
+	public $encrypt = array();
 
-	/** @var int which record to start showing from */
+	/**
+	 * Which record number to start showing from
+	 *
+	 * @var int
+	 */
 	var $limitStart = null;
 
-	/** @var int # records to show */
+	/**
+	 * Number of records per page
+	 *
+	 * @var int
+	 */
 	var $limitLength = null;
 
+	/**
+	 * List rows
+	 *
+	 * @var array
+	 */
 	protected $rows = null;
 
 	/**
@@ -201,24 +387,53 @@ class FabrikFEModelList extends JModelForm
 	 */
 	protected $actionHeading = false;
 
-	/** @var array list of column data - used for filters */
+	/**
+	 * List of column data - used for filters
+	 *
+	 * @var array
+	 */
 	protected $columnData = array();
 
-	/** @var string render context used for defining custom css variable for tmpl rendering e.g. module_1*/
+	/**
+	 * Render context used for defining custom css variable for tmpl rendering e.g. module_1
+	 *
+	 * @var string
+	 */
 	protected $renderContext = '';
 
-	/** @var int the max number of buttons that is shown in a row */
+	/**
+	 * Tthe max number of buttons that is shown in a row
+	 *
+	 * @var int
+	 */
 	protected $rowActionCount = 0;
 
-	/** @var bool do any of the elements have a required filter, only used through method of same name */
+	/**
+	 * Do any of the elements have a required filter, only used through method of same name
+	 *
+	 * @var bool
+	 */
 	protected $hasRequiredElementFilters = null;
 
-	/** @var array do any of thecache for elements which have a required filter */
+	/**
+	 * Elements which have a required filter
+	 *
+	 * @var array
+	 */
 	protected $elementsWithRequiredFilters = array();
 
-	/** @var bool force formatData() to format all elements, uses formatAll() accessor method **/
+	/**
+	 * Force formatData() to format all elements, uses formatAll() accessor method
+	 *
+	 * @var bool
+	 */
 	protected $_format_all = false;
 
+	/**
+	 * Array of order by elements
+	 *
+	 * @var array
+	 */
 	public $orderEls = array();
 
 	/**
@@ -566,8 +781,7 @@ class FabrikFEModelList extends JModelForm
 		$cache = FabrikWorker::getCache();
 		// Ajax call needs to recall this - not sure why
 		$this->setLimits();
-		$results = $cache
-		->call(array(get_class($this), 'finesseData'), $this->getId(), $query, $this->limitStart, $this->limitLength, $this->outPutFormat);
+		$results = $cache->call(array(get_class($this), 'finesseData'), $this->getId(), $query, $this->limitStart, $this->limitLength, $this->outPutFormat);
 		$this->totalRecords = $results[0];
 		$this->_data = $results[1];
 		$this->groupTemplates = $results[2];
@@ -781,7 +995,14 @@ class FabrikFEModelList extends JModelForm
 			}
 			else
 			{
+				// $$$ hugh - added 'always render' option to elements, and methods to grab those.
+				// Could probably do this in getPublishedListElements(), but for now just grab a list
+				// of elements with 'always render' set to Yes, and "show in list" set to No,
+				// then merge that with the getPublishedListElements.  This is to work around issues
+				// where things like plugin bubble templates use placeholders for elements not shown in the list.
+				$alwaysRenderElements = $this->getAlwaysRenderElements(true);
 				$elementModels = $groupModel->getPublishedListElements();
+				$elementModels = array_merge($elementModels, $alwaysRenderElements);
 			}
 			foreach ($elementModels as $elementModel)
 			{
@@ -878,7 +1099,8 @@ class FabrikFEModelList extends JModelForm
 					// Test if its just an <a>*</a> tag - if so allow HTML (enables use of icons)
 					$xml = new SimpleXMLElement('<div>' . $sdata . '</div>');
 					$children = $xml->children();
-					if (!($xml->count() === 1 && $children[0]->getName() == 'a'))
+				//not working in PHP5.2	if (!($xml->count() === 1 && $children[0]->getName() == 'a'))
+					if (!(count($xml->children()) === 1 && $children[0]->getName() == 'a'))
 					{
 						$sdata = strip_tags($sdata);
 					}
@@ -2121,7 +2343,8 @@ class FabrikFEModelList extends JModelForm
 				$orderbys = json_decode($table->order_by, true);
 			}
 			// $$$ not sure why, but sometimes $orderbys is NULL at this point.
-			if (!isset($orderbys)) {
+			if (!isset($orderbys))
+			{
 				$orderbys = array();
 			}
 			// Covert ids to names (were stored as names but then stored as ids)
@@ -2138,20 +2361,21 @@ class FabrikFEModelList extends JModelForm
 			{
 				$orderdirs = json_decode($table->order_dir, true);
 			}
+			$els = $this->getElements('filtername');
 			if (!empty($orderbys))
 			{
 				$bits = array();
-				for ($o = 0; $o < count($orderbys); $o++)
+				$o = 0;
+				foreach ($orderbys as $orderbyRaw)
 				{
 					$dir = JArrayHelper::getValue($orderdirs, $o, 'desc');
-					if ($orderbys[$o] !== '')
+					if ($orderbyRaw !== '')
 					{
-						$orderby = FabrikString::safeColName($orderbys[$o]);
-						$els = $this->getElements('filtername');
-						if (array_key_exists($orderby, $els))
+						$orderbyRaw = FabrikString::safeColName($orderbyRaw);
+						if (array_key_exists($orderbyRaw, $els))
 						{
 							// $$$ hugh - getOrderByName can return a CONCAT, ie join element ...
-							$field = $els[$orderby]->getOrderByName();
+							$field = $els[$orderbyRaw]->getOrderByName();
 							if (!JString::stristr($field, 'CONCAT('))
 							{
 								$field = FabrikString::safeColName($field);
@@ -2162,15 +2386,16 @@ class FabrikFEModelList extends JModelForm
 						}
 						else
 						{
-							if (strstr($orderby, '_raw`'))
+							if (strstr($orderbyRaw, '_raw`'))
 							{
-								$orderby = FabrikString::safeColNameToArrayKey($orderby);
+								$orderbyRaw = FabrikString::safeColNameToArrayKey($orderbyRaw);
 							}
-							$bits[] = " $orderby $dir";
-							$this->orderEls[] = $orderby;
+							$bits[] = " $orderbyRaw $dir";
+							$this->orderEls[] = $orderbyRaw;
 							$this->orderDirs[] = $dir;
 						}
 					}
+					$o ++;
 				}
 				if (!empty($bits))
 				{
@@ -3163,7 +3388,7 @@ class FabrikFEModelList extends JModelForm
 	}
 
 	/**
-	 * Checks user access for deleting records
+	 * Checks user access for deleting records.
 	 *
 	 * @param   object  $row  of data currently active
 	 *
@@ -3172,17 +3397,24 @@ class FabrikFEModelList extends JModelForm
 
 	public function canDelete($row = null)
 	{
+		// Find out if any plugins deny delete.  We then allow a plugin to override with 'false' if
+		// if useDo or group ACL allows edit.  But we don't allow plugin to allow, if userDo or group ACL
+		// deny access.
+		$pluginCanEdit = FabrikWorker::getPluginManager()->runPlugins('onCanDelete', $this, 'list', $row);
+		$pluginCanEdit = !in_array(false, $pluginCanEdit);
 		$canUserDo = $this->canUserDo($row, 'allow_delete2');
 		if ($canUserDo !== -1)
 		{
-			return $canUserDo;
+			// if userDo allows delete, let plugin override
+			return $canUserDo ? $pluginCanEdit : $canUserDo;
 		}
 		if (!is_object($this->_access) || !array_key_exists('delete', $this->_access))
 		{
 			$groups = JFactory::getUser()->authorisedLevels();
 			$this->_access->delete = in_array($this->getParams()->get('allow_delete'), $groups);
 		}
-		return $this->_access->delete;
+		// if group access allows delete, then let plugin override
+		return $this->_access->delete ? $pluginCanEdit : $this->_access->delete;
 	}
 
 	/**
@@ -4564,8 +4796,8 @@ class FabrikFEModelList extends JModelForm
 	}
 
 	/**
-	 * used to determine which filter action to use
-	 *if a filter is a range then override lists setting with onsubmit
+	 * Used to determine which filter action to use.
+	 * If a filter is a range then override lists setting with onsubmit
 	 *
 	 * @return  string
 	 */
@@ -5002,8 +5234,9 @@ class FabrikFEModelList extends JModelForm
 			$requestKey = $this->getFilterModel()->getSearchAllRequestKey();
 			$v = $this->getFilterModel()->getSearchAllValue('html');
 			$o = new stdClass;
+			$class = FabrikWorker::j3() ? 'fabrik_filter search-query input-medium' : 'fabrik_filter';
 			$o->filter = '<input type="search" size="20" placeholder="' . JText::_('COM_FABRIK_SEARCH') . '" value="' . $v
-			. '" class="fabrik_filter" name="' . $requestKey . '" />';
+			. '" class="' . $class . '" name="' . $requestKey . '" />';
 			if ($params->get('search-mode-advanced') == 1)
 			{
 				$opts = array();
@@ -9514,6 +9747,8 @@ class FabrikFEModelList extends JModelForm
 	 * and just format everything, needed by things like the table email plugin.
 	 * If called without an arg, just returns current setting.
 	 *
+	 * $$$ hugh - doesn't work, now that finesseData() is called via call_user_func().
+	 *
 	 * @param   bool  $format_all  optional arg to set format
 	 *
 	 * @return  bool
@@ -9560,4 +9795,41 @@ class FabrikFEModelList extends JModelForm
 		return $state;
 	}
 
+	/**
+	 * Return an array of elements which are set to always render
+	 *
+	 * @param   bool  only return elements which have 'always render' enabled, AND are not displayed in the list
+	 *
+	 * @return   bool  array of element models
+	 */
+
+	public function getAlwaysRenderElements($not_shown_only = true)
+	{
+		$form = $this->getFormModel();
+		$alwaysRender = array();
+		$groups = $form->getGroupsHiarachy();
+		foreach ($groups as $groupModel)
+		{
+			$elementModels = $groupModel->getPublishedElements();
+			foreach ($elementModels as $elementModel)
+			{
+				if ($elementModel->isAlwaysRender($not_shown_only))
+				{
+					$alwaysRender[] = $elementModel;
+				}
+			}
+		}
+		return $alwaysRender;
+	}
+
+	/**
+	 * Does the list have any 'always render' elements?
+	 *
+	 * @return   bool
+	 */
+	public function hasAlwaysRenderElements()
+	{
+		$alwaysRender = $this->getAlwaysRenderElements();
+		return !empty($alwaysRender);
+	}
 }

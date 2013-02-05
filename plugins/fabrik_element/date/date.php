@@ -1,5 +1,7 @@
 <?php
 /**
+ * Plugin element to render date picker
+ *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.date
  * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
@@ -24,7 +26,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 * If the element 'Include in search all' option is set to 'default' then this states if the
 	 * element should be ignored from search all.
 	 *
-	 * @var bool  True, ignore in advanced search all.
+	 * @var bool  True, ignore in extended search all.
 	 */
 	protected $ignoreSearchAllDefault = true;
 
@@ -35,6 +37,11 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 */
 	protected $resetToGMT = true;
 
+	/**
+	 * Is the element a ranged filter (can depend on request data)
+	 *
+	 * @var bool
+	 */
 	protected $rangeFilterSet = false;
 
 	/**
@@ -2233,8 +2240,18 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 class FabDate extends JDate
 {
 
+	/**
+	 * GMT Date
+	 *
+	 * @var DateTimeZone
+	 */
 	protected static $gmt;
 
+	/**
+	 * Default tz date
+	 *
+	 * @var DateTimeZone
+	 */
 	protected static $stz;
 
 	/**

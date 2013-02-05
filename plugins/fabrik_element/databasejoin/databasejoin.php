@@ -2432,8 +2432,8 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 		if ($this->isJoin())
 		{
-			$rows = ($this->checkboxRows('id'));
-			if (array_key_exists($v, $rows))
+			$rows = $this->checkboxRows('id');
+			if (is_array($rows) && array_key_exists($v, $rows))
 			{
 				return $rows[$v]->text;
 			}
@@ -2758,7 +2758,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	/**
 	 * Should the element's data be returned in the search all?
 	 *
-	 * @param   bool  $advancedMode  is the elements' list is advanced search all mode?
+	 * @param   bool  $advancedMode  is the elements' list is extended search all mode?
 	 *
 	 * @return  bool	true
 	 */
@@ -2798,7 +2798,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	public function dataIsNull($data, $val)
 	{
-		$default = $this->getDefaultValue();
+		$default = (array) $this->getDefaultValue();
 		$keys = array_keys($default);
 		if (is_array($default) && count($default) == 1 && $default[$keys[0]] == $val && $val == '')
 		{

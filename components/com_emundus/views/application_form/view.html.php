@@ -52,7 +52,8 @@ class EmundusViewApplication_form extends JView{
 
         $user =& $this->get('User');
         $canEvaluate =& $this->get('canEvaluate');
-        $isEvaluated =& $this->get('asBeenEvaluated');
+        //$isEvaluated =& $this->get('asBeenEvaluated');
+		$isEvaluated =& $this->get('asBeenEvaluatedByMe');
         $comments =& $this->get('Comments');
         /* Call the state object */
         $state =& $this->get( 'State' );

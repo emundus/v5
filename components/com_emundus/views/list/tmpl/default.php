@@ -45,8 +45,8 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                             <?php
                             foreach ($this->header_values as $key=>$value){
                                 if($value['name'] == 'user_id'){
-								echo '<th align="center" style="font-size:9px;"><input type="checkbox" id="checkall" class="emundusraw" onClick="check_all(\'ud\',this)" />';
-                                    echo JHTML::_('grid.sort', JText::_('#'), $value['name'], $this->lists['order_Dir'], $this->lists['order']);
+									echo '<th align="center" style="font-size:9px;"><input type="checkbox" id="checkall" class="emundusraw" onClick="check_all(\'ud\',this)" />';
+                                    //echo JHTML::_('grid.sort', JText::_('#'), $value['name'], $this->lists['order_Dir'], $this->lists['order']);
                                     echo '</th>';
                                 }else
                                     echo '<th>'.JHTML::_('grid.sort', JText::_($value['label']), $value['name'], $this->lists['order_Dir'], $this->lists['order']).'</th>';
@@ -62,8 +62,8 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                                     if($key=='user_id'){ ?>
                                         <td> <?php 
                                         echo $i+$limitstart; $i++; 
-                                        echo $this->actions[$value];
-                                        echo "#".$value;  
+                                        echo $this->actions[$value][$value];
+                                        //echo "#".$value;  
                                         ?> 
                                         </td><?php 	
                                     }elseif($key == 'profile'){ 

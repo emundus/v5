@@ -123,6 +123,14 @@
 	
 		<fieldset name="filters2">
 		
+			<field name="filter_length"
+				type="text"
+				size="2"
+				default="20"
+				class="input-mini"
+				description="COM_FABRIK_FIELD_FILTER_LENGTH_DESC"
+				label="COM_FABRIK_FIELD_FILTER_LENGTH_LABEL" />
+				
 			<field name="filter_access"
 				type="accesslevel"
 				default="1"
@@ -165,7 +173,7 @@
 					<option value="value">COM_FABRIK_VALUE</option>
 					<option value="-1">COM_FABRIK_NONE</option>
 			</field>
-			
+		<!-- 	
 			<field name="inc_in_search_all"
 				type="list"
 				default="2"
@@ -175,7 +183,7 @@
 					<option value="1">JYES</option>
 					<option value="2">JDEFAULT</option>
 			</field>
-			
+			 -->
 			<field name="inc_in_adv_search"
 				type="radio"
 				default="1"
@@ -231,6 +239,15 @@
 			default="1" 
 			label="COM_FABRIK_FIELD_INCLUDE_IN_LIST_QUERY_LABEL" 
 			description="COM_FABRIK_FIELD_INCLUDE_IN_LIST_QUERY_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			
+			<field name="always_render" 
+			type="radio" 
+			default="0" 
+			label="COM_FABRIK_FIELD_ALWAYS_RENDER_LABEL" 
+			description="COM_FABRIK_FIELD_ALWAYS_RENDER_DESC">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>

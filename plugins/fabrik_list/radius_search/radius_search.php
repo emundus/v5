@@ -182,7 +182,7 @@ class plgFabrik_ListRadius_search extends plgFabrik_List
 		$str[] = '<div class="radius_search_geocode" style="' . $style . '">';
 		$str[] = '<input id="radius_search_geocode_field" name="radius_search_geocode_field" value="' . $address . '" />';
 		$str[] = '<button class="btn button" id="radius_search_button">' . JText::_('COM_FABRIK_SEARCH') . '</button>';
-		$str[] = '<div id="radius_search_geocode_map" style="width:100;height:175px"></div>';
+		$str[] = '<div id="radius_search_geocode_map" style="width:200px;height:200px"></div>';
 		$str[] = '<input type="hidden" name="radius_search_geocode_lat" value="' . $latitude . '" />';
 		$str[] = '<input type="hidden" name="radius_search_geocode_lon" value="' . $longitude. '" />';
 		$str[] = '</div>';
@@ -515,6 +515,7 @@ class plgFabrik_ListRadius_search extends plgFabrik_List
 
 	public function loadJavascriptClass()
 	{
+		$params = $this->getParams();
 		$el = $this->getPlaceElement();
 		$mapelement = $this->getMapElement();
 		if (!is_object($mapelement))
@@ -532,8 +533,14 @@ class plgFabrik_ListRadius_search extends plgFabrik_List
 			return;
 		}
 		$mapfullkey = $mapelement->getFullName(false, true, false);
-		//FabrikHelperHTML::autoComplete("radius_search_place{$this->_counter}", $el->getElement()->id, $el->getElement()->plugin, $opts);
-		FabrikHelperHTML::script('components/com_fabrik/libs/geo-location/geo.js');
+		if ($params->get('place', 1) == 1)
+		{
+			FabrikHelperHTML::autoComplete("radius_search_place{$this->_counter}", $el->getElement()->id, $el->getElement()->plugin, $opts);
+		}
+		if ($params->get('myloc', 1) == 1)
+		{
+			FabrikHelperHTML::script('components/com_fabrik/libs/geo-location/geo.js');
+		}
 		parent::loadJavascriptClass();
 	}
 
@@ -567,6 +574,11 @@ class plgFabrik_ListRadius_search extends plgFabrik_List
 		$opts->prefilter = $prefilterDistance === '' ? false : true;
 		$opts->prefilterDone = (bool) $app->input->getBool('radius_prefilter', false);
 		$opts->prefilterDistance = $prefilterDistance;
+		$opts->myloc = $params->get('myloc', 1) == 1 ? true : false;
+		$o = FabrikString::mapStrToCoords($params->get('geocode_default', ''));
+		$opts->geocode_default_lat = $o->lat;
+		$opts->geocode_default_long = $o->long;
+		$opts->geocode_default_zoom = (int) $o->zoom;
 		$opts = json_encode($opts);
 		$this->jsInstance = "new FbListRadiusSearch($opts)";
 		return true;
