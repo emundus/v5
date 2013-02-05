@@ -33,7 +33,7 @@ if (count($this->attachments) > 0) {
 <form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">
     <div id="attachment_list">
         <h3><?php echo JText::_('ATTACHMENTS'); ?></h3>
-        <h4><?php echo JText::_('Upload max filesize') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
+        <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
         <div id="legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>
