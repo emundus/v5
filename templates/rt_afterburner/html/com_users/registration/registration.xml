@@ -15,7 +15,7 @@
 			value_field="label"
 			required="true"
 		/>
-
+		
 		<field name="name" type="text"
 			description="COM_EXTUSER_REGISTER_LASTNAME_DESC"
 			filter="string"

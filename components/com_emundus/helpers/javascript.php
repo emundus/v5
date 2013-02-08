@@ -119,7 +119,7 @@ class EmundusHelperJavascript{
 			$script .= '<option class=\"emundus_search_elm\" value=\"'.$elements->table_name.'.'.$elements->element_name.'\">'.substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>'; 
 			$i++; 
 		} 
-		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 1)\"><img src=\"'.JURI::Base().'images/emundus/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
+		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 1)\"><img src=\"'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
 		//die($script);
 		return $script;
 	}
@@ -149,7 +149,7 @@ class EmundusHelperJavascript{
 				$script .= '<option class=\"emundus_search_elm_other\" value=\"'.$element->table_name.'.'.$element->element_name.'\">'.substr(htmlentities($element->element_label, ENT_QUOTES), 0, $length).$dot_elm.'</option>'; 
 				$i++; 
 			}
-		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"'.JURI::Base().'images/emundus/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
+		$script .= '</select><a href=\"#removeElement\" onclick=\"removeElement(\'"+divIdName+"\', 2)\"><img src=\"'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png\" alt=\"'.JText::_('REMOVE_SEARCH_ELEMENT').'\" id=\"add_filt\"/></a>"; ni.appendChild(newdiv); } ';
 		return $script;
 	}
 	

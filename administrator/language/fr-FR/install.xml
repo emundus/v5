@@ -2,12 +2,12 @@
 <extension version="2.5" client="administrator" type="language" method="upgrade">
 	<name>French (fr-FR)</name>
     <tag>fr-FR</tag>
-	<version>2.5.8.1</version>
-	<creationDate>9 nov 2012</creationDate>
+	<version>2.5.9.1</version>
+	<creationDate>4 feb 2013</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>www.joomla.fr</authorUrl>
-    <copyright>Copyright (C) 2005 - 2012 joomla.fr et Open Source Matters. Tous droits réservés</copyright>
+    <copyright>Copyright (C) 2005 - 2013 joomla.fr et Open Source Matters. Tous droits réservés</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<description>fr-FR administrator language</description>
 	<files>

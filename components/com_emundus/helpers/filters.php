@@ -265,37 +265,59 @@ class EmundusHelperFilters{
 	}
 	
 	function buildOptions($element_name, $params){
-		$db =& JFactory::getDBO();
-		if($element_name == 'result_for')
-			$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
-		else
-			$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
-		$db->setQuery($query);
-		return $db->loadObjectList();
+		if(!empty($params->join_key_column)) {
+			$db =& JFactory::getDBO();
+			if($element_name == 'result_for')
+				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
+			else
+				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
+			$db->setQuery($query);
+			$result = $db->loadObjectList(); 
+		} else {
+			$i = 0;
+			foreach ($params->sub_options->sub_values as $value) {
+				$result[] = (object) array('elt_key'=>$value, 'elt_val'=>$params->sub_options->sub_labels[$i]); 
+				$i++;
+			}
+		}
+		return $result;
 	}
 	
 	function setSearchBox($selected, $search_value, $elements_values) { 
 		jimport( 'joomla.html.parameter' );
 	//echo $selected->element_plugin;
 		$current_filter = "";
-		if(!empty($selected) and ($selected->element_plugin == "textarea" or $selected->element_plugin == "field"))
-			$current_filter .= '<input name="'.$elements_values.'[]" width="30" value="'.$search_value.'" />';
-		else if(!empty($selected) and ($selected->element_plugin == "databasejoin")){
-			$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
-			echo $query_paramsdefs;
-			$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
-			$query_params = json_decode($query_params);
-			$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
-			$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
-			<option value="">'.JText::_('PLEASE_SELECT').'</option>';
-			foreach($option_list as $value){
-				$current_filter .= '<option value="'.$value->elt_key.'"';
-				if ($value->elt_key == $search_value) $current_filter .= ' selected';
-				$current_filter .= '>'.$value->elt_val.'</option>';
-			}
-			$current_filter .= '</select>';
+		if(!empty($selected)) {
+			if($selected->element_plugin == "databasejoin"){
+				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
+				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
+				$query_params = json_decode($query_params);
+				$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
+				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
+				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				foreach($option_list as $value){
+					$current_filter .= '<option value="'.$value->elt_key.'"';
+					if ($value->elt_key == $search_value) $current_filter .= ' selected';
+					$current_filter .= '>'.$value->elt_val.'</option>';
+				}
+				$current_filter .= '</select>';
+			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton"){
+				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
+				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
+				$query_params = json_decode($query_params); 
+				$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
+				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
+				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				foreach($option_list as $value){
+					$current_filter .= '<option value="'.$value->elt_key.'"';
+					if ($value->elt_key == $search_value) $current_filter .= ' selected';
+					$current_filter .= '>'.$value->elt_val.'</option>';
+				}
+				$current_filter .= '</select>';
+			} else
+				$current_filter .= '<input name="'.$elements_values.'[]" width="30" value="'.$search_value.'" />';
 		}
-		else if (!empty($selected)){
+		/*else if (!empty($selected)){
 			$elements_att =& EmundushelperFilters::getElementsValuesOther($selected->id);
 			$sub_values = $elements_att->sub_values;//explode('|', $elements_att[0]->sub_values);
 			$sub_labels = $elements_att->sub_labels;//explode('|', $elements_att[0]->sub_labels);
@@ -310,7 +332,7 @@ class EmundusHelperFilters{
 				$j++;
 			}
 			$current_filter .= '</select>';
-		}
+		}*/
 		return $current_filter;
 	}
 
@@ -340,7 +362,7 @@ class EmundusHelperFilters{
 		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', $params['validate'] );
 		
 		$option;
-		$filters = '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
+		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
 		
 		$quick = '<div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
 		$quick .= '<div class="em_filtersElement"><input type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
@@ -503,7 +525,7 @@ class EmundusHelperFilters{
 		$elements =& EmundusHelperFilters::getElements();
 		$adv_filter = '<div class="em_filters" id="em_adv_filters"><a href="javascript:addElement();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>';
         $adv_filter .= '<input type="hidden" value="0" id="theValue" />';
-        $adv_filter .= '<img src="'.JURI::Base().'images/emundus/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+        $adv_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 		$adv_filter .= '<div id="myDiv">';
 		//var_dump($search);
 		if (count($search)>0 && isset($search) && is_array($search)) {
@@ -535,7 +557,7 @@ class EmundusHelperFilters{
 				if(empty($search_values[$i])) $search_values[$i] = "";
 				if($selected_adv != "")
 					$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
-				$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'images/emundus/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
+				$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
 				$i++; 
 				$adv_filter .= '</div>';
 			} 
@@ -550,7 +572,7 @@ class EmundusHelperFilters{
 			$other_elements =& EmundusHelperFilters::getElementsOther($tables);
 			$other_filter = '<div class="em_filters" id="em_other_filters"><a href="javascript:addElementOther();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>';
         	$other_filter .= '<input type="hidden" value="0" id="theValue_other" />';
-        	$other_filter .= '<img src="'.JURI::Base().'images/emundus/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+        	$other_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 			$other_filter .= '<div id="otherDiv">';
 		
 			if (count($search_other)>0 && isset($search_other) && is_array($search_other)) {
@@ -585,7 +607,7 @@ class EmundusHelperFilters{
 					echo'<BR />';
 					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
-					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2)"><img src="'.JURI::Base().'images/emundus/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 					$i++; 
 					$other_filter .= '</div>';
 				} 

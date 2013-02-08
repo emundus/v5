@@ -3,12 +3,12 @@
     <tag>fr-FR</tag>
 	<name>French (fr-FR)</name>
     <description>French site language for Joomla 3.0</description>
-	<version>2.5.8.1</version>
-	<creationDate>9 nov 2012</creationDate>
+	<version>2.5.9.1</version>
+	<creationDate>4 feb 2013</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>www.joomla.fr</authorUrl>
-	<copyright>Copyright (C) 2005 - 2012 Open Source Matters &amp; joomla.fr. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2005 - 2013 Open Source Matters &amp; joomla.fr. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<metadata>
 		<name>French (fr-FR)</name>

@@ -78,10 +78,10 @@ class  plgSystemEmundus_period extends JPlugin
 					die($app->redirect('index.php?option=com_emundus&view=renew_application'));
 				}elseif ( strtotime(date("Y-m-d H:m:i")) > strtotime($user->candidature_end) ) {
 					JError::raiseNotice('PERIOD', utf8_encode(JText::sprintf('PERIOD',strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_start) ),strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_end) ))));
-					die($app->redirect('index.php?option=com_content&id=29'));
+					die($app->redirect('index.php?option=com_content&view=article&id=29'));
 				} elseif ( strtotime(date("Y-m-d H:m:i")) < strtotime($user->candidature_start) ) { 
 					JError::raiseNotice('PERIOD', utf8_encode(JText::sprintf('PERIOD',strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_start) ),strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_end) ))));
-					die($app->redirect('index.php?option=com_content&id=30')); 
+					die($app->redirect('index.php?option=com_content&view=article&id=30')); 
 				}
 			}
 		}
