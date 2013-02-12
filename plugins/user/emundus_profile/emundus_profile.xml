@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="user">
 	<name>plg_user_profile</name>
 	<author>Benjamin Rivalland</author>
-	<creationDate>January 2008</creationDate>
+	<creationDate>January 2013</creationDate>
 	<copyright>(C) 2010-${year} Décision Publique. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>benjamin@decisionpublique.fr</authorEmail>
@@ -20,10 +20,26 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="register-require-user" type="spacer"
+				<field name="register-user" type="spacer"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_NAME_REGISTER_REQUIRE_USER"
 				/>
-				<field name="register-something" type="list"
+				<field name="register-require-lastname" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
+				<field name="register-require-firstname" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
+				<field name="register-require-something" type="list"
 					description="PLG_USER_EMUNDUS_PROFILE_FIELD_SOMETHING_DESC"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_SOMETHING_LABEL"
 				>
@@ -32,10 +48,25 @@
 					<option value="0">JDISABLED</option>
 				</field>
  
-				<field name="profile-require-user" type="spacer"
+				<field name="profile-user" type="spacer"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_NAME_PROFILE_REQUIRE_USER"
 				/>
- 
+				<field name="profile-require-lastname" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
+				<field name="profile-require-firstname" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
 				<field name="profile-require_something" type="list"
 					description="PLG_USER_EMUNDUS_PROFILE_FIELD_SOMETHING_DESC"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_SOMETHING_LABEL"

@@ -101,9 +101,9 @@
 				$form->loadFile('profile', false);
 		
 				$fields = array(
-					'something',
 					'lastname',
 					'firstname',
+					'something',
 				);
 		
                 foreach ($fields as $field)
@@ -133,7 +133,7 @@
 					}
 					// Case profile in site or admin
 					elseif ($name == 'com_users.profile' || $name == 'com_admin.profile')
-					{
+					{die($this->params->get('profile-require_' . $field, 1));
 						// Toggle whether the field is required.
 						if ($this->params->get('profile-require_' . $field, 1) > 0)
 						{
