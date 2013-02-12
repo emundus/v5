@@ -14,16 +14,31 @@
    * @subpackage        user.profile
    * @version           1.6
    */
-  class plgUserProfile5 extends JPlugin
+  class plgUserEmundus_Profile extends JPlugin
   {
+		/**
+		 * Constructor
+		 *
+		 * @access      protected
+		 * @param       object  $subject The object to observe
+		 * @param       array   $config  An array that holds the plugin configuration
+		 * @since       1.5
+		 */
+		public function __construct(& $subject, $config)
+		{
+			parent::__construct($subject, $config);
+			$this->loadLanguage();
+			//JFormHelper::addFieldPath(dirname(__FILE__) . '/fields');
+		}
+
         /**
          * @param       string  The context for the data
          * @param       int             The user id
          * @param       object
          * @return      boolean
-         * @since       1.6
+         * @since       2.5
          */
-        function onContentPrepareData($context, $data)
+		 function onContentPrepareData($context, $data)
         {
                 // Check we are manipulating a valid form.
                 if (!in_array($context, array('com_users.profile','com_users.registration','com_users.user','com_admin.profile'))){
@@ -37,7 +52,7 @@
                 $db->setQuery(
                         'SELECT profile_key, profile_value FROM #__user_profiles' .
                         ' WHERE user_id = '.(int) $userId .
-                        ' AND profile_key LIKE \'profile5.%\'' .
+                        ' AND profile_key LIKE \'emundus_profile.%\'' .
                         ' ORDER BY ordering'
                 );
                 $results = $db->loadRowList();
@@ -49,10 +64,11 @@
                 }
  
                 // Merge the profile data.
-                $data->profile5 = array();
+                $data->emundus_profile = array();
+				
                 foreach ($results as $v) {
-                        $k = str_replace('profile5.', '', $v[0]);
-                        $data->profile5[$k] = json_decode($v[1], true);
+                        $k = str_replace('emundus_profile.', '', $v[0]);
+                        $data->emundus_profile[$k] = json_decode($v[1], true);
                 }
  
                 return true;
@@ -67,65 +83,90 @@
         function onContentPrepareForm($form, $data)
         {
                 // Load user_profile plugin language
-                $lang = JFactory::getLanguage();
-                $lang->load('plg_user_profile5', JPATH_ADMINISTRATOR);
- 
+                //$lang = JFactory::getLanguage();
+                //$lang->load('plg_user_emundus_profile', JPATH_ADMINISTRATOR);
+				
                 if (!($form instanceof JForm)) {
                         $this->_subject->setError('JERROR_NOT_A_FORM');
                         return false;
                 }
                 // Check we are manipulating a valid form.
+				$name = $form->getName();
                 if (!in_array($form->getName(), array('com_users.profile', 'com_users.registration','com_users.user','com_admin.profile'))) {
                         return true;
                 }
-                if ($form->getName()=='com_users.profile')
-                {
-                        // Add the profile fields to the form.
-                        JForm::addFormPath(dirname(__FILE__).'/profiles');
-                        $form->loadFile('profile', false);
- 
-                        // Toggle whether the something field is required.
-                        if ($this->params->get('profile-require_something', 1) > 0) {
-                                $form->setFieldAttribute('something', 'required', $this->params->get('profile-require_something') == 2, 'profile5');
-                        } else {
-                                $form->removeField('something', 'profile5');
-                        }
-                }
- 
-                //In this example, we treat the frontend registration and the back end user create or edit as the same. 
-                elseif ($form->getName()=='com_users.registration' || $form->getName()=='com_users.user' )
-                {               
-                        // Add the registration fields to the form.
-                        JForm::addFormPath(dirname(__FILE__).'/profiles');
-                        $form->loadFile('profile', false);
- 
-                        // Toggle whether the something field is required.
-                        if ($this->params->get('register-require_something', 1) > 0) {
-                                $form->setFieldAttribute('something', 'required', $this->params->get('register-require_something') == 2, 'profile5');
-                        } else {
-                                $form->removeField('something', 'profile5');
-                        }
-                }                       
+				
+				// Add the registration fields to the form.
+				JForm::addFormPath(dirname(__FILE__) . '/profiles');
+				$form->loadFile('profile', false);
+		
+				$fields = array(
+					'something',
+					'lastname',
+					'firstname',
+				);
+		
+                foreach ($fields as $field)
+				{	
+					// Case using the users manager in admin
+					if ($name == 'com_users.user')
+					{
+						// Remove the field if it is disabled in registration and profile
+						if ($this->params->get('register-require_' . $field, 1) == 0
+							&& $this->params->get('profile-require_' . $field, 1) == 0)
+						{
+							$form->removeField($field, 'profile');
+						}
+					}
+					// Case registration
+					elseif ($name == 'com_users.registration')
+					{
+						// Toggle whether the field is required.
+						if ($this->params->get('register-require_' . $field, 1) > 0)
+						{
+							$form->setFieldAttribute($field, 'required', ($this->params->get('register-require_' . $field) == 2) ? 'required' : '', 'profile');
+						}
+						else
+						{
+							$form->removeField($field, 'profile');
+						}
+					}
+					// Case profile in site or admin
+					elseif ($name == 'com_users.profile' || $name == 'com_admin.profile')
+					{
+						// Toggle whether the field is required.
+						if ($this->params->get('profile-require_' . $field, 1) > 0)
+						{
+							$form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'profile');
+						}
+						else
+						{
+							$form->removeField($field, 'profile');
+						}
+					}
+				}
+
+				return true;                
         }
  
         function onUserAfterSave($data, $isNew, $result, $error)
         {
                 $userId = JArrayHelper::getValue($data, 'id', 0, 'int');
  
-                if ($userId && $result && isset($data['profile5']) && (count($data['profile5'])))
+                if ($userId && $result && isset($data['emundus_profile']) && (count($data['emundus_profile'])))
                 {
                         try
                         {
                                 $db = &JFactory::getDbo();
-                                $db->setQuery('DELETE FROM #__user_profiles WHERE user_id = '.$userId.' AND profile_key LIKE \'profile5.%\'');
+                                $db->setQuery('DELETE FROM #__user_profiles WHERE user_id = '.$userId.' AND profile_key LIKE \'emundus_profile.%\'');
                                 if (!$db->query()) {
                                         throw new Exception($db->getErrorMsg());
                                 }
  
                                 $tuples = array();
                                 $order  = 1;
-                                foreach ($data['profile5'] as $k => $v) {
-                                        $tuples[] = '('.$userId.', '.$db->quote('profile5.'.$k).', '.$db->quote(json_encode($v)).', '.$order++.')';
+                                foreach ($data['emundus_profile'] as $k => $v) {
+                                        $tuples[] = '('.$userId.', '.$db->quote('emundus_profile.'.$k).', '.$db->quote(json_encode($v)).', '.$order++.')';
                                 }
  
                                 $db->setQuery('INSERT INTO #__user_profiles VALUES '.implode(', ', $tuples));
@@ -166,7 +207,7 @@
                                 $db = JFactory::getDbo();
                                 $db->setQuery(
                                         'DELETE FROM #__user_profiles WHERE user_id = '.$userId .
-                                        " AND profile_key LIKE 'profile5.%'"
+                                        " AND profile_key LIKE 'emundus_profile.%'"
                                 );
  
                                 if (!$db->query()) {
