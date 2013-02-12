@@ -168,3 +168,4 @@ configuration.php
 logs/*
 tmp/*
 images/emundus/files/*
+db_save/*
