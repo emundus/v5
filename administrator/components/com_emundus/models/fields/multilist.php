@@ -33,7 +33,7 @@ class JFormFieldMultilist extends JElement
 	 */
 	var $_name = 'Multilist';
 	protected $type = 'Multilist';
-die();
+
 	function fetchElement($name, $value, &$node, $control_name)
 	{
 		$class = '';

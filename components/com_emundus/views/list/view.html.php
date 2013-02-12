@@ -43,11 +43,15 @@ class EmundusViewList extends JView
     {
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
-		//$allowed = array("Super Users", "Administrator", "Editor");
 		
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
+		
+		$access=!empty($current_menu)?$current_menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) {
+			die("COM_EMUNDUS_NOT_ALLOWED");
+		}
 		
 		$blocks_list = explode(',', $menu_params->get('em_blocks_names'));
 		
@@ -56,23 +60,12 @@ class EmundusViewList extends JView
 		$session =& JFactory::getSession();
 		if(empty($filter_comment) && $session->has( 'comments' )) $filter_comment = $session->get( 'comments' );
 		
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) {
-			die("You are not allowed to access to this page.");
-		}
-		
 		JHTML::_('behavior.modal');
 		JHTML::_('behavior.tooltip'); 
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 		
-		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
-		//$this->assignRef( 'isallowed', $isallowed );
-
 		//Filters
-		
-/*		$filts = array('profile', 'evaluator', 'evaluator_group', 'schoolyear', 'missing_doc', 'complete', 'finalgrade', 'validate', 'other');*/
 		$tables 		= explode(',', $menu_params->get('em_tables_id'));
 		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
 		$filts_values 	= explode(',', $menu_params->get('em_filters_values'));
@@ -123,26 +116,14 @@ class EmundusViewList extends JView
 		exit();
 		}
 		$this->assignRef( 'users', $users );
-		
-		//Check rights
-		/*$rights	= $menu_params->get('em_groups');
-		$accessibility = false;
-		foreach ($this->_user->groups as $group)
-			if ($rights == $group)
-				$accessibility = true;
-		if ($accessibility === false) die("Can not reach this page : Permission denied");*/
-		$user =& JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("Can not reach this page : Permission denied");
-		}
-		
+
 		//Call the state object 
 		if (($state =& $this->get( 'state' )) === false)
 			JController::setRedirect('index.php?');
 		// Get the values from the state object that were inserted in the model's construct function 
-		$lists['order_Dir']				= $state->get( 'filter_order_Dir' );
+		foreach ($state as $key => $value)
+			$lists[$key] = $value;
+	/*	$lists['order_Dir']				= $state->get( 'filter_order_Dir' );
 		$lists['order']					= $state->get( 'filter_order' );
 		$lists['schoolyears']			= $state->get( 'schoolyears' );
 		$lists['elements']				= $state->get( 'elements' );
@@ -157,7 +138,7 @@ class EmundusViewList extends JView
 		$lists['missing_doc']			= $state->get( 'missing_doc' );
 		$lists['complete']				= $state->get( 'complete' );
 		$lists['validate']				= $state->get( 'validate' );
-		
+		*/
         $this->assignRef( 'lists', $lists );
 		
         $pagination =& $this->get('Pagination');
@@ -168,16 +149,13 @@ class EmundusViewList extends JView
 		
 		//Export
 		$options = array('zip', 'xls');
-		if($this->_user->profile!=16)
+		if($this->_user->profile!=16) // devra être remplacé par un paramétrage au niveau du menu
 			$export_icones =& EmundusHelperExport::export_icones($options);
 		$this->assignRef('export_icones', $export_icones);
 		unset($options);
 		
-		$user =& JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
 		//Administrative validation
-		if (EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('batch', $blocks_list)) $batch = EmundusHelperList::createBatchBlock();
+		if (EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('batch', $blocks_list)) $batch = EmundusHelperList::createBatchBlock();
 		else $batch = '';
 		$this->assignRef('batch', $batch);
 		
@@ -186,7 +164,7 @@ class EmundusViewList extends JView
 		$this->assignRef( 'evaluators', $evaluators );
 		$groups = EmundusHelperFilters::getGroups();
 		$this->assignRef( 'groups', $groups );
-		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('evaluator', $blocks_list)) {
+		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('evaluator', $blocks_list)) {
 			if($this->_user->profile!=16) $affectEval =& EmundusHelperList::affectEvaluators();
 		}
 		else $affectEval = '';
@@ -198,6 +176,7 @@ class EmundusViewList extends JView
 			$incomplete = EmundusHelperList::createApplicationStatutblock($options);
 		else $incomplete = '';
         $this->assignRef('incomplete', $incomplete);
+		
 		$options = array('complete');
 		if (in_array('complete', $blocks_list))
 			$complete = EmundusHelperList::createApplicationStatutblock($options);
@@ -206,7 +185,7 @@ class EmundusViewList extends JView
 		unset($options);
 		
 		//Email
-		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('email_evaluator', $blocks_list)){
+		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('email_evaluator', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('default', 'custom');
 				$email_evaluator =& EmundusHelperEmails::createEmailBlock($options);
@@ -214,7 +193,7 @@ class EmundusViewList extends JView
 		}
 		else $email_evaluator = '';
 		$this->assignRef('email_evaluator', $email_evaluator);
-		if(EmundusHelperAccess::isAllowedAccessLevel($user->id,$access) && in_array('email_applicant', $blocks_list)){
+		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('email_applicant', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('applicants','default');
 				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
@@ -236,7 +215,7 @@ class EmundusViewList extends JView
 		
 		//Application comments
 		$options = array('evaluator', 'date', 'reason', 'comment');
-		$app_comments = EmundusHelperList::createApplicationCommentBlock($users,$options);
+		$app_comments = EmundusHelperList::createApplicationCommentBlock($users, $options);
 		if($filter_comment == 1)
 			$this->assignRef('app_comments', $app_comments);
 		
@@ -251,7 +230,6 @@ class EmundusViewList extends JView
 		$this->assignRef( 'header_values', $header_values );
 		
 		// Javascript
-        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();

@@ -1,6 +1,6 @@
 <?php 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 
 defined('_JEXEC') or die('Restricted access'); 
 $user =& JFactory::getUser();
@@ -56,14 +56,14 @@ if (count($this->attachments) > 0) {
                     $div .= '<tr>
                         <td>';
                         if($item->can_be_viewed==1) {
-                        $div .= '<a href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><img src="images/emundus/icones/viewmag_16x16.png" alt="show" style="vertical-align:middle"/>'.JText::_('VIEW').'</a>';
+                        $div .= '<a href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><img src="media/com_emundus/images/icones/viewmag_16x16.png" alt="show" style="vertical-align:middle"/>'.JText::_('VIEW').'</a>';
                         }
                         else { 
                         $div .= JText::_('CANT_VIEW') ;
                         } 
                         $div .= '&nbsp;-&nbsp;' ;
                         if($item->can_be_deleted==1) {
-                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'"><img src="images/emundus/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/>'.JText::_('DELETE').'</a>';
+                        $div .= '<a href="?option=com_emundus&task=delete&aid='.$item->id .'&Itemid='.$itemid.'"><img src="media/com_emundus/images/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/>'.JText::_('DELETE').'</a>';
                         } 
                         else { 
                         $div .= JText::_('CANT_DELETE'); 

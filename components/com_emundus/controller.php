@@ -334,28 +334,28 @@ function updateprofile() {
 		$db =& JFactory::getDBO();
 		jimport( 'joomla.user.helper' );
 		$usersConfig = &JComponentHelper::getParams( 'com_users' );
-
-		$newuser['firstname'] = JRequest::getVar('firstname', null, 'POST', '', 0);
-		$newuser['lastname'] = JRequest::getVar('lastname', null, 'POST', '', 0);
-		$newuser['name'] = strtoupper($newuser['lastname']).' '.$newuser['firstname'];
-		$newuser['username'] = JRequest::getVar('login', null, 'POST', '', 0);
-		$newuser['email'] = JRequest::getVar('email', null, 'POST', '', 0);
-		$passwd = JUserHelper::genRandomPassword();
-		$newuser['password'] = $passwd;
-		$newuser['password2'] = $passwd;
-		$newuser['profile'] = JRequest::getVar('profile', null, 'POST', '', 0); /* usertype*/
-		$newuser['university_id'] = JRequest::getVar('university_id', null, 'POST', '', 0);
-		// Set profile schoolyear
-		$query = 'SELECT schoolyear FROM `#__emundus_setup_profiles` WHERE id='.$newuser['profile'];
-		$db->setQuery($query);
-		$newuser['schoolyear'] = $db->loadResult();
 		
+		// Get the user data.
+		$requestData = JRequest::getVar('jform', array(), 'post', 'array');
+		//die(print_r($requestData));
+		
+		$passwd = JUserHelper::genRandomPassword();
+		$requestData['password'] = $passwd;
+		$requestData['password2'] = $passwd;
+		
+		if (empty($requestData['schoolyear']) || !isset($requestData['schoolyear'])) {
+			// Set profile schoolyear
+			$query = 'SELECT schoolyear FROM `#__emundus_setup_profiles` WHERE id='.$newuser['profile'];
+			$db->setQuery($query);
+			$requestData['schoolyear'] = $db->loadResult();
+		}
+		die(print_r($requestData));
 		$model = &$this->getModel('profile');
-		$tacl = $model->getProfile($newuser['profile']); 
+		$tacl = $model->getProfile($requestData['profile']); 
 		// Bind the post array to the user object
 		$newuser['gid']=$tacl->acl_aro_groups;
 		//$newuser['gid']=$authorize->get_group_id( '', $newuser['usertype'], 'ARO' );
-		if (!$user->bind( $newuser )) {
+		if (!$user->bind( $requestData )) {
 			JError::raiseError( 500, $user->getError());
 			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid);
 		}
@@ -372,8 +372,8 @@ function updateprofile() {
 			// $user->set('activation', md5( JUserHelper::genRandomPassword()) );
 			// $user->set('block', '1');
 		// }
-		require(JPATH_BASE.DS.'components'.DS.'com_extendeduser'.DS.'models'.DS.'extuser.php');
-		$extuser =& JTable::getInstance('ExtUser', 'Table');
+		require(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'usersext.php');
+		$extuser =& JTable::getInstance('Usersext', 'Table');
 		if (!$extuser->bind($newuser)) {
 			JError::raiseWarning(500, $extuser->getError());
 			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid);

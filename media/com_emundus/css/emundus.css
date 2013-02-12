@@ -21,7 +21,7 @@ input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-g
 	min-width:25%;
 }
 .need_missing {
-	background: url(images/button_cancel.png) 0 0 no-repeat;
+	background: url(../images/icones/button_cancel.png) 0 0 no-repeat;
 	padding-left:30px;
 	text-align:left;
 }
@@ -30,19 +30,19 @@ input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-g
 }
 p.need_missing {margin-left: 25px;}
 .need_ok {
-	background: url(images/button_ok.png) 0 0 no-repeat;
+	background: url(../images/icones/button_ok.png) 0 0 no-repeat;
 	padding-left:30px;
 	text-align:left;
 }
 p.need_ok{margin-left: 25px;}
 .print {
-	background: url(images/printer.png) 0 0 no-repeat;
+	background: url(../images/icones/printer.png) 0 0 no-repeat;
 	padding-left:48px;
 	padding-top:20px;
 	height:48px;
 }
 .need_missing_fac {
-	background: url(images/button_cancel_black.png) 0 0 no-repeat;
+	background: url(../images/icones/button_cancel_black.png) 0 0 no-repeat;
 	padding-left:30px;
 	text-align:left;
 }
@@ -92,19 +92,19 @@ p.description  {
 	padding-bottom:16px;
 }
 .checklist1 {
-	background: url(images/error.png) 0 0 no-repeat;
+	background: url(../images/icones/error.png) 0 0 no-repeat;
 }
 .checklist0  {
-	background: url(images/clean.png) 0 0 no-repeat;
+	background: url(../images/icones/clean.png) 0 0 no-repeat;
 }
 .checklist2 {
-	background: url(images/fail.png) 0 0 no-repeat;
+	background: url(../images/icones/fail.png) 0 0 no-repeat;
 }
 .checklist3 {
-	background: url(images/wait.png) 0 0 no-repeat;
+	background: url(../images/icones/wait.png) 0 0 no-repeat;
 }
 .checklist4  {
-	background: url(images/graduated.png) 0 0 no-repeat;
+	background: url(../images/icones/graduated.png) 0 0 no-repeat;
 }
 #info_checklist  h2{
 	text-align:center;
@@ -117,10 +117,10 @@ p.description  {
 	padding-bottom:16px;
 }
 #info_checklist a.appsent {
-	background: url(images/printer.png) 0 0 no-repeat;
+	background: url(../images/icones/printer.png) 0 0 no-repeat;
 }
 #info_checklist a.sent {
-	background: url(images/filevalid.png) 0 0 no-repeat;
+	background: url(../images/icones/filevalid.png) 0 0 no-repeat;
 }
 #submittop {
 	float:right;
@@ -292,8 +292,8 @@ input.btnhov {
 
 /******** Checklist *********/
 
-.mandatory{ width: 50%; float:left; }
-.optional{ width: 50%; float:left; }
+.em_mandatory{ width: 50%; float:left; }
+.em_optional{ width: 50%; float:left; }
 
 /******** Search LOV **/
 .emundus_search_grp {
@@ -321,7 +321,7 @@ input.btnhov {
 
 #em_adv_filters.em_filters {
 	clear:both;
-	width:550px;
+	/*width:550px;*/
 	padding-top:10px;
 }
 

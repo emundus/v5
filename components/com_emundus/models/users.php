@@ -20,6 +20,7 @@ class EmundusModelUsers extends JModel
 {
 	var $_total = null;
 	var $_pagination = null;
+	protected $data;
 
 	/**
 	 * Constructor
@@ -251,6 +252,92 @@ class EmundusModelUsers extends JModel
         return $this->_pagination;
   }
 
+/**
+	 * Method to get the registration form.
+	 *
+	 * The base form is loaded from XML and then an event is fired
+	 * for users plugins to extend the form with extra fields.
+	 *
+	 * @param	array	$data		An optional array of data for the form to interogate.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
+	 */
+	public function getForm($data = array(), $loadData = true)
+	{
+		//die( JPATH_COMPONENT.DS.'forms'.DS.'registration.xml' );
+		// Get the form.
+		$form = &JForm::getInstance('com_emundus.registration', JPATH_COMPONENT.DS.'models'.DS.'forms'.DS.'registration.xml', array('control' => 'jform', 'load_data' => $loadData));
+
+		if (empty($form)) {
+			return false;
+		}
+
+		return $form;
+	}
+	
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return	mixed	The data for the form.
+	 * @since	1.6
+	 */
+	protected function loadFormData()
+	{
+		return $this->getData();
+	}
+	
+	/**
+	 * Method to get the registration form data.
+	 *
+	 * The base form data is loaded and then an event is fired
+	 * for users plugins to extend the data.
+	 *
+	 * @return	mixed		Data object on success, false on failure.
+	 * @since	1.6
+	 */
+	public function getData()
+	{
+		if ($this->data === null) {
+
+			$this->data	= new stdClass();
+			$app	= JFactory::getApplication();
+			$params	= JComponentHelper::getParams('com_users');
+
+			// Override the base user data with any data in the session.
+			$temp = (array)$app->getUserState('com_users.registration.data', array());
+			foreach ($temp as $k => $v) {
+				$this->data->$k = $v;
+			}
+
+			// Get the groups the user should be added to after registration.
+			$this->data->groups = array();
+
+			// Get the default new user group, Registered if not specified.
+			$system	= $params->get('new_usertype', 2);
+
+			$this->data->groups[] = $system;
+
+			// Unset the passwords.
+			unset($this->data->password1);
+			unset($this->data->password2);
+
+			// Get the dispatcher and load the users plugins.
+			$dispatcher	= JDispatcher::getInstance();
+			JPluginHelper::importPlugin('user');
+
+			// Trigger the data preparation event.
+			$results = $dispatcher->trigger('onContentPrepareData', array('com_users.registration', $this->data));
+
+			// Check for errors encountered while preparing the data.
+			if (count($results) && in_array(false, $results, true)) {
+				$this->setError($dispatcher->getError());
+				$this->data = false;
+			}
+		}
+
+		return $this->data;
+	}
 
 }
 ?>

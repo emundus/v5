@@ -11,8 +11,8 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
     <input type="hidden" name="option" value="com_emundus"/>
     <input type="hidden" name="view" value="<?php echo $v; ?>"/>
     <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
-    <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
-    <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+    <input type="hidden" name="filter_order" value="<?php echo $this->lists['filter_order']; ?>" />
+    <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['filter_order_Dir']; ?>" />
     <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 <?php
     echo $this->filters;
@@ -26,11 +26,11 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 		} else $menuname = '';
 		
 		if($tmpl == 'component') {
-				echo '<div><h3><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</h3>';
+				echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</h3>';
 				$document =& JFactory::getDocument();
-				$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundusraw.css" );
+				$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
-				echo '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</legend>'; ?>
+				echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</legend>'; ?>
         <div class="evaluation_users"><?php 
             if(isset($this->users)&&!empty($this->users)){ ?>
                 <table id="userlist" width="100%">
@@ -46,16 +46,16 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                             foreach ($this->header_values as $key=>$value){
                                 if($value['name'] == 'user_id'){
 									echo '<th align="center" style="font-size:9px;"><input type="checkbox" id="checkall" class="emundusraw" onClick="check_all(\'ud\',this)" />';
-                                    //echo JHTML::_('grid.sort', JText::_('#'), $value['name'], $this->lists['order_Dir'], $this->lists['order']);
+                                    //echo JHTML::_('grid.sort', JText::_('#'), $value['name'], $this->lists['filter_order_Dir'], $this->lists['order']);
                                     echo '</th>';
                                 }else
-                                    echo '<th>'.JHTML::_('grid.sort', JText::_($value['label']), $value['name'], $this->lists['order_Dir'], $this->lists['order']).'</th>';
+                                    echo '<th>'.JHTML::_('grid.sort', JText::_($value['label']), $value['name'], $this->lists['filter_order_Dir'], $this->lists['filter_order']).'</th>';
                             }
                             ?>
                         </tr>
                     </thead>
                     <tbody><?php 
-                        $i=1; $j=0;
+                        $i=1; $j=0; 
                         foreach($this->users as $evalu){ ?>
                             <tr class="row<?php echo $j++%2; ?>"><?php
                                 foreach ($evalu as $key=>$value){ 
@@ -90,7 +90,7 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 		else echo '</fieldset>'; ?>		
  		<div class="emundusraw"><?php
             if ($this->incomplete || $this->complete || $this->batch)
-                echo '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/>'.JText::_('BATCH').'</legend>';  
+                echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/>'.JText::_('BATCH').'</legend>';  
 			echo $this->batch;
             echo $this->incomplete;
             echo $this->complete;

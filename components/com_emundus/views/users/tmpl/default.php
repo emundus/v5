@@ -1,7 +1,7 @@
 <?php 
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php'); 
 $edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
@@ -22,7 +22,7 @@ if($edit!=1) {
 $current_user =& JFactory::getUser();
 if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $current_user->get('usertype') == "Publisher") {
 	$document =& JFactory::getDocument();
-	$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundusraw.css" );
+	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 }
 ?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
@@ -85,7 +85,7 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
 <fieldset>
-<legend><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
+<legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 <table width="100%">
 <tr>  
   <th width="14%" align="left"><?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span>'; ?></th>
@@ -165,9 +165,9 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 <div class="emundusraw">
 <?php
 if(!empty($this->users)) {
-	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile-selected_48.png" name="export_selected_to_xls" onclick="document.pressed=this.name"></span>'; 
-	//echo '<span class="editlinktip hasTip" title="'.sprintf(JText::_('EXPORT_CURRENT_CAMPAIGN'), $this->schoolyear).'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile_48.png" name="export_xls" onclick="document.pressed=this.name" /></span>';
-	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
+	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_selected_to_xls" onclick="document.pressed=this.name"></span>'; 
+	//echo '<span class="editlinktip hasTip" title="'.sprintf(JText::_('EXPORT_CURRENT_CAMPAIGN'), $this->schoolyear).'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_xls" onclick="document.pressed=this.name" /></span>';
+	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
 ?>
 </div>
 
@@ -216,9 +216,9 @@ foreach ($this->users as $user) { ?>
         <?php
 			echo '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user->email.'">';
 			if (isset($user->gender)) {
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_'.$user->gender.'.png" width="22" height="22" align="bottom" /></a></span> ';
+				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_'.$user->gender.'.png" width="22" height="22" align="bottom" /></a></span> ';
 				echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$Itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$Itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span>';
 			} else
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a></span> ';
@@ -245,7 +245,7 @@ foreach ($this->users as $user) { ?>
 		$diff_jour = $diff/60/60/24;
 		if (strpos($user->lastvisitDate,"0000-00-00 00:00:00")===0 && $user->registred_for>7) $alert=1; else $alert=0;
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
-		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&rowid=<?php echo $current_p; ?>&uid=<?php echo $user->id; ?>"><img src="<?php JURI::Base(); ?>components/com_emundus/style/images/<?php echo $user->block>0?'button_cancel.png':'button_ok.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
+		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&rowid=<?php echo $current_p; ?>&uid=<?php echo $user->id; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/css/images/<?php echo $user->block>0?'button_cancel.png':'button_ok.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">
         	<div class="emundusraw">
 <?php 
@@ -279,7 +279,7 @@ foreach ($this->users as $user) { ?>
 	?><fieldset>
 		  <legend> 
 			<span class="editlinktip hasTip" title="<?php echo JText::_('ARCHIVE').'::'.JText::_('ARCHIVE_TIP'); ?>">
-				<img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_( 'ARCHIVE' ); ?>
+				<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_( 'ARCHIVE' ); ?>
 			</span>
 		  </legend>
 		  <input type="submit" name="archive" onclick="document.pressed=this.name" value="<?php echo JText::_( 'ARCHIVE_SELECTED_USERS' );?>" />
@@ -353,6 +353,54 @@ foreach ($this->users as $user) { ?>
 </fieldset>
 </form>
 </div>
+<?php 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+JHtml::_('behavior.noframes');
+?>
+
+<form id="member-registration" action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user&Itemid=<?php echo $itemid; ?>" method="post" class="form-validate">
+<?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
+	<?php $fields = $this->form->getFieldset($fieldset->name);?>
+	<?php if (count($fields)):?>
+		<fieldset>
+		<?php if (isset($fieldset->label)):// If the fieldset has a label set, display it as the legend.
+		?>
+			<legend><?php echo JText::_($fieldset->label);?></legend>
+		<?php endif;?>
+			<dl>
+		<?php foreach($fields as $field):// Iterate through the fields in the set and display them.?>
+			<?php if ($field->hidden):// If the field is hidden, just display the input.?>
+				<?php echo $field->input;?>
+			<?php else:?>
+				<dt>
+					<?php echo $field->label; ?>
+					<?php if (!$field->required && $field->type!='Spacer'): ?>
+						<span class="optional"><?php echo JText::_('COM_EMUNDUS_OPTIONAL'); ?></span>
+					<?php endif; ?>
+				</dt>
+				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;"; ?></dd>
+			<?php endif;?>
+		<?php endforeach;?>
+			</dl>
+		</fieldset>
+	<?php endif;?>
+<?php endforeach;?>
+		<div>
+			<button type="submit" class="validate"><?php echo JText::_('JREGISTER');?></button>
+			<?php echo JText::_('COM_EMUNDUS_OR');?>
+			<a href="<?php echo JRoute::_('');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
+			<input type="hidden" name="option" value="com_emundus" />
+            <input type="hidden" name="itemid" value="<?php echo $itemid; ?>" />
+			<input type="hidden" name="task" value="<?php echo $edit==1?'edit':'add'; ?>user" />
+			<?php echo JHtml::_('form.token');?>
+		</div>
+	</form>
+</div>
+
+
+
 <script>
 function check_all() {
  var checked = document.getElementById('checkall').checked;

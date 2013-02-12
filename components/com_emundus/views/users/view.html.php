@@ -84,6 +84,10 @@ class EmundusViewUsers extends JView
 		$lists['order']     = $state->get( 'filter_order' );
 		$this->assignRef( 'lists', $lists );
 		
+		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
+		$form		= $this->get('Form');
+		$this->assignRef('form', $form);
+		
 		parent::display($tpl);
     }
 }

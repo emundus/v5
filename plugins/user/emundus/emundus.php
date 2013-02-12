@@ -98,11 +98,10 @@ class plgUserEmundus extends JPlugin
 		$app 			= JFactory::getApplication();
 		$config			= JFactory::getConfig();
 		$mail_to_user 	= $this->params->get('mail_to_user', 1);
+		$db = JFactory::getDBO();
 
 		if ($isnew) {
 			// @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
-
-			$db = JFactory::getDBO();
 
 			// Update name and fistname from #__users
 			$db->setQuery('UPDATE #__users
@@ -178,7 +177,17 @@ class plgUserEmundus extends JPlugin
 			}
 		}
 		else {
-			// Existing user - nothing to do...yet.
+			// Update name and fistname from #__users
+			$db->setQuery('UPDATE #__users
+					SET name="'.strtoupper($details['name']).' '.ucfirst($details['firstname']).'"
+					WHERE id='.$user['id']);
+			$db->Query();
+			
+			$db->setQuery('UPDATE #__emundus_users
+					SET lastname="'.strtoupper($details['name']).'", firstname="'.ucfirst($details['firstname']).'"
+					WHERE user_id='.$user['id']);
+			$db->Query();
+			
 		}
 	}
 

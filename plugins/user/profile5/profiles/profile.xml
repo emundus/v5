@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="default"
+	        label="PLG_USER_PROFILE5_SLIDER_LABEL"
+	>
+	    <field name="firstname" type="text"
+			description="COM_EXTUSER_REGISTER_FIRSTNAME_DESC"
+			filter="string"
+			label="COM_EXTUSER_REGISTER_FIRSTNAME_LABEL"
+			message="COM_EXTUSER_REGISTER_FIRSTNAME_MESSAGE"
+			required="true"
+			size="30"
+		/>
+	</fieldset>
+</form>

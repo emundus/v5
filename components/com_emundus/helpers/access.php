@@ -52,5 +52,25 @@ class EmundusHelperAccess{
 	function isApplicant($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id,4);
 	}
+	
+	/**
+	 * Get the eMundus groups for a user.
+	 *
+	 *
+	 * @param	int	$user			The user id.
+	 *
+	 * @return	array	The array of groups for user.
+	 * @since	4.0
+	*/
+	function getProfileAccess($user){
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
+					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
+					WHERE esg.published=1 AND eg.user_id='.$user;
+		$db->setQuery( $query );
+		$profiles = $db->loadResultArray();
+		return $profiles;
+	}
+	
 }
 ?>

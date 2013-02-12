@@ -16,6 +16,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.model' );
 jimport( 'joomla.application.application' );
+jimport( 'joomla.html.parameter' );
  
 class EmundusModelList extends JModel
 {
@@ -37,16 +38,8 @@ class EmundusModelList extends JModel
 
 		$mainframe =& JFactory::getApplication();
 
-        // Get pagination request variables
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-        $limitstart = JRequest::getVar('limitstart', 0, '', 'int');
- 
-        // In case limit has been changed, adjust it
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-		
 		// Get current menu parameters
 		$menu = &JSite::getMenu();
-		
 		$current_menu  = $menu->getActive();
 		/* 
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
@@ -90,6 +83,10 @@ class EmundusModelList extends JModel
 		$missing_doc			= $mainframe->getUserStateFromRequest( $option.'missing_doc', 'missing_doc', $filts_details['missing_doc'] );
 		$complete				= $mainframe->getUserStateFromRequest( $option.'complete', 'complete', $filts_details['complete'] );
 		$validate				= $mainframe->getUserStateFromRequest( $option.'validate', 'validate', $filts_details['validate'] );
+		 // Get pagination request variables
+        $limit 					= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+        $limitstart 			= ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
@@ -110,8 +107,8 @@ class EmundusModelList extends JModel
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
 		
-		$col_elt	= $this->getState('elements');			//$col_elt = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$col_other	= $this->getState('elements_other');	//col_other	= JRequest::getVar('elements_other', null, 'POST', 'array', 0);
+		$col_elt	= $this->getState('elements');
+		$col_other	= $this->getState('elements_other');
 
 		$this->elements_id = $menu_params->get('em_elements_id');
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
@@ -128,9 +125,9 @@ class EmundusModelList extends JModel
 		
 		$this->col = array_merge($col_elt, $col_other, $this->elements_default);
 
-		$elements_names = '"'.implode('", "', $this->col).'"';
-		$result = EmundusHelperList::getElementsDetails($elements_names);
-		$result = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
+		$elements_names = '"'.implode('", "', $this->col).'"'; 
+		$result = EmundusHelperList::getElementsDetails($elements_names); 
+		$result = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels")); 
 		$this->details = new stdClass();
 		foreach ($result as $res) {
 			$this->details->{$res->tab_name.'__'.$res->element_name} = array('element_id'	=> $res->element_id,
@@ -139,18 +136,20 @@ class EmundusModelList extends JModel
 																			'sub_values'	=> $res->sub_values,
 																			'sub_labels'	=> $res->sub_labels,
 																			'group_by'		=> $res->tab_group_by);
-			if ($this->details->{$res->tab_name.'__'.$res->element_name}['plugin'] == "fabrikdatabasejoin") {
-				$query_paramsdefs = JPATH_BASE.DS.'components'.DS.'com_fabrik'.DS.'plugins'.DS.'element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml';
+			/*if ($this->details->{$res->tab_name.'__'.$res->element_name}['plugin'] == "databasejoin") {			
+				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
 				$query_params = new JParameter($this->details->{$res->tab_name.'__'.$res->element_name}['attribs'], $query_paramsdefs);
-				$query_params = $query_params->_registry['_default']['data'];
-				$this->details->{$res->tab_name.'__'.$res->element_name}['option_list'] =  EmundusHelperFilters::buildOptions($res->element_name, $query_params);
-			}
-		}
+				$query_params = json_decode($query_params);
+				$option_list =  EmundusHelperFilters::buildOptions($res->element_name, $query_params);
+				
+				$this->details->{$res->tab_name.'__'.$res->element_name}['option_list'] = $option_list;
+			}*/
+		} //echo '<pre>'; print_r($this->details);  echo '</pre>'; 
 	}
 	
 	function _buildContentOrderBy(){
 		global $option;
-
+//echo '<pre>'; print_r($this->_applicants);
 		$mainframe =& JFactory::getApplication();
 
 		$tmp = array();
@@ -211,17 +210,6 @@ class EmundusModelList extends JModel
 	        array_multisort($key_array,$sort,$multi_array);
         return $multi_array;  
 	}  
-
-	function getProfileAcces($user){
-		$db =& JFactory::getDBO();
-		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
-					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
-					WHERE esg.published=1 AND eg.user_id='.$user;
-		$db->setQuery( $query );
-		$profiles = $db->loadResultArray();
-		return $profiles;
-	}
-	
 	
 	function getCurrentCampaign(){
 		$query = 'SELECT DISTINCT schoolyear 
@@ -337,7 +325,7 @@ class EmundusModelList extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade');
 		
-		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__users.email, #__users.name, #__emundus_setup_profiles.id as profile';
+		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__users.name, #__users.email, #__emundus_setup_profiles.id as profile';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -362,9 +350,16 @@ class EmundusModelList extends JModel
 		$query .= ' WHERE #__users.block = 0 ';
 		if(empty($schoolyears)) $query .= ' AND #__emundus_users.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'")';
 		
-		if ($current_user->usertype=='Editor'){
-			$pa = $this->getProfileAcces($current_user->id);
-			$query .= ' AND (#__emundus_users.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$pa).')) OR #__emundus_users.user_id IN (select user_id from #__emundus_users where profile in ('.implode(',',$pa).'))) ';
+		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
+			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
+			$query .= ' AND (#__emundus_users.user_id IN (
+								SELECT user_id 
+								FROM #__emundus_users_profiles 
+								WHERE profile_id in ('.implode(',',$pa).')) OR #__emundus_users.user_id IN (
+									SELECT user_id 
+									FROM #__emundus_users 
+									WHERE profile in ('.implode(',',$pa).'))
+							) ';
 		}
 		return $query;
 	}
@@ -386,21 +381,21 @@ class EmundusModelList extends JModel
 	}
 	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		//$eMConfig =& JComponentHelper::getParams('com_emundus');
 		
-		$search					= $this->getState('elements');//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$search_values			= $this->getState('elements_values');//$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$search_other			= $this->getState('elements_other');//$search_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
-		$search_values_other	= $this->getState('elements_values_other');//$search_values_other = JRequest::getVar('elements_values_other', null, 'POST', 'array', 0);
-		$finalgrade				= $this->getState('finalgrade');//$finalgrade = JRequest::getVar('finalgrade', null, 'POST', 'none', 0);
-		$quick_search			= $this->getState('s');//$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$schoolyears			= $this->getState('schoolyears');//$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array', 0);
-		$gid					= $this->getState('groups');//$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
-		$uid					= $this->getState('user');//$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		$profile				= $this->getState('profile');//$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
-		$miss_doc				= $this->getState('missing_doc');//$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
-		$complete				= $this->getState('complete');//$complete = JRequest::getVar('complete', null, 'POST', 'none',0);
-		$validate_application	= $this->getState('validate');//$validate_application = JRequest::getVar('validate', null, 'POST', 'none',0);
+		$search					= $this->getState('elements');
+		$search_values			= $this->getState('elements_values');
+		$search_other			= $this->getState('elements_other');
+		$search_values_other	= $this->getState('elements_values_other');
+		$finalgrade				= $this->getState('finalgrade');
+		$quick_search			= $this->getState('s');
+		$schoolyears			= $this->getState('schoolyears');
+		$gid					= $this->getState('groups');
+		$uid					= $this->getState('user');
+		$profile				= $this->getState('profile');
+		$miss_doc				= $this->getState('missing_doc');
+		$complete				= $this->getState('complete');
+		$validate_application	= $this->getState('validate');
 		
 		$query = '';
 		$and = true;
@@ -475,14 +470,15 @@ class EmundusModelList extends JModel
 		return $query;
 	}
 	
-	/*
-	** @description : Generate values for array of data for all applicants
-	** @param $search : filters elements
-	** @param $eval_list : reference of result list
-	** @param $head_val : header name
-	** @param $applicant : array of applicants indexed by database column
-	*/
+	/**
+	* @description : Generate values for array of data for all applicants
+	* @param	array	$search	filters elements
+	* @param	array	$eval_list	reference of result list
+	* @param	array	$head_val	header name
+	* @param	object	$applicant	array of applicants indexed by database column
+	**/
 	function setEvalList($search, &$eval_list, $head_val, $applicant) {
+	//print_r($applicant); die();
 		if(!empty($search)){
 			foreach($search as $c){
 				if(!empty($c)){
@@ -492,12 +488,11 @@ class EmundusModelList extends JModel
 						if ($this->details->{$name[0].'__'.$name[1]}['group_by']
 							&& array_key_exists($name[0].'__'.$name[1], $this->subquery)
 							&& array_key_exists($applicant->user_id, $this->subquery[$name[0].'__'.$name[1]])){
-							$print_val = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+							$$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+						} elseif (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
+							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
 						}
-						else if (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
-							$print_val = EmundusHelperList::getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
-						}
-						$eval_list[$name[0].'__'.$name[1]] = $print_val;
+						$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
 					}
 				}
 			}
@@ -505,8 +500,8 @@ class EmundusModelList extends JModel
 	}
 	
 	function _buildQuery(){
-		$search = $this->getState('elements');//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);	
-		$search_other = $this->getState('elements_other');//$search_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
+		$search = $this->getState('elements');
+		$search_other = $this->getState('elements_other');
 		
 		$tables_list = array();
 		$tables_list_other = array();
@@ -517,7 +512,7 @@ class EmundusModelList extends JModel
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
 
-		/*echo str_replace("#_", "jos", $query);*/
+		//echo str_replace("#_", "jos", $query);
 		$this->_db->setQuery($query);
 		$applicants = $this->_db->loadObjectlist();
 
@@ -531,7 +526,7 @@ class EmundusModelList extends JModel
 					$eval_list[$head['name']] = $applicant->$head['name'];
 					$eval_list['user'] = $applicant->user_id;
 				}
-				/** add an advance filter columns only if not already exist **/
+				// add an advance filter columns only if not already exist 
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);
 				$this->setEvalList($search_other, $eval_list, $head_val, $applicant);
 				$this->setEvalList($this->elements_default, $eval_list, $head_val, $applicant);
@@ -542,6 +537,8 @@ class EmundusModelList extends JModel
 				$this->_applicants=$eval_lists;
 		}else
 			$this->_applicants=$applicants;
+			
+		//echo '<pre>'; print_r($this->_applicants);
 	}
 	
 	function getUsers(){	
@@ -589,8 +586,8 @@ class EmundusModelList extends JModel
 		$cols = array();
 		$cols[] = array('name' =>'user_id', 'label'=>'User id');
 		$cols[] = array('name' =>'user', 'label'=>'User id');
-		$cols[] = array('name' =>'email', 'label'=>'Email');
-		$cols[] = array('name' =>'name', 'label'=>'Name'); 
+		$cols[] = array('name' =>'name', 'label'=>'Name');
+		$cols[] = array('name' =>'email', 'label'=>'Email'); 
 		$cols[] = array('name' =>'profile', 'label'=>'Profile'); 
 
 		return $cols;

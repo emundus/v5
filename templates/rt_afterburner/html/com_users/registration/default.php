@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.noframes');
 $template = JFactory::getApplication()->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
-$this->form->reset( true );
+//$this->form->reset( true );
 $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
 <div class="registration<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading')) : ?>
