@@ -6,13 +6,8 @@ $user =& JFactory::getUser();
 $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
 ?>
-<dl id="system-message">
-	<dt class="message">
-		<dd class="message"><ul><li><?php echo JText::_('CAREFUL_ONLY_STUDENT'); ?></li></ul></dd>
-	</dt>
-</dl>
 <div id="profilebasics">
-<h1><?php echo $this->profile->label; ?> <a href="index.php?option=com_fabrik&view=table&tableid=67&calculations=0&resetfilters=0&Itemid=43&lang=en"><?php echo '['.JText::_('BACK_TO_PROFILE').']';?></a></h1>
+<h1><?php echo $this->profile->label; ?> <a href="index.php?option=com_fabrik&view=list&listid=67&Itemid=3&lang=en"><?php echo '['.JText::_('BACK_TO_PROFILE').']';?></a></h1>
 <table>
 	<tr><th><?php echo JText::_('PUBLISHED_FOR_APP'); ?></th><td><?php echo $this->profile->published>0?JText::_('Yes'):JText::_('No'); ?></td></tr>
 	<tr><th><?php echo JText::_('DESCRIPTION'); ?></th><td><?php echo $this->profile->description; ?></td></tr>
@@ -24,7 +19,7 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
 <!--<input type="hidden" name="Itemid" value="<?php// echo $Itemid; ?>" />-->
 <table id="attachmentlist">
-	<tr><th colspan="4"><h1><?php echo JText::_('ATTACHMENTS'); ?>  <a href="index.php?option=com_fabrik&view=table&tableid=36&calculations=0&resetfilters=0&Itemid=46&lang=en"><?php echo '['.JText::_('SETUP_ATTACHMENTS').']';?></a></h1></th></tr>
+	<tr><th colspan="4"><h1><?php echo JText::_('ATTACHMENTS'); ?>  <a href="index.php?option=com_fabrik&view=list&listid=36&calculations=0&resetfilters=0&Itemid=4&lang=en"><?php echo '['.JText::_('SETUP_ATTACHMENTS').']';?></a></h1></th></tr>
 	<tr height="30px">
 		<th><?php echo JText::_('TITLE'); ?></th>
 		<th align="center"><?php echo JText::_('USED'); ?></th>
