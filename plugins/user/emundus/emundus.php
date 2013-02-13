@@ -105,7 +105,7 @@ class plgUserEmundus extends JPlugin
 
 			// Update name and fistname from #__users
 			$db->setQuery('UPDATE #__users
-					SET name="'.strtoupper($details['name']).' '.ucfirst($details['firstname']).'"
+					SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
 					WHERE id='.$user['id']);
 			$db->Query();
 
@@ -114,7 +114,7 @@ class plgUserEmundus extends JPlugin
 			$schoolyear = $db->loadResult();
 
 			$db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear,registerDate)
-						VALUES ('.$user['id'].',"'.ucfirst($details['firstname']).'","'.strtoupper($details['name']).'",'.$details['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
+						VALUES ('.$user['id'].',"'.ucfirst($details['emundus_profile']['firstname']).'","'.strtoupper($details['emundus_profile']['lastname']).'",'.$details['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
 			$db->Query();
 
 			// Insert data in #__emundus_users_profiles
@@ -176,15 +176,15 @@ class plgUserEmundus extends JPlugin
 				}
 			}
 		}
-		else {
+		else { //die(print_r($details));
 			// Update name and fistname from #__users
 			$db->setQuery('UPDATE #__users
-					SET name="'.strtoupper($details['name']).' '.ucfirst($details['firstname']).'"
+					SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
 					WHERE id='.$user['id']);
 			$db->Query();
 			
 			$db->setQuery('UPDATE #__emundus_users
-					SET lastname="'.strtoupper($details['name']).'", firstname="'.ucfirst($details['firstname']).'"
+					SET lastname="'.strtoupper($details['emundus_profile']['name']).'", firstname="'.ucfirst($details['emundus_profile']['firstname']).'"
 					WHERE user_id='.$user['id']);
 			$db->Query();
 			

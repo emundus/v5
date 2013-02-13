@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="core"
+	<fieldset name="default"
 		label="COM_USERS_PROFILE_DEFAULT_LABEL">
 
 		<field name="id" type="hidden"
 			filter="integer"
 		/>
-
-		<field name="name" type="text"
-			description="COM_EXTUSER_REGISTER_LASTNAME_DESC"
+		
+		<field name="name" type="hidden"
 			filter="string"
-			label="COM_EXTUSER_REGISTER_LASTNAME_LABEL"
-			message="COM_EXTUSER_REGISTER_LASTNAME_MESSAGE"
-			required="true"
-			size="30"
-		/>
-
-		<field name="firstname" type="text"
-			description="COM_EXTUSER_REGISTER_FIRSTNAME_DESC"
-			filter="string"
-			label="COM_EXTUSER_REGISTER_FIRSTNAME_LABEL"
-			message="COM_EXTUSER_REGISTER_FIRSTNAME_MESSAGE"
-			required="true"
-			size="30"
 		/>
 
 		<field name="username" type="text"

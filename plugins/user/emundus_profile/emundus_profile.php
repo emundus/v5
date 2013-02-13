@@ -115,7 +115,7 @@
 						if ($this->params->get('register-require_' . $field, 1) == 0
 							&& $this->params->get('profile-require_' . $field, 1) == 0)
 						{
-							$form->removeField($field, 'profile');
+							$form->removeField($field, 'emundus_profile');
 						}
 					}
 					// Case registration
@@ -124,24 +124,24 @@
 						// Toggle whether the field is required.
 						if ($this->params->get('register-require_' . $field, 1) > 0)
 						{
-							$form->setFieldAttribute($field, 'required', ($this->params->get('register-require_' . $field) == 2) ? 'required' : '', 'profile');
+							$form->setFieldAttribute($field, 'required', ($this->params->get('register-require_' . $field) == 2) ? 'required' : '', 'emundus_profile');
 						}
 						else
 						{
-							$form->removeField($field, 'profile');
+							$form->removeField($field, 'emundus_profile');
 						}
 					}
 					// Case profile in site or admin
 					elseif ($name == 'com_users.profile' || $name == 'com_admin.profile')
-					{die($this->params->get('profile-require_' . $field, 1));
+					{
 						// Toggle whether the field is required.
 						if ($this->params->get('profile-require_' . $field, 1) > 0)
 						{
-							$form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'profile');
+							$form->setFieldAttribute($field, 'required', ($this->params->get('profile-require_' . $field) == 2) ? 'required' : '', 'emundus_profile'); 
 						}
 						else
 						{
-							$form->removeField($field, 'profile');
+							$form->removeField($field, 'emundus_profile');
 						}
 					}
 				}
