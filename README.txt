@@ -1,15 +1,14 @@
 1- What is this?
-    * This is eMundus application form installation/upgrade package for Joomla! version 2.5.x
-    * eMundus Official site: http://www.emundus.fr
-    
+    * This is a Joomla! installation/upgrade package to version 2.5.x
+    * Joomla! Official site: http://www.joomla.org
+    * Joomla 2.5 version history - http://docs.joomla.org/Joomla_2.5_version_history
+    * Detailed changes in the Changelog: http://joomlacode.org/gf/project/joomla/scmsvn/?action=browse&path=/development/trunk/administrator/&view=log
+
 2- What is Joomla?
     * Joomla it's a Content Management System (CMS) which enables you to build Web sites and powerful online applications.
     * It's a free and OpenSource software, distributed under the GNU General Public License version 2 or later
     * This is a simple and powerful web server application and it requires a server with PHP and MySQL to run it. 
 	More details here: http://www.joomla.org/about-joomla.html
-	* Joomla 2.5 version history - http://docs.joomla.org/Joomla_2.5_version_history
-    * Detailed changes in the Changelog: http://joomlacode.org/gf/project/joomla/scmsvn/?action=browse&path=/development/trunk/administrator/&view=log
-
 
 3- Is Joomla for you?
     * Joomla its the right solution for any content web project: http://docs.joomla.org/Joomla_Is_it_for-me%3F
@@ -65,7 +64,7 @@
     * Are you a Web designer? http://docs.joomla.org/Web_designers
 
 Copyright:
-    * Copyright (C) 2005 - 2012 Open Source Matters. All rights reserved.
+    * Copyright (C) 2005 - 2013 Open Source Matters. All rights reserved.
     * Credits: http://docs.joomla.org/Joomla_1.6_Credits
     * Distributed under the GNU General Public License version 2 or later
     * See Licenses details at http://docs.joomla.org/Joomla_Licenses
