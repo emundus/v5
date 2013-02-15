@@ -18,6 +18,7 @@
 		
 		<field name="name" type="hidden"
 			filter="string"
+			default="to_set"
 		/>
 
 		<field name="username" type="text"

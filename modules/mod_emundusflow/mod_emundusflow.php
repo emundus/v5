@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $user =& JFactory::getUser();
-if($user->get('usertype') != 2 || $user->applicant != 1 ) return;
+if( !in_array(4, $user->getAuthorisedViewLevels()) ) return;
 $db =& JFactory::getDBO();
 
 $query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id)
