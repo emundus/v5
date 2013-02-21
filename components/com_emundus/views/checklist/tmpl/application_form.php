@@ -1,6 +1,6 @@
 <?php 
 //JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');

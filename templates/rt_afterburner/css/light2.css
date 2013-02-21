@@ -90,9 +90,35 @@ p {margin-top:10px;margin-bottom:10px;}
 #header {overflow:hidden;}
 #header li {list-style:none;float:left;padding-left:15px;font-weight:bold;}
 #nav {height:45px;background:#4B4B4B;z-index:1;position:relative;/*margin-top: -13px;*//*padding-bottom: 5px;*/} 
-.menumain_men li {background-color:#4B4B4B;}
+.menumain_men {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-origin: padding-box;
+    background-position: left top;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    color: #263F82;
+    font-size: 0.9em;
+   /* margin-top: 70px;*/
+    padding-left: 9px;
+    position: absolute;
+    right: -10px;
+    text-transform: uppercase;
+}
 #nav ul {margin:0px 0 0 15px;}
-#nav li {list-style:none;float:left;padding: 0 1px 0px 0px;height:30px;position:relative;}
+#nav li {list-style:none;float:left;padding: 0 20px 0px 0px;height:30px;position:relative;}
+#nav li.parent {
+    background-attachment: scroll !important;
+    background-clip: border-box !important;
+    background-color: transparent !important;
+    background-image: url("../images/down.png") !important;
+    background-origin: padding-box !important;
+    background-position: right bottom !important;
+    background-repeat: no-repeat !important;
+    background-size: auto auto !important;
+    padding-right: 20px !important;
+}
 #nav li a {display:block;padding: 5px 10px 0px 10px;line-height:35px;color:#fff;font-weight:bold;border-bottom-color: #0070B8;
     border-bottom-style: solid;
     border-bottom-width: 4px;}
