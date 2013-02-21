@@ -103,7 +103,7 @@
 				$fields = array(
 					'lastname',
 					'firstname',
-					'something',
+					'profile',
 				);
 		
                 foreach ($fields as $field)

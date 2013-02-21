@@ -68,7 +68,7 @@ function check_field(){
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
 			if (field[0].value == "")
-				field[0].setStyles({backgroundColor: '#FFC174'});
+				field[0].setStyles({backgroundColor: '#FCC530'});
 			field[0].onblur = function(){this.setStyles({backgroundColor: '#fff'}); name.value = firstname.value + ' ' + lastname.value;}
 			field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
 			field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}

@@ -9,8 +9,9 @@ table {text-align:left;border-spacing:3px;}  /*border-collapse:collapse; */
 /* Main Layout */
 fieldset {
 	border: 1px solid #ccc;
-	margin: 10px 0 0px 0;
-	padding: 0px 5px 3px 10px;
+	border-top-width: 3px;
+	margin: 10px 0 10px 0;
+	padding: 0px 5px 10px 10px;
 	background-color:#FFF;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
@@ -429,8 +430,8 @@ opacity: 1;
     background-repeat: repeat;
     background-size: auto auto;
     border-bottom-color: #AAAAAA;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-left-color-ltr-source: physical;
@@ -453,8 +454,8 @@ opacity: 1;
     border-right-width-rtl-source: physical;
     border-right-width-value: 1px;
     border-top-color: #AAAAAA;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     border-top-style: solid;
     border-top-width: 1px;
     color: #111111;
@@ -483,7 +484,7 @@ i.button:active, button:active, input[type="submit"]:active, input[type="reset"]
     position: relative;
     top: 1px;
 }
-.validate {background-color:#9F0;}
+.validate {background-color:#C3D2E5;}
 .validate:hover {background-color:#00FF40;}
 
 /* Login form */

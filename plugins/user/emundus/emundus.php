@@ -99,95 +99,95 @@ class plgUserEmundus extends JPlugin
 		$config			= JFactory::getConfig();
 		$mail_to_user 	= $this->params->get('mail_to_user', 1);
 		$db = JFactory::getDBO();
-
-		if ($isnew) {
-			// @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
-
-			// Update name and fistname from #__users
-			$db->setQuery('UPDATE #__users
-					SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
-					WHERE id='.$user['id']);
-			$db->Query();
-
-			// Insert data in #__emundus_users
-			$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$details['profile']);
-			$schoolyear = $db->loadResult();
-
-			$db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear,registerDate)
-						VALUES ('.$user['id'].',"'.ucfirst($details['emundus_profile']['firstname']).'","'.strtoupper($details['emundus_profile']['lastname']).'",'.$details['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
-			$db->Query();
-
-			// Insert data in #__emundus_users_profiles
-			$db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id)
-						VALUES ('.$user['id'].','.$details['profile'].')');
-			$db->Query();
-
-			// Insert data in #__emundus_users_profiles_history
-			$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var)
-						VALUES ('.$user['id'].','.$details['profile'].',"profile")');
-			$db->Query();
-
-			$db->setQuery('UPDATE #__users
-						SET usertype=(SELECT u.title FROM #__usergroups AS u
-						LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
-						WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) WHERE id='.$user['id']);
-			$db->Query();
-
-			if ($app->isAdmin()) {
-				if ($mail_to_user) {
-
-					// Load user_joomla plugin language (not done automatically).
-					$lang = JFactory::getLanguage();
-					$lang->load('plg_user_joomla', JPATH_ADMINISTRATOR);
-
-					// Compute the mail subject.
-					$emailSubject = JText::sprintf(
-						'PLG_USER_JOOMLA_NEW_USER_EMAIL_SUBJECT',
-						$user['name'],
-						$config->get('sitename')
-					);
-
-					// Compute the mail body.
-					$emailBody = JText::sprintf(
-						'PLG_USER_JOOMLA_NEW_USER_EMAIL_BODY',
-						$user['name'],
-						$config->get('sitename'),
-						JUri::root(),
-						$user['username'],
-						$user['password_clear']
-					);
-
-					// Assemble the email data...the sexy way!
-					$mail = JFactory::getMailer()
-						->setSender(
-							array(
-								$config->get('mailfrom'),
-								$config->get('fromname')
+		if( count($details) > 0 ) {
+			if ($isnew) {
+				// @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
+	
+				// Update name and fistname from #__users
+				$db->setQuery('UPDATE #__users
+						SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
+						WHERE id='.$user['id']);
+				$db->Query();
+	
+				// Insert data in #__emundus_users
+				$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$details['emundus_profile']['profile']);
+				$schoolyear = $db->loadResult();
+	
+				$db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
+							VALUES ('.$user['id'].',"'.ucfirst($details['emundus_profile']['firstname']).'","'.strtoupper($details['emundus_profile']['lastname']).'",'.$details['emundus_profile']['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
+				$db->Query();
+	
+				// Insert data in #__emundus_users_profiles
+				$db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id)
+							VALUES ('.$user['id'].','.$details['emundus_profile']['profile'].')');
+				$db->Query();
+	
+				// Insert data in #__emundus_users_profiles_history
+				$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var)
+							VALUES ('.$user['id'].','.$details['emundus_profile']['profile'].',"profile")');
+				$db->Query();
+	
+				$db->setQuery('UPDATE #__users
+							SET usertype=(SELECT u.title FROM #__usergroups AS u
+							LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
+							WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) WHERE id='.$user['id']);
+				$db->Query();
+	
+				if ($app->isAdmin()) {
+					if ($mail_to_user) {
+	
+						// Load user_joomla plugin language (not done automatically).
+						$lang = JFactory::getLanguage();
+						$lang->load('plg_user_joomla', JPATH_ADMINISTRATOR);
+	
+						// Compute the mail subject.
+						$emailSubject = JText::sprintf(
+							'PLG_USER_JOOMLA_NEW_USER_EMAIL_SUBJECT',
+							$user['name'],
+							$config->get('sitename')
+						);
+	
+						// Compute the mail body.
+						$emailBody = JText::sprintf(
+							'PLG_USER_JOOMLA_NEW_USER_EMAIL_BODY',
+							$user['name'],
+							$config->get('sitename'),
+							JUri::root(),
+							$user['username'],
+							$user['password_clear']
+						);
+	
+						// Assemble the email data...the sexy way!
+						$mail = JFactory::getMailer()
+							->setSender(
+								array(
+									$config->get('mailfrom'),
+									$config->get('fromname')
+								)
 							)
-						)
-						->addRecipient($user['email'])
-						->setSubject($emailSubject)
-						->setBody($emailBody);
-
-					if (!$mail->Send()) {
-						// TODO: Probably should raise a plugin error but this event is not error checked.
-						JError::raiseWarning(500, JText::_('ERROR_SENDING_EMAIL'));
+							->addRecipient($user['email'])
+							->setSubject($emailSubject)
+							->setBody($emailBody);
+	
+						if (!$mail->Send()) {
+							// TODO: Probably should raise a plugin error but this event is not error checked.
+							JError::raiseWarning(500, JText::_('ERROR_SENDING_EMAIL'));
+						}
 					}
 				}
 			}
-		}
-		else { //die(print_r($details));
-			// Update name and fistname from #__users
-			$db->setQuery('UPDATE #__users
-					SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
-					WHERE id='.$user['id']);
-			$db->Query();
-			
-			$db->setQuery('UPDATE #__emundus_users
-					SET lastname="'.strtoupper($details['emundus_profile']['name']).'", firstname="'.ucfirst($details['emundus_profile']['firstname']).'"
-					WHERE user_id='.$user['id']);
-			$db->Query();
-			
+			else { //die(print_r($details));
+				// Update name and fistname from #__users
+				$db->setQuery('UPDATE #__users
+						SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
+						WHERE id='.$user['id']);
+				$db->Query();
+				
+				$db->setQuery('UPDATE #__emundus_users
+						SET lastname="'.strtoupper($details['emundus_profile']['name']).'", firstname="'.ucfirst($details['emundus_profile']['firstname']).'"
+						WHERE user_id='.$user['id']);
+				$db->Query();
+			}
 		}
 	}
 
