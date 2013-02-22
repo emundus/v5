@@ -1,6 +1,6 @@
 <?php 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 JHTML::stylesheet( 'template.css', JURI::Base().'templates/emundus/css/' );
 JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
 JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
@@ -26,7 +26,7 @@ else
 </table>
 <div id="attachment_list">
   <h2><?php echo JText::_('ATTACHMENTS'); ?></h2>
-  <h4><?php echo JText::_('Upload max filesize') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
+  <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
   <br />
   <form id="checklistForm" name="checklistForm" action="index.php?option=com_emundus&task=upload&layout=attachments&sid=<?php echo $user->id; ?>"  method="post" enctype="multipart/form-data">
     <input name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ATTACHMENT'); ?>"/>

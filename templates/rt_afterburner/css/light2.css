@@ -103,6 +103,7 @@ p {margin-top:10px;margin-bottom:10px;}
     padding-left: 9px;
     position: absolute;
     right: -13px;
+	margin: -2px 13px 0px 0px;
 }
 .menumain_men li {
     background-attachment: scroll;

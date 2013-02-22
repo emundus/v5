@@ -8,7 +8,9 @@ $query='SELECT id, link
 	WHERE alias="checklist"';
 $_db->setQuery( $query );
 $itemid = $_db->loadAssoc();
-
+?>
+</ul>
+<?php 
 $query='SELECT esa.value, esap.id, esa.id as _id
 	FROM #__emundus_setup_attachment_profiles esap
 	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
@@ -29,8 +31,10 @@ $query='SELECT esa.value, esap.id, esa.id as _id
 				$class	= 'need_ok';
 			$endlink= '</a>';
 ?>
-	<p class="<?php echo $class; ?>"><?php echo $link.$form->value.$endlink; ?></p>
-<?php } 
+	<li class="<?php echo $class; ?>"><?php echo $link.$form->value.$endlink; ?></li>
+<?php } ?>
+</ul>
+<?php 
 unset($link);
 unset($endlink);
 ?>
