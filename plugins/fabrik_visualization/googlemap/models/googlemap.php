@@ -67,11 +67,11 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 
 	public function getJs()
 	{
-		if (!$this->getRequiredFiltersFound())
+		$params = $this->getParams();
+		if (!$this->getRequiredFiltersFound() && $params->get('fb_gm_always_show_map', '0') != '1')
 		{
 			return '';
 		}
-		$params = $this->getParams();
 		$str = "head.ready(function() {";
 		$viz = $this->getVisualization();
 
@@ -377,7 +377,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization
 						$html = str_replace(array("\r\n"), "<br />", $html);
 						$html = str_replace(array("\n", "\r"), "<br />", $html);
 						*/
-						$html = nl2br($html, true);
+						$html = nl2br($html);
 					}
 					$html = str_replace("'", '"', $html);
 					$this->txt[] = $html;

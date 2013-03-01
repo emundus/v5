@@ -121,6 +121,12 @@ class FabrikHelperHTML
 	protected static $printURL = null;
 
 	/**
+	 * Array of browser request headers.  Starts as null.
+	 * @var array
+	 */
+	protected static $requestHeaders = null;
+
+	/**
 	 * Load up window code - should be run in ajax loaded pages as well (10/07/2012 but not json views)
 	 * might be an issue in that we may be re-observing some links when loading in - need to check
 	 *
@@ -138,6 +144,33 @@ class FabrikHelperHTML
 	}
 
 	/**
+	 *
+	 * Build an array of the request headers by hand.  Replacement for using
+	 * apache_request_headers(), which only works in certain configurations.
+	 * This solution gets them from the $_SERVER array, and re-munges them back
+	 * from HTTP_FOO_BAR format to Foo-Bar format.  Stolen from:
+	 * http://stackoverflow.com/questions/541430/how-do-i-read-any-request-header-in-php
+	 *
+	 * @return   array  request headers assoc
+	 */
+
+	public static function parseRequestHeaders() {
+		if (isset(self::$requestHeaders))
+		{
+			return self::$requestHeaders;
+		}
+		self::$requestHeaders = array();
+		foreach($_SERVER as $key => $value) {
+			if (substr($key, 0, 5) <> 'HTTP_') {
+				continue;
+			}
+			$header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+			self::$requestHeaders[$header] = $value;
+		}
+		return self::$requestHeaders;
+	}
+
+	/**
 	 * Load up window code - should be run in ajax loaded pages as well (10/07/2012 but not json views)
 	 * might be an issue in that we may be re-observing some links when loading in - need to check
 	 *
@@ -150,6 +183,15 @@ class FabrikHelperHTML
 	public static function windows($selector = '', $params = array())
 	{
 		$script = '';
+
+		// Don't include in an Request.JSON call - for autofill form plugin
+		// $$$ hugh - apache_request_headers() only works for certain server configurations
+		//$headers = apache_request_headers();
+		$headers = self::parseRequestHeaders();
+		if (JArrayHelper::getValue($headers, 'X-Request') === 'JSON')
+		{
+			return;
+		}
 		if (JRequest::getVar('format') == 'json')
 		{
 			return;
@@ -371,23 +413,25 @@ EOD;
 
 	public static function printURL($formModel)
 	{
+		if (isset(self::$printURL))
+		{
+			return self::$printURL;
+		}
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$form = $formModel->getForm();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$table = $formModel->getTable();
-		if (isset(self::$printURL))
-		{
-			return self::$printURL;
-		}
-		$url = COM_FABRIK_LIVESITE . "index.php?option=com_' . $package . '&tmpl=component&view=details&formid=" . $form->id . "&listid=" . $table->id
-		. "&rowid=" . $formModel->_rowId . '&iframe=1&print=1';
+
+		$url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&tmpl=component&view=details&formid=' . $form->id . '&listid=' . $table->id
+		. '&rowid=' . $formModel->getRowId() . '&iframe=1&print=1';
+
 		/* $$$ hugh - @TODO - FIXME - if they were using rowid=-1, we don't need this, as rowid has already been transmogrified
 		 * to the correct (PK based) rowid.  but how to tell if original rowid was -1???
 		 */
 		if ($input->get('usekey') !== null)
 		{
-			$url .= "&usekey=" . $input->get('usekey');
+			$url .= '&usekey=' . $input->get('usekey');
 		}
 		$url = JRoute::_($url);
 
@@ -816,22 +860,19 @@ EOD;
 				$src[] = 'media/com_fabrik/js/icons.js';
 				$src[] = 'media/com_fabrik/js/icongen.js';
 				$src[] = 'media/com_fabrik/js/fabrik.js';
+				$src[] = 'media/com_fabrik/js/encoder.js';
 				$src[] = 'media/com_fabrik/js/tips.js';
 				$src[] = 'media/com_fabrik/js/window.js';
 				$src[] = 'media/com_fabrik/js/lib/Event.mock.js';
 
 				self::styleSheet(COM_FABRIK_LIVESITE . 'media/com_fabrik/css/fabrik.css');
-				/* $$$ hugh - setting liveSite needs to use addScriptDecleration, so it loads earlier, otherwise
-				 * in some browsers it's not available when other things (like map viz) are loading
-				 */
-				self::addScriptDeclaration("head.ready(function() { Fabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';});");
-
 				$script = array();
 				$script[] = "Fabrik.fireEvent('fabrik.framework.loaded');";
 
 				$tipOpts = self::tipOpts();
 				self::addScriptDeclaration(
 					"head.ready(function () {
+	Fabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';
 	Fabrik.tips = new FloatingTips('.fabrikTip', " . json_encode($tipOpts)
 						. ");
 	Fabrik.addEvent('fabrik.list.updaterows', function () {
@@ -1570,11 +1611,11 @@ EOD;
 	/**
 	 * Run Joomla content plugins over text
 	 *
-	 * @since   3.0.7
-	 *
 	 * @param   string  &$text  Content
 	 *
 	 * @return  void
+	 *
+	 * @since   3.0.7
 	 */
 
 	public static function runConentPlugins(&$text)
@@ -1591,5 +1632,79 @@ EOD;
 		$text = preg_replace('/\{emailcloak\=off\}/', '', $text);
 		$input->set('option', $opt);
 		$input->set('view', $view);
+	}
+
+	/**
+	* get content item template
+	*
+	* @since   3.0.7
+	*
+	* @param   int $contentTemplate
+	*
+	* @return  string  content item html
+	*/
+
+	public function getContentTemplate($contentTemplate)
+	{
+		$app = JFactory::getApplication();
+		if ($app->isAdmin())
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
+			$db->setQuery($query);
+			$res = $db->loadObject();
+		}
+		else
+		{
+			JModel::addIncludePath(COM_FABRIK_BASE . 'components/com_content/models');
+			$articleModel = JModel::getInstance('Article', 'ContentModel');
+			$res = $articleModel->getItem($contentTemplate);
+		}
+		return $res->introtext . ' ' . $res->fulltext;
+	}
+
+	/**
+	* read a template file
+	*
+	* @param   string  path to template
+	*
+	* @return   string  template content
+	*/
+
+	function getTemplateFile($templateFile)
+	{
+		jimport('joomla.filesystem.file');
+		return JFile::read($templateFile);
+	}
+
+
+	/**
+	* Run a PHP tmeplate as a require.  Return buffered output, or false if require returns false.
+	*
+	* @param   string  path to template
+	*
+	* @param   array  optional element data in standard format, for eval'ed code to use
+	*
+	* @param   object  optional model object, depending on context, for eval'ed code to use
+	*
+	* @return   mixed  email message or false
+	*/
+
+	public function getPHPTemplate($tmpl, $data = array(), $model = null)
+	{
+		// start capturing output into a buffer
+		ob_start();
+		$result = require $tmpl;
+		$message = ob_get_contents();
+		ob_end_clean();
+		if ($return === false)
+		{
+			return false;
+		}
+		else
+		{
+			return $message;
+		}
 	}
 }

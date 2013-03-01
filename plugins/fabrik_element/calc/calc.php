@@ -555,14 +555,23 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  list model
-	 * @param   string  $label       label
+	 * @param   object  &$listModel  List model
+	 * @param   array   $labels      Label
 	 *
 	 * @return string
 	 */
 
-	protected function getSumQuery(&$listModel, $label = "'calc'")
+	protected function getSumQuery(&$listModel, $labels = array())
 	{
+		if (count($labels) == 0)
+		{
+			$label = "'calc' AS label";
+		}
+		else
+		{
+			$label = 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
+		}
+
 		$db = $listModel->getDb();
 		$fields = $listModel->getDBFields($this->getTableName(), 'Field');
 		$name = $this->getElement()->name;
@@ -573,12 +582,12 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$table = $listModel->getTable();
 			$joinSQL = $listModel->_buildQueryJoin();
 			$whereSQL = $listModel->_buildQueryWhere();
-			return "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name)
+			return "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC($name))) AS value, $label FROM " . $db->quoteName($table->db_table_name)
 				. " $joinSQL $whereSQL";
 		}
 		else
 		{
-			return parent::getSumQuery($listModel, $label);
+			return parent::getSumQuery($listModel, $labels);
 		}
 	}
 
@@ -693,8 +702,9 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$data = $listModel->getData();
 		$return = new stdClass;
 		$w = new FabrikWorker;
-
+		$store = (bool) $params->get('calc_on_save_only', 0);
 		$listRef = 'list_' . $listModel->getRenderContext() . '_row_';
+		$storeKey = $this->getElement()->name;
 		foreach ($data as $group)
 		{
 			foreach ($group as $row)
@@ -702,9 +712,12 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 				$key = $listRef . $row->__pk_val;
 				$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $row);
 				$return->$key =  @eval($default);
+				if ($store)
+				{
+					$listModel->storeCell($row->__pk_val, $storeKey, $return->$key);
+				}
 			}
 		}
-
 
 		echo json_encode($return);
 	}

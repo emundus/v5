@@ -197,6 +197,7 @@ var FbDatabasejoin = new Class({
 		{
 			var chxs = this.element.getElements('> .fabrik_subelement');
 			if (chxs.length === 0) {
+				console.log(this.options.editable);
 				this.chxTmplNode = this.element.getElement('.chxTmplNode').getChildren()[0].clone();
 				this.element.getElement('.chxTmplNode').destroy();
 			} else {
@@ -522,12 +523,43 @@ var FbDatabasejoin = new Class({
 			return v;
 		case 'checkbox':
 			v = [];
-			this._getSubElements().each(function (sub) {
+			this.getChxLabelSubElements().each(function (sub) {
 				if (sub.checked) {
 					v.push(sub.get('value'));
 				}
 			});
 			return v;
+		}
+	},
+	
+	/**
+	 * When rendered as a checkbox - the joined to tables values are stored in the visible checkboxes,
+	 * for getValue() to get the actual values we only want to select these subElements and not the hidden
+	 * ones which if we did would add the lookup lists's ids into the values array. 
+	 * 
+	 * @return  array
+	 */
+	getChxLabelSubElements: function () {
+		var subs = this._getSubElements();
+		return subs.filter(function (sub) {
+			if (!sub.name.contains('___id')) {
+				return true;
+			}
+		});
+	},
+	
+	/**
+	 * Sets the element key used in Fabrik.blocks.form_X.formElements
+	 * 
+	 * @since   3.0.7
+	 * 
+	 * @return  string
+	 */
+	getFormElementsKey: function (elId) {
+		if (this.options.displayType === 'checkbox' || this.options.displayType === 'multilist') {
+			return this.options.listName + '___' + this.options.elementShortName;
+		} else {
+			return this.parent(elId);
 		}
 	},
 	
@@ -558,8 +590,10 @@ var FbDatabasejoin = new Class({
 	
 	init: function () {
 		
-		this.getCheckboxTmplNode();
-		this.getCheckboxIDTmplNode();
+		if (this.options.editable) {
+			this.getCheckboxTmplNode();
+			this.getCheckboxIDTmplNode();
+		}
 		
 		// If users can add records to the database join drop down
 		if (this.options.allowadd === true && this.options.editable !== false) {
@@ -632,7 +666,7 @@ var FbDatabasejoin = new Class({
 			if (this.element) {
 				this.element.addEvent(action, function (e) {
 					e.stop();
-					(typeOf(js) === 'function') ? js.delay(0) : eval(js);
+					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}
 			break;
@@ -640,7 +674,7 @@ var FbDatabasejoin = new Class({
 			this._getSubElements();
 			this.subElements.each(function (el) {
 				el.addEvent(action, function (e) {
-					(typeOf(js) === 'function') ? js.delay(0) : eval(js);
+					(typeOf(js) === 'function') ? js.delay(0, this, this) : eval(js);
 				}.bind(this));
 			}.bind(this));
 			break;
@@ -649,7 +683,7 @@ var FbDatabasejoin = new Class({
 			if (typeOf(f) !== 'null') {
 				f.addEvent(action, function (e) {
 					e.stop();
-					(typeOf(js) === 'function') ? js.delay(700) : eval(js);
+					(typeOf(js) === 'function') ? js.delay(700, this, this) : eval(js);
 				}.bind(this));
 			}
 			break;

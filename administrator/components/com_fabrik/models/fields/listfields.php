@@ -53,8 +53,10 @@ class JFormFieldListfields extends JFormFieldList
 		{
 			$this->results = array();
 		}
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$controller = $input->get('view', $input->get('task'));
 		$formModel = false;
-		$controller = JRequest::getVar('view', JRequest::getVar('task'));
 		$aEls = array();
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);
 		$c = ElementHelper::getRepeatCounter($this);
@@ -66,15 +68,17 @@ class JFormFieldListfields extends JFormFieldList
 		$valueformat = JArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlylistfields = (int) JArrayHelper::getValue($this->element, 'onlylistfields', 0);
 		$showRaw = (bool) JArrayHelper::getValue($this->element, 'raw', false);
+		$highlightpk = (bool) JArrayHelper::getValue($this->element, 'highlightpk', false);
 		switch ($controller)
 		{
 			case 'validationrule':
-				$id = JRequest::getInt('id');
+				$id = $input->getInt('id');
 				$pluginManager = FabrikWorker::getPluginManager();
 				$elementModel = $pluginManager->getElementPlugin($id);
 				$element = $elementModel->getElement();
 				$res = $this->loadFromGroupId($element->group_id);
 				break;
+			case 'visualization':
 			case 'element':
 			// @TODO this seems like we could refractor it to use the formModel class as per the table and form switches below?
 				$connectionDd = ($c === false) ? $connection : $connection . '-' . $c;
@@ -94,6 +98,7 @@ class JFormFieldListfields extends JFormFieldList
 					$opts->conn = 'jform_' . $connectionDd;
 					$opts->value = $this->value;
 					$opts->repeat = $this->value;
+					$opts->highlightpk = (int) $highlightpk;
 					$opts = json_encode($opts);
 					$script = "new ListFieldsElement('$this->id', $opts);\n";
 					FabrikHelperHTML::script('administrator/components/com_fabrik/models/fields/listfields.js', $script);
@@ -216,7 +221,7 @@ class JFormFieldListfields extends JFormFieldList
 	/**
 	 * Load the element list from the group id
 	 *
-	 * @param   int  $groupId group id
+	 * @param   int  $groupId  Group id
 	 *
 	 * @since   3.0.6
 	 *
@@ -225,7 +230,9 @@ class JFormFieldListfields extends JFormFieldList
 
 	protected function loadFromGroupId($groupId)
 	{
-		$controller = JRequest::getVar('view', JRequest::getVar('task'));
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$controller = $input->get('view', $input->get('task'));
 		$valueformat = JArrayHelper::getValue($this->element, 'valueformat', 'id');
 		$onlylistfields = (int) JArrayHelper::getValue($this->element, 'onlylistfields', 0);
 		$pluginFilters = trim($this->element['filter']) == '' ? array() : explode('|', $this->element['filter']);

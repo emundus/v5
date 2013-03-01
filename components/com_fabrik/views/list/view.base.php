@@ -55,7 +55,7 @@ class FabrikViewListBase extends JView
 		array_unshift($src, 'media/com_fabrik/js/advanced-search.js');
 
 		$model->getCustomJsAction($src);
-		$src[] = 'media/com_fabrik/js/encoder.js';
+		//$src[] = 'media/com_fabrik/js/encoder.js';
 
 		$tmpl = $this->get('tmpl');
 		$this->tmpl = $tmpl;
@@ -103,6 +103,7 @@ class FabrikViewListBase extends JView
 		$opts->canView = $model->canView() ? "1" : "0";
 		$opts->page = JRoute::_('index.php');
 		$opts->isGrouped = $this->isGrouped;
+		$opts->singleOrdering = (bool) $model->singleOrdering();
 
 		$formEls = array();
 		foreach ($elementsNotInTable as $tmpElement)
@@ -144,6 +145,7 @@ class FabrikViewListBase extends JView
 		$opts->popup_add_label = $params->get('addlabel', JText::_('COM_FABRIK_ADD'));
 		$opts->limitLength = $model->limitLength;
 		$opts->limitStart = $model->limitStart;
+		$opts->tmpl = $tmpl;
 		$csvOpts = new stdClass;
 		$csvOpts->excel = (int) $params->get('csv_format');
 		$csvOpts->inctabledata = (int) $params->get('csv_include_data');
@@ -158,6 +160,7 @@ class FabrikViewListBase extends JView
 		$opts->data = $data;
 
 		$opts->groupByOpts = new stdClass;
+		$opts->groupByOpts->isGrouped = (bool) $this->isGrouped;
 		$opts->groupByOpts->collapseOthers = (bool) $params->get('group_by_collapse_others', false);
 		$opts->groupByOpts->startCollapsed = (bool) $params->get('group_by_start_collapsed', false);
 
@@ -429,10 +432,17 @@ class FabrikViewListBase extends JView
 		}
 		else
 		{
-			$this->pdfLink = JRoute::_('index.php?option=com_' . $package . '&view=list&format=pdf&listid=' . $item->id);
+			$pdfLink = 'index.php?option=com_' . $package . '&view=list&format=pdf&listid=' . $item->id;
+			if (!$this->nodata)
+			{
+				// If some data is shown then ensure that menu links reset filters (combined with require filters) doesnt produce an empty data set for the pdf
+				$pdfLink .= '&resetfilters=0';
+			}
+			$this->pdfLink = JRoute::_($pdfLink);
 		}
 
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
+
 		$this->groupByHeadings = $this->get('GroupByHeadings');
 		$this->filter_action = $this->get('FilterAction');
 		JDEBUG ? $profiler->mark('fabrik getfilters start') : null;

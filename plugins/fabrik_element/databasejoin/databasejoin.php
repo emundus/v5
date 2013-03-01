@@ -206,7 +206,18 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				$db = $listModel->getDb();
 				$data = array();
 				$opts = array();
-				$this->_autocomplete_where = $label . ' LIKE ' . $db->quote('%' . JRequest::getVar('value') . '%');
+				// $$$ hugh (and Joe) - added 'autocomplete_how', currently just "starts_with" or "contains"
+				// default to "contains" for backward compat.
+				// http://fabrikar.com/forums/showthread.php?p=165192&posted=1#post165192
+				$params = $this->getParams();
+				if ($params->get('dbjoin_autocomplete_how', 'contains') == 'contains')
+				{
+					$this->_autocomplete_where = $label . ' LIKE ' . $db->quote('%' . JRequest::getVar('value') . '%');
+				}
+				else
+				{
+					$this->_autocomplete_where = $label . ' LIKE ' . $db->quote(JRequest::getVar('value') . '%');
+				}
 				$rows = $this->_getOptionVals($data, 0, true, $opts);
 			}
 			else
@@ -238,7 +249,9 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$params = $this->getParams();
 		$db = $this->getDb();
 		$join = $this->getJoin();
-		if (($params->get($this->concatLabelParam) != '') && JRequest::getVar('overide_join_val_column_concat') != 1)
+		// $$$ hugh - bandaid for inlineedit, problem where $join isn't loaded, as per comments in getJoin().
+		// for now, just avoid this code if $join isn't an object.
+		if (is_object($join) && ($params->get($this->concatLabelParam) != '') && JRequest::getVar('overide_join_val_column_concat') != 1)
 		{
 			$val = str_replace("{thistable}", $join->table_join_alias, $params->get($this->concatLabelParam));
 			$w = new FabrikWorker;
@@ -517,7 +530,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$this->addSpaceToEmptyLabels($tmp);
 		if ($this->showPleaseSelect())
 		{
-			array_unshift($tmp, JHTML::_('select.option', $params->get('database_join_noselectionvalue'), $this->_getSelectLabel()));
+			array_unshift($tmp, JHTML::_('select.option', $params->get('database_join_noselectionvalue', ''), $this->_getSelectLabel()));
 		}
 		return $tmp;
 	}
@@ -1985,6 +1998,15 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$label = $db->quoteName($to . '.' . $this->getLabelParamVal());
 		$v = $jointable . '.' . $shortName;
 		$query->select($jointable . '.id AS id');
+
+		// If rendering as mulit/checkbox then {thistable} should not refer to the joining repeat table, but the end table.
+		if ($this->isJoin())
+		{
+			$jkey = $this->getValColumn();
+			$jkey = !strstr($jkey, 'CONCAT') ? $label : $jkey;
+			$label = str_replace($join->table_join, $to, $jkey);
+		}
+
 		$query->select($jointable . '.parent_id, ' . $v . ' AS value, ' . $label . ' AS text')->from($jointable)
 			->join('LEFT', $to . ' ON ' . $key . ' = ' . $jointable . '.' . $shortName);
 		if (!is_null($condition) && !is_null($value))
@@ -2170,7 +2192,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$opts = $this->_getOptionVals();
-		$data = $this->_form->_data;
+		$data = $this->getFormModel()->_data;
 		$arSelected = $this->getValue($data, $repeatCounter);
 		$arVals = $this->getSubOptionValues();
 		$arTxt = $this->getSubOptionLabels();
@@ -2198,6 +2220,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$opts->autoCompleteOpts = $opts->displayType == 'auto-complete'
 			? FabrikHelperHTML::autoCompletOptions($opts->id, $this->getElement()->id, 'databasejoin') : null;
 		$opts->allowadd = $params->get('fabrikdatabasejoin_frontend_add', 0) == 0 ? false : true;
+		$opts->listName = $this->getListModel()->getTable()->db_table_name;
 		$this->elementJavascriptJoinOpts($opts);
 		$opts->isJoin = $this->isJoin();
 		return json_encode($opts);
@@ -2640,6 +2663,11 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$dbName = $this->getDbName();
 		$jkey = !strstr($jkey, 'CONCAT') ? $dbName . '.' . $jkey : $jkey;
 
+		// If rendering as mulit/checkbox then {thistable} should not refer to the joining repeat table, but the end table.
+		if ($this->isJoin())
+		{
+			$jkey = str_replace($jointable, $dbName, $jkey);
+		}
 		$fullElName = $this->getFullName(false, true, false);
 		$sql = "(SELECT GROUP_CONCAT(" . $jkey . " " . $where . " SEPARATOR '" . GROUPSPLITTER . "') FROM $jointable
 		LEFT JOIN " . $dbName . " ON " . $dbName . "." . $this->getJoinValueFieldName() . " = $jointable." . $this->getElement()->name . " WHERE "

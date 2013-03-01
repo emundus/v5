@@ -68,6 +68,19 @@ class FabrikFEModelVisualization extends JModel
 		}
 	}
 
+	/**
+	 * Should the viz show the list filters
+	 *
+	 * @return boolean
+	 */
+	public function showFilters()
+	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$params = $this->getParams();
+		return (int) $input->get('showfilters', $params->get('show_filters')) === 1 ? true : false;
+	}
+
 	function getPluginParams()
 	{
 		if (!isset($this->_pluginParams))
@@ -89,6 +102,19 @@ class FabrikFEModelVisualization extends JModel
 		$this->getVisualization();
 		$pluginParams = new JRegistry($this->getVisualization()->params);
 		return $pluginParams;
+	}
+	
+	/**
+	 * alais to getVisualization()
+	 *
+	 * @since	3.0.6
+	 *
+	 * @return  FabTable viz
+	 */
+	
+	public function getRow()
+	{
+		return $this->getVisualization();
 	}
 
 	/**

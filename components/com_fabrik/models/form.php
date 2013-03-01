@@ -2576,6 +2576,9 @@ class FabrikFEModelForm extends FabModelForm
 
 	/**
 	 * Get form validation errors - if empty test session for errors
+	 * 31/01/13 - no longer restoring from session errors - see http://fabrikar.com/forums/showthread.php?t=31377
+	 * 19/02/13 - Changed from http refferer test to this->isMambot to restore session errors when redirecting from a non-ajax form
+	 * in module that has failed validaiton - see http://fabrikar.com/forums/showthread.php?t=31870
 	 *
 	 * @return  array  errors
 	 */
@@ -2591,7 +2594,7 @@ class FabrikFEModelForm extends FabModelForm
 		$errors = array();
 		if (empty($this->_arErrors))
 		{
-			if (isset($_SERVER['HTTP_REFERER']))
+			if ($this->isMambot)
 			{
 				$errors = $session->get($context . 'errors', array());
 			}
@@ -3029,6 +3032,10 @@ class FabrikFEModelForm extends FabModelForm
 		$this->_rowId = $this->getRowId();
 
 		// $$$ hugh - need to call this here as we set $this->_editable here, which is needed by some plugins
+		// hmmmm, this means that getData() is being called from checkAccessFromListSettings(),
+		// so plugins running onBeforeLoad will have to unset($formModel->_data) if they want to
+		// do something funky like change the rowid being loaded.  Not a huge problem, but caught me out
+		// when a custom PHP onBeforeLoad plugin I'd written for a client suddenly broke.
 		$this->checkAccessFromListSettings();
 		$pluginManager = FabrikWorker::getPluginManager();
 		$res = $pluginManager->runPlugins('onBeforeLoad', $this);
@@ -3081,6 +3088,7 @@ class FabrikFEModelForm extends FabModelForm
 
 	public function hasErrors()
 	{
+
 		$errorsFound = !empty($this->_arErrors);
 
 		if ($this->saveMultiPage(false))
@@ -4004,6 +4012,14 @@ class FabrikFEModelForm extends FabModelForm
 		}
 		$w = new FabrikWorker;
 		$text = $w->parseMessageForPlaceHolder($text, $this->_data, true);
+
+		// Jaanus: to remove content plugin code from intro and/or outro when plugins are not processed
+		$params = $this->getParams();
+		$jplugins = (int) $params->get('process-jplugins', '2');
+		if ($jplugins === 0 || ($jplugins === 2 && $this->isEditable()))
+		{
+			$text = preg_replace("/{\s*.*?}/i", '', $text);
+		}
 		return $text;
 	}
 
@@ -4960,7 +4976,7 @@ class FabrikFEModelForm extends FabModelForm
 		$baseRedirect = true;
 		if (!$incSession)
 		{
-			return $url;
+			return array('url' => $url, 'baseRedirect' => $baseRedirect);
 		}
 		$session = JFactory::getSession();
 		$formdata = $session->get('com_' . $package . '.form.data');

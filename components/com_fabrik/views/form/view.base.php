@@ -285,8 +285,16 @@ class FabrikViewFormBase extends JView
 
 	protected function _addButtons()
 	{
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$app = JFactory::getApplication();
+		if ($app->input->get('format') === 'pdf')
+		{
+			// if we're rendering as PDF, no point showing any buttons
+			$this->showEmail = false;
+			$this->showPrint = false;
+			$this->showPDF = false;
+			return;
+		}
+		$fbConfig = JComponentHelper::getParams('com_fabrik');
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->input;
 		$model = $this->getModel();
@@ -641,7 +649,7 @@ class FabrikViewFormBase extends JView
 		}
 		$str = implode("\n", $script);
 		$model->getCustomJsAction($srcs);
-		$srcs[] = 'media/com_fabrik/js/encoder.js';
+		//$srcs[] = 'media/com_fabrik/js/encoder.js';
 		FabrikHelperHTML::script($srcs, $str);
 		$pluginManager->runPlugins('onAfterJSLoad', $model);
 	}

@@ -190,7 +190,7 @@ var FbForm = new Class({
 		});
 	},
 
-	setUp : function () {
+	setUp: function () {
 		this.form = this.getForm();
 		this.watchGroupButtons();
 		//if (this.options.editable) { //submit can appear in confirmation plugin even when readonly
@@ -200,7 +200,7 @@ var FbForm = new Class({
 		this.watchClearSession();
 	},
 
-	getForm : function () {
+	getForm: function () {
 		this.form = document.id(this.getBlock());
 		return this.form;
 	},
@@ -597,7 +597,9 @@ var FbForm = new Class({
 	},
 
 	addElement: function (oEl, elId, gid) {
+		elId = oEl.getFormElementsKey(elId);
 		elId = elId.replace('[]', '');
+		
 		var ro = elId.substring(elId.length - 3, elId.length) === '_ro';
 		oEl.form = this;
 		oEl.groupid = gid;
@@ -845,7 +847,7 @@ var FbForm = new Class({
 		if (msg === '') {
 			msg = Joomla.JText._('COM_FABRIK_SUCCESS');
 		}
-		msg = '<span>' + msg + '</span>';
+		msg = '<span> ' + msg + '</span>';
 		this.formElements.get(id).setErrorMessage(msg, classname);
 		return (classname === 'fabrikSuccess') ? false : true;
 	},
@@ -932,15 +934,15 @@ var FbForm = new Class({
 		if (this.result === false) {
 			this.result = true;
 			e.stop();
-			// update global status error
+			// Update global status error
 			this.updateMainError();
 		}
-		//insert a hidden element so we can reload the last page if validation vails
+		// Insert a hidden element so we can reload the last page if validation vails
 		if (this.options.pages.getKeys().length > 1) {
 			this.form.adopt(new Element('input', {'name': 'currentPage', 'value': this.currentPage.toInt(), 'type': 'hidden'}));
 		}
 		if (this.options.ajax) {
-			//do ajax val only if onSubmit val ok
+			// Do ajax val only if onSubmit val ok
 			if (this.form) {
 				Fabrik.loader.start('form_' + this.id, Joomla.JText._('COM_FABRIK_LOADING'));
 				// $$$ hugh - we already did elementsBeforeSubmit() this at the start of this func?
@@ -976,10 +978,11 @@ var FbForm = new Class({
 							fconsole('error in returned json', json, txt);
 							return;
 						}
-						// process errors if there are some
+						// Process errors if there are some
 						var errfound = false;
 						if (json.errors !== undefined) {
-							// for every element of the form update error message
+							
+							// For every element of the form update error message
 							$H(json.errors).each(function (errors, key) {
 								// $$$ hugh - nasty hackery alert!
 								// validate() now returns errors for joins in join___id___label format,
@@ -1077,16 +1080,22 @@ var FbForm = new Class({
 		});
 	},
 
-	// used to get the querystring data and
-	// for any element overwrite with its own data definition
-	// required for empty select lists which return undefined as their value if no
-	// items
-	// available
+	/**
+	 * Used to get the querystring data and
+	 * for any element overwrite with its own data definition
+	 * required for empty select lists which return undefined as their value if no
+	 * items available
+	 * 
+	 * @param  bool  submit  Should we run the element onsubmit() methods - set to false in calc element
+	 */
 
-	getFormData : function () {
-		this.formElements.each(function (el, key) {
-			el.onsubmit();
-		});
+	getFormData : function (submit) {
+		submit = typeOf(submit) !== 'null' ? submit : true;
+		if (submit) {
+			this.formElements.each(function (el, key) {
+				el.onsubmit();
+			});
+		}
 		this.getForm();
 		var s = this.form.toQueryString();
 		var h = {};
@@ -1165,7 +1174,6 @@ var FbForm = new Class({
 			e.preventDefault();
 			this.deleteGroup(e);
 		}.bind(this));
-		
 		
 		this.form.addEvent('click:relay(.addGroup)', function (e, target) {
 			e.preventDefault();
@@ -1260,7 +1268,8 @@ var FbForm = new Class({
 							}
 						}
 					}.bind(this));
-					// minus the removed group
+					
+					// Minus the removed group
 					subgroups = group.getElements('.fabrikSubGroup');
 					var nameMap = {};
 					this.formElements.each(function (e, k) {
@@ -1293,7 +1302,7 @@ var FbForm = new Class({
 				}
 			}
 		}
-		// update the hidden field containing number of repeat groups
+		// Update the hidden field containing number of repeat groups
 		document.id('fabrik_repeat_group_' + i + '_counter').value = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt() - 1;
 		// $$$ hugh - no, musn't decrement this!  See comment in setupAll
 		this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) - 1);
@@ -1301,7 +1310,7 @@ var FbForm = new Class({
 
 	hideLastGroup : function (groupid, subGroup) {
 		var sge = subGroup.getElement('.fabrikSubGroupElements');
-		var notice = new Element('div', {'class': 'fabrikNotice'}).appendText(Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA'));
+		var notice = new Element('div', {'class': 'fabrikNotice alert'}).appendText(Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA'));
 		if (typeOf(sge) === 'null') {
 			sge = subGroup;
 			var add = sge.getElement('.addGroup');
@@ -1421,7 +1430,7 @@ var FbForm = new Class({
 		tocheck.each(function (i) {
 			i.setProperty('checked', true);
 		});
-		// remove values and increment ids
+		// Remove values and increment ids
 		var newElementControllers = [];
 		this.subelementCounter = 0;
 		var hasSubElements = false;

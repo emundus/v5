@@ -13,6 +13,7 @@ var FbElement =  new Class({
 		element: null,
 		defaultVal: '',
 		value: '',
+		label: '',
 		editable: false,
 		isJoin: false,
 		joinId: 0
@@ -47,6 +48,18 @@ var FbElement =  new Class({
 		if (v === 'value') {
 			return this.getValue(); 
 		}
+	},
+	
+	/**
+	 * Sets the element key used in Fabrik.blocks.form_X.formElements
+	 * Overwritten by any element which performs a n-n join (multi ajax fileuploads, dbjoins as checkboxes) 
+	 * 
+	 * @since   3.0.7
+	 * 
+	 * @return  string
+	 */
+	getFormElementsKey: function (elId) {
+		return elId;
 	},
 	
 	attachedToForm: function ()
@@ -162,7 +175,7 @@ var FbElement =  new Class({
 	addNewEventAux: function (action, js) {
 		this.element.addEvent(action, function (e) {
 			e.stop();
-			typeOf(js) === 'function' ? js.delay(0) : eval(js);
+			typeOf(js) === 'function' ? js.delay(0, this, this) : eval(js);
 		}.bind(this));
 	},
 	
@@ -204,6 +217,10 @@ var FbElement =  new Class({
 		}
 		s = s.substring(0, s.length - 1) + ']';
 		document.id(this.options.element + '_additions').value = s;
+	},
+	
+	getLabel: function () {
+		return this.options.label;
 	},
 	
 	//below functions can override in plugin element classes

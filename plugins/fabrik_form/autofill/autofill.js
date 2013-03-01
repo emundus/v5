@@ -98,14 +98,23 @@ var Autofill = new Class({
 		if (!e) {
 			return false;
 		}
+		var evnt = function (e) {
+			// Fabrik Trigger element object so don't use as this.element or lookup value will be wrong
+			this.lookUp();
+		}.bind(this);
+		
 		this.element = e;
-		var evnt = this.lookUp.bind(this);
 		if (this.options.trigger === '') {
 			if (!this.element) {
 				fconsole('autofill - couldnt find element to observe');
 			} else {
 				var elEvnt = this.element.getBlurEvent();
-				this.form.dispatchEvent('', this.element.options.element, elEvnt, evnt);
+				this.form.dispatchEvent('', this.element.options.element, elEvnt, function (e) {
+
+					// Fabrik element object that triggered the event 
+					this.element = e; 
+					this.lookUp();
+				}.bind(this));
 			}
 		} else {
 			this.form.dispatchEvent('', this.options.trigger, 'click', evnt);
@@ -197,6 +206,7 @@ var Autofill = new Class({
 		if (this.options.editOrig === true) {
 			this.form.getForm().getElement('input[name=rowid]').value = json.__pk_val;
 		}
+		Fabrik.fireEvent('fabrik.form.autofill.update.end', [this, json]);
 	},
 	
 	tryUpdate: function (key, val) {

@@ -546,10 +546,26 @@ class plgFabrik_Element extends FabrikPlugin
 				$opts->position = 'top';
 				$opts = json_encode($opts);
 				$data = '<span>' . $data . '</span>';
+
+				// See if data has an <a> tag
+				$html = new DOMDocument;
+				$html->loadXML($data);
+				$as = $html->getElementsBytagName('a');
+
 				if ($params->get('icon_hovertext', true))
 				{
+					$ahref = '#';
+					$target = '';
+					if ($as->length)
+					{
+						// Data already has an <a href="foo"> lets get that for use in hover text
+						$a = $as->item(0);
+						$ahref = $a->getAttribute('href');
+						$target = $a->getAttribute('target');
+						$target = 'target="' . $target . '"';
+					}
 					$data = htmlspecialchars($data, ENT_QUOTES);
-					$img = '<a class="fabrikTip" href="#" opts=\'' . $opts . '\' title="' . $data . '">' . $img . '</a>';
+					$img = '<a class="fabrikTip" ' . $target . ' href="' . $ahref . '" opts=\'' . $opts . '\' title="' . $data . '">' . $img . '</a>';
 				}
 				elseif (!empty($iconfile))
 				{
@@ -558,9 +574,7 @@ class plgFabrik_Element extends FabrikPlugin
 					 * we'll need to replace the text in the link with the image
 					 * After ages dicking around with a regex to do this, decided to use DOMDocument instead!
 					 */
-					$html = new DOMDocument;
-					$html->loadXML($data);
-					$as = $html->getElementsBytagName('a');
+
 					if ($as->length)
 					{
 						$img = $html->createElement('img');
@@ -769,18 +783,25 @@ class plgFabrik_Element extends FabrikPlugin
 	/**
 	 * Check user can view the read only element & view in list view
 	 *
+	 * @param   string  $view  View list/form @since 3.0.7
+	 *
 	 * @return  bool  can view or not
 	 */
 
-	public function canView()
+	public function canView($view = 'form')
 	{
-		if (!is_object($this->_access) || !array_key_exists('view', $this->_access))
+		// As list view acl is new we should inherit from the details view setting which was being applied to the list view.
+		$default = ($view === 'list') ? $this->canView() : 1;
+		$key = $view == 'form' ? 'view' : 'listview';
+		$prop = $view == 'form' ? 'view_access' : 'list_view_access';
+		if (!is_object($this->_access) || !array_key_exists($key, $this->_access))
 		{
 			$user = JFactory::getUser();
 			$groups = $user->authorisedLevels();
-			$this->_access->view = in_array($this->getParams()->get('view_access'), $groups);
+
+			$this->_access->$key = in_array($this->getParams()->get($prop, $default), $groups);
 		}
-		return $this->_access->view;
+		return $this->_access->$key;
 	}
 
 	/**
@@ -1929,10 +1950,36 @@ class plgFabrik_Element extends FabrikPlugin
 		{
 			$c[] = 'fabrikHide';
 		}
+		else
+		{
+			// $$$ hugh - adding a class name for repeat groups, as per:
+			// http://fabrikar.com/forums/showthread.php?p=165128#post165128
+			// But as per my repsonse on that thread, if this turns out to be a performance
+			// hit, may take it out.  That said, I think having this class will make things
+			// easier for custom styling when the element ID isn't constant.
+			$groupModel = $this->getGroupModel();
+			if ($groupModel->canRepeat())
+			{
+				// $$$ hugh - decided don't need to differentiate between list / table type, saves getParams anyway
+				/*
+				$groupParams = $groupModel->getParams();
+				if ($groupParams->get('repeat_template', 'repeatgroup') == 'repeatgroup_table')
+				{
+					$c[] = 'fabrikRepeatGroupTable___' . $this->getFullName(false, true, false);
+				}
+				else
+				{
+					$c[] = 'fabrikRepeatGroupList___' . $this->getFullName(false, true, false);
+				}
+				*/
+				$c[] = 'fabrikRepeatGroup___' . $this->getFullName(false, true, false);
+			}
+		}
 		if ($element->error != '')
 		{
 			$c[] = 'fabrikError';
 		}
+
 		return implode(' ', $c);
 	}
 
@@ -2483,6 +2530,11 @@ class plgFabrik_Element extends FabrikPlugin
 					{
 						$js = "if (!Array.from(this.get('value')).contains('$jsAct->js_e_value')) {";
 					}
+					// $$$ hugh if we always quote the js_e_value, numeric comparison doesn't work, as '100' < '3'.
+					// So let's assume if they use <, <=, > or >= they mean numbers.
+					elseif (in_array($jsAct->js_e_condition, array('<', '<=', '>', '>='))) {
+						$js .= "if(this.get('value').toFloat() $jsAct->js_e_condition '$jsAct->js_e_value'.toFloat()) {";
+					}
 					else
 					{
 						$js = "if (this.get('value') $jsAct->js_e_condition '$jsAct->js_e_value') {";
@@ -2520,6 +2572,12 @@ class plgFabrik_Element extends FabrikPlugin
 	protected function getDefaultFilterVal($normal = true, $counter = 0)
 	{
 		$app = JFactory::getApplication();
+
+		// Used for update col list plugin - we dont want a default value filled
+		if ($app->input->get('fabrikIngoreDefaultFilterVal', false))
+		{
+			return '';
+		}
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$listModel = $this->getListModel();
 		$filters = $listModel->getFilterArray();
@@ -3918,14 +3976,23 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	/**
 	 * Get sum query
 	 *
-	 * @param   object  &$listModel  list model
-	 * @param   string  $label       label
+	 * @param   object  &$listModel  List model
+	 * @param   array   $labels      Label
 	 *
 	 * @return string
 	 */
 
-	protected function getSumQuery(&$listModel, $label = "'calc'")
+	protected function getSumQuery(&$listModel, $labels = array())
 	{
+		if (count($labels) == 0)
+		{
+			$label = "'calc' AS label";
+		}
+		else
+		{
+			$label = 'CONCAT(' . implode(', " & " , ', $labels) . ')  AS label';
+		}
+
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->_buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
@@ -3934,14 +4001,15 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		if ($groupModel->isJoin())
 		{
 			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
-			return "SELECT SUM($name) AS value, $label AS label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SUM($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL";
 		}
 		else
 		{
 			// Need to do first query to get distinct records as if we are doing left joins the sum is too large
 			return "SELECT SUM(value) AS value, label
-	FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FROM " . FabrikString::safeColName($item->db_table_name)
-				. " $joinSQL $whereSQL) AS t";
+			FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
+			. " $joinSQL $whereSQL) AS t";
+
 		}
 	}
 
@@ -4046,29 +4114,52 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	}
 
 	/**
-	 * calculation: sum
+	 * Calculation: sum
 	 * can be overridden in element class
 	 *
-	 * @param   object  &$listModel  list model
+	 * @param   object  &$listModel  List model
 	 *
 	 * @return  array
 	 */
 
 	public function sum(&$listModel)
 	{
+		$app = JFactory::getApplication();
+		$requestGroupBy = $app->input->get('group_by', '');
+		if ($requestGroupBy == '0')
+		{
+			$requestGroupBy = '';
+		}
+		$groupBys = array();
+		$splitName = array();
+		if ($requestGroupBy !== '')
+		{
+			$formModel = $this->getFormModel();
+			$requestGroupBy = $formModel->getElement($requestGroupBy)->getElement()->id;
+			$groupBys[] = $requestGroupBy;
+		}
 		$db = $listModel->getDb();
 		$params = $this->getParams();
 		$item = $listModel->getTable();
-		$splitSum = $params->get('sum_split', '');
-		$split = trim($splitSum) == '' ? false : true;
+
+		$splitSum = $params->get('sum_split', null);
+		if (!is_null($splitSum))
+		{
+			$groupBys[] = $splitSum;
+		}
+		$split = empty($groupBys) ? false : true;
 		$calcLabel = $params->get('sum_label', JText::_('COM_FABRIK_SUM'));
 		if ($split)
 		{
 			$pluginManager = FabrikWorker::getPluginManager();
-			$plugin = $pluginManager->getElementPlugin($splitSum);
-			$splitName = method_exists($plugin, 'getJoinLabelColumn') ? $plugin->getJoinLabelColumn() : $plugin->getFullName(false, false, false);
-			$splitName = FabrikString::safeColName($splitName);
+			foreach ($groupBys as $gById)
+			{
+				$plugin = $pluginManager->getElementPlugin($gById);
+				$sName = method_exists($plugin, 'getJoinLabelColumn') ? $plugin->getJoinLabelColumn() : $plugin->getFullName(false, false, false);
+				$splitName[] = FabrikString::safeColName($sName);
+			}
 			$sql = $this->getSumQuery($listModel, $splitName) . ' GROUP BY label';
+
 			$sql = $listModel->pluginQuery($sql);
 			$db->setQuery($sql);
 			$results2 = $db->loadObjectList('label');
@@ -4565,6 +4656,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$opts->repeatCounter = $repeatCounter;
 		$opts->editable = ($this->canView() && !$this->canUse()) ? false : $this->isEditable();
 		$opts->value = $this->getValue($data, $repeatCounter);
+		$opts->label = $element->label;
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->inRepeatGroup = $this->getGroup()->canRepeat() == 1;
 		$validationEls = array();

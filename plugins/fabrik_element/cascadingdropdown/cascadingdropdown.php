@@ -340,10 +340,16 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 	{
 		$app = JFactory::getApplication();
 		$input = $app->input;
+		$filterview = $app->input->get('filterview', '');
 		$this->loadMeForAjax();
 		$params = $this->getParams();
 
-		if ($this->getFilterBuildMethod() == 1)
+		/**
+		 * $$$ hugh -added test for $filterview, and only do filtery stuff if we are being
+		 * calledin a filter context, not in a regular form display context.
+		 */
+
+		if (!empty($filterview) && $this->getFilterBuildMethod() == 1)
 		{
 			// Get distinct records which have already been selected: http://fabrikar.com/forums/showthread.php?t=30450
 			$listModel = $this->getListModel();
@@ -364,12 +370,13 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 				$this->_autocomplete_where = empty($ids) ? '1 = -1' : $key . ' IN (' . implode(',', $ids) . ')';
 			}
 		}
+
 		$filter = JFilterInput::getInstance();
 		$data = $filter->clean($_POST, 'array');
 		$opts = $this->_getOptionVals($data);
 
 		// OK its due to list filters so lets test if we are in the table view (posted from filter.js)
-		if ($app->input->get('filterview') == 'table')
+		if ($filterview == 'table')
 		{
 			$params->set('cascadingdropdown_showpleaseselect', true);
 		}
@@ -436,6 +443,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 
 	protected function _getOptionVals($data = array(), $repeatCounter = 0, $incWhere = true, $opts = array())
 	{
+		$params = $this->getParams();
 		if (!isset($this->_optionVals))
 		{
 			$this->_optionVals = array();
@@ -457,6 +465,20 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 		{
 			JError::raiseError(501, $db->getErrorMsg());
 		}
+
+		$eval = $params->get('cdd_join_label_eval', '');
+		if (trim($eval) !== '')
+		{
+			foreach ($this->_optionVals[$sqlKey] as $key => &$opt)
+			{
+				// Allow removing an option by returning false
+				if (eval($eval) === false)
+				{
+					unset($this->_optionVals[$sqlKey][$key]);
+				}
+			}
+		}
+
 		if ($this->showPleaseSelect())
 		{
 			array_unshift($this->_optionVals[$sqlKey], JHTML::_('select.option', '', $this->_getSelectLabel()));
@@ -601,14 +623,6 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 
 						// Allow for multiple values - e.g. when observing a db join rendered as a checkbox
 						$whereval = $input->get('v', array(), 'array');
-						if (count($whereval) === 1)
-						{
-							$whereval = $whereval[0];
-						}
-						elseif (empty($whereval))
-						{
-							$whereval = '';
-						}
 					}
 					else
 					{
@@ -678,18 +692,17 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 		{
 			$whereBits = explode('___', $wherekey);
 			$wherekey = array_pop($whereBits);
-			$where = $wherekey;
 			if (is_array($whereval))
 			{
 				foreach ($whereval as &$v)
 				{
 					$v = $db->quote($v);
 				}
-				$where .=  ' IN (' . implode(',', $whereval) . ')';
+				$where .=  count($whereval) == 0 ? '1 = -1' : $wherekey . ' IN (' . implode(',', $whereval) . ')';
 			}
 			else
 			{
-				$where .=  ' = ' .$db->quote($whereval);
+				$where .= $wherekey . ' = ' .$db->quote($whereval);
 			}
 
 		}
@@ -787,12 +800,14 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 
 		$query->from($db->quoteName($table) . ' AS ' . $db->quoteName($join->table_join_alias));
 		$query = $this->buildQueryJoin($query);
-		$query->where(FabrikString::rtrimword($where));
-
+		$where = FabrikString::rtrimword($where);
+		if ($where !== '')
+		{
+			$query->where($where);
+		}
 		if (!JString::stristr($where, 'order by'))
 		{
 			$query->order($orderby . ' ASC');
-
 		}
 		$this->_sql[$sig] = $query;
 		FabrikHelperHTML::debug($this->_sql[$sig]);

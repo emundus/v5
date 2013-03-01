@@ -36,7 +36,16 @@
 						
 			<field connection_in_repeat="false" description="PLG_ELEMENT_CDD_TABLE_DESC" label="PLG_ELEMENT_CDD_TABLE_LABEL" name="cascadingdropdown_table" observe="params_cascadingdropdown_connection" type="fabriktables"/>
 				
-			<field connection="params_cascadingdropdown_connection" connection_in_repeat="false" description="PLG_ELEMENT_CDD_ID_DESC" excludejoined="1" label="PLG_ELEMENT_CDD_ID_LABEL" name="cascadingdropdown_id" showintable="true" table="params_cascadingdropdown_table" type="element"/>
+			<field name="cascadingdropdown_id"
+				type="element"
+				connection="params_cascadingdropdown_connection"
+				connection_in_repeat="false"
+				description="PLG_ELEMENT_CDD_ID_DESC"
+				excludejoined="1"
+				highlightpk="true"
+				label="PLG_ELEMENT_CDD_ID_LABEL"
+				showintable="true"
+				table="params_cascadingdropdown_table" />
 				
 			<field connection="params_cascadingdropdown_connection" connection_in_repeat="false" description="PLG_ELEMENT_CDD_LABEL_DESC" excludejoined="1" label="PLG_ELEMENT_CDD_LABEL_LABEL" name="cascadingdropdown_label" table="params_cascadingdropdown_table" type="element"/>
 				
@@ -49,7 +58,7 @@
 			<field connection="params_cascadingdropdown_connection" connection_in_repeat="false" description="PLG_ELEMENT_CDD_KEY_DESC" label="PLG_ELEMENT_CDD_KEY_LABEL" name="cascadingdropdown_key" table="params_cascadingdropdown_table" type="element"/>
 		</fieldset>
 		
-		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-cascadingdropdown-advanced">
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" label="Advanced" name="plg-cascadingdropdown-advanced">
 			<field cols="40" description="PLG_ELEMENT_CDD_WHERE_DESC" label="PLG_ELEMENT_CDD_WHERE_LABEL" name="cascadingdropdown_filter" rows="8" type="textarea"/>
 				
 		
@@ -61,9 +70,15 @@
 			
 			<field description="PLG_ELEMENT_CDD_NO_SELECTION_LABEL_DESC" label="PLG_ELEMENT_CDD_NO_SELECTION_LABEL_LABEL" name="cascadingdropdown_noselectionlabel" size="35" type="text"/>
 			
+			<field name="cdd_join_label_eval"
+			 	type="textarea"
+				cols="40" rows="8"
+				description="PLG_ELEMENT_CDD_OPTIONS_EVAL_DESC"
+				label="PLG_ELEMENT_CDD_OPTIONS_EVAL_LABEL" />
+				
 		</fieldset>
 		
-		<fieldset name="plg-cascadingdropdown-frontend">
+		<fieldset name="plg-cascadingdropdown-frontend" label="Front end">
 			<field default="0" description="PLG_ELEMENT_CDD_READONLY_LINK_DESC" label="PLG_ELEMENT_CDD_READONLY_LINK_LABEL" name="cascadingdropdown_readonly_link" type="radio">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
