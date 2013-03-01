@@ -14,7 +14,10 @@ $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
-$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$menu = &JSite::getMenu();
+$menuItem = $menu->getActive();
+$itemid = $menuItem->id;
 
 if($edit!=1) {
 ?>
@@ -83,7 +86,7 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
-<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>" />
+<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 <fieldset>
 <legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 <table width="100%">
@@ -218,7 +221,7 @@ foreach ($this->users as $user) { ?>
 			if (isset($user->gender)) {
 				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_'.$user->gender.'.png" width="22" height="22" align="bottom" /></a></span> ';
 				echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$Itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
+				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->id.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span>';
 			} else
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a></span> ';
@@ -251,7 +254,7 @@ foreach ($this->users as $user) { ?>
 <?php 
         	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
-                	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $Itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
+                	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
                     </a><?php 
 				 } ?>
         	</div>
@@ -469,7 +472,7 @@ function OnSubmitForm() {
 		break;
 		case 'search': 
 			document.adminForm.task.value = "";
-			document.adminForm.action ="index.php?option=com_emundus&view=users&Itemid=<?php echo $Itemid; ?>";
+			document.adminForm.action ="index.php?option=com_emundus&view=users&Itemid=<?php echo $itemid; ?>";
 		break;
 		case 'clear': 
 			document.adminForm.task.value = "clear";

@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 function return_bytes($val) {
@@ -51,11 +51,11 @@ function return_bytes($val) {
 			$cacheSettings = array( 'memoryCacheSize' => '32MB');
 			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 			// Set properties
-			$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-			$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-			$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-			$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+			$objPHPExcel->getProperties()->setCreator("DÃ©cision Publique : http://www.decisionpublique.fr/");
+			$objPHPExcel->getProperties()->setLastModifiedBy("DÃ©cision Publique");
+			$objPHPExcel->getProperties()->setTitle("eMmundusÂ® Report");
+			$objPHPExcel->getProperties()->setSubject("eMmundusÂ® Report");
+			$objPHPExcel->getProperties()->setDescription("Report from open source eMundusÂ® plateform : http://www.emundus.fr/");
 	
 			
 			$objPHPExcel->setActiveSheetIndex(0);
@@ -93,7 +93,7 @@ function return_bytes($val) {
 			//die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 			
-			// @TODO : générer une chaine de caractère avec tous les user_id
+			// @TODO : gÃ©nÃ©rer une chaine de caractÃ¨re avec tous les user_id
 			
 			
 			// Starting a session.
@@ -249,7 +249,7 @@ function return_bytes($val) {
 			// ***************************************
 			// Avancement de la saisie des formulaires
 					
-				$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
+			/*	$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
 							FROM #__fabrik_lists AS fbtables 
 							INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1)
 							INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$user->profile.' 
@@ -319,7 +319,7 @@ function return_bytes($val) {
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $attachments.'%');
 				$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 				$colonne++;
-			
+			*/
 			// ********************************************
 			//				Application form
 			// ********************************************

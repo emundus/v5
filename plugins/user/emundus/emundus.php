@@ -100,31 +100,37 @@ class plgUserEmundus extends JPlugin
 		$mail_to_user 	= $this->params->get('mail_to_user', 1);
 		$db = JFactory::getDBO();
 		if( count($details) > 0 ) {
+			$profile = @isset($details['emundus_profile']['profile'])?$details['emundus_profile']['profile']:$details['profile'];
+			$name = @isset($details['emundus_profile']['name'])?$details['emundus_profile']['name']:$details['name'];
+			$lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:$details['name'];
+			$firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:$details['firstname'];
+			$email = @isset($details['emundus_profile']['email'])?$details['emundus_profile']['email']:$details['email'];
+			$schoolyear = @isset($details['emundus_profile']['schoolyear'])?$details['emundus_profile']['schoolyear']:$details['schoolyear'];
+			$university_id = @isset($details['emundus_profile']['university_id'])?$details['emundus_profile']['university_id']:$details['university_id'];
+			$group = @isset($details['emundus_profile']['group'])?$details['emundus_profile']['group']:$details['group'];
+			
 			if ($isnew) {
 				// @TODO	Suck in the frontend registration emails here as well. Job for a rainy day.
-	
+
 				// Update name and fistname from #__users
-				$db->setQuery('UPDATE #__users
-						SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
-						WHERE id='.$user['id']);
+				$db->setQuery('UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'" WHERE id='.$user['id']);
 				$db->Query();
 	
 				// Insert data in #__emundus_users
-				$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$details['emundus_profile']['profile']);
+				$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$profile);
 				$schoolyear = $db->loadResult();
 	
 				$db->setQuery('INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
-							VALUES ('.$user['id'].',"'.ucfirst($details['emundus_profile']['firstname']).'","'.strtoupper($details['emundus_profile']['lastname']).'",'.$details['emundus_profile']['profile'].',"'.$schoolyear.'","'.$user['registerDate'].'")');
+							VALUES ('.$user['id'].',"'.ucfirst($firstname).'","'.strtoupper($lastname).'",'.$profile.',"'.$schoolyear.'","'.$user['registerDate'].'")');
 				$db->Query();
 	
 				// Insert data in #__emundus_users_profiles
-				$db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id)
-							VALUES ('.$user['id'].','.$details['emundus_profile']['profile'].')');
+				$db->setQuery('INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user['id'].','.$profile.')');
 				$db->Query();
 	
 				// Insert data in #__emundus_users_profiles_history
 				$db->setQuery('INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var)
-							VALUES ('.$user['id'].','.$details['emundus_profile']['profile'].',"profile")');
+							VALUES ('.$user['id'].','.$profile.',"profile")');
 				$db->Query();
 	
 				$db->setQuery('UPDATE #__users
@@ -133,7 +139,7 @@ class plgUserEmundus extends JPlugin
 							WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) WHERE id='.$user['id']);
 				$db->Query();
 	
-				if ($app->isAdmin()) {
+				/*if ($app->isAdmin()) {
 					if ($mail_to_user) {
 	
 						// Load user_joomla plugin language (not done automatically).
@@ -142,7 +148,7 @@ class plgUserEmundus extends JPlugin
 	
 						// Compute the mail subject.
 						$emailSubject = JText::sprintf(
-							'PLG_USER_JOOMLA_NEW_USER_EMAIL_SUBJECT',
+							'POM'.'PLG_USER_JOOMLA_NEW_USER_EMAIL_SUBJECT',
 							$user['name'],
 							$config->get('sitename')
 						);
@@ -174,17 +180,17 @@ class plgUserEmundus extends JPlugin
 							JError::raiseWarning(500, JText::_('ERROR_SENDING_EMAIL'));
 						}
 					}
-				}
+				}*/
 			}
 			else { //die(print_r($details));
 				// Update name and fistname from #__users
 				$db->setQuery('UPDATE #__users
-						SET name="'.strtoupper($details['emundus_profile']['lastname']).' '.ucfirst($details['emundus_profile']['firstname']).'"
+						SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'"
 						WHERE id='.$user['id']);
 				$db->Query();
 				
 				$db->setQuery('UPDATE #__emundus_users
-						SET lastname="'.strtoupper($details['emundus_profile']['name']).'", firstname="'.ucfirst($details['emundus_profile']['firstname']).'"
+						SET lastname="'.strtoupper($name).'", firstname="'.ucfirst($firstname).'"
 						WHERE user_id='.$user['id']);
 				$db->Query();
 			}
