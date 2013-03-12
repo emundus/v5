@@ -2,7 +2,7 @@
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 defined('_JEXEC') or die('Restricted access'); 
 $document   =& JFactory::getDocument();
 $current_user = JFactory::getUser();
@@ -44,7 +44,7 @@ if (count($search)==0 && isset($s_elements)) {
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 <fieldset>
 <legend>
-<img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?>
+<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?>
 </legend>
 
 <table width="100%">
@@ -123,7 +123,7 @@ if(EmundusHelperAccess::isAdministrator($user->id)) {
   <th align="left">
   	<?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>'; ?>
     <input type="hidden" value="0" id="theValue" />
-  	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
+  	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
   </th>
  </tr>
  <tr>
@@ -158,7 +158,7 @@ if (count($search)>0 && isset($search) && is_array($search)) {
   </select>
  
   <input name="elements_values[]" width="30" value="<?php echo $search_values[$i];?>" />
-  <a href="#" onclick="removeElement('<?php echo 'filter'.$i; ?>')"><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>
+  <a href="#" onclick="removeElement('<?php echo 'filter'.$i; ?>')"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>
 <?php 
 		$i++; 
 		echo '</div>';
@@ -176,19 +176,19 @@ if (count($search)>0 && isset($search) && is_array($search)) {
 <div class="emundusraw">
 <?php
 if(!empty($this->users)) {
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name"></span>'; 
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_ALL_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile_48.png" name="export_all_to_xls" onclick="document.pressed=this.name" /></span>';
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name"></span>'; 
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_ALL_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_all_to_xls" onclick="document.pressed=this.name" /></span>';
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
 ?>
 </div>
 
 <?php 
 	if($tmpl == 'component') {
-			echo '<div><h3><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</h3>';
+			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</h3>';
 			$document =& JFactory::getDocument();
-			$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundusraw.css" );
+			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
-			echo '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</legend>';
+			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</legend>';
 	}
 ?>
 
@@ -229,19 +229,19 @@ foreach ($this->users as $user) { ?>
         <?php
 			echo '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user->email.'">';
 			if ($user->gender == 'male')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
+				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
 			elseif ($user->gender == 'female')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/images/emundus/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
+				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
 			else
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a>';
 			echo '</span>';
 			echo '<span class="editlinktip hasTip" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
 			echo '<a rel="{handler: \'iframe\', size: {x: 750, y: window.
-innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_reports&view=report&cid[0]=application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
+innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_reports&view=report&cid[0]=application_form&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
 			echo '</span>';
 			echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
 			echo '<a rel="{handler: \'iframe\', size: {x: 450, y: window.
-innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checklist&layout=attachments&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checklist&layout=attachments&sid='. $user->id.'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			echo '</span></div>';
 			echo '#'.$user->id.'</div>';
 		?>
@@ -274,7 +274,7 @@ innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checkl
 			if(!empty($t->evaluator_id) && isset($t->evaluator_id)) {
 				$img = '';
 				if(EmundusHelperAccess::isAdministrator($user->id)) { 
-					$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_COORDINATOR_TEACHER').'::'.JText::_('DELETE_COORDINATOR_TEACHER_TXT').'"><a href="index.php?option=com_emundus&controller=learningagreementreferent&task=delAssessor&aid='.$t->evaluator_id.'&uid='.$t->user_id.'&limitstart='.$ls.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'"><img src="'.JURI::Base().'images/emundus/icones/clear_left_16x16.png" alt="'.JText::_('DELETE_COORDINATOR_TEACHER').'" align="absbottom" /></a></span> ';
+					$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_COORDINATOR_TEACHER').'::'.JText::_('DELETE_COORDINATOR_TEACHER_TXT').'"><a href="index.php?option=com_emundus&controller=learningagreementreferent&task=delAssessor&aid='.$t->evaluator_id.'&uid='.$t->user_id.'&limitstart='.$ls.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'"><img src="'.JURI::Base().'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DELETE_COORDINATOR_TEACHER').'" align="absbottom" /></a></span> ';
 				}
 				echo JFactory::getUser($t->evaluator_id)->name.' '.$img.'<br />';	
 			}
@@ -289,10 +289,10 @@ innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checkl
 				$status = @$this->learning_agreement_status[$user->id]->status;
 				if ($status == 1) {
 					echo '<span class="editlinktip hasTip" title="'.JText::_('VIEW_LEARNING_AGREEMENT').'::'.JText::_('VIEW_LEARNING_AGREEMENT_TXT').'"><a rel="{handler: \'iframe\', size: {x: 350, y: window.
-innerHeight}}" href="index.php?option=com_emundus&view=learningAgreement&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'images/emundus/icones/learning_agreement_validated_22x22.png" alt="'.JText::_('VIEW_LEARNING_AGREEMENT').'" align="absbottom" /></a></span> ';
+innerHeight}}" href="index.php?option=com_emundus&view=learningAgreement&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'media/com_emundus/images/icones/learning_agreement_validated_22x22.png" alt="'.JText::_('VIEW_LEARNING_AGREEMENT').'" align="absbottom" /></a></span> ';
 				} else {
 					echo '<span class="editlinktip hasTip" title="'.JText::_('EDIT_LEARNING_AGREEMENT').'::'.JText::_('EDIT_LEARNING_AGREEMENT_TXT').'"><a rel="{handler: \'iframe\', size: {x: 350, y: window.
-innerHeight}}" href="index.php?option=com_emundus&view=learningAgreement&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'images/emundus/icones/learning_agreement_set_22x22.png" alt="'.JText::_('EDIT_LEARNING_AGREEMENT').'" align="absbottom" /></a></span> ';
+innerHeight}}" href="index.php?option=com_emundus&view=learningAgreement&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'media/com_emundus/images/icones/learning_agreement_set_22x22.png" alt="'.JText::_('EDIT_LEARNING_AGREEMENT').'" align="absbottom" /></a></span> ';
 				}
 			}
 		?>
@@ -303,7 +303,7 @@ innerHeight}}" href="index.php?option=com_emundus&view=learningAgreement&student
 				$status = @$this->learning_agreement_status[$user->id]->status;
 				if ($status == 1) {
 					echo '<span class="editlinktip hasTip" title="'.JText::_('ACADEMIC_TRANSCRIPT').'::'.JText::_('ACADEMIC_TRANSCRIPT_TXT').'"><a rel="{handler: \'iframe\', size: {x: 350, y: window.
-innerHeight}}" href="index.php?option=com_emundus&view=academicTranscript&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'images/emundus/icones/documentary_properties_22x22.png" alt="'.JText::_('ACADEMIC_TRANSCRIPT').'" align="absbottom" /></a></span> ';
+innerHeight}}" href="index.php?option=com_emundus&view=academicTranscript&student_id='.$user->id.'&tmpl=component" target="_self" class="modal"><img src="'.JURI::Base().'media/com_emundus/images/icones/documentary_properties_22x22.png" alt="'.JText::_('ACADEMIC_TRANSCRIPT').'" align="absbottom" /></a></span> ';
 				} 
 			}
 		?>
@@ -329,7 +329,7 @@ innerHeight}}" href="index.php?option=com_emundus&view=academicTranscript&studen
 if(EmundusHelperAccess::isAdministrator($user->id)) { 
 ?>
 
-<fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_TEACHER_OR_LOCAL'); ?></legend>
+<fieldset><legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('AFFECT_TO_TEACHER_OR_LOCAL'); ?></legend>
 <table width="100%">
  <tr>
   <th><?php echo JText::_('TEACHER_USER_FILTER'); ?></th>
@@ -357,7 +357,7 @@ if(EmundusHelperAccess::isAdministrator($user->id)) {
 </fieldset>
 
 <fieldset>
-<legend><img src="<?php JURI::Base(); ?>images/emundus/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('MARK_SELECTED_AS_ENROLLED_STUDENT'); ?></legend>
+<legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_('MARK_SELECTED_AS_ENROLLED_STUDENT'); ?></legend>
 <!--    <input type="submit" name="registration" onclick="document.pressed=this.name" value="<?php echo JText::_('MARK_SELECTED_AS_ENROLLED_STUDENT_BTN'); ?>" />
     <input type="submit" name="unregistration" onclick="document.pressed=this.name" value="<?php echo JText::_('MARK_SELECTED_AS_SELECTED_APPLICANT_BTN'); ?>" /> -->
 <table width="100%">
@@ -396,7 +396,7 @@ if(EmundusHelperAccess::isAdministrator($user->id)) {
   <fieldset>
   <legend> 
   	<span class="editlinktip hasTip" title="<?php echo JText::_('EMAIL_TEACHER_DEFAULT').'::'.JText::_('EMAIL_TEACHER_DEFAULT_TIP'); ?>">
-		<img src="<?php JURI::Base(); ?>images/emundus/icones/mail_replayall_22x22.png" alt="<?php JText::_('EMAIL_TEACHER_DEFAULT'); ?>"/> <?php echo JText::_( 'EMAIL_TEACHER_DEFAULT' ); ?>
+		<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/mail_replayall_22x22.png" alt="<?php JText::_('EMAIL_TEACHER_DEFAULT'); ?>"/> <?php echo JText::_( 'EMAIL_TEACHER_DEFAULT' ); ?>
 	</span>
   </legend>
   <input type="submit" name="default_email" onclick="document.pressed=this.name" value="<?php echo JText::_( 'SEND_DEFAULT_EMAIL' );?>" >
@@ -405,7 +405,7 @@ if(EmundusHelperAccess::isAdministrator($user->id)) {
   <fieldset>
   <legend> 
   	<span class="editlinktip hasTip" title="<?php echo JText::_('EMAIL_SELECTED_TEACHERS').'::'.JText::_('EMAIL_SELECTED_TEACHERS_TIP'); ?>">
-		<img src="<?php JURI::Base(); ?>images/emundus/icones/mail_replay_22x22.png" alt="<?php JText::_('EMAIL_TEACHERS_DEFAULT'); ?>"/> <?php echo JText::_( 'EMAIL_SELECTED_TEACHERS' ); ?>
+		<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/mail_replay_22x22.png" alt="<?php JText::_('EMAIL_TEACHERS_DEFAULT'); ?>"/> <?php echo JText::_( 'EMAIL_SELECTED_TEACHERS' ); ?>
 	</span>
   </legend>
   <div>
@@ -472,7 +472,7 @@ function addElement() {
   var newdiv = document.createElement('div');
   var divIdName = 'my'+num+'Div';
   newdiv.setAttribute('id',divIdName);
-  newdiv.innerHTML = '<select name="elements[]" id="elements"><option value=""> <?php echo JText::_("PLEASE_SELECT"); ?> </option><?php $groupe =""; $i=0; foreach($this->elements as $elements) { $groupe_tmp = $elements->group_label; $length = 50; $dot_grp = strlen($groupe_tmp)>=$length?'...':''; $dot_elm = strlen($elements->element_label)>=$length?'...':''; if ($groupe != $groupe_tmp) { echo "<option class=\"emundus_search_grp\" disabled=\"disabled\" value=\"\">".substr(strtoupper($groupe_tmp), 0, $length).$dot_grp."</option>"; $groupe = $groupe_tmp; } echo "<option class=\"emundus_search_elm\" value=\"".$elements->table_name.'.'.$elements->element_name."\">".substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm."</option>"; $i++; } ?></select><input name="elements_values[]" width="30" /> <a href=\'#\' onclick=\'removeElement("'+divIdName+'")\'><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>';
+  newdiv.innerHTML = '<select name="elements[]" id="elements"><option value=""> <?php echo JText::_("PLEASE_SELECT"); ?> </option><?php $groupe =""; $i=0; foreach($this->elements as $elements) { $groupe_tmp = $elements->group_label; $length = 50; $dot_grp = strlen($groupe_tmp)>=$length?'...':''; $dot_elm = strlen($elements->element_label)>=$length?'...':''; if ($groupe != $groupe_tmp) { echo "<option class=\"emundus_search_grp\" disabled=\"disabled\" value=\"\">".substr(strtoupper($groupe_tmp), 0, $length).$dot_grp."</option>"; $groupe = $groupe_tmp; } echo "<option class=\"emundus_search_elm\" value=\"".$elements->table_name.'.'.$elements->element_name."\">".substr(htmlentities($elements->element_label, ENT_QUOTES), 0, $length).$dot_elm."</option>"; $i++; } ?></select><input name="elements_values[]" width="30" /> <a href=\'#\' onclick=\'removeElement("'+divIdName+'")\'><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>';
   ni.appendChild(newdiv);
 }
 

@@ -57,7 +57,7 @@ $db = JFactory::getDBO();
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 
-<fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
+<fieldset><legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
 
 <table width="100%">
  <tr align="left">
@@ -103,7 +103,7 @@ $db = JFactory::getDBO();
   	<?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>'; ?>
     <input type="hidden" value="0" id="theValue" />
 
-  	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
+  	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
   </th>
  </tr>
  <tr align="left">
@@ -138,7 +138,7 @@ if (count($search)>0 && isset($search) && is_array($search)) {
   </select>
  
   <input name="elements_values[]" width="30" value="<?php echo $search_values[$i];?>" />
-  <a href="#" onclick="removeElement('<?php echo 'filter'.$i; ?>')"><img src="<?php JURI::Base(); ?>images/emundus/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>
+  <a href="#" onclick="removeElement('<?php echo 'filter'.$i; ?>')"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>
 <?php 
 		$i++; 
 		echo '</div>';
@@ -157,21 +157,21 @@ if (count($search)>0 && isset($search) && is_array($search)) {
 <?php
 if(!empty($this->users)) {
  if($current_user->profile!=16){
-	/*echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile-selected_48.png" name="export_complete" onclick="document.pressed=this.name"></span>'; 	
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_COMPLETED_TO_XLS').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=export_select_columns&tmpl=component&as=1&v='.$v.'" target="_self" class="modal"><img src="'.$this->baseurl.'/images/emundus/icones/XLSFile_48.png" name="export_complete_to_xls" onclick="document.pressed=this.name" /></a></span>'; 
-	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_INCOMPLETED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile-incomplete_48.png" name="export_incomplete_to_xls" onclick="document.pressed=this.name" /></span>'; */
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
-	echo '<span class="editlinktip hasTip" title="'.JText::_('SEND_ELEMENTS').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name" /></span>'; 
+	/*echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_complete" onclick="document.pressed=this.name"></span>'; 	
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_COMPLETED_TO_XLS').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=export_select_columns&tmpl=component&as=1&v='.$v.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_complete_to_xls" onclick="document.pressed=this.name" /></a></span>'; 
+	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_INCOMPLETED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-incomplete_48.png" name="export_incomplete_to_xls" onclick="document.pressed=this.name" /></span>'; */
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
+	echo '<span class="editlinktip hasTip" title="'.JText::_('SEND_ELEMENTS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name" /></span>'; 
 }
 ?>
 </div>
 <?php 
 	if($tmpl == 'component') {
-		echo '<div><h3><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.JText::_('COMPLETED_APPLICANTS_LIST').'"/>'.JText::_('COMPLETED_APPLICANTS_LIST').'</h3>';
+		echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('COMPLETED_APPLICANTS_LIST').'"/>'.JText::_('COMPLETED_APPLICANTS_LIST').'</h3>';
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundusraw.css" );
+		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
-		echo '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.JText::_('COMPLETED_APPLICANTS_LIST').'"/>'.JText::_('COMPLETED_APPLICANTS_LIST').'</legend>';
+		echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('COMPLETED_APPLICANTS_LIST').'"/>'.JText::_('COMPLETED_APPLICANTS_LIST').'</legend>';
 	}
 ?>
 <table id="userlist" width="100%">
@@ -249,10 +249,10 @@ foreach ($this->users as $user) { ?>
         <?php
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
-			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/components/com_emundus/style/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>"  width='30' height='30' onclick="document.pressed=this.name" >
+			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>"  width='30' height='30' onclick="document.pressed=this.name" >
         <?php echo '</span>'; 
 		} else { ?>
-			<img src="<?php JURI::Base(); ?>/components/com_emundus/style/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>" width='30' height='30' alt="<?php echo $user->validated>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
+			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>" width='30' height='30' alt="<?php echo $user->validated>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
 		<?php 
         }
 		?>
@@ -276,7 +276,7 @@ if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAcces
   <fieldset>
   <legend> 
   	<span class="editlinktip hasTip" title="<?php echo JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP'); ?>">
-		<img src="<?php JURI::Base(); ?>images/emundus/icones/mail_replay_22x22.png" alt="<?php JText::_('EMAIL_SELECTED_APPLICANTS'); ?>"/> <?php echo JText::_( 'EMAIL_SELECTED_APPLICANTS' ); ?>
+		<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/mail_replay_22x22.png" alt="<?php JText::_('EMAIL_SELECTED_APPLICANTS'); ?>"/> <?php echo JText::_( 'EMAIL_SELECTED_APPLICANTS' ); ?>
 	</span>
   </legend>
   <div>

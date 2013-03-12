@@ -55,11 +55,11 @@ foreach($this->attachments as $attachment) {
           <tr>
             <td>• <?php echo empty($item->description)?JText::_('NO_DESC'):$item->description; ?></td>
             <td><?php if($item->can_be_viewed==1 || $current_user->profile <= 4) {?>
-              <a href="<?php echo $chemin.$user->id.'/'.$item->filename; ?>" target="_blank"><img src="images/emundus/icones/viewmag_16x16.png" alt="show" style="vertical-align:middle"/><?php echo JText::_('VIEW'); ?></a>
+              <a href="<?php echo $chemin.$user->id.'/'.$item->filename; ?>" target="_blank"><img src="media/com_emundus/images/icones/viewmag_16x16.png" alt="show" style="vertical-align:middle"/><?php echo JText::_('VIEW'); ?></a>
               <?php } else { echo JText::_('CANT_VIEW'); } ?>
               &nbsp;-&nbsp;
               <?php if($item->can_be_deleted==1 || $current_user->profile <= 4) {?>
-              <a href="?option=com_emundus&task=delete&layout=attachments&sid=<?php echo $user->id; ?>&aid=<?php echo $item->id; ?>"><img src="images/emundus/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/><?php echo JText::_('DELETE'); ?></a>
+              <a href="?option=com_emundus&task=delete&layout=attachments&sid=<?php echo $user->id; ?>&aid=<?php echo $item->id; ?>"><img src="media/com_emundus/images/icones/trashcan_full.png"  style="vertical-align:middle" alt="delete"/><?php echo JText::_('DELETE'); ?></a>
               <?php } else { echo JText::_('CANT_DELETE'); } ?></td>
           </tr>
           <?php 	} ?>

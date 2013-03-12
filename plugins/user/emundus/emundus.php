@@ -190,7 +190,7 @@ class plgUserEmundus extends JPlugin
 				$db->Query();
 				
 				$db->setQuery('UPDATE #__emundus_users
-						SET lastname="'.strtoupper($name).'", firstname="'.ucfirst($firstname).'"
+						SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'"
 						WHERE user_id='.$user['id']);
 				$db->Query();
 			}

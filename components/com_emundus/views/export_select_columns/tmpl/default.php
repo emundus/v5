@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 
 $eMConfig =& JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();

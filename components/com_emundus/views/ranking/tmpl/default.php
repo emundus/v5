@@ -24,11 +24,11 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 			$menuname = $menu->getActive()->title;
 		} else $menuname = '';
 		if($tmpl == 'component') {
-				echo '<div><h3><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</h3>';
+				echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</h3>';
 				$document =& JFactory::getDocument();
-				$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundusraw.css" );
+				$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
-				echo '<fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/folder_documents.png" alt="'.$menuname.'"/>'.JText::_('ADMISSION').' : '.$this->current_schoolyear.'</legend>'; ?>
+				echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.JText::_('ADMISSION').' : '.$this->current_schoolyear.'</legend>'; ?>
         <div class="evaluation_users"><?php 
             if(isset($this->users)&&!empty($this->users)){ ?>
                 <table id="userlist" width="100%">

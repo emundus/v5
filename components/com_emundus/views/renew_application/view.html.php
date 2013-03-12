@@ -47,7 +47,7 @@ class EmundusViewRenew_application extends JView
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access))die("You are not allowed to access to this page.");
 		
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."components/com_emundus/style/emundus.css" );
+		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
 		$current_user =& JFactory::getUser();
 		$statut = $this->get('statut');

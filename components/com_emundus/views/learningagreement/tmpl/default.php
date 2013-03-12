@@ -1,14 +1,14 @@
 <?php 
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 JHTML::stylesheet( 'template.css', JURI::Base().'templates/emundus/css/' );
 defined('_JEXEC') or die('Restricted access'); 
 
 $action = JRequest::getVar('action', null, 'GET', 'none',0);
 if ($action == 'DONE') {
 	echo '<script>window.parent.location.reload();window.close();</script>';
-	echo '<p><fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/clean.png" alt="'.JText::_('ACTION_DONE').'"/>'.JText::_('ACTION_DONE').'</legend>';
+	echo '<p><fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/clean.png" alt="'.JText::_('ACTION_DONE').'"/>'.JText::_('ACTION_DONE').'</legend>';
 	//echo '<input type="button" value="'.JText::_('CLOSE').'" onclick="window.close()" />';
 	echo '</fieldset></p>';
 } 
@@ -18,7 +18,7 @@ $student =& JFactory::getUser($student_id);
 $status = @$this->learning_agreement_status[$student_id]->status;
 echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 ?>
-<fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/learning_agreement<?php echo $status?'_validated':'' ?>_22x22.png" alt="<?php echo $status?JText::_('SELECTED_TEACHING_UNITS'):JText::_('SELECT_TEACHING_UNITS'); ?>"/> <?php echo $status?JText::_('SELECTED_TEACHING_UNITS'):JText::_('SELECT_TEACHING_UNITS'); ?></legend>
+<fieldset><legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/learning_agreement<?php echo $status?'_validated':'' ?>_22x22.png" alt="<?php echo $status?JText::_('SELECTED_TEACHING_UNITS'):JText::_('SELECT_TEACHING_UNITS'); ?>"/> <?php echo $status?JText::_('SELECTED_TEACHING_UNITS'):JText::_('SELECT_TEACHING_UNITS'); ?></legend>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
 <input type="hidden" name="student_id" value="<?php echo $student_id; ?>"/>
 <table id="teaching_unity">
@@ -57,7 +57,7 @@ echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 ?>
 		<input type="submit" name="unvalidate" onclick="document.pressed=this.name" value="<?php echo JText::_( 'LEARNING_AGREEMENT_UNVALIDATION' );?>" >
 <?php       
-      echo '<span class="editlinktip hasTip" title="'.JText::_('ACADEMIC_TRANSCRIPT').'::'.JText::_('ACADEMIC_TRANSCRIPT_TXT').'"><a href="index.php?option=com_emundus&view=academictranscript&student_id='.$student_id.'&tmpl=component"><img src="'.JURI::Base().'images/emundus/icones/documentary_properties_22x22.png" alt="'.JText::_('ACADEMIC_TRANSCRIPT').'" align="absbottom" /></a></span> ';
+      echo '<span class="editlinktip hasTip" title="'.JText::_('ACADEMIC_TRANSCRIPT').'::'.JText::_('ACADEMIC_TRANSCRIPT_TXT').'"><a href="index.php?option=com_emundus&view=academictranscript&student_id='.$student_id.'&tmpl=component"><img src="'.JURI::Base().'media/com_emundus/images/icones/documentary_properties_22x22.png" alt="'.JText::_('ACADEMIC_TRANSCRIPT').'" align="absbottom" /></a></span> ';
 ?>
 <?php
 	}

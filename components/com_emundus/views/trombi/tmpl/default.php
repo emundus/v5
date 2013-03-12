@@ -1,6 +1,6 @@
 <?php 
 JHTML::_('behavior.modal'); 
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 defined('_JEXEC') or die('Restricted access'); 
 $current_s = JRequest::getVar('rowid', false, '', 'STRING');
 $current_p = JRequest::getVar('pid', null, '', 'INT');
@@ -49,7 +49,7 @@ foreach ($this->users as $user) {  ?>
 		<table cellspacing="15px">
 	<?php } if($j == 0) echo '<tr>'; ?>
 	<td align="center">
-		<?php $photo = empty($user->filename)?'images/emundus/icones/clock.png':EMUNDUS_PATH_REL.$user->id.'/tn_'.$user->filename; ?>
+		<?php $photo = empty($user->filename)?'media/com_emundus/images/icones/clock.png':EMUNDUS_PATH_REL.$user->id.'/tn_'.$user->filename; ?>
 		<p align="center"><img src="<?php echo $photo ; ?>" alt="Photo" <?php if(current(getimagesize($photo))>100) echo 'width="100"'; ?> /></p>
 		<p align="center"><?php echo $user->lastname; ?><br/><?php echo $user->firstname; ?></p>
 		<p align="center"><?php echo $user->nationality; ?></p>

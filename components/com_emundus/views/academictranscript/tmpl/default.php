@@ -3,12 +3,12 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 JHTML::stylesheet( 'template.css', JURI::Base().'templates/emundus/css/' );
 
 $action = JRequest::getVar('action', null, 'GET', 'none',0);
 if ($action == 'DONE') {
-	echo '<p><fieldset><legend><img src="'.JURI::Base().'images/emundus/icones/clean.png" alt="'.JText::_('ACTION_DONE').'"/>'.JText::_('ACTION_DONE').'</legend>';
+	echo '<p><fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/clean.png" alt="'.JText::_('ACTION_DONE').'"/>'.JText::_('ACTION_DONE').'</legend>';
 	//echo '<input type="button" value="'.JText::_('CLOSE').'" onclick="window.close()" />';
 	echo '</fieldset></p>';
 } 
@@ -19,7 +19,7 @@ $status = @$this->learning_agreement_status[$student_id]->status;
 echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 ?>
 
-<fieldset><legend><img src="<?php JURI::Base(); ?>images/emundus/icones/documentary_properties_22x22.png" alt="<?php echo JText::_('ACADEMIC_TRANSCRIPT'); ?>"/> <?php echo JText::_('ACADEMIC_TRANSCRIPT'); ?></legend>
+<fieldset><legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/documentary_properties_22x22.png" alt="<?php echo JText::_('ACADEMIC_TRANSCRIPT'); ?>"/> <?php echo JText::_('ACADEMIC_TRANSCRIPT'); ?></legend>
 <?php
 if (count($this->learning_units) > 0) {
 ?>

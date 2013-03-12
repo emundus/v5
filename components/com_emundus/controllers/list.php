@@ -13,7 +13,6 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport('joomla.application.component.controller');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
  
 /**
  * eMundus Component Controller
@@ -27,7 +26,7 @@ class EmundusControllerList extends JController {
 	
 	function __construct($config = array()){
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');

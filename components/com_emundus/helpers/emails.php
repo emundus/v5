@@ -30,7 +30,7 @@ class EmundusHelperEmails{
 			$email .= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
-						<img src="'.JURI::Base().'images/emundus/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
 					</span>
 				</legend>
 				<input type="submit" class="blue" name="default_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" >
@@ -44,7 +44,7 @@ class EmundusHelperEmails{
 			$email .= '
 			<fieldset><legend> 
 						<span class="editlinktip hasTip" title="'.JText::_('EMAIL_SELECTED_ASSESSORS').'::'.JText::_('EMAIL_SELECTED_ASSESSORS_TIP').'">
-							<img src="'.JURI::Base().'images/emundus/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/> '.JText::_( 'EMAIL_SELECTED_ASSESSORS' ).'
+							<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/> '.JText::_( 'EMAIL_SELECTED_ASSESSORS' ).'
 						</span>
 					</legend>
 				<div><p><dd>
@@ -86,7 +86,7 @@ class EmundusHelperEmails{
 			$email.= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP').'">
-						<img src="'.JURI::Base().'images/emundus/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_SELECTED_APPLICANTS').'"/> '.JText::_( 'EMAIL_SELECTED_APPLICANTS' ).'
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_SELECTED_APPLICANTS').'"/> '.JText::_( 'EMAIL_SELECTED_APPLICANTS' ).'
 					</span>
 				</legend>
 				<div>

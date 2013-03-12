@@ -84,19 +84,19 @@ function age($naiss) {
     <?php 
 			echo '<input id="cb'.$this->user->user_id.'" name="cid[]" value="'.$this->user->user_id.'" checked type="checkbox">'; 
 			echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-			echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user->user_id.');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user->user_id.'&student_id='. $this->user->user_id.'&tmpl=component"><img src="'.$this->baseurl.'/images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
+			echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user->user_id.');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user->user_id.'&student_id='. $this->user->user_id.'&tmpl=component"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
 			echo '<script>var elm = document.getElementById("cb'.$this->user->user_id.'"); elm.style.display = "none";</script>';
 			if ($this->user->time_date!='')
-				echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/images/emundus/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="32"></span><br />'; 
+				echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="32"></span><br />'; 
 				
 			echo '<span class="editlinktip hasTip" title="'.JText::_('DOWNLOAD_APPLICATION_FORM').'::">';
-			echo '<a href="index.php?option=com_emundus&task=pdf&user='.$this->user->user_id.'" class="appsent" target="_blank"><img border="0" src="'.$this->baseurl.'/images/emundus/icones/pdf.png" /></a>'; 
+			echo '<a href="index.php?option=com_emundus&task=pdf&user='.$this->user->user_id.'" class="appsent" target="_blank"><img border="0" src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" /></a>'; 
 			echo '</span><br />';
 	?>
 	<?php 
 		 if ($this->user->profile <= 5 && $this->user->profile != 3 && $this->user->profile != 999 && $this->user->profile != 16) {
 			echo '<span class="editlinktip hasTip" title="'.JText::_('ADD_ATTACHMENT').'">';
-			echo '<a href="'.$this->baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user->user_id.'&student_id='. $this->user->user_id.'&tmpl=component" target="_self" class="modal"><img border="0" src="'.$this->baseurl.'images/emundus/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a>';
+			echo '<a href="'.$this->baseurl.'index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user->user_id.'&student_id='. $this->user->user_id.'&tmpl=component" target="_self" class="modal"><img border="0" src="'.$this->baseurl.'media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a>';
 			echo '</span><br />';
 		 }
 	?>
@@ -241,13 +241,13 @@ if ($sent == 0) {
             if (!empty($row->description)) 
                 $link .= ' <em>('.$row->description.')</em>';
             if(strpos($row->filename, "_locked_")>0) 
-                $link = '<img src="'.$this->baseurl.'images/emundus/icones/encrypted.png" />'.$link;
+                $link = '<img src="'.$this->baseurl.'media/com_emundus/images/icones/encrypted.png" />'.$link;
             if($row->id == 27){
 				if(!file_exists(EMUNDUS_PATH_REL.'archives'.DS.$row->filename))
-                	$link = '<img src="images/emundus/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> '.$link;
+                	$link = '<img src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> '.$link;
 			}else{
 				if(!file_exists(EMUNDUS_PATH_REL.$this->user->user_id.DS.$row->filename))
-                	$link = '<img src="images/emundus/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> '.$link;
+                	$link = '<img src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> '.$link;
 			}	
             
             if (in_array($current_user->usertype, $can_delete)) 

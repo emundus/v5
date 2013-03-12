@@ -21,7 +21,7 @@
 		<fields name="params">
 			<fieldset addfieldpath="/modules/mod_emunduspanel/elements" name="basic">
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Folder to find pictures&lt;b&gt;" label="" description="" />
-				<field name="folder" type="text" default="images/emundus/icones/" label="Enter the folder for all pictures" description="" size="60" />	
+				<field name="folder" type="text" default="media/com_emundus/images/icones/" label="Enter the folder for all pictures" description="" size="60" />	
 		
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Guest home page&lt;b&gt;" label="" description="" />
 				<field name="mainmenu" type="multilist" default="" label="Guest menu"/>

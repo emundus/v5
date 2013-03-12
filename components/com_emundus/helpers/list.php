@@ -289,7 +289,7 @@ class EmundusHelperList{
 					$actions[$user['user_id']][$user['user']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('FORMS').'" title="'.JText::_('FORMS').'" width="22" height="22" align="absbottom" /></a><ul>';
 					foreach ( $forms as $row ) {
 						$actions[$user['user_id']][$user['user']] .= '<li>';
-						$actions[$user['user_id']][$user['user']] .= '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$row->form_id.'&random=0&rowid='.$user['user_id'].'&usekey=user&Itemid='.$itemid.'" target="_blank" >'.$row->label.'</a>';
+						$actions[$user['user_id']][$user['user']] .= '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid='.$row->form_id.'&random=0&rowid='.$user['user_id'].'&usekey=user&Itemid='.$itemid.'" target="_blank" >'.$row->label.'</a>';
 						$actions[$user['user_id']][$user['user']] .= '</li>';
 					}
 					$actions[$user['user_id']][$user['user']] .= '</ul></li>';
@@ -325,7 +325,7 @@ class EmundusHelperList{
 			@$selection[$user['user_id']] .= '<div class="emundusraw">';
 			if (isset($user['final_grade'])) {
 				$fg_txt = preg_replace($p_grade, $grade, $user['final_grade']);
-				@$selection[$user['user_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik=39&random=0&rowid='.$user['row_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal">'; 
+				@$selection[$user['user_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=39&random=0&rowid='.$user['row_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal">'; 
 				if ($user['final_grade']!= -1 && $user['final_grade'] != '') {
 					if ($user['final_grade'] == 2)
 						$final_grade = '<img src="'.$this->baseurl.'/media/com_emundus/images/icones/fileclose.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
@@ -359,7 +359,7 @@ class EmundusHelperList{
 			
 			$add = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid='.$form_eval.'&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal"><img title="'.JText::_( 'ADD_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add.png" /></a>';
 			
-			$edit = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&fabrik='.$form_eval.'&random=0&rowid='.@$evaluation->id.'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'UPDATE_EVALUATION' ).'" src="'.$this->baseurl.'/images/M_images/edit.png" /></a>';
+			$edit = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid='.$form_eval.'&random=0&rowid='.@$evaluation->id.'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'UPDATE_EVALUATION' ).'" src="'.$this->baseurl.'/images/M_images/edit.png" /></a>';
 			
 			$view = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=details&fabrik='.$form_eval.'&random=0&rowid='.@$evaluation->id.'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'VIEW_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/zoom_application.png" /></a>';
 			

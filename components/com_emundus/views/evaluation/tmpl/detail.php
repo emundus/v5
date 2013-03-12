@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'components/com_emundus/style/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
 $eval_id = JRequest::getVar('uid', null, 'GET', 'none',0);
 $current_user =& JFactory::getUser($student_id);

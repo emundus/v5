@@ -26,7 +26,7 @@ class EmundusControllerIncomplete extends JController {
 	
 	function __construct($config = array()){
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
@@ -50,6 +50,17 @@ class EmundusControllerIncomplete extends JController {
 			parent::display();
 		}
     }
+	
+	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
+	function applicantEmail() {
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		EmundusHelperEmails::sendApplicantEmail();
+	}
+
+	function clear() {
+		EmundusHelperFilters::clear();
+	}
+	/*
 	function clear() {
 		// Starting a session.
 		$session =& JFactory::getSession();
@@ -57,9 +68,9 @@ class EmundusControllerIncomplete extends JController {
 		$session->clear( 'quick_search' );
 		$session->clear( 's_elements' );
 		$session->clear( 's_elements_values' );
-		/*$session->clear( 'groups' );
-		$session->clear( 'finalgrade' );
-		$session->clear( 'evaluator' );*/
+		//$session->clear( 'groups' );
+		//$session->clear( 'finalgrade' );
+		//$session->clear( 'evaluator' );
 		
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -67,7 +78,7 @@ class EmundusControllerIncomplete extends JController {
 		$Itemid=JSite::getMenu()->getActive()->id;
 		
 		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
-	}
+	}*/
 	
 	function getCampaign()
 	{
@@ -174,62 +185,6 @@ class EmundusControllerIncomplete extends JController {
 			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
 	}
 	
-	/**
-	 * push true to complete application form status
-	 */
-	/*function push_true() {
-				
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
-		}
-		$db =& JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$validation_list = JRequest::getVar('validation_list', null, 'POST', 'none',0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$elements_items = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$elements_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$comment = JRequest::getVar('comments', null, 'POST');
-		
-	 	// Starting a session.
-		$session =& JFactory::getSession();
-		$session->set('s_elements', $elements_items);
-		$session->set('s_elements_values', $elements_values);
-		
-		JArrayHelper::toInteger( $uid, 0 );
-		if (count( $uid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
-			exit;
-		} 
-		
-		foreach ($ids as $id) {
-			$query = 'SELECT comment FROM #__emundus_users WHERE user_id ='.$id;
-			$db->setQuery( $query );
-			$res = $db->loadResult();
-
-			if(!empty($comment)) {
-				if($res == NULL) {
-					$query ='UPDATE `#__emundus_users` SET `comment` = "" WHERE `user_id` ='.$id;
-					$db->setQuery( $query );
-					$db->query();
-				}
-				$query = 'UPDATE #__emundus_users SET comment = CONCAT(comment, "'.$comment.'", "\n") WHERE user_id ='.$id;
-				$db->setQuery( $query );
-				$db->query();
-			}
-			
-			$query = 'INSERT INTO #__emundus_declaration (time_date, user) VALUES("'.date("Y.m.d H:i:s").'", '.$id.')';
-			$db->setQuery( $query );
-			$db->query();
-		}
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE').' : '.count($ids), 'message');
-	}*/
 	
 	function push_true(){
 		$user =& JFactory::getUser();
@@ -352,7 +307,7 @@ class EmundusControllerIncomplete extends JController {
 	}
 	
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
-	function customEmail() {
+	/*function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
@@ -461,6 +416,6 @@ class EmundusControllerIncomplete extends JController {
 			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('REPORTS_MAILS_SENT'), 'message');
 		}
 		
-	}
+	}*/
 }
 ?>
