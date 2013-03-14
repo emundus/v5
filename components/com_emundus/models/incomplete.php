@@ -15,7 +15,9 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.model' );
- 
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+
 class EmundusModelIncomplete extends JModel
 {
 	var $_total = null;
@@ -30,12 +32,13 @@ class EmundusModelIncomplete extends JModel
 	{
 		parent::__construct();
 		global $option;
-
+		
 		$mainframe =& JFactory::getApplication();
 		
 		// Get current menu parameters
 		$menu = &JSite::getMenu();
 		$current_menu  = $menu->getActive();
+
 		/* 
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/
@@ -109,7 +112,7 @@ class EmundusModelIncomplete extends JModel
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->elements_default = array();
-		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);
+		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);	
 		if (!empty($default_elements))
 			foreach ($default_elements as $def_elmt) {
 				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
@@ -117,7 +120,7 @@ class EmundusModelIncomplete extends JModel
 		if (count($col_elt) == 0) $col_elt = array();
 		if (count($col_other) == 0) $col_other = array();
 		if (count($this->elements_default) == 0) $this->elements_default = array();
-		
+
 		$this->col = array_merge($col_elt, $col_other, $this->elements_default);
 
 		$elements_names = '"'.implode('", "', $this->col).'"'; 

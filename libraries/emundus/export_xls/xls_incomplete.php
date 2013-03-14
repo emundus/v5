@@ -1,6 +1,5 @@
 ﻿<?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
-
 function return_bytes($val) {
     $val = trim($val);
     $last = strtolower($val[strlen($val)-1]);
@@ -18,30 +17,33 @@ function return_bytes($val) {
 }
 
 	function export_xls($uids, $element_id) {
-			$current_user =& JFactory::getUser();
-			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
-			if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
-			@set_time_limit(10800);
-			global $mainframe;
-			$baseurl = JURI::base();
-			$db	= &JFactory::getDBO();
-			jimport( 'joomla.user.user' );
-			error_reporting(0);
-			/** PHPExcel */
-			ini_set('include_path', JPATH_BASE . '/libraries/');
-			include 'PHPExcel.php'; 
-			include 'PHPExcel/Writer/Excel5.php'; 
-			
-			$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
-			$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
-			$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
-			$db->setQuery( $query );
-			$result = $db->loadRowList();
-			$sub_values = explode('|', $result[0][0]);
-			foreach($sub_values as $sv)
-				$patterns[]="/".$sv."/";
+		$current_user =& JFactory::getUser();
+		
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) 
+			&& !EmundusHelperAccess::isCoordinator($current_user->id)
+			&& !EmundusHelperAccess::isEvaluator($current_user->id)
+			&& !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
+		@set_time_limit(10800);
+		global $mainframe;
+		$baseurl = JURI::base();
+		$db	= &JFactory::getDBO();
+		jimport( 'joomla.user.user' );
+		error_reporting(0);
+		/** PHPExcel */
+		ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
+		include 'PHPExcel.php';
+		include 'PHPExcel'.DS.'Writer'.DS.'Excel5.php';
+		
+		$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
+		$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
+		$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+		$db->setQuery( $query );
+		$result = $db->loadRowList();
+		$sub_values = explode('|', $result[0][0]);
+		
+		foreach($sub_values as $sv)
+			$patterns[]="/".$sv."/";
 			$grade = explode('|', $result[0][1]);
-print_r($uids);			
 			// Create new PHPExcel object
 			$objPHPExcel = new PHPExcel();
 			// Initiate cache
@@ -57,19 +59,20 @@ print_r($uids);
 	
 			
 			$objPHPExcel->setActiveSheetIndex(0);
-			$objPHPExcel->getActiveSheet()->setTitle('Incomplete application form');
+			$objPHPExcel->getActiveSheet()->setTitle('Incomplete application forms');
 			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-			include_once(JPATH_BASE.'/components/com_emundus/models/incomplete.php');
-			
-			$mod = new EmundusModelIncomplete;
+			//include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
+			//$mod = new EmundusModelIncomplete;
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
+			$mod = new EmundusModelCheck;
 			$model = $mod->_buildQuery();
 			$db->setQuery( $model );
 			$users = $db->loadObjectList();
 			$p = new $mod;
 			$profile = $p->getProfiles();
-			
+		
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
@@ -90,7 +93,7 @@ print_r($uids);
 			$db->setQuery( $query );
 			//die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
-			
+
 			// @TODO : générer une chaine de caractère avec tous les user_id
 			
 			

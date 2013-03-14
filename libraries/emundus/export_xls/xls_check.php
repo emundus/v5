@@ -29,13 +29,13 @@ function return_bytes($val) {
 			jimport( 'joomla.user.user' );
 			error_reporting(0);
 			/** PHPExcel */
-			ini_set('include_path', JPATH_BASE . '/libraries/');
+			ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
 			include 'PHPExcel.php'; 
 			include 'PHPExcel/Writer/Excel5.php'; 
 			
 			$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
-			$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
+			$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
 			$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 			$db->setQuery( $query );
 			$result = $db->loadRowList();
@@ -63,7 +63,7 @@ function return_bytes($val) {
 			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-			include_once(JPATH_BASE.'/components/com_emundus/models/check.php');
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
 			
 			$mod = new EmundusModelCheck;
 			$model = $mod->_buildQuery();

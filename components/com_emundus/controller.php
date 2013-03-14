@@ -412,8 +412,8 @@ function updateprofile() {
 			$db->Query() or die($db->getErrorMsg());
 		}
 		
-		/* enregistrement du profil => valable si 1 profil correspond à 1 group */
-			/* récupération de l'user_id OK 
+		/* enregistrement du profil => valable si 1 profil correspond Ã  1 group */
+			/* rÃ©cupÃ©ration de l'user_id OK 
 			$query = 'SELECT MAX(user_id) FROM `#__emundus_users`';
 			$db->setQuery($query);
 			$id = $db->loadResult();*/
@@ -425,7 +425,7 @@ function updateprofile() {
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());*/
 			
-			/* récupération de acl_aro_groups = id_groups OK
+			/* rÃ©cupÃ©ration de acl_aro_groups = id_groups OK
 			$query = 'SELECT acl_aro_groups FROM `#__emundus_setup_profiles` WHERE id='.$id_profils.' ';
 			$db->setQuery($query);
 			$id_groups = $db->loadResult(); */
@@ -453,7 +453,7 @@ function updateprofile() {
 		}*/
 		
 		//
-		// Envoi de la confirmation de création de compte par email
+		// Envoi de la confirmation de crÃ©ation de compte par email
 		$model = &$this->getModel('emails');
 		$email = $model->getEmail('new_account');
 		//$email = $model->getEmail('register');
@@ -688,7 +688,7 @@ function updateprofile() {
 				$db->Query() or die($db->getErrorMsg());
 			}
 /*		//
-		// Affectation à une Université
+		// Affectation Ã  une UniversitÃ©
 		$university_id = JRequest::getVar('university_id', null, 'POST', null, 0);
 		$db->setQuery('UPDATE `#__emundus_users` SET university_id='.$university_id.' WHERE user_id='.mysql_real_escape_string($newuser['id']));
 		$db->Query() or die($db->getErrorMsg());*/
@@ -775,9 +775,10 @@ function updateprofile() {
 			die("You are not allowed to access to this page.");
 		}
 		
-		require_once('libraries/emundus/export_xls/xls_'.$view.'.php');
+		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		export_xls($cid, $elements);
+		exit();
 	}
 	
 	function transfert_view($reqids=array()){
@@ -874,7 +875,7 @@ function updateprofile() {
 			if ($nb_email_per_batch == null)
 				$nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
 					
-			//Selection des mails à envoyer : table jos_emundus_emailtosend
+			//Selection des mails Ã  envoyer : table jos_emundus_emailtosend
 			$query = '	SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email 
 						FROM #__messages m, #__users u 
 						WHERE m.user_id_to = u.id
