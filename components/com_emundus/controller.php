@@ -777,7 +777,6 @@ function updateprofile() {
 		
 		require_once('libraries/emundus/export_xls/xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		
 		export_xls($cid, $elements);
 	}
 	

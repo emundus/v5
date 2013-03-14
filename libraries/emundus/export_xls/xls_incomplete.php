@@ -21,7 +21,6 @@ function return_bytes($val) {
 			$current_user =& JFactory::getUser();
 			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
 			if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
-
 			@set_time_limit(10800);
 			global $mainframe;
 			$baseurl = JURI::base();
@@ -30,11 +29,10 @@ function return_bytes($val) {
 			error_reporting(0);
 			/** PHPExcel */
 			ini_set('include_path', JPATH_BASE . '/libraries/');
-
 			include 'PHPExcel.php'; 
 			include 'PHPExcel/Writer/Excel5.php'; 
 			
-			$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
+			$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
 			$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
 			$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 			$db->setQuery( $query );
@@ -43,7 +41,7 @@ function return_bytes($val) {
 			foreach($sub_values as $sv)
 				$patterns[]="/".$sv."/";
 			$grade = explode('|', $result[0][1]);
-			
+print_r($uids);			
 			// Create new PHPExcel object
 			$objPHPExcel = new PHPExcel();
 			// Initiate cache

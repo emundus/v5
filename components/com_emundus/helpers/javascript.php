@@ -1,11 +1,11 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2012-07-19 14:10:00Z brivalland $
+ * @version		$Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+ * @copyright	Copyright (C) 2008 - 2013 Decision Publique. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant to the
+ * eMundus is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
  * of works licensed under the GNU General Public License or other free or open
  * source software licenses. See COPYRIGHT.php for copyright notices and
@@ -29,7 +29,9 @@ class EmundusHelperJavascript{
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
 		
-		$script = 'function OnSubmitForm() {
+		$script = '
+function OnSubmitForm() { 
+	if(typeof document.pressed !== "undefined") { 
 		var button_name=document.pressed.split("|");
 		switch(button_name[0]) {
 		   case \'affect\': 
@@ -86,7 +88,8 @@ class EmundusHelperJavascript{
 			default: return false;
 		}
 		return true;
-	} ';
+	}
+} ';
 		
 		return $script;
 	}

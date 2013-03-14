@@ -194,7 +194,7 @@ class EmundusHelperFilters{
 	function getElements(){
 		$db =& JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label
+				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
 				FROM #__fabrik_elements element 
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
