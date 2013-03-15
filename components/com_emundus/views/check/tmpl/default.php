@@ -1,13 +1,13 @@
-<?php 
+﻿<?php 
+defined('_JEXEC') or die('Restricted access'); 
+
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media'.DS.'com_emundus'.DS.'css'.DS );
 
 $document   =& JFactory::getDocument();
 
-defined('_JEXEC') or die('Restricted access'); 
 $current_user = JFactory::getUser();
 $current_p = JRequest::getVar('profile', null, 'POST', 'none',0);
 $current_u = JRequest::getVar('user', null, 'POST', 'none',0);
@@ -249,10 +249,10 @@ foreach ($this->users as $user) { ?>
         <?php
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
-			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>"  width='30' height='30' onclick="document.pressed=this.name" >
+			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/icones/<?php echo $user->validated>0?'tick.png':'publish_x.png' ?>"  onclick="document.pressed=this.name" >
         <?php echo '</span>'; 
 		} else { ?>
-			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user->validated>0?'yes_icone.png':'no_icone.png' ?>" width='30' height='30' alt="<?php echo $user->validated>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
+			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user->validated>0?'tick.png':'publish_x.png' ?>" alt="<?php echo $user->validated>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
 		<?php 
         }
 		?>

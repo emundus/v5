@@ -1,12 +1,13 @@
 ﻿﻿<?php 
+defined('_JEXEC') or die('Restricted access'); 
+
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+JHTML::stylesheet( 'emundus.css', JURI::Base().'media'.DS.'com_emundus'.DS.'css'.DS );
 
 $document   =& JFactory::getDocument();
 
-defined('_JEXEC') or die('Restricted access'); 
 $current_user 		= JFactory::getUser();
 $current_p 			= JRequest::getVar('profile', null, 'POST', 'none',0);
 $current_u 			= JRequest::getVar('user', null, 'POST', 'none',0);
@@ -26,9 +27,9 @@ $schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
 $session =& JFactory::getSession();
-	$session->clear( 'uid' );
-	$session->clear( 'profile' );
-	$session->clear( 'quick_search' );
+$session->clear( 'uid' );
+$session->clear( 'profile' );
+$session->clear( 'quick_search' );
 
 // Gettig the orderid if there is one.
 $s_elements = $session->get('s_elements');
@@ -41,7 +42,7 @@ if (count($search)==0) {
 
 $db = JFactory::getDBO();
 ?>
-<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().'/images/emundus/menu_style.css'; ?>" media="screen"/>
+<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().DS.'images'.DS.'emundus'.DS.'menu_style.css'; ?>" media="screen"/>
 
 <!--[if lt IE 7]>
 	<link rel="stylesheet" type="text/css" href="menu/includes/ie6.css" media="screen"/>
@@ -70,11 +71,11 @@ if(!empty($this->users)) {
 </div>
 <?php 
 	if($tmpl == 'component') {
-			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</h3>';
-			$document =& JFactory::getDocument();
-			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
+		echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</h3>';
+		$document =& JFactory::getDocument();
+		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
-			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</legend>';
+		echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</legend>';
 	}
 ?>
 
