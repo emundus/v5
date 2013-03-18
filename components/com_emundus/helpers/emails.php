@@ -25,7 +25,7 @@ jimport('joomla.application.component.helper');
  */
 class EmundusHelperEmails{
 	function createEmailBlock($params){
-		$email = '<div class="em_email">';
+		$email = '<div class="em_email_block">';
 		if(in_array('default',$params)){
 			$email .= '<fieldset>
 				<legend> 

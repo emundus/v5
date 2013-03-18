@@ -44,17 +44,19 @@ class EmundusViewIncomplete extends JView
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$access = !empty($current_menu)?$current_menu->access:0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access))  die("You are not allowed to access to this page.");
 
 		$users =& $this->get('Users');
 		
 		//Filters
-		$tables = array(); // 		= explode(',', $menu_params->get('em_tables_id'));
-		$filts_names 	= array('profile', 'schoolyear', 'missing_doc', 'other');
-		$filts_values = array(); // 	= explode(',', $menu_params->get('em_filters_values'));
-		$filts_types = array(); // 	= explode(',', $menu_params->get('em_filters_options'));
+		$tables 		= explode(',', $menu_params->get('em_tables_id'));
+		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
+		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
 		$filts_details 	= array('profile'			=> NULL,
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
@@ -115,6 +117,11 @@ class EmundusViewIncomplete extends JView
 		$statut = EmundusHelperList::createApplicationStatutblock($options);
         $this->assignRef('statut', $statut);
 		unset($options);
+		
+		//List
+		$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
+		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		$this->assignRef('actions', $actions);
 		
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {

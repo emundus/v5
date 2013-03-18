@@ -27,9 +27,18 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
 $session =& JFactory::getSession();
+$session->clear( 'uid' );
+$session->clear( 'profile' );
+$session->clear( 'quick_search' );
+
 // Gettig the orderid if there is one.
 $s_elements = $session->get('s_elements');
 $s_elements_values = $session->get('s_elements_values');
+
+if (count($search)==0) {
+	$search = $s_elements;
+	$search_values = $s_elements_values;
+}
 
 if (count($search)==0) {
 	$search = $s_elements;
@@ -56,110 +65,14 @@ $db = JFactory::getDBO();
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+<input type="hidden" name="validation_list" value="" />
 
-<fieldset><legend><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILTERS'); ?>"/> <?php echo JText::_('FILTERS'); ?></legend>
+<?php  echo $this->filters; ?>
 
-<table width="100%">
- <tr align="left">
-  <th align="left"><?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span>'; ?></th>
-  <th align="left"><?php echo JText::_('PROFILE'); ?></th>
-    <th align="left"><?php echo JText::_('SCHOOLYEARS'); ?></th>
- </tr>
- <tr>
-    <td>
-        <input type="text" name="s" size="30" value="<?php echo $current_s; ?>"/>
-    </td>
-    <td>
-      <select name="profile" onChange="javascript:submit()">
-        <option value=""> <?php echo JText::_('ALL'); ?> </option><?php
-		$profil_list=$this->applicantsProfiles;
-		if(count($profil_list)>0){
-            foreach($profil_list as $applicantsProfiles) { 
-                echo '<option value="'.$applicantsProfiles->id.'"';
-                if($current_p==$applicantsProfiles->id) echo ' selected';
-                echo '>'.$applicantsProfiles->label.'</option>'; 
-            } 
-		}
-		?> 
-        </select>
-    </td>
-    <td>
-        <select name="schoolyears" onChange="javascript:submit()">
-        <option value=""> <?php echo JText::_('ALL'); ?> </option>
-        <?php 
-        foreach($this->schoolyears as $s) { 
-          echo '<option value="'.$s.'"';
-            if($schoolyears==$s) echo ' selected';
-                echo '>'.$s.'</option>'; 
-        }
-        ?>
-        </select>
-  	</td>
- </tr>
-</table>
-<table width="100%">
- <tr align="left">
-  <th align="left">
-  	<?php echo '<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>'; ?>
-    <input type="hidden" value="0" id="theValue" />
-
-  	<a href="javascript:;" onclick="addElement();"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag+_16x16.png" alt="<?php JText::_('ADD_SEARCH_ELEMENT'); ?>"/></a>
-  </th>
- </tr>
- <tr align="left">
-  <td align="left">
-   <div id="myDiv">
-<?php 
-if (count($search)>0 && isset($search) && is_array($search)) {
-
-	$i=0;
-	foreach($search as $sf) {
-		echo '<div id="filter'.$i.'">';
-?>
-    <select name="elements[]" id="elements">
-	<option value=""> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
-	<?php  
-	$groupe ="";
-	foreach($this->elements as $elements) { 
-		$groupe_tmp = $elements->group_label;
-		$length = 50;
-		$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
-		$dot_elm = strlen($elements->element_label)>=$length?'...':'';
-		if ($groupe != $groupe_tmp) {
-			echo '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
-			$groupe = $groupe_tmp;
-		}
-		echo '<option class="emundus_search_elm" value="'.$elements->table_name.'.'.$elements->element_name.'"';
-			//$key = array_search($elements->table_name.'.'.$elements->element_name, $search);
-			if($elements->table_name.'.'.$elements->element_name == $search[$i]) echo ' selected';
-					echo '>'.substr($elements->element_label, 0, $length).$dot_elm.'</option>'; 
-	} 
-	?>
-  </select>
- 
-  <input name="elements_values[]" width="30" value="<?php echo $search_values[$i];?>" />
-  <a href="#" onclick="removeElement('<?php echo 'filter'.$i; ?>')"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/viewmag-_16x16.png" alt="<?php JText::_('REMOVE_SEARCH_ELEMENT'); ?>"/></a>
-<?php 
-		$i++; 
-		echo '</div>';
-	} 
-} 
-?>  
-  
-    </div>
-    <input type="submit" name="search_button" onclick="document.pressed=this.name" value="<?php echo JText::_('SEARCH_BTN'); ?>"/>
-	<input type="submit" name="clear_button" onclick="document.pressed=this.name" value="<?php echo JText::_('CLEAR_BTN'); ?>"/>
-  </td>
- </tr>
-</table>
-</fieldset>
 <div class="emundusraw">
 <?php
 if(!empty($this->users)) {
  if($current_user->profile!=16){
-	/*echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_complete" onclick="document.pressed=this.name"></span>'; 	
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_COMPLETED_TO_XLS').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=export_select_columns&tmpl=component&as=1&v='.$v.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_complete_to_xls" onclick="document.pressed=this.name" /></a></span>'; 
-	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_INCOMPLETED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-incomplete_48.png" name="export_incomplete_to_xls" onclick="document.pressed=this.name" /></span>'; */
 	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
 	echo '<span class="editlinktip hasTip" title="'.JText::_('SEND_ELEMENTS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name" /></span>'; 
 }
@@ -223,7 +136,7 @@ foreach ($this->users as $user) { ?>
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user->name.'</font></span>'; 
 			?>
 		</td>
-      <td><?php echo $user->nationality; ?></td>
+      <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
       <td>
 	  <div class="emundusprofile<?php echo $user->profile; ?>"><?php echo $this->profiles[$user->profile]->label; ?></div>
 	  <?php 
@@ -234,9 +147,10 @@ foreach ($this->users as $user) { ?>
 					ORDER BY eup.id';
 		$db->setQuery( $query );
 		$profiles=$db->loadObjectList();
+		$many_profiles = count($profiles)>1?true:false;
 		echo '<ul>';
 		foreach($profiles as $p){
-			if ($p->id == $user->profile)
+			if ($p->id == $user->profile && $many_profiles)
 				echo '<li class="bold">'.$p->label.' ('.JText::_('FIRST_CHOICE').')</li>';
 			else
 				echo '<li>'.$p->label.'</li>';
@@ -244,7 +158,7 @@ foreach ($this->users as $user) { ?>
 		echo '</ul>';
 	   ?></td>
       <td align="left" valign="middle"><?php echo $user->schoolyear; ?></td>
-		<td><?php echo strftime(JText::_('DATE_FORMAT_LC2'), strtotime($user->time_date)); ?></td>
+		<td><?php echo JHtml::_('date', $user->registerDate, JText::_('DATE_FORMAT_LC2')); ?></td>
 		<td align="center">
         <?php
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
@@ -259,6 +173,7 @@ foreach ($this->users as $user) { ?>
 		</td>	
 	</tr>
 <?php } ?>
+
 </table>
 <?php 
 	if($tmpl == 'component') {
@@ -267,46 +182,30 @@ foreach ($this->users as $user) { ?>
 		echo '</fieldset>';
 	}
 ?>
-<div class="emundusraw">
-<?php
-if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id)) {
-	//batch block
+
+  <div class="emundusraw">
+	<?php 
+	echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/>'.JText::_('BATCH').'</legend>';  
 	echo $this->batch;
-?>
-  <fieldset>
-  <legend> 
-  	<span class="editlinktip hasTip" title="<?php echo JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP'); ?>">
-		<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/mail_replay_22x22.png" alt="<?php JText::_('EMAIL_SELECTED_APPLICANTS'); ?>"/> <?php echo JText::_( 'EMAIL_SELECTED_APPLICANTS' ); ?>
-	</span>
-  </legend>
-  <div>
-   <p>
-  <dd>
-  [NAME] : <?php echo JText::_('TAG_NAME_TIP'); ?><br />
-  [SITE_URL] : <?php echo JText::_('SITE_URL_TIP'); ?><br />
-  </dd>
-  </p><br />
-  <label for="mail_subject"> <?php echo JText::_( 'SUBJECT' );?> </label><br/>
-    <input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
-  </div>
-    <label for="mail_body"> <?php echo JText::_( 'MESSAGE' );?> </label><br/>
-    <textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
-    
-  <input type="submit" name="custom_email" onclick="document.pressed=this.name" value="<?php echo JText::_( 'SEND_CUSTOM_EMAIL' );?>" >
-  </fieldset>
+    echo '</fieldset>';
+	echo $this->email_applicant; 
+	?>
   </div>
 </form>
+
 <?php
-}
 } else { ?>
 <h2><?php echo JText::_('NO_RESULT'); ?></h2>
 <?php 
 @$j++;
 } 
 ?>
-<script><?php 
+
+<script>
+<?php 
 	echo $this->addElement;
 	echo $this->onSubmitForm; 
 	echo $this->delayAct;
-	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>
+	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );
+?>
 </script>

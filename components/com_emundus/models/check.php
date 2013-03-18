@@ -15,6 +15,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.model' );
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
  
 class EmundusModelCheck extends JModel
 {
@@ -26,7 +28,6 @@ class EmundusModelCheck extends JModel
 	 *
 	 * @since 1.5
 	 */
-	 
 	function __construct()
 	{
 		parent::__construct();
@@ -34,22 +35,106 @@ class EmundusModelCheck extends JModel
 
 		$mainframe =& JFactory::getApplication();
  
-        // Get pagination request variables
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		//die('--->'.$limit);
-        $limitstart = JRequest::getVar('limitstart', 0, '', 'int');
- 
-        // In case limit has been changed, adjust it
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+        // Get current menu parameters
+		$menu = &JSite::getMenu();
+		$current_menu  = $menu->getActive();
+
+		/* 
+		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
+		*/
+		if (empty($current_menu))
+			return false;
+		$menu_params = $menu->getParams($current_menu->id);
+
+		$filts_names = explode(',', $menu_params->get('em_filters_names'));
+		$filts_values = explode(',', $menu_params->get('em_filters_values'));
+		$filts_details = array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL);
+		$i = 0;
+		foreach ($filts_names as $filt_name)
+			if (array_key_exists($i, $filts_values))
+				$filts_details[$filt_name] = $filts_values[$i++];
+			else
+				$filts_details[$filt_name] = '';
+		unset($filts_names); unset($filts_values);
 		
-		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
- 
-        $this->setState('filter_order', $filter_order);
+		//Set session variables
+		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
+        $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
+		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
+		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
+		$elements_values_other	= $mainframe->getUserStateFromRequest( $option.'elements_values_other', 'elements_values_other' );
+		$finalgrade				= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', $filts_details['finalgrade'] );
+		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
+		$groups					= $mainframe->getUserStateFromRequest( $option.'groups', 'groups', $filts_details['evaluator_group'] );
+		$user					= $mainframe->getUserStateFromRequest( $option.'user', 'user', $filts_details['evaluator'] );
+		$profile				= $mainframe->getUserStateFromRequest( $option.'profile', 'profile', $filts_details['profile'] );
+		$missing_doc			= $mainframe->getUserStateFromRequest( $option.'missing_doc', 'missing_doc', $filts_details['missing_doc'] );
+		$complete				= $mainframe->getUserStateFromRequest( $option.'complete', 'complete', $filts_details['complete'] );
+		$validate				= $mainframe->getUserStateFromRequest( $option.'validate', 'validate', $filts_details['validate'] );
+		 // Get pagination request variables
+        $limit 					= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+        $limitstart 			= ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		
+ 		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
- 
+		$this->setState('schoolyears', $schoolyears);
+		$this->setState('elements', $elements);
+		$this->setState('elements_values', $elements_values);
+		$this->setState('elements_other', $elements_other);
+		$this->setState('elements_values_other', $elements_values_other);
+		$this->setState('finalgrade', $finalgrade);
+		$this->setState('s', $s);
+		$this->setState('groups', $groups);
+		$this->setState('user', $user);
+		$this->setState('profile', $profile);
+		$this->setState('missing_doc', $missing_doc);
+		$this->setState('complete', $complete);
+		$this->setState('validate', $validate);
+
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
+		
+		$col_elt	= $this->getState('elements');
+		$col_other	= $this->getState('elements_other');
+		
+		$this->elements_id = $menu_params->get('em_elements_id');
+		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
+
+		$this->elements_default = array();
+		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);	
+		if (!empty($default_elements))
+			foreach ($default_elements as $def_elmt) {
+				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
+			}
+		if (count($col_elt) == 0) $col_elt = array();
+		if (count($col_other) == 0) $col_other = array();
+		if (count($this->elements_default) == 0) $this->elements_default = array();
+
+		$this->col = array_merge($col_elt, $col_other, $this->elements_default);
+
+		$elements_names = '"'.implode('", "', $this->col).'"'; 
+		$result = EmundusHelperList::getElementsDetails($elements_names); 
+		$result = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels")); 
+		$this->details = new stdClass();
+		foreach ($result as $res) {
+			$this->details->{$res->tab_name.'__'.$res->element_name} = array('element_id'	=> $res->element_id,
+																			'plugin'		=> $res->element_plugin,
+																			'attribs'		=> $res->params,
+																			'sub_values'	=> $res->sub_values,
+																			'sub_labels'	=> $res->sub_labels,
+																			'group_by'		=> $res->tab_group_by);
+		}
 	}
 	
 	
@@ -81,6 +166,14 @@ class EmundusModelCheck extends JModel
 		
 		return $syear[0];
 	}
+	function getCurrentCampaign(){
+		$query = 'SELECT DISTINCT schoolyear 
+				FROM #__emundus_setup_profiles 
+				WHERE published=1 
+				ORDER BY schoolyear';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadResultArray();
+	}
 	
 	function getProfileAcces($user)
 	{
@@ -93,7 +186,7 @@ class EmundusModelCheck extends JModel
 		
 		return $profiles;
 	}
-	
+/*	
 	function _buildQuery()
 	{
 		
@@ -186,6 +279,233 @@ class EmundusModelCheck extends JModel
 			//echo str_replace('#_','jos',$query);
 		return $query;
 	} 
+	*/
+	
+	function setSelect($search) {
+		$cols = array();
+		if(!empty($search)) {
+			asort($search);
+			$i = -1;
+			$old_table = '';
+			foreach ($search as $c)
+				if(!empty($c)){
+					$tab = explode('.', $c);
+					if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
+						$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
+					else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+				}
+			if(count($cols > 0) && !empty($cols))
+				$cols = implode(', ',$cols);
+		}
+		return $cols;
+	}
+	
+	function isJoined($tab, $joined) {
+		foreach ($joined as $j)
+			if ($tab == $j) return true;
+		return false;
+	}
+	
+	function setJoins($search, &$query, &$joined) {
+		$tables_list = array();
+		if(!empty($search)) {
+			$old_table = '';
+			foreach ($search as $s) {
+				$tab = explode('.', $s);
+				if (count($tab) > 1) {
+					if($tab[0] != $old_table && !$this->isJoined($tab[0], $joined)){
+						if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments' )
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.applicant_id=#__users.id ';
+						elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' || $tab[0] == 'jos_emundus_academic_transcript'
+								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
+						else
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
+						$joined[] = $tab[0];
+					}
+					$old_table = $tab[0];
+				}
+			}
+		}
+		return $tables_list;
+	}
+	
+	function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default){
+		$current_user = & JFactory::getUser();
+		$search					= $this->getState('elements');
+		$search_other			= $this->getState('elements_other');
+		$schoolyears			= $this->getState('schoolyears');
+		$gid					= $this->getState('groups');
+		$uid					= $this->getState('user');
+		$miss_doc				= $this->getState('missing_doc');
+		$validate_application	= $this->getState('validate');
+		
+		$cols = $this->setSelect($search);
+		$cols_other = $this->setSelect($search_other);
+		$cols_default = $this->setSelect($this->elements_default);
+		
+		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', '#__emundus_declaration');
+		
+		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated';
+		if(!empty($cols)) $query .= ', '.$cols;
+		if(!empty($cols_other)) $query .= ', '.$cols_other;
+		if(!empty($cols_default)) $query .= ', '.$cols_default;
+		$query .= '	FROM #__emundus_declaration 
+					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
+					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
+					LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+					LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
+		
+		$this->setJoins($search, $query, $joined);
+		$this->setJoins($search_other, $query, $joined);
+		$this->setJoins($this->elements_default, $query, $joined);	
+
+		if(((isset($gid) && !empty($gid)) || (isset($uid) && !empty($uid))) && !$this->isJoined('jos_emundus_groups_eval', $joined)) 
+			$query .= ' LEFT JOIN #__emundus_groups_eval ON #__emundus_groups_eval.applicant_id=#__users.id ';
+			
+		if(!empty($miss_doc) && !$this->isJoined('jos_emundus_uploads', $joined))
+			$query .= ' LEFT JOIN #__emundus_uploads ON #__emundus_uploads.user_id=#__users.id';
+		
+		if(!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined))
+			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
+			
+		$query .= ' WHERE #__users.block = 0 ';
+		if(empty($schoolyears)) $query .= ' AND #__emundus_users.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		
+		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
+			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
+			$query .= ' AND (#__emundus_users.user_id IN (
+								SELECT user_id 
+								FROM #__emundus_users_profiles 
+								WHERE profile_id in ('.implode(',',$pa).')) OR #__emundus_users.user_id IN (
+									SELECT user_id 
+									FROM #__emundus_users 
+									WHERE profile in ('.implode(',',$pa).'))
+							) ';
+		}
+		return $query;
+	}
+	
+	function setWhere($search, $search_values, &$query) {
+		if(isset($search) && !empty($search)) {
+			$i = 0;
+			foreach ($search as $s) {
+				if(!empty($search_values[$i])){
+					$tab = explode('.', $s);
+					if (count($tab)>1) {
+						$query .= ' AND ';
+						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+					}
+				}
+				$i++;
+			}
+		}
+	}
+	
+	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
+		//$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$search					= $this->getState('elements');
+		$search_values			= $this->getState('elements_values');
+		$search_other			= $this->getState('elements_other');
+		$search_values_other	= $this->getState('elements_values_other');
+		$finalgrade				= $this->getState('finalgrade');
+		$quick_search			= $this->getState('s');
+		$schoolyears			= $this->getState('schoolyears');
+		$gid					= $this->getState('groups');
+		$uid					= $this->getState('user');
+		$profile				= $this->getState('profile');
+		$miss_doc				= $this->getState('missing_doc');
+		$complete				= $this->getState('complete');
+		$validate_application	= $this->getState('validate');
+		
+		$query = '';
+		$and = true;
+		
+		if(isset($finalgrade) && !empty($finalgrade)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
+		}
+		
+		$this->setWhere($search, $search_values, $query);
+		$this->setWhere($search_other, $search_values_other, $query);
+		$this->setWhere($this->elements_default, $this->elements_values, $query);
+		
+		if(isset($schoolyears) &&  !empty($schoolyears)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= '#__emundus_users.schoolyear IN ("'.implode('","',$schoolyears).'") ';
+		}
+		if(isset($quick_search) && !empty($quick_search)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			if (is_numeric ($quick_search)) 
+				$query.= '#__users.id='.$quick_search.' ';
+			else
+				$query.= '(#__emundus_users.lastname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
+						OR #__emundus_users.firstname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
+						OR #__users.email LIKE "%'.mysql_real_escape_string($quick_search).'%" 
+						OR #__users.username LIKE "%'.mysql_real_escape_string($quick_search).'%" )';
+		}	
+		
+		if(isset($gid) && !empty($gid)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= ' (#__emundus_groups_eval.group_id='.mysql_real_escape_string($gid).' OR #__emundus_groups_eval.user_id IN (select user_id FROM #__emundus_groups WHERE group_id='.mysql_real_escape_string($gid).'))';
+		}
+		if(isset($uid) && !empty($uid)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= ' (#__emundus_groups_eval.user_id='.mysql_real_escape_string($uid).' OR #__emundus_groups_eval.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id='.mysql_real_escape_string($uid).'))';
+		}
+		
+		if(isset($profile) && !empty($profile)){
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= ' (#__emundus_setup_profiles.id = '.$profile.' OR #__emundus_final_grade.result_for = '.$profile.' OR #__emundus_users.user_id IN (select user_id from #__emundus_users_profiles where profile_id = '.$profile.'))';
+		}
+		
+		if(isset($miss_doc) &&  !empty($miss_doc)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			$query.= $miss_doc.' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = #__users.id)';
+		}
+		
+		if(isset($complete) &&  !empty($complete)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			if($complete == 1)
+				$query.= ' #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id)';
+			else 
+				$query.= ' #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id)';
+		}
+		
+		if(isset($validate_application) &&  !empty($validate_application)) {
+			if($and) $query .= ' AND ';
+			else { $and = true; $query .='WHERE '; }
+			if($validate_application == 1)
+				$query.= ' #__emundus_declaration.validated = 1';
+			else 
+				$query.= ' #__emundus_declaration.validated = 0';
+		}
+		return $query;
+	}
+	
+	function _buildQuery(){
+		$search = $this->getState('elements');
+		$search_other = $this->getState('elements_other');
+		
+		$tables_list = array();
+		$tables_list_other = array();
+		$tables_list_default = array();
+
+		$query = $this->_buildSelect($tables_list, $tables_list_other, $tables_list_default);
+		
+		/** add filters to the query **/
+		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
+		
+		return $query;
+	}
 	
 	function getUsers()
 	{

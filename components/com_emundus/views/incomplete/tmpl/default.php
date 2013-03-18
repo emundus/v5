@@ -42,7 +42,7 @@ if (count($search)==0) {
 
 $db = JFactory::getDBO();
 ?>
-<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().DS.'images'.DS.'emundus'.DS.'menu_style.css'; ?>" media="screen"/>
+<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().'/images/emundus/menu_style.css'; ?>" media="screen"/>
 
 <!--[if lt IE 7]>
 	<link rel="stylesheet" type="text/css" href="menu/includes/ie6.css" media="screen"/>
@@ -116,63 +116,11 @@ $i=0;
 $j=0;
 foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
-        <td>
-		<?php 
-			echo ++$i+$limitstart;
-			if($current_user->profile!=16) {
-			if($user->user != 62)  ?> <input class="emundusraw" id="cb<?php echo $user->user; ?>" type="checkbox" name="ud[]" value="<?php echo $user->user; ?>"/>
-        <?php
-			}
-			echo '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user->email.'">';
-			if ($user->jos_emundus_personal_detail__gender == 'male')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
-			elseif ($user->jos_emundus_personal_detail__gender == 'female')
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_female.png" width="22" height="22" align="bottom" /></a>';
-			else
-				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/mailreminder.png" align="bottom" /></a>';
-			echo '</span>';
-			echo '<span class="editlinktip hasTip emundusraw" title="'.JText::_('APPLICATION_FORM').'::'.JText::_('POPUP_APPLICATION_FORM_DETAILS').'">';
-			echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=application_form&sid='. $user->user.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png" alt="'.JText::_('DETAILS').'" title="'.JText::_('DETAILS').'" width="16" height="16" align="bottom" /></a>';
-			echo '</span>';
-			if($current_user->profile!=16) {
-				echo '<span class="editlinktip hasTip emundusraw" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.9,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&jos_emundus_uploads___user_id[value]='. $user->user.'&student_id='. $user->user.'&tmpl=component&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a> ';
-			}
-			echo '</span>#'.$user->user;
-		?>
-<div id="container" class="emundusraw"> 
-	<ul id="emundus_nav">
-		<?php // Tableau des pièces jointes envoyées
-		$filestypes = EmundusHelperList::getUploadList($user->user);
-		echo '<li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>
-		<ul>';
-		foreach ( $filestypes as $row ) {
-			echo '<li>';
-			if ($row->description != '')
-				$link = $row->value.' (<em>'.$row->description.'</em>)';
-			else
-				$link = $row->value;
-			echo '<a href="'.$this->baseurl.'/'.EMUNDUS_PATH_REL.$user->user.'/'.$row->filename.'" target="_new">'.$link.'</a>';
-			echo '</li>';
-		}
-		echo '</ul>
-</li>';
-		//
-		// Tableau des formulaires
-		// contenu dans $forms[$profile_id]
-		$tableuser = EmundusHelperList::getFormsList($user->user);
-		echo '<li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('FORMS').'" title="'.JText::_('FORMS').'" width="22" height="22" align="absbottom" /></a>
-	<ul>';
-		foreach ( $tableuser as $row ) {
-echo '<li>';
-echo '<a href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid='.$row->form_id.'&random=0&rowid='.$user->user.'&usekey=user&Itemid='.$itemid.'" target="_blank" >'.$row->label.'</a>';
-echo '</li>';
-		}
-		echo '</ul>
-		</li>';
-		?>
-	</ul>
-</div>
+        <td><?php 
+		echo ++$i+$limitstart; $i++;
+		echo "<div class='em_user_id'>#".$user->user."<div>";
+        echo $this->actions[$user->user][$user->user];
+		?> 
         </td>
 		<td><?php 
 			if(strtoupper($user->name) == strtoupper($user->lastname.' '.$user->firstname)) 

@@ -131,7 +131,7 @@ class EmundusViewRanking extends JView
 		$selection =& EmundusHelperList::createSelectionBlock($users);
 		$this->assignRef('selection', $selection);
 		
-		$options = array('checkbox', 'details', 'selection_outcome');
+		$options = array('checkbox', 'gender', 'details', 'selection_outcome');
 		$actions =& EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
 		unset($options);

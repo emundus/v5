@@ -26,7 +26,7 @@ class EmundusControllerCheck extends JController {
 	
 	function __construct($config = array()){
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
@@ -47,20 +47,7 @@ class EmundusControllerCheck extends JController {
     }
 
 	function clear() {
-		// Starting a session.
-		$session =& JFactory::getSession();
-		$session->clear( 'profile' );
-		$session->clear( 'quick_search' );
-		$session->clear( 's_elements' );
-		$session->clear( 's_elements_values' );
-		/*$session->clear( 'groups' );
-		$session->clear( 'finalgrade' );
-		$session->clear( 'evaluator' );*/
-		
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+		EmundusHelperFilters::clear();
 	}
 	
 	function getCampaign()
@@ -128,7 +115,7 @@ class EmundusControllerCheck extends JController {
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('Application form validated'), 'message');
 	}
 	
-	function administrative_check($reqids = null) {
+	function administrative_check($reqids = null) { 
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

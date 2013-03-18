@@ -32,7 +32,7 @@ class EmundusHelperJavascript{
 		$script = '
 function OnSubmitForm() { 
 	if(typeof document.pressed !== "undefined") { 
-		var button_name=document.pressed.split("|");
+		var button_name=document.pressed.split("|"); 
 		switch(button_name[0]) {
 		   case \'affect\': 
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
@@ -76,6 +76,16 @@ function OnSubmitForm() {
 			break;
 			case \'push_false\':
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_false";
+			break;
+			case \'validate\': 
+				document.getElementById("cb"+button_name[1]).checked = true;
+				document.getElementById("validation_list").value = 1;
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+			break;
+			case \'unvalidate\': 
+				document.getElementById("cb"+button_name[1]).checked = true;
+				document.getElementById("validation_list").value = 0;
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
 			break;
 			case \'set_status\':
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";

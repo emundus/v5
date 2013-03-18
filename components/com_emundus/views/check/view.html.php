@@ -30,7 +30,7 @@ class EmundusViewCheck extends JView
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
@@ -44,16 +44,54 @@ class EmundusViewCheck extends JView
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
-		//$current_user =& JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)){
-		die("You are not allowed to access to this page.");
-		}
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$access = !empty($current_menu)?$current_menu->access:0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die("You are not allowed to access to this page.");
 
 		$users =& $this->get('Users');
+		
+		//Filters
+		$tables 		= explode(',', $menu_params->get('em_tables_id'));
+		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
+		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
+		$filts_details 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL);
+		$filts_options 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL);
+		$i = 0;
+		foreach ($filts_names as $filt_name) {
+			if (array_key_exists($i, $filts_values))
+				$filts_details[$filt_name] = $filts_values[$i];
+			else
+				$filts_details[$filt_name] = '';
+			if (array_key_exists($i, $filts_types))
+				$filts_options[$filt_name] = $filts_types[$i];
+			else
+				$filts_options[$filt_name] = '';
+			$i++;
+		}
+		unset($filts_names); unset($filts_values); unset($filts_types);
+		
+		$filters =& EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
+		$this->assignRef('filters', $filters);
+		unset($filts_details); unset($filts_options);
 		
 		$applicantsProfiles =& $this->get('ApplicantsProfiles');
 		$elements =& $this->get('Elements');
@@ -89,14 +127,23 @@ class EmundusViewCheck extends JView
 		$actions =& EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
 
+		//Email
+		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {
+			if($this->_user->profile!=16){
+				$options = array('applicants');
+				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
+				unset($options);
+			}
+		}
+		else $email_applicant = '';
+		$this->assignRef('email_applicant', $email_applicant);	
+		
 		// Javascript
         JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
-		/*$addElementFinalGrade =& EmundusHelperJavascript::addElementFinalGrade($tables);
-		$this->assignRef('addElementFinalGrade', $addElementFinalGrade);*/
 		$delayAct =& EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		
