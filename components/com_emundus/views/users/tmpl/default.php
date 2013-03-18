@@ -248,7 +248,7 @@ foreach ($this->users as $user) { ?>
 		$diff_jour = $diff/60/60/24;
 		if (strpos($user->lastvisitDate,"0000-00-00 00:00:00")===0 && $user->registred_for>7) $alert=1; else $alert=0;
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
-		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&rowid=<?php echo $current_p; ?>&uid=<?php echo $user->id; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/<?php echo $user->block>0?'button_cancel.png':'button_ok.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
+		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">
         	<div class="emundusraw">
 <?php 
