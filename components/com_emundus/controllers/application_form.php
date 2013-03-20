@@ -8,7 +8,7 @@
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
-
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 /**
  * Custom report controller
  * @package		Emundus

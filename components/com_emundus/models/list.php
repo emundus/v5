@@ -136,14 +136,6 @@ class EmundusModelList extends JModel
 																			'sub_values'	=> $res->sub_values,
 																			'sub_labels'	=> $res->sub_labels,
 																			'group_by'		=> $res->tab_group_by);
-			/*if ($this->details->{$res->tab_name.'__'.$res->element_name}['plugin'] == "databasejoin") {			
-				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
-				$query_params = new JParameter($this->details->{$res->tab_name.'__'.$res->element_name}['attribs'], $query_paramsdefs);
-				$query_params = json_decode($query_params);
-				$option_list =  EmundusHelperFilters::buildOptions($res->element_name, $query_params);
-				
-				$this->details->{$res->tab_name.'__'.$res->element_name}['option_list'] = $option_list;
-			}*/
 		} //echo '<pre>'; print_r($this->details);  echo '</pre>'; 
 	}
 	
@@ -165,19 +157,6 @@ class EmundusModelList extends JModel
 		$select_list = $this->getSelectList();
 		if(!empty($select_list))
 			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
-		
-		/*foreach($this->getEvalColumns() as $eval_col)
-			$can_be_ordering[] = $eval_col['name'];
-
-		$can_be_ordering[] = 'ranking_all';
-		$can_be_ordering[] = 'ranking';
-		
-		$this->_applicants = $this->multi_array_sort($this->_applicants, 'overall', SORT_DESC);
-		$rank=1;
-		for($i=0 ; $i<count($this->_applicants) ; $i++) {
-			$this->_applicants[$i]['r']=$rank;
-			$rank++;
-		}*/
 		
 		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
 			$this->_applicants = $this->multi_array_sort($this->_applicants, $filter_order, $sort);
@@ -241,11 +220,11 @@ class EmundusModelList extends JModel
 		// subquery WHERE
 		$query .= ' WHERE '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
 
-		$this->setWhere($search, $search_values, $query);
-		$this->setWhere($search_other, $search_values_other, $query);
-		$this->setWhere($this->elements_default, $this->elements_values, $query);
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 
-		str_replace("#_", "jos", $query);
+		//str_replace("#_", "jos", $query);
 		$db->setQuery( $query );
 		$obj = $db->loadObjectList();
 		$list = array();
@@ -364,22 +343,6 @@ class EmundusModelList extends JModel
 		return $query;
 	}
 	
-	function setWhere($search, $search_values, &$query) {
-		if(isset($search) && !empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				if(!empty($search_values[$i])){
-					$tab = explode('.', $s);
-					if (count($tab)>1) {
-						$query .= ' AND ';
-						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-					}
-				}
-				$i++;
-			}
-		}
-	}
-	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
 		//$eMConfig =& JComponentHelper::getParams('com_emundus');
 		
@@ -406,9 +369,9 @@ class EmundusModelList extends JModel
 			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
 		}
 		
-		$this->setWhere($search, $search_values, $query);
-		$this->setWhere($search_other, $search_values_other, $query);
-		$this->setWhere($this->elements_default, $this->elements_values, $query);
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 		
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';

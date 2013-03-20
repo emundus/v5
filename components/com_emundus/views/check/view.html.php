@@ -144,6 +144,8 @@ class EmundusViewCheck extends JView
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
+		$addElementOther =& EmundusHelperJavascript::addElementOther($tables);
+		$this->assignRef('addElementOther', $addElementOther);
 		$delayAct =& EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		

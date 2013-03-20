@@ -1,6 +1,6 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2010-01-26 14:10:00Z louis $
+ * @version		$Id: query.php 14401 2013-03-21 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Content
  * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
@@ -15,6 +15,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
+
 /**
  * Content Component Query Helper
  *
@@ -23,7 +24,7 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusHelperFilters{
+class EmundusHelperFilters {
 	
 	/*
 	** @description Clear session and reinit values by default
@@ -264,7 +265,7 @@ class EmundusHelperFilters{
 		return $db->loadObjectList();
 	}
 	
-	function buildOptions($element_name, $params){
+	function buildOptions($element_name, $params){ 
 		if(!empty($params->join_key_column)) {
 			$db =& JFactory::getDBO();
 			if($element_name == 'result_for')
@@ -283,9 +284,41 @@ class EmundusHelperFilters{
 		return $result;
 	}
 	
+	/*
+	** @description Create the WHERE query.
+	** @param array $search Liste of search element.
+	** @param array $search_values Liste of search values.
+	** @param string $query Name for HTML tag.
+	** @return string The query WHERE.
+	*/	
+	function setWhere($search, $search_values, &$query) {
+		if(isset($search) && !empty($search)) {
+			$i = 0;
+			foreach ($search as $s) {
+				if( (!empty($search_values[$i]) || isset($search_values[$i])) && $search_values[$i]!="" ){
+					$tab = explode('.', $s);
+					if (count($tab)>1) {
+						$query .= ' AND ';
+						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+					}
+				}
+				$i++;
+			}
+		}
+		return $query;
+	}
+	
+	/*
+	** @description Create the search options for Advance filter and Other filter.
+	** @param array $selected Selected Fabrik component element.
+	** @param array $search_value Search values for selected elements.
+	** @param string $elements_values Name for HTML tag.
+	** @return string HTML to display for filters options.
+	*/	
 	function setSearchBox($selected, $search_value, $elements_values) { 
 		jimport( 'joomla.html.parameter' );
-	//echo $selected->element_plugin;
+//echo "<hr>".$selected->element_plugin;
+//echo " : ".$search_value;
 		$current_filter = "";
 		if(!empty($selected)) {
 			if($selected->element_plugin == "databasejoin"){
@@ -301,7 +334,7 @@ class EmundusHelperFilters{
 					$current_filter .= '>'.$value->elt_val.'</option>';
 				}
 				$current_filter .= '</select>';
-			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton"){
+			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton" || $selected->element_plugin == "dropdown"){
 				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params); 
@@ -337,10 +370,11 @@ class EmundusHelperFilters{
 	}
 
 	/*
-	** @description : Create a fieldset of filter boxes
-	** @param array : Filters values indexed by filters names
-	** @param array : Filters options indexed by filters names
-	** @param array : List of the tables contained in "Other filters" dropbox
+	** @description Create a fieldset of filter boxes
+	** @param array $params Filters values indexed by filters names (profile / evaluator / evaluator_group / finalgrade / schoolyear / missing_doc / complete / validate / other).
+	** @param array $types Filters options indexed by filters names.
+	** @param array $tables List of the tables contained in "Other filters" dropbox.
+	** @return string HTML to display in page for filter block.
 	*/	
 	function createFilterBlock($params, $types, $tables){
 		global $option;
@@ -554,7 +588,8 @@ class EmundusHelperFilters{
 						$adv_filter .= '>'.substr($element->element_label, 0, $length).$dot_elm.'</option>'; 
 					}
 				$adv_filter .= '</select>';
-				if(empty($search_values[$i])) $search_values[$i] = "";
+
+				if(!isset($search_values[$i])) $search_values[$i] = "";
 				if($selected_adv != "")
 					$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
 				$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
@@ -594,17 +629,17 @@ class EmundusHelperFilters{
 								$groupe = $groupe_tmp;
 							}
 						$other_filter .= '<option class="emundus_search_elm_other" value="'.$element_other->table_name.'.'.$element_other->element_name.'"'; // = result_for; engaged; scholarship...
-						if($element_other->table_name.'.'.$element_other->element_name == $sf){
+						if($element_other->table_name.'.'.$element_other->element_name == $sf){ 
 							$other_filter .= ' selected';
 							$selected_other = $element_other;
 						}
 						$other_filter .= '>'.substr($element_other->element_label, 0, $length).$dot_elm.'</option>'; 
 					}
 					$other_filter .= '</select>';
-					if(empty($search_values_other[$i])) $search_values_other[$i] = "";
+					if(!isset($search_values_other[$i])) $search_values_other[$i] = "";
 					if ($selected_other != "")
 					//var_dump($selected_other);
-					echo'<BR />';
+					//echo'<BR />';
 					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
 					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';

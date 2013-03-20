@@ -392,22 +392,6 @@ class EmundusModelIncomplete extends JModel
 		return $query;
 	}
 	
-	function setWhere($search, $search_values, &$query) {
-		if(isset($search) && !empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				if(!empty($search_values[$i])){
-					$tab = explode('.', $s);
-					if (count($tab)>1) {
-						$query .= ' AND ';
-						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-					}
-				}
-				$i++;
-			}
-		}
-	}
-	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
 		//$eMConfig =& JComponentHelper::getParams('com_emundus');
 		$search					= $this->getState('elements');
@@ -433,9 +417,9 @@ class EmundusModelIncomplete extends JModel
 			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
 		}
 		
-		$this->setWhere($search, $search_values, $query);
-		$this->setWhere($search_other, $search_values_other, $query);
-		$this->setWhere($this->elements_default, $this->elements_values, $query);
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 		
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';

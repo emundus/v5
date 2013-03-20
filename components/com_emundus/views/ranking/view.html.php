@@ -154,8 +154,8 @@ class EmundusViewRanking extends JView
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
-		$addElementFinalGrade =& EmundusHelperJavascript::addElementFinalGrade($tables);
-		$this->assignRef('addElementFinalGrade', $addElementFinalGrade);
+		$addElementOther =& EmundusHelperJavascript::addElementOther($tables);
+		$this->assignRef('addElementOther', $addElementOther);
 		$delayAct =& EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		

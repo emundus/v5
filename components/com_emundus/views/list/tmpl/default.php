@@ -106,7 +106,7 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 
 <script><?php 
 	echo $this->addElement;
-	echo $this->addElementFinalGrade;
+	echo $this->addElementOther;
 	echo $this->onSubmitForm; 
 	echo $this->delayAct;
 	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>

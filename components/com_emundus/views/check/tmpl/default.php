@@ -99,14 +99,14 @@ if(!empty($this->users)) {
 		<?php if($current_user->profile!=16){ ?>
         <input type="checkbox" id="checkall" class="emundusraw" onClick="javascript:check_all()"/>
 		<?php } ?>
-        <?php echo JHTML::_('grid.sort', JText::_('#'), 'id', $this->lists['order_Dir'], $this->lists['order']); ?>
+        <?php echo JHTML::_('grid.sort', JText::_('#'), 'user_id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
-        <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'jos_emundus_personal_detail__last_name', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'jos_emundus_personal_detail__nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
         <th><?php echo JHTML::_('grid.sort', JText::_('SCHOOL_YEAR'), 'c.schoolyear', $this->lists['order_Dir'], $this->lists['order']); ?> </th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('SEND_ON'), 'time_date', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICATION_FORM_VALIDATION'), 'validated', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php echo JHTML::_('grid.sort', JText::_('SEND_ON'), 'jos_emundus_declaration__time_date', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICATION_FORM_VALIDATION'), 'jos_emundus_declaration__validated', $this->lists['order_Dir'], $this->lists['order']); ?></th>
         
 	</tr>
     </thead>
@@ -125,48 +125,48 @@ foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
         <td> <?php 
 		echo ++$i+$limitstart; $i++;
-		echo "<div class='em_user_id'>#".$user->id."<div>";
-        echo $this->actions[$user->id][$user->id];
+		echo "<div class='em_user_id'>#".$user['user_id']."<div>";
+        echo $this->actions[$user['user_id']][$user['user_id']];
 		?> 
 		</td>
 		<td><?php 
-			if(strtoupper($user->name) == strtoupper($user->firstname).' '.strtoupper($user->lastname)) 
-				echo '<strong>'.strtoupper($user->lastname).'</strong><br />'.$user->firstname; 
+			if(strtoupper($user['name']) == strtoupper($user['jos_emundus_personal_detail__first_name']).' '.strtoupper($user['jos_emundus_personal_detail__last_name'])) 
+				echo '<strong>'.strtoupper($user['jos_emundus_personal_detail__last_name']).'</strong><br />'.$user['jos_emundus_personal_detail__first_name']; 
 			else 
-				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user->name.'</font></span>'; 
+				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user['name'].'</font></span>'; 
 			?>
 		</td>
-      <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
+      <td><?php echo $user['jos_emundus_personal_detail__nationality']; ?></td>
       <td>
-	  <div class="emundusprofile<?php echo $user->profile; ?>"><?php echo $this->profiles[$user->profile]->label; ?></div>
+	  <div class="emundusprofile<?php echo $user['profile']; ?>"><?php echo $this->profiles[$user['profile']]->label; ?></div>
 	  <?php 
 	   $query = 'SELECT esp.id, esp.label
 					FROM #__emundus_users_profiles AS eup
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id=eup.profile_id
-					WHERE eup.user_id = '.$user->id.'
+					WHERE eup.user_id = '.$user['user_id'].'
 					ORDER BY eup.id';
 		$db->setQuery( $query );
 		$profiles=$db->loadObjectList();
 		$many_profiles = count($profiles)>1?true:false;
 		echo '<ul>';
 		foreach($profiles as $p){
-			if ($p->id == $user->profile && $many_profiles)
+			if ($p->id == $user['profile'] && $many_profiles)
 				echo '<li class="bold">'.$p->label.' ('.JText::_('FIRST_CHOICE').')</li>';
 			else
 				echo '<li>'.$p->label.'</li>';
 		}
 		echo '</ul>';
 	   ?></td>
-      <td align="left" valign="middle"><?php echo $user->schoolyear; ?></td>
-		<td><?php echo JHtml::_('date', $user->registerDate, JText::_('DATE_FORMAT_LC2')); ?></td>
+      <td align="left" valign="middle"><?php echo $user['schoolyear']; ?></td>
+		<td><?php echo JHtml::_('date', $user['registerDate'], JText::_('DATE_FORMAT_LC2')); ?></td>
 		<td align="center">
         <?php
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+		if(!EmundusHelperAccess::isAdministrator($user['user_id']) && !EmundusHelperAccess::isCoordinator($user['user_id'])) {
 			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
-			 <input type="image" name="<?php echo $user->validated>0?'unvalidate|'.$user->id:'validate|'.$user->id; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/icones/<?php echo $user->validated>0?'tick.png':'publish_x.png' ?>"  onclick="document.pressed=this.name" >
+			 <input type="image" name="<?php echo $user['validated']>0?'unvalidate|'.$user['user_id']:'validate|'.$user['user_id']; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/icones/<?php echo $user['validated']>0?'tick.png':'publish_x.png' ?>"  onclick="document.pressed=this.name" >
         <?php echo '</span>'; 
 		} else { ?>
-			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user->validated>0?'tick.png':'publish_x.png' ?>" alt="<?php echo $user->validated>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
+			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user['validated']>0?'tick.png':'publish_x.png' ?>" alt="<?php echo $user['validated']>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
 		<?php 
         }
 		?>
@@ -205,6 +205,7 @@ foreach ($this->users as $user) { ?>
 <?php 
 	echo $this->addElement;
 	echo $this->onSubmitForm; 
+	echo $this->addElementOther;
 	echo $this->delayAct;
 	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );
 ?>

@@ -22,6 +22,8 @@ class EmundusModelCheck extends JModel
 {
 	var $_total = null;
 	var $_pagination = null;
+	var $_applicants = array();
+	var $subquery = array();
 
 	/**
 	 * Constructor
@@ -138,24 +140,56 @@ class EmundusModelCheck extends JModel
 	}
 	
 	
-	function _buildContentOrderBy()
-	{
-        global $option;
-
+	function _buildContentOrderBy(){
+		global $option;
+		
 		$mainframe =& JFactory::getApplication();
-		
-        $orderby = '';
+
+		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
-       	$filter_order_Dir = $this->getState('filter_order_Dir');
-				
-		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'time_date','profile','validated');
-        /* Error handling is never a bad thing*/
-        if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
-        	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+		$filter_order_Dir = $this->getState('filter_order_Dir');
+
+		$sort=($filter_order_Dir=='desc')?SORT_DESC:SORT_ASC;
+ 		$can_be_ordering = array();
+			
+		foreach($this->getApplicantColumns() as $appli_col)
+			$can_be_ordering[] = $appli_col['name'];
+			
+		$select_list = $this->getSelectList();
+		if(!empty($select_list))
+			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
+		//print_r($this->getSelectList());
+		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
+			$this->_applicants = $this->multi_array_sort($this->_applicants, $filter_order, $sort);
+		} 
+		$t 	= count($this->_applicants);
+		$ls = $this->getState('limitstart');
+		$l 	= $this->getState('limit');
+		if ($l == 0) {$l = $t; $ls = 0;}
+		else $l = ($ls + $l > $t) ? $t - $ls : $l;
+	
+		for ($i = $ls ; $i < ($ls + $l) ; $i++) {
+			$tmp[] = $this->_applicants[$i];
 		}
-		
-        return $orderby;
+		return $tmp;
 	}
+	
+		function multi_array_sort($multi_array=array(),$sort_key,$sort=SORT_ASC){  
+        if(is_array($multi_array)){  
+            foreach ($multi_array as $key=>$row_array){  
+                if(is_array($row_array)){  
+                    @$key_array[$key] = $row_array[$sort_key]; 
+                }else{  
+                    return -1;  
+                } 
+            } 
+        }else{  
+            return -1;  
+        } 
+		if(!empty($key_array))
+	        array_multisort($key_array,$sort,$multi_array);
+        return $multi_array;  
+	}  
 	
 	function getCampaign()
 	{
@@ -186,100 +220,44 @@ class EmundusModelCheck extends JModel
 		
 		return $profiles;
 	}
-/*	
-	function _buildQuery()
-	{
+	
+	function setSubQuery($tab, $elem) {
+		$search 				= JRequest::getVar('elements'				, NULL, 'POST', 'array', 0);
+		$search_values 			= JRequest::getVar('elements_values'		, NULL, 'POST', 'array', 0);
+		$search_other 			= JRequest::getVar('elements_other'			, NULL, 'POST', 'array', 0);
+		$search_values_other 	= JRequest::getVar('elements_values_other'	, NULL, 'POST', 'array', 0);
 		
-	    $db =& JFactory::getDBO();
-		$pid = JRequest::getVar('profil', null, 'POST', 'none', 0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
-		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$nationality = JRequest::getVar('nationality', null, 'POST', 'none', 0);
+		$db =& JFactory::getDBO();
 		
-		// Starting a session.
-		$session =& JFactory::getSession();
+		$query = 'SELECT DISTINCT(#__emundus_users.user_id), '.$tab.'.'.$elem.' AS '.$tab.'__'.$elem;
+		$query .= '	FROM #__emundus_users 
+					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
 		
-		if(empty($profile) && $session->has( 'profile' )) $profile = $session->get( 'profile' );
-		if(empty($quick_search) && $session->has( 'quick_search' )) $quick_search = $session->get( 'quick_search' );
-		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
+		// subquery JOINS
+		$joined = array('jos_emundus_users');
+		$this->setJoins($search, $query, $joined);
+		$this->setJoins($search_other, $query, $joined);
+		$this->setJoins($this->elements_default, $query, $joined);
 		
-		$s_elements = $session->get('s_elements');
-		$s_elements_values = $session->get('s_elements_values');
+		// subquery WHERE
+		$query .= ' WHERE '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 
-		if (count($search)==0) {
-			$search = $s_elements;
-			$search_values = $s_elements_values;
+		$db->setQuery( $query );
+		$obj = $db->loadObjectList();
+		$list = array();
+		$tmp = '';
+		foreach ($obj as $unit) {
+			if ($tmp != $unit->user_id)
+				$list[$unit->user_id] = EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			else
+				$list[$unit->user_id] .= ','.EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			$tmp = $unit->user_id;
 		}
-		$user =& JFactory::getUser();
-		
-		
-		$query = 'SELECT ed.user, ed.user as user_id, a.filename AS avatar , eu.firstname, eu.lastname, u.username, u.email, epd.gender, epd.nationality, eu.profile, eu.schoolyear,  ed.validated, ed.time_date, u.id, u.name,u.usertype, u.registerDate, u.block
-					FROM #__emundus_declaration ed 
-					LEFT JOIN #__emundus_users AS eu ON ed.user = eu.user_id 
-					LEFT JOIN #__emundus_personal_detail AS epd ON ed.user = epd.user 
-					LEFT JOIN #__emundus_uploads AS a ON a.user_id = ed.user AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' 
-					LEFT JOIN #__users AS u ON ed.user = u.id 
-					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id=eu.profile '; 
-			
-		if(!empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				$tab = explode('.', $s);
-				if (count($tab)>1) {
-					$query .= 'LEFT JOIN '.$tab[0].' AS j'.$i.' ON j'.$i.'.user=ed.user ';
-					$i++;
-				}
-			}
-		}
-			
-		$query .= 'WHERE esp.published=1';
-		if(empty($schoolyears)) $query .= ' AND eu.schoolyear like "%'.$this->getCampaign().'%"';
-		
-		if(!empty($profile)) 
-			$query .= ' AND eu.user_id IN ('.implode(',',$this->getApplicantsByProfile($profile)).')';
-		
-		//$no_filter = array("Super Users", "Administrator");
-		if (!EmundusHelperAccess::isAdministrator($user->id)){
-			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0;
-			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';
-			}
-			$and = true;
-			if(!empty($search)) {
-				$i = 0;
-				foreach ($search as $s) {
-					$tab = explode('.', $s);
-					if (count($tab)>1) {
-						$query .= ' AND ';
-						$query .= 'j'.$i.'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-						$i++;
-					}
-				}
-			}
-			if(isset($quick_search) && !empty($quick_search)) {
-				if($and) $query .= ' AND ';
-				else { $and = true; $query .='WHERE '; }
-				if (is_numeric ($quick_search)) 
-					$query.= 'u.id = '.$quick_search.' ';
-				else
-					$query.= '(eu.lastname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-							OR eu.firstname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-							OR u.email LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-							OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%" )';
-			}
-			if(isset($schoolyears) &&  !empty($schoolyears)) {
-				$s=is_array($schoolyears)?implode(',',$schoolyears):$schoolyears;
-				if($and) $query .= ' AND ';
-				else { $and = true; $query .='WHERE '; }
-				$query.= 'eu.schoolyear="'.$s.'"';
-			}
-			//echo str_replace('#_','jos',$query);
-		return $query;
-	} 
-	*/
+		return $list;
+	}
 	
 	function setSelect($search) {
 		$cols = array();
@@ -344,7 +322,7 @@ class EmundusModelCheck extends JModel
 		$cols_other = $this->setSelect($search_other);
 		$cols_default = $this->setSelect($this->elements_default);
 		
-		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', '#__emundus_declaration');
+		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', 'jos_emundus_declaration');
 		
 		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated';
 		if(!empty($cols)) $query .= ', '.$cols;
@@ -386,22 +364,6 @@ class EmundusModelCheck extends JModel
 		return $query;
 	}
 	
-	function setWhere($search, $search_values, &$query) {
-		if(isset($search) && !empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				if(!empty($search_values[$i])){
-					$tab = explode('.', $s);
-					if (count($tab)>1) {
-						$query .= ' AND ';
-						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-					}
-				}
-				$i++;
-			}
-		}
-	}
-	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
 		//$eMConfig =& JComponentHelper::getParams('com_emundus');
 		$search					= $this->getState('elements');
@@ -427,10 +389,10 @@ class EmundusModelCheck extends JModel
 			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
 		}
 		
-		$this->setWhere($search, $search_values, $query);
-		$this->setWhere($search_other, $search_values_other, $query);
-		$this->setWhere($this->elements_default, $this->elements_values, $query);
-		
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
+
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
@@ -490,6 +452,37 @@ class EmundusModelCheck extends JModel
 		}
 		return $query;
 	}
+
+	
+	/**
+	* @description : Generate values for array of data for all applicants
+	* @param	array	$search	filters elements
+	* @param	array	$eval_list	reference of result list
+	* @param	array	$head_val	header name
+	* @param	object	$applicant	array of applicants indexed by database column
+	**/
+	function setEvalList($search, &$eval_list, $head_val, $applicant) {
+	//print_r($applicant); die();
+		if(!empty($search)){
+			foreach($search as $c){
+				if(!empty($c)){
+					$name = explode('.',$c);
+					if(!in_array($name[0].'__'.$name[1],$head_val)){
+						$print_val = '';
+						if ($this->details->{$name[0].'__'.$name[1]}['group_by']
+							&& array_key_exists($name[0].'__'.$name[1], $this->subquery)
+							&& array_key_exists($applicant->user_id, $this->subquery[$name[0].'__'.$name[1]])){
+							$$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+						} elseif (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
+							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
+						}
+						$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
+					}
+				}
+			}
+		}
+	}
+
 	
 	function _buildQuery(){
 		$search = $this->getState('elements');
@@ -503,19 +496,80 @@ class EmundusModelCheck extends JModel
 		
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
-		
-		return $query;
+
+//echo str_replace("#_", "jos", $query);
+		$this->_db->setQuery($query);
+		$applicants = $this->_db->loadObjectlist();
+
+		$head_values = $this->getApplicantColumns();
+
+		if(!empty($applicants)){
+			foreach($applicants as $applicant){
+				$eval_list=array();
+				foreach($head_values as $head){
+					$head_val[] = $head['name'];
+					$eval_list[$head['name']] = $applicant->$head['name'];
+					$eval_list['user'] = $applicant->user_id;
+					$eval_list['schoolyear'] = $applicant->schoolyear;
+					$eval_list['registerDate'] = $applicant->registerDate;
+					$eval_list['validated'] = $applicant->validated;
+				}
+				// add an advance filter columns only if not already exist 
+				$this->setEvalList($search, $eval_list, $head_val, $applicant);
+				$this->setEvalList($search_other, $eval_list, $head_val, $applicant);
+				$this->setEvalList($this->elements_default, $eval_list, $head_val, $applicant);
+
+				$eval_lists[]=$eval_list;
+			}
+			if(!empty($eval_lists))
+				$this->_applicants=$eval_lists;
+		}else
+			$this->_applicants=$applicants;
+			
+		//echo '<pre>'; print_r($this->_applicants);
 	}
 	
 	function getUsers()
 	{
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
-		$query .= $this->_buildContentOrderBy();
-		
-		return $this->_getList( $query ,$this->getState('limitstart'), $this->getState('limit'));
+		return $this->_buildContentOrderBy();
 	} 
 
+	function getSelectList(){
+		$lists = '';
+		
+		if(!empty($this->col)){
+			foreach($this->col as $c){
+				if(!empty($c)){
+					$tab = explode('.', $c);
+					$names = @$tab[1];
+					$tables = $tab[0];
+	
+					$query = 'SELECT distinct(fe.name), fe.label, ft.db_table_name as table_name
+						FROM #__fabrik_elements fe
+						LEFT JOIN #__fabrik_formgroup ff ON ff.group_id = fe.group_id
+						LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.form_id
+						WHERE fe.name = "'.$names.'"
+						AND ft.db_table_name = "'.$tables.'"';
+					$this->_db->setQuery( $query );
+					$cols[] = $this->_db->loadObject();
+				}
+			}
+			if(!empty($cols)){
+				foreach($cols as $c){
+					if(!empty($c)){
+						$list = array();
+						$list['name'] = @$c->table_name.'__'.$c->name;
+						$list['label'] = @ucfirst($c->label);
+						$lists[]=$list;
+					}
+				}
+			}
+		}
+		return $lists;
+	}
+	
 	function getProfiles()
 	{
 		$db =& JFactory::getDBO();
@@ -621,7 +675,7 @@ class EmundusModelCheck extends JModel
 		return $db->loadObjectList('id');
 	}
 	
-	function getTotal()
+	/*function getTotal()
 	{
 		// Load the content if it doesn't already exist
 		if (empty($this->_total)) {
@@ -629,6 +683,23 @@ class EmundusModelCheck extends JModel
 			$this->_total = $this->_getListCount($query);    
 		}
 		return $this->_total;
+	}*/
+	function getTotal(){
+        // Load the content if it doesn't already exist
+      	if (empty($this->_total)) $this->_total = count($this->_applicants);
+  		return $this->_total;
+	}
+	
+	// get applicant columns
+	function getApplicantColumns(){
+		$cols = array();
+		$cols[] = array('name' =>'user_id', 'label'=>'User id');
+		$cols[] = array('name' =>'user', 'label'=>'User id');
+		$cols[] = array('name' =>'name', 'label'=>'Name');
+		$cols[] = array('name' =>'email', 'label'=>'Email'); 
+		$cols[] = array('name' =>'profile', 'label'=>'Profile'); 
+
+		return $cols;
 	}
 	
 	function getPagination()

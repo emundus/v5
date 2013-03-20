@@ -1,6 +1,6 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2010-01-26 14:10:00Z guillossou $
+ * @version		$Id: query.php 14401 2013-03-26 14:10:00Z brivalland $
  * @package		Joomla
  * @subpackage	Emundus
  * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
@@ -29,7 +29,7 @@ class EmundusHelperList{
 	
 	function aggregation($array1,$array2,$array3 = array(), $array4 = array()){
 		if(!empty($array2))
-			$merge = array_merge($array1,$array2,$array3,$array4);
+			$merge = array_merge($array1, $array2,$array3, $array4);
 		else 
 			$merge = array_merge($array1,$array3,$array4);	
 		$newArray = array(); // le nouveau tableau dédoublonné
@@ -212,7 +212,13 @@ class EmundusHelperList{
 		return EmundusHelperMenu::buildMenuQuery($profile);;
 	}
 	
-	// get icone on first column
+
+	/*
+	** @description Get icone on first column.
+	** @param array $users List of user to display in page.
+	** @param array $params Type of action that can be done for user (checkbox / gender /email / details / photo / upload / attachments / forms / evaluation / selection_outcome).
+	** @return string HTML to display in page for action block.
+	*/	
 	function createActionsBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$actions = array();
@@ -311,6 +317,17 @@ class EmundusHelperList{
 			//}
 		}
 		return $actions;
+	}
+	
+	/*
+	** @description Create cellule for administrative validation.
+	** @param array $users List of user to display in page.
+	** @param array $params Type of validation needed.
+	** @return string HTML to display in page for aministrative validation.
+	*/	
+	function createValidateBlock($users){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		return $validate;
 	}
 	
 	//create icones for selection outcome
@@ -422,7 +439,6 @@ class EmundusHelperList{
 	
 	
 	function createEvaluatorBlock($users, $params){
-		
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
@@ -633,11 +649,12 @@ class EmundusHelperList{
 	}
 	
 	/*
-	** @param array		tableau des détails d'un élément
-	** @param string	valeur par défaut de la case
-	** @param string	nom de l'élément
+	** @description	Get the value of the search box
+	** @param	array	$details	tableau des détails d'un élément.
+	** @param	string	$default	valeur par défaut de la case.
+	** @param	string	$name	nom de l'élément.
 	*/
-	function getBoxValue($details, $default, $name) {
+	function getBoxValue($details, $default, $name) { 
 		if ($details['plugin'] == "fabrikfield" || $details['plugin'] == "fabriktextarea" || $details['plugin'] == "fabrikcalc") return $default;
 		/*elseif ($details['plugin'] == "fabrikuser")*/
 		elseif ($details['plugin'] == "fabrikdatabasejoin") {

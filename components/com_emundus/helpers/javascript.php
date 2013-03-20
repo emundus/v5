@@ -109,7 +109,8 @@ function OnSubmitForm() {
 	*/
 	
 	function addElement(){
-		$script = 'function addElement() {
+		$script = 
+		'function addElement() {
 			var ni = document.getElementById("myDiv");
 		  	var numi = document.getElementById("theValue");
 		  	var num = (document.getElementById("theValue").value -1)+ 2;
@@ -137,8 +138,9 @@ function OnSubmitForm() {
 		return $script;
 	}
 	
-	function addElementFinalGrade($tables){
-		$script = 'function addElementOther() {
+	function addElementOther($tables){
+		$script = 
+		'function addElementOther() {
 			var ni = document.getElementById("otherDiv");
 		  	var numi = document.getElementById("theValue");
 		  	var num = (document.getElementById("theValue").value -1)+ 2;
@@ -168,7 +170,8 @@ function OnSubmitForm() {
 	
 	function delayAct(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$script = 'function delayAct(user_id){
+		$script = 
+		'function delayAct(user_id){
 			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#cb"+user_id;
 			setTimeout("document.adminForm.submit()",500) }';
 		return $script;
