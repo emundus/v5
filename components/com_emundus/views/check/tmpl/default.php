@@ -160,16 +160,7 @@ foreach ($this->users as $user) { ?>
       <td align="left" valign="middle"><?php echo $user['schoolyear']; ?></td>
 		<td><?php echo JHtml::_('date', $user['registerDate'], JText::_('DATE_FORMAT_LC2')); ?></td>
 		<td align="center">
-        <?php
-		if(!EmundusHelperAccess::isAdministrator($user['user_id']) && !EmundusHelperAccess::isCoordinator($user['user_id'])) {
-			 echo '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">'; ?>
-			 <input type="image" name="<?php echo $user['validated']>0?'unvalidate|'.$user['user_id']:'validate|'.$user['user_id']; ?>" src="<?php echo $this->baseurl; ?>/media/com_emundus/images/icones/<?php echo $user['validated']>0?'tick.png':'publish_x.png' ?>"  onclick="document.pressed=this.name" >
-        <?php echo '</span>'; 
-		} else { ?>
-			<img src="<?php JURI::Base(); ?>/media/com_emundus/images/<?php echo $user['validated']>0?'tick.png':'publish_x.png' ?>" alt="<?php echo $user['validated']>0?JText::_('VALIDATE_APPLICATION_FORM'):JText::_('UNVALIDATE_APPLICATION_FORM'); ?>"/>
-		<?php 
-        }
-		?>
+        <?php echo $this->validate[$user['user_id']]; ?>
 		</td>	
 	</tr>
 <?php } ?>

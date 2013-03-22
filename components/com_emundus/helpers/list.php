@@ -27,11 +27,11 @@ jimport('joomla.application.component.helper');
  
 class EmundusHelperList{
 	
-	function aggregation($array1,$array2,$array3 = array(), $array4 = array()){
+	function aggregation($array1, $array2, $array3 = array(), $array4 = array()){
 		if(!empty($array2))
-			$merge = array_merge($array1, $array2,$array3, $array4);
+			$merge = array_merge($array1, $array2, $array3, $array4);
 		else 
-			$merge = array_merge($array1,$array3,$array4);	
+			$merge = array_merge($array1, $array3, $array4);	
 		$newArray = array(); // le nouveau tableau dédoublonné
 		$arrayTemp = array(); // contiendra les ids à éviter
 		foreach($merge as $m)
@@ -45,7 +45,7 @@ class EmundusHelperList{
 	}
 	
 	// Fonction de tri des tableaux
-	function multi_array_sort($multi_array=array(),$sort_key,$sort=SORT_ASC){  
+	function multi_array_sort($multi_array=array(), $sort_key, $sort=SORT_ASC){  
         if(is_array($multi_array)){ 
             foreach ($multi_array as $key=>$row_array){  
 				if(is_array($row_array)){  
@@ -59,7 +59,7 @@ class EmundusHelperList{
             return -1;  
         } 
 		if(!empty($key_array))
-	        array_multisort($key_array,$sort,$multi_array);
+	        array_multisort($key_array, $sort, $multi_array);
         return $multi_array;  
 	} 
 	
@@ -217,7 +217,7 @@ class EmundusHelperList{
 	** @description Get icone on first column.
 	** @param array $users List of user to display in page.
 	** @param array $params Type of action that can be done for user (checkbox / gender /email / details / photo / upload / attachments / forms / evaluation / selection_outcome).
-	** @return string HTML to display in page for action block.
+	** @return array Arary of HTML to display in page for action block indexed by user ID.
 	*/	
 	function createActionsBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -323,10 +323,34 @@ class EmundusHelperList{
 	** @description Create cellule for administrative validation.
 	** @param array $users List of user to display in page.
 	** @param array $params Type of validation needed.
-	** @return string HTML to display in page for aministrative validation.
+	** @return array Arary of HTML to display in page for action block indexed by user ID.
 	*/	
-	function createValidateBlock($users){
+	function createValidateBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$validate = array();
+//echo '<hr>';
+		$validate_details = EmundusHelperList::getElementsDetails('"'.implode('","', $params).'"');
+//print_r($validate_details);
+		foreach($users as $user) {
+			@$validate[$user['user_id']] .= '<div class="emundusraw">';
+			foreach($validate_details as $vd) {
+				if(!EmundusHelperAccess::isAdministrator($user['user_id']) && !EmundusHelperAccess::isCoordinator($user['user_id'])) {
+					if ($user['validated']>0){
+						$img = 'tick.png';
+						$btn = 'unvalidate|'.$user['user_id'];
+						$alt = JText::_('VALIDATE_APPLICATION_FORM');
+					} else {
+						$img = 'publish_x.png';
+						$btn = 'validate|'.$user['user_id'];
+						$alt = JText::_('UNVALIDATE_APPLICATION_FORM');
+					}
+					@$validate[$user['user_id']] .= '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'"><input type="image" name="'.$btn.'" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="document.pressed=this.name" > '.$vd->element_label.'</span><br>'; 
+				} else {
+					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" alt="'.$alt.'"/> '.$vd->element_label.'<br>';
+				}
+			}
+			@$validate[$user['user_id']] .= '</div>';
+		}
 		return $validate;
 	}
 	
@@ -634,9 +658,14 @@ class EmundusHelperList{
 		return $statut;
 	}
 	
+	/*
+	** @description	Get Fabrik elements detail from elements Fabrik name
+	** @param	string	$elements	list of Fabrik element comma separated.
+	** @return	array	Array of Fabrik element params.
+	*/
 	function getElementsDetails($elements) {
 		$db =& JFactory::getDBO();
-		$query = 'SELECT element.name AS element_name, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
 				element.params AS params, element.params, tab.group_by AS tab_group_by
 				FROM #__fabrik_elements element
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
@@ -644,7 +673,7 @@ class EmundusHelperList{
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
 		$query .= ' WHERE concat_ws(".", tab.db_table_name, element.name) IN ('.$elements.')';
 		$db->setQuery($query);
-//		die(str_replace("#_", "jos", $query));
+//echo str_replace("#_", "jos", $query);
 		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
 	}
 	

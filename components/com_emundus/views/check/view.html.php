@@ -126,6 +126,10 @@ class EmundusViewCheck extends JView
 		$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
 		$actions =& EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
+		
+		$options = array('jos_emundus_declaration.validated', 'jos_emundus_declaration.certified_copies_received', 'jos_emundus_declaration.languages_result_received'); 
+		$validate =& EmundusHelperList::createValidateBlock($users, $options);
+		$this->assignRef('validate', $validate);
 
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {

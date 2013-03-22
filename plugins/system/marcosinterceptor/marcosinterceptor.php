@@ -203,12 +203,13 @@ class plgSystemMarcosinterceptor extends JPlugin{
 			$warning .= " -[$k] => $v\r\n";
 		}
 		
-		jimport('joomla.mail.mail');
+		/*jimport('joomla.mail.mail');
 		$mail = new JMail();
 		$mail->setsender($app->getCfg('mailfrom'));
 		$mail->addRecipient($p_sendTo);
 		$mail->setSubject($app->getCfg('sitename') . ' Marco\'s interceptor warning ' );
 		$mail->setbody($warning);
-		$mail->send();		
+		$mail->send();*/
+		JUtility::sendMail($app->getCfg('mailfrom'), $obj[0]->name, $p_sendTo, ' HACKING ATTEMPT - '.$app->getCfg('sitename'), $warning, 0);
 	}
 }

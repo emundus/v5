@@ -79,7 +79,7 @@ class EmundusHelperFilters {
 	* @param 			query results
 	* @param 	array 	values to extract and insert
 	*/
-	function insertValuesInQueryResult($results, $options) {
+	function insertValuesInQueryResult($results, $options) { 
 		foreach ($results as $key=>$result) {
 			if (array_key_exists('params', $result)) {
 				if (is_array($result)) {
