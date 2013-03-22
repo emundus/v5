@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset
+		name="scan"
+		label="ATOOLS_JCONFIG_SCAN_LABEL"
+		description="ATOOLS_JCONFIG_SCAN_DESC"
+		>
+
+		<field name="scandiffs" type="list" default="0"
+				label="ATOOLS_JCONFIG_SCANDIFF_LABEL"
+				description="ATOOLS_JCONFIG_SCANDIFF_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+		<field name="scanemail" type="text" default="" size="30"
+			label="ATOOLS_LBL_CONFIG_SCANEMAIL_LABEL"
+			description="ATOOLS_LBL_CONFIG_SCANEMAIL_DESC"
+		/>
+	
+	</fieldset>
+
+	<fieldset
+		name="updates"
+		label="ATOOLS_JCONFIG_UPDATES_LABEL"
+		description="ATOOLS_JCONFIG_UPDATES_DESC"
+		>
+		<field name="downloadid" type="text" default="" size="30"
+			label="ATOOLS_LBL_CONFIG_DOWNLOADID"
+			description ="" />
+		<field name="minstability" type="list" default="alpha" label="ATOOLS_LIVEUPDATE_MINSTABILITY_LABEL" description="ATOOLS_LIVEUPDATE_MINSTABILITY_DESC">
+			<option value="alpha">ATOOLS_STABILITY_ALPHA</option>
+			<option value="beta">ATOOLS_STABILITY_BETA</option>
+			<option value="rc">ATOOLS_STABILITY_RC</option>
+			<option value="stable">ATOOLS_STABILITY_STABLE</option>
+		</field>
+		<field name="liveupdate" type="hidden" default="" label="" description="" />
+		<field name="sitename" type="hidden" default="" label="" description="" />
+	</fieldset>
+		
+	<fieldset
+		name="permissions"
+		label="JCONFIG_PERMISSIONS_LABEL"
+		description="JCONFIG_PERMISSIONS_DESC"
+		>
+
+		<field
+			name="rules"
+			type="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			class="inputbox"
+			filter="rules"
+			component="com_admintools"
+			section="component" />
+	</fieldset>	
+</config>

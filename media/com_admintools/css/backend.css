@@ -1,46 +1,49 @@
-/* @override http://dev17.local.web/media/com_admintools/css/backend.css?svn586 */
+/*
+	Admin Tools User Interface CSS
+	Copyright (c)2010-2012 Nicholas K. Dionysopoulos <nicholas@dionysopoulos.me>
+	Released under the GNU General Public License, version 3 or later
+*/
 
-#cpanel { width: 60%; float: left; }
-#sidepanes { width: 40%; float: left; }
-
+/*
+ * Akeeba Backup title icon
+ */
 .icon-48-admintools { background-image: url(../images/admintools-48.png) }
 
+/**
+ * Selective reset of Bootstrap styling
+ */
+div.akeeba-bootstrap { background: transparent; }
+div.icon a.modal { position: relative; top: inherit; left: inherit; z-index: inherit; margin: 0 !important; box-shadow: none;  }
+div.ak_clr_left { clear: left; }
+div.ak_clr { clear: both; }
+div.icon-wrapper, .akeeba-bootstrap [class^="icon-wrapper"] { display: inline; }
+
+div.akeeba-bootstrap form.form-horizontal-wide label.control-label { width: 300px }
+div.akeeba-bootstrap form.form-horizontal-wide div.controls { margin-left: 320px }
+div.akeeba-bootstrap form.form-horizontal-wide textarea { width: 450px }
+
+td.order span { line-height: 16px; height: 16px; margin: 0; padding: 0; }
+td.order a.jgrid span.state { background-repeat: no-repeat; height: 12px; margin-bottom: 2px }
+td.order a.jgrid span.state span.text { line-height: 16px; }
+td.order input.text_area { width: 20px; }
+
+div.akeeba-bootstrap label.radiobtn { display: inline-block; }
+.decrapbooleanlist label.radiobtn { display: inline-block; float: none; clear: none; }
+.decrapbooleanlist input { display: inline-block; float: none; clear: none; }
+
+div.controls span.floatme { display: inline-block; float: left; padding: 5px; }
 
 /*
  * Joomla! 1.6+ reset horrid styling
  */
-#atools-container button, #atools-container input, #atools-container select { float: none; }
-#atools-container label { float: left; }
-#atools-container button { margin: 0 0 0 5px; }
-#atools-container fieldset label { clear: none !important; margin-right: 0.4em !important; }
-#atools-container span.radio label,
-#atools-container span.radio input[type=radio] { float: left; }
-
 #waf-countries input[type=checkbox] { float: left; }
+#waf-continents input, #waf-continents label { float: none; display: inline; }
 
 /* Control Panel */
 span.update-ok {color: #009900 !important;}
 span.update-warning {color: #990000 !important; font-weight: bold;}
 span.update-manual {color: #999900 !important; font-weight: bold;}
-div.disclaimer, #disclaimer { width: 80%; border: thin solid silver; margin: 0.5em 10%; padding: 1em; background: #f0f0f0; color: gray; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; }
-div.disclaimer h3, #disclaimer h3 { font-size: 9pt; color: gray; font-weight: bold; padding: 0; margin: 0; }
-div.disclaimer p, #disclaimer p { font-size: 8pt; padding: 0; margin: 0.2em 0 0 0; }
-.atlargewarning { font-size: 12pt !important; box-shadow: 0 0 20px 4px #f00;
-	-webkit-animation-name: atwpulsate;
-    -webkit-animation-duration: 1s;
-    -webkit-animation-timing-function: ease-in-out;
-    -webkit-animation-iteration-count: 10
-}
 
-@-webkit-keyframes atwpulsate {
-	0% { box-shadow: 0 0 20px 4px #f00; }
-	50% { box-shadow: 0 0 10px 0px #ff0; }
-	100% { box-shadow: 0 0 20px 4px #f00; }
-}
-
-.atoolsblock { width: 90%; border: 1px solid #333; margin: 0.4em 3%; padding: 1em; background: #f9f9f9; color: #333; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 5px; }
-.atoolsblock p { font-size: small; padding: 0; margin: 0.2em 0 0 0; }
-.atoolsblock h3 { font-size: medium; color: black; font-weight: bold; padding: 0; margin: 0 0 1em 0; text-shadow: #aaa 1px 1px 2px; }
 /*
  * Live Update
  */
@@ -63,76 +66,14 @@ div.update { background-color: #ffff99; border-color: #999900; }
 .version { font-weight: bold; color: #333300; }
 .version-status { color: #666666; font-style: italic; }
 
-/*
- * Editor forms
- */
-div.editform3-row label { display: inline; float: none; clear: none; }
-div.editform3-row input { display: inline; float: none; }
-
-div.editform-row, div.editform3-row { display:block; margin: 1px 0; padding: 1px; clear: left; }
-div.editform-row-noheight { height: auto; }
-div.editform-row > label, div.editform3-row label.option { display: block; float: left; width: 400px; height: 1.4em; background-color: #ddd; margin: 0 2px 0 0; padding: 2px 0 0px 2px; border-bottom: 1px solid #999; border-top: 1px solid #ddd; overflow: none; }
-div.editform-row > input, div.editform-row .float { display: block; float: left; min-width: 250px; height: 1.6em; }
-div.editform-row > input.checkbox { display: inline; float: none; min-width: 0; height: auto; }
-div.editform-row > option { display: block; float: left; min-width: 90px; height: 1.6em; }
-div.editform-row > span { display: block; float: left; height: 1.6em; margin: 0.2em 0.5em 0; }
-div.editform-row > input.narrow { min-width: 0; }
-
-div.editform-row > label.short { width: 200px; }
-
-div.editform2-row { display: block; margin: 1px 0; padding: 1px; }
-div.editform2-row > label { display: block; float: left; width: 400px; height: 1.4em; background-color: #ddd; margin: 0 2px 0 0; padding: 2px 0 0px 2px; border-bottom: 1px solid #999; border-top: 1px solid #ddd; }
-div.editform2-row > textarea, div.editform-row .float { height: 6em; }
-
-/* Joomla! Core Update */
-#joomla-update-information { width: 80%; margin: 2em 10%; border: thin solid gray; background: #f0f0f0; padding: 0.5em }
-#joomla-update-information td { border-bottom: thin solid silver; }
-#joomla-update-information td.label { font-weight: bold; }
-
-#joomla-update-buttonbar {
-	text-align: center;
-}
-
 #extprogress { background: #f0f0f0; }
 
 .extlabel { display: inline-block; font-weight: bold; width: 200px; }
 .extprogrow { line-height: 150% }
 
-/* Database Tools */
-#progressbar-outer { width: 90%; margin: 0.5em 5%; height: 28px; border: thin solid gray; padding: 2px; background-color: white;  }
-#progressbar-inner { background-color: navy; height: 28px; width: 1%; }
-
-p.admintools-para { font-size: 120%; }
-div.admintools-warning, p.admintools-warning { background-color: #ffdd00; border: medium solid red; color: red; padding: 0.5em; font-size: 110%; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
-label.admintools { font-weight: bold; width: 140px; display: inline-block; }
-
 /* Custom file permissions */
 #splitlist { margin: 1em 0 0 0; padding: 0; }
 #splitlist fieldset { width: 48%; float: left; }
-
-/* Common elements */
-#admintools-whatsthis-icon { font-weight: bold; min-height: 16px; font-size: 10pt; padding-left: 22px; background: transparent url(../images/info-16.png) top left no-repeat; cursor: pointer; }
-#admintools-whatsthis-info {
-	display: none;
-	float: left;
-	position: absolute;
-	width: 60%;
-	z-index: 1000;
-	font-size: 10pt;
-	color: black;
-	background-color: rgba(240,255,255,0.85);
-	border: 2px solid black;
-	margin: -0.7em 0 0 16px;
-	padding: 0 0.5em;
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	box-shadow: 2px 2px 4px black;
-	-moz-box-shadow: 2px 2px 4px black;
-}
-#admintools-whatsthis-info ul { list-style-type: square; }
-#admintools-whatsthis-info ul li { margin-bottom: 0.5em }
-
-#waf-continents input, #waf-continents label { float: none; display: inline; }
 
 /*
  * Changelog

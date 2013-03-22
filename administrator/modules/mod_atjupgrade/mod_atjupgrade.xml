@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5.0" type="module" client="administrator" method="upgrade">
+	<name>Admin Tools Joomla! Upgrade Notification</name>
+	<author>Nicholas K. Dionysopoulos</author>
+	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
+	<authorUrl>http://www.akeebabackup.com</authorUrl>
+	<copyright>Copyright (c)2010 Nicholas K. Dionysopoulos</copyright>
+	<license>GNU GPL v3</license>
+	<version>2.5.3</version>
+	<creationDate>2013-03-14</creationDate>
+	<files>
+		<filename module="mod_atjupgrade">mod_atjupgrade.php</filename>
+		<folder>css</folder>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.mod_atjupgrade.ini</language>
+		<language tag="en-GB">en-GB/en-GB.mod_atjupgrade.sys.ini</language>
+	</languages>
+</extension>

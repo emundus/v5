@@ -1,0 +1,27 @@
+/*
+	Admin Tools Two-Factor Authentication Login CSS for Hathor template
+	Copyright (c)2010-2012 Nicholas K. Dionysopoulos <nicholas@dionysopoulos.me>
+	Released under the GNU General Public License, version 3 or later
+*/
+
+div.admintools-security-code label {
+	display: block;
+	float: left;
+	clear: left;
+	width: 160px;
+	text-align: right;
+	padding: 4px;
+	margin: 0;
+}
+
+div.admintools-security-code input {
+	display: block;
+	width: 120px;
+	min-width: 120px;
+	float: right;	
+	margin: 0 0 15px 5px;
+}
+
+div.admintools-security-code div.clear {
+	clear: both;
+}

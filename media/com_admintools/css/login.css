@@ -1,0 +1,25 @@
+/*
+	Admin Tools Two-Factor Authentication Login CSS
+	Copyright (c)2010-2012 Nicholas K. Dionysopoulos <nicholas@dionysopoulos.me>
+	Released under the GNU General Public License, version 3 or later
+*/
+
+div.admintools-security-code label {
+	display: block;
+	margin: 5px 15px 10px 8px;
+	float: left;
+	clear: left;
+	text-align: left;
+}
+
+div.admintools-security-code input {
+	display: block;
+	float: right;	
+	margin: 0 8px 0 0;
+	min-width: 144px;
+	width: auto;
+}
+
+div.admintools-security-code div.clear {
+	clear: both;
+}
