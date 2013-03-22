@@ -43,7 +43,6 @@ class  plgSystemEmundus_period extends JPlugin
 	}
 
 	function onAfterInitialise() {
-		$jinput = JFactory::getApplication()->input;
 		$user = & JFactory::getUser();
 		
 		// Global variables
@@ -54,16 +53,18 @@ class  plgSystemEmundus_period extends JPlugin
 		$eMConfig =& JComponentHelper::getParams('com_emundus');
 		$id_applicants = $eMConfig->get('id_applicants', '0');
 		$applicants = explode(',',$id_applicants);
-		
-		if ($user->usertype == 'Registered' && !in_array($user->id, $applicants)) {	
+
+		if (@$user->applicant && !in_array($user->id, $applicants)) {	
+
 			$baseurl = JURI::base();
 			$db = & JFactory::getDBO();
 			$app =& JFactory::getApplication();
 			
-			$id = @$jinput->get('id');
-			$option = @$jinput->get('option');
-			$task = @$jinput->get('task');
-			$view = @$jinput->get('view');
+			$id = JRequest::getVar('id', null, 'GET', 'none',0);
+			$option = JRequest::getVar('option', null, 'GET', 'none',0);
+			$task = JRequest::getVar('task', null, 'POST', 'none',0);
+			$view =JRequest::getVar('view', null, 'GET', 'none',0);
+			
 
 			date_default_timezone_set('Europe/London');
 			$script_tz = date_default_timezone_get();
@@ -72,7 +73,7 @@ class  plgSystemEmundus_period extends JPlugin
 			$schoolyear = $db->loadResult();
 			
 			if($user->profile != 8){
-				if ( ($id == 29 || $id == 30 || $id == 78 || ($id >= 19 && $id <= 24)) && $option == 'com_content' || $task == 'logout' || $option == 'com_contact' || $view == 'renew_application') {
+				if ( ($id == 29 || $id == 30 || $id == 78 || ($id >= 19 && $id <= 24)) && $option == 'com_content' || $task == 'user.logout' || $option == 'com_contact' || $option == 'com_users' || $view == 'renew_application') {
 						return '';
 				}elseif($schoolyear != $user->schoolyear){
 					die($app->redirect('index.php?option=com_emundus&view=renew_application'));
