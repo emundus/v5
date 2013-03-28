@@ -329,13 +329,13 @@ class EmundusHelperList{
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$validate = array();
 //echo '<hr>';
-		$validate_details = EmundusHelperList::getElementsDetails('"'.implode('","', $params).'"');
+		$validate_details = EmundusHelperList::getElementsDetailsByID('"'.implode('","', $params).'"');
 //print_r($validate_details);
 		foreach($users as $user) {
 			@$validate[$user['user_id']] .= '<div class="emundusraw">';
 			foreach($validate_details as $vd) {
 				if(!EmundusHelperAccess::isAdministrator($user['user_id']) && !EmundusHelperAccess::isCoordinator($user['user_id'])) {
-					if ($user['validated']>0){
+					if ($user[$vd->element_name]>0){
 						$img = 'tick.png';
 						$btn = 'unvalidate|'.$user['user_id'];
 						$alt = JText::_('VALIDATE_APPLICATION_FORM');
@@ -344,7 +344,9 @@ class EmundusHelperList{
 						$btn = 'validate|'.$user['user_id'];
 						$alt = JText::_('UNVALIDATE_APPLICATION_FORM');
 					}
-					@$validate[$user['user_id']] .= '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'"><input type="image" name="'.$btn.'" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="document.pressed=this.name" > '.$vd->element_label.'</span><br>'; 
+					$id = $vd->tab_name.'.'.$vd->element_name.$user['user_id'];
+					@$validate[$user['user_id']] .= '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">
+					<div class="em_validation" id="'.$id.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$vd->element_name.'\', \''.$id.'\');" ></div></span> '.$vd->element_label.'<br>'; 
 				} else {
 					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" alt="'.$alt.'"/> '.$vd->element_label.'<br>';
 				}
@@ -672,6 +674,25 @@ class EmundusHelperList{
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
 		$query .= ' WHERE concat_ws(".", tab.db_table_name, element.name) IN ('.$elements.')';
+		$db->setQuery($query);
+//echo str_replace("#_", "jos", $query);
+		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
+	}
+	
+		/*
+	** @description	Get Fabrik elements detail from elements Fabrik name
+	** @param	string	$elements	list of Fabrik element comma separated.
+	** @return	array	Array of Fabrik element params.
+	*/
+	function getElementsDetailsByID($elements) {
+		$db =& JFactory::getDBO();
+		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+				element.params AS params, element.params, tab.group_by AS tab_group_by
+				FROM #__fabrik_elements element
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+				WHERE element.id IN ('.$elements.')';
 		$db->setQuery($query);
 //echo str_replace("#_", "jos", $query);
 		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));

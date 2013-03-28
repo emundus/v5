@@ -318,6 +318,16 @@ class EmundusModelCheck extends JModel
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
 		
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$this->validate_details = EmundusHelperList::getElementsDetailsByID($menu_params->get('em_validate_id'));
+		$col_validate = "";
+		foreach($this->validate_details as $vd) {
+			$col_validate .= $vd->tab_name.'.'.$vd->element_name.',';
+		}
+		$col_validate = substr($col_validate,0,strlen($col_validate)-1);
+
 		$cols = $this->setSelect($search);
 		$cols_other = $this->setSelect($search_other);
 		$cols_default = $this->setSelect($this->elements_default);
@@ -328,6 +338,7 @@ class EmundusModelCheck extends JModel
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
+		if(!empty($col_validate)) $query .= ', '.$col_validate;
 		$query .= '	FROM #__emundus_declaration 
 					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
@@ -512,7 +523,10 @@ class EmundusModelCheck extends JModel
 					$eval_list['user'] = $applicant->user_id;
 					$eval_list['schoolyear'] = $applicant->schoolyear;
 					$eval_list['registerDate'] = $applicant->registerDate;
-					$eval_list['validated'] = $applicant->validated;
+					// @comment	All administrative validation element to check
+					foreach($this->validate_details as $vd) {
+						$eval_list[$vd->element_name] = $applicant->{$vd->element_name};
+					}
 				}
 				// add an advance filter columns only if not already exist 
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);

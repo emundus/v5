@@ -29,7 +29,7 @@ class EmundusHelperAccess{
 		return in_array($usertype, $allowed);
 	}
 	
-	function isAllowedAccessLevel($user_id,$current_menu_access){
+	function isAllowedAccessLevel($user_id, $current_menu_access){
 		$user_access_level=JAccess::getAuthorisedViewLevels($user_id);
 		return in_array($current_menu_access, $user_access_level);
 	}

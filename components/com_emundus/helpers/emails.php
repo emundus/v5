@@ -234,7 +234,7 @@ class EmundusHelperEmails{
 			if (count($applicants)>0) {
 				if (JUtility::sendMail($from, $obj[0]->name, $user->email, $obj[0]->subject, $body, 1, $cc)) {
 					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', NOW())";
+						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($obj[0]->subject).", ".$db->quote($body).", NOW())";
 					$db->setQuery( $sql );
 					$db->query();
 					$sent .= '&rsaquo; '.$user->name.' - '.$user->email.'<br />';
@@ -373,7 +373,7 @@ class EmundusHelperEmails{
 			if(JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)){
 				usleep(1000);
 				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-					VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
+					VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 				$db->setQuery( $sql );
 				$db->query();
 			}
@@ -467,10 +467,9 @@ class EmundusHelperEmails{
 			$body = preg_replace($patterns, $replacements, $message);
 
 			// mail function
-			//JMail( $from, $fromname, $user->email, $subject, $body ,1);
 			if (JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)) {
 				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-					VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
+					VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 				$db->setQuery( $sql );
 				$db->query();
 			} else {

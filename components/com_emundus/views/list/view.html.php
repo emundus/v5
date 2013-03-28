@@ -88,6 +88,7 @@ class EmundusViewList extends JView
 							   'finalgrade'			=> NULL,
 							   'validate'			=> NULL,
 							   'other'				=> NULL);
+	   $actions  		= explode(',', $menu_params->get('em_actions'));
 		$i = 0;
 		foreach ($filts_names as $filt_name) {
 			if (array_key_exists($i, $filts_values))
@@ -204,8 +205,8 @@ class EmundusViewList extends JView
 		$this->assignRef('email_applicant', $email_applicant);		
 		
 		//List
-		$options = array('checkbox', 'gender', 'details');
-		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		//$options = array('checkbox', 'gender', 'details');
+		$actions =& EmundusHelperList::createActionsBlock($users, $actions);
 		$this->assignRef('actions', $actions);
 		unset($options); 
 		

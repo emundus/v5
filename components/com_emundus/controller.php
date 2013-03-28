@@ -75,7 +75,7 @@ class EmundusController extends JController {
 		$student_id = JRequest::getVar('user', null, 'GET', 'none',0);
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author", "Registered");
 		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isPartner($user->id) && !EmundusHelperAccess::isEvaluator($user->id) && !EmundusHelperAccess::isApplicant($user->id)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 		unset($allowed);
@@ -771,8 +771,8 @@ function updateprofile() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+			die(JText::_('ACCESS_DENIED'));
 		}
 		
 		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');

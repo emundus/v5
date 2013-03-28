@@ -5,4 +5,9 @@
 			<![CDATA[COM_EMUNDUS_EVALUATION_VIEW_DEFAULT_TITLE_DESC]]>
 		</message>
 	</layout>
+	<fields name="params">
+		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+			<field name="em_actions" value="checkbox,photo,gender,details,upload,attachments,forms" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC"/>
+		</fieldset>
+	</fields>
 </metadata>

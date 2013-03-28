@@ -48,7 +48,7 @@ class EmundusViewCheck extends JView
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$access = !empty($current_menu)?$current_menu->access:0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die(JText::_('ACCESS_DENIED'));
 
 		$users =& $this->get('Users');
 		
@@ -75,6 +75,8 @@ class EmundusViewCheck extends JView
 							   'finalgrade'			=> NULL,
 							   'validate'			=> NULL,
 							   'other'				=> NULL);
+		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+		$actions  		= explode(',', $menu_params->get('em_actions'));
 		$i = 0;
 		foreach ($filts_names as $filt_name) {
 			if (array_key_exists($i, $filts_values))
@@ -123,12 +125,12 @@ class EmundusViewCheck extends JView
         $this->assignRef('statut', $statut);
 		//die(print_r($users));
 		//List
-		$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
-		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		//$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
+		$actions =& EmundusHelperList::createActionsBlock($users, $actions);
 		$this->assignRef('actions', $actions);
 		
-		$options = array('jos_emundus_declaration.validated', 'jos_emundus_declaration.certified_copies_received', 'jos_emundus_declaration.languages_result_received'); 
-		$validate =& EmundusHelperList::createValidateBlock($users, $options);
+		//$options = array('jos_emundus_declaration.validated', 'jos_emundus_declaration.certified_copies_received', 'jos_emundus_declaration.languages_result_received'); 
+		$validate =& EmundusHelperList::createValidateBlock($users, $validate_id);
 		$this->assignRef('validate', $validate);
 
 		//Email
@@ -143,7 +145,6 @@ class EmundusViewCheck extends JView
 		$this->assignRef('email_applicant', $email_applicant);	
 		
 		// Javascript
-        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();

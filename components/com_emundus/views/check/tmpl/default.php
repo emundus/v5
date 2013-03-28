@@ -4,7 +4,6 @@ defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
-JHTML::stylesheet( 'emundus.css', JURI::Base().'media'.DS.'com_emundus'.DS.'css'.DS );
 
 $document   =& JFactory::getDocument();
 
@@ -68,7 +67,32 @@ $db = JFactory::getDBO();
 <input type="hidden" name="validation_list" value="" />
 
 <?php  echo $this->filters; ?>
+<script language="javascript">
 
+function validation(uid, validate, cible){
+	var getPlayerResult = $(cible);
+	var getPlayer = new Request(
+	{
+      url:   'index.php?option=com_emundus&format=raw&view=check&controller=check&task=validation',
+      method: 'get',
+      onRequest: function() {
+            getPlayerResult.set('html', '<img src="<?php echo JURI::Base().'/media/com_emundus/images/icones/loading.gif'; ?>">');
+         },
+      onSuccess: function(responseText) {
+            getPlayerResult.set('html', responseText);
+         },
+      onFailure: function() {
+            getPlayerResult.set('text', '<?php echo JText::_('ERROR'); ?>');
+         }
+	});
+	$(cible).addEvent('click', function(getPlayerEvent)
+	{
+    	getPlayerEvent.stop();
+		getPlayer.send('&uid=' + uid + '&validate=' + validate);
+	});
+	
+} 
+</script>
 <div class="emundusraw">
 <?php
 if(!empty($this->users)) {

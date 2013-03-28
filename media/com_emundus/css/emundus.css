@@ -368,3 +368,4 @@ input.btnhov {
 .em_upload, .em_gender, .em_email, .em_details, .em_evaluation, .em_selection_outcome {float:left; padding: 1px 3px 1px 3px}
 .em_attachments, .em_forms {float:padding; margin: 0px 3px 0px 3px; display: inline-block;}
 .em_photo {float:left;}
+.em_validation {float:left;}

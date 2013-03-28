@@ -60,13 +60,29 @@ class EmundusControllerCheck extends JController {
 		return $syear[0];
 	}
 
+	function validation() {
+		//$menu=JSite::getMenu()->getActive(); die(print_r($menu));
+		//$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+			die(JText::_('ACCESS_DENIED'));
+		}
+		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
+		$validate = JRequest::getVar('validate', null, 'GET', null, 0);
+		if(!empty($uid) && is_numeric($uid)) {
+			$db =& JFactory::getDBO();
+			$db->setQuery('UPDATE #__emundus_declaration SET '.$validate.'='.abs($validate-1).' WHERE user = '.mysql_real_escape_string($uid));
+			$db->Query();
+		}
+	}
+	
 	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
@@ -94,7 +110,7 @@ class EmundusControllerCheck extends JController {
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', null, 0);
@@ -121,7 +137,7 @@ class EmundusControllerCheck extends JController {
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -151,65 +167,7 @@ class EmundusControllerCheck extends JController {
 		else
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($ids), 'message');
 	}
-	
-	/**
-	 * push false to complete application form status
-	 */
-	/*function push_false() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user =& JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
-		}
-		$db =& JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$validation_list = JRequest::getVar('validation_list', null, 'POST', 'none',0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
-		$elements_items = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$elements_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$comment = JRequest::getVar('comments', null, 'POST');
-		
-	 	// Starting a session.
-		$session =& JFactory::getSession();
-		$session->set('s_elements', $elements_items);
-		$session->set('s_elements_values', $elements_values);
-		
-		JArrayHelper::toInteger( $uid, 0 );
-		if (count( $uid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
-			exit;
-		} 
-		
-		foreach ($ids as $id) {
-			$query = 'SELECT comment FROM #__emundus_users WHERE user_id ='.$id;
-			$db->setQuery( $query );
-			$res = $db->loadResult();
 
-			if(!empty($comment)) {
-				if($res == NULL) {
-					//die('bobnfiodhvbgoidf___________________________________hdsfubvffujdvl___________________________');
-					$query ='UPDATE `#__emundus_users` SET `comment` = "" WHERE `user_id` ='.$id;
-					$db->setQuery( $query );
-					$db->query();
-				}
-				$query = 'UPDATE #__emundus_users SET comment = CONCAT(comment, "'.$comment.'", "\n") WHERE user_id ='.$id;
-				$db->setQuery( $query );
-				$db->query();
-			}
-			
-			$query = 'DELETE FROM #__emundus_declaration WHERE user='.$id;
-			$db->setQuery( $query );
-			$db->query();
-			
-			unlink(JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.$id.DS."application.pdf");
-		}
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($ids), 'message');
-	}*/
 	
 	function push_false() {
 		$user =& JFactory::getUser();
@@ -251,7 +209,7 @@ class EmundusControllerCheck extends JController {
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		require_once('libraries/emundus/excel.php');
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -275,7 +233,7 @@ class EmundusControllerCheck extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		$mainframe =& JFactory::getApplication();
 		require_once('libraries/emundus/xls.php');
@@ -309,7 +267,7 @@ class EmundusControllerCheck extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		require_once('libraries/emundus/excel.php');
 
@@ -340,7 +298,7 @@ class EmundusControllerCheck extends JController {
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_('ACCESS_DENIED'));
 		}
 		require_once('libraries/emundus/zip.php');
 		$db	= &JFactory::getDBO();
@@ -365,8 +323,8 @@ class EmundusControllerCheck extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+			die(JText::_('ACCESS_DENIED'));
 		}
 		
 		$mainframe =& JFactory::getApplication();
