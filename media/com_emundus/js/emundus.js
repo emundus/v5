@@ -38,3 +38,29 @@ function tableOrdering( order, dir, task ) {
   form.filter_order_Dir.value = dir;
   document.adminForm.submit( task );
 }
+
+function validation(uid, validate, cible){
+	var getPlayerResult = $(cible);
+	var getPlayer = new Request(
+	{
+      url:   'index.php?option=com_emundus&format=raw&task=ajax_validation',
+      method: 'get',
+      onRequest: function() {
+            getPlayerResult.set('html', '<img src="media/com_emundus/images/icones/loading.gif">');
+         },
+      onSuccess: function(responseText) {
+            getPlayerResult.set('html', responseText);
+			$(cible).removeEvents('click');
+         },
+      onFailure: function() {
+            getPlayerResult.set('text', 'ERROR');
+			$(cible).removeEvents('click');
+         }
+	});
+	$(cible).addEvent('click', function(getPlayerEvent) { 
+    	getPlayerEvent.stop();
+		getPlayer.send('&uid=' + uid + '&validate=' + validate + '&cible=' + cible);
+	});
+	
+	
+} 

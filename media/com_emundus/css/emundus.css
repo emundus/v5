@@ -365,7 +365,8 @@ input.btnhov {
 #em_list_elements {
 	padding-bottom:15px;
 }
-.em_upload, .em_gender, .em_email, .em_details, .em_evaluation, .em_selection_outcome {float:left; padding: 1px 3px 1px 3px}
-.em_attachments, .em_forms {float:padding; margin: 0px 3px 0px 3px; display: inline-block;}
-.em_photo {float:left;}
-.em_validation {float:left;}
+.em_actions {display: inline-block; min-width:30px}
+.em_upload, .em_gender, .em_email, .em_details, .em_evaluation, .em_selection_outcome, .em_user_id, .em_checkbox {padding: 1px 3px 1px 3px; display: inline;}
+.em_attachments, .em_forms {margin: 0px 3px 0px 3px; display: inline-block;}
+.em_photo {float: right;}
+.em_validation {display:inline;}

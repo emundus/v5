@@ -75,6 +75,9 @@ class EmundusViewIncomplete extends JView
 							   'finalgrade'			=> NULL,
 							   'validate'			=> NULL,
 							   'other'				=> NULL);
+		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+		$actions  		= explode(',', $menu_params->get('em_actions'));
+		
 		$i = 0;
 		foreach ($filts_names as $filt_name) {
 			if (array_key_exists($i, $filts_values))
@@ -117,10 +120,10 @@ class EmundusViewIncomplete extends JView
 		$statut = EmundusHelperList::createApplicationStatutblock($options);
         $this->assignRef('statut', $statut);
 		unset($options);
-		
+
 		//List
-		$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
-		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		//$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
+		$actions =& EmundusHelperList::createActionsBlock($users, $actions); 
 		$this->assignRef('actions', $actions);
 		
 		//Email

@@ -58,7 +58,7 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                                         <td> <?php 
                                         echo $i+$limitstart; $i++; 
                                         echo $this->actions[$value][@$evalu['user']];
-                                        echo "#".$value;  
+                                        //echo "#".$value;  
                                         ?> 
                                         </td><?php 	
                                     }elseif($key == 'profile'){ 

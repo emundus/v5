@@ -225,7 +225,7 @@ class EmundusControllerEvaluation extends JController {
 
 		$db =& JFactory::getDBO();
 		
-		if(EmundusHelperAccess::isEvaluator($user->id)){
+		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id)){
 			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$user->id;
 		}else{
 			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];

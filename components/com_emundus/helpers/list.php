@@ -221,9 +221,9 @@ class EmundusHelperList{
 	*/	
 	function createActionsBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$actions = array();
+		$actions = array(); 
 		//$ids = array();
-		foreach($users as $user) {
+		foreach($users as $user) { 
 			//if(!in_array($user['user_id'],$ids)){
 				//$ids[] = $user['user_id'];
 				if (is_object($user)) {
@@ -233,9 +233,11 @@ class EmundusHelperList{
 				//print_r($user);
 				$user_info = & EmundusHelperList::getUserInfo($user['user_id']);
 				$avatar =& EmundusHelperList::getAvatar($user['user_id']);
+				@$actions[$user['user_id']][$user['user']] .= '<div class="em_actions" id="em_actions_'.$user['user_id'].'">';
 				if(in_array('checkbox',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'"/></div>';
 				}
+				@$actions[$user['user_id']][$user['user']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'">#'.$user['user_id'].'</div>';
 				if(in_array('gender',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_gender" id="em_gender_'.$user['user_id'].'">';
 					$actions[$user['user_id']][@$user['user']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';
@@ -247,7 +249,7 @@ class EmundusHelperList{
 						$actions[$user['user_id']][$user['user']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
 					$actions[$user['user_id']][@$user['user']] .= '</span>';
 					$actions[$user['user_id']][@$user['user']] .= '</div>';
-				}
+				} 
 				if(in_array('email',$params)){
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_email" id="em_email_'.$user['user_id'].'">';
 					$actions[$user['user_id']][$user['user']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';
@@ -260,6 +262,11 @@ class EmundusHelperList{
 					$actions[@$user['user_id']][@$user['user']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.@$user['user_id'].');}}" href="index.php?option=com_emundus&view=application_form&sid='.@$user['user_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png"/></a>';
 					@$actions[@$user['user_id']][@$user['user']] .= '</div>';
 				}
+				if(in_array('upload',$params)){
+					@$actions[$user['user_id']][$user['user']] .= '<div class="em_upload" id="em_upload_'.$user['user_id'].'">';
+					$actions[$user['user_id']][$user['user']] .= '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&rowid=&jos_emundus_uploads___user_id[value]='. $user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a></span> ';
+					$actions[$user['user_id']][$user['user']] .= '</div>';
+				}
 				if(in_array('photo',$params)){
 					if(!empty($avatar)){
 						@$actions[$user['user_id']][$user['user']] .= '<div class="em_photo" id="em_photo_'.$user['user_id'].'"><span class="editlinktip hasTip" title="'.JText::_('OPEN_PHOTO_IN_NEW_WINDOW').'::">';
@@ -268,11 +275,7 @@ class EmundusHelperList{
 						$actions[$user['user_id']][$user['user']] .= '</span></div>';
 					}
 				}
-				if(in_array('upload',$params)){
-					@$actions[$user['user_id']][$user['user']] .= '<div class="em_upload" id="em_upload_'.$user['user_id'].'">';
-					$actions[$user['user_id']][$user['user']] .= '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'"><a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=67&rowid=&jos_emundus_uploads___user_id[value]='. $user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a></span> ';
-					$actions[$user['user_id']][$user['user']] .= '</div>';
-				}
+				
 				if(in_array('attachments',$params)){
 					$uploads =& EmundusHelperList::getUploadList($user['user_id']);
 					@$actions[$user['user_id']][$user['user']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
@@ -314,6 +317,7 @@ class EmundusHelperList{
 					$actions[@$user['user_id']][@$user['user']] .= $this->selection[$user['user_id']];
 					$actions[@$user['user_id']][@$user['user']] .= '</div>';
 				}
+			@$actions[$user['user_id']][$user['user']] .= '</div>';
 			//}
 		}
 		return $actions;
@@ -332,26 +336,24 @@ class EmundusHelperList{
 		$validate_details = EmundusHelperList::getElementsDetailsByID('"'.implode('","', $params).'"');
 //print_r($validate_details);
 		foreach($users as $user) {
-			@$validate[$user['user_id']] .= '<div class="emundusraw">';
 			foreach($validate_details as $vd) {
 				if(!EmundusHelperAccess::isAdministrator($user['user_id']) && !EmundusHelperAccess::isCoordinator($user['user_id'])) {
 					if ($user[$vd->element_name]>0){
 						$img = 'tick.png';
 						$btn = 'unvalidate|'.$user['user_id'];
-						$alt = JText::_('VALIDATE_APPLICATION_FORM');
+						$alt = JText::_('VALIDATED').'::'.JText::_('VALIDATED_NOTE');
 					} else {
 						$img = 'publish_x.png';
 						$btn = 'validate|'.$user['user_id'];
-						$alt = JText::_('UNVALIDATE_APPLICATION_FORM');
+						$alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
 					}
-					$id = $vd->tab_name.'.'.$vd->element_name.$user['user_id'];
-					@$validate[$user['user_id']] .= '<span class="hasTip" title="'.JText::_('APPLICATION_FORM_VALIDATION_NOTE').'">
-					<div class="em_validation" id="'.$id.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$vd->element_name.'\', \''.$id.'\');" ></div></span> '.$vd->element_label.'<br>'; 
+					$id = $vd->tab_name.'.'.$vd->element_name.'.'.$user['user_id'];
+					@$validate[$user['user_id']] .= '<span class="hasTip" title="'.$alt.'">
+					<div class="em_validation" id="'.$id.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" ></div></span> '.$vd->element_label.'<br>'; 
 				} else {
-					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" alt="'.$alt.'"/> '.$vd->element_label.'<br>';
+					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" /> '.$vd->element_label.'<br>';
 				}
 			}
-			@$validate[$user['user_id']] .= '</div>';
 		}
 		return $validate;
 	}
@@ -411,7 +413,7 @@ class EmundusHelperList{
 			$delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['user'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 			
 			//$allowed = array("Super Users", "Administrator", "Editor");
-			if((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->eval_access > 1) {
+			if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->eval_access > 1 ) {
 				$canview = true;
 				$canedit = true;
 			} elseif ($this->eval_access > 0) {
@@ -421,7 +423,8 @@ class EmundusHelperList{
 				$canview = false;
 				$canedit = false;
 			}
-			if(EmundusHelperAccess::isAdministrator($current_user->id) && EmundusHelperAccess::isCoordinator($current_user->id)) { 
+			if(EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id)) { 
+				$canedit = true;
 				$candelete = true;
 			}else{
 				$candelete = false;

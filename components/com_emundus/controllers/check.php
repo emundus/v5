@@ -60,22 +60,6 @@ class EmundusControllerCheck extends JController {
 		return $syear[0];
 	}
 
-	function validation() {
-		//$menu=JSite::getMenu()->getActive(); die(print_r($menu));
-		//$access=!empty($menu)?$menu->access : 0;
-		$user =& JFactory::getUser();
-		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			die(JText::_('ACCESS_DENIED'));
-		}
-		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
-		$validate = JRequest::getVar('validate', null, 'GET', null, 0);
-		if(!empty($uid) && is_numeric($uid)) {
-			$db =& JFactory::getDBO();
-			$db->setQuery('UPDATE #__emundus_declaration SET '.$validate.'='.abs($validate-1).' WHERE user = '.mysql_real_escape_string($uid));
-			$db->Query();
-		}
-	}
-	
 	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();

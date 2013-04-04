@@ -907,5 +907,44 @@ function updateprofile() {
 			}
 		}
 	}
+	
+	/*
+	** @description Validate / Unvalidate a column from table (used in administrative validation). Ajax request
+	** @return string HTML to display in page for action block indexed by user ID.
+	*/
+	function ajax_validation() {
+		//$menu=JSite::getMenu()->getActive(); die(print_r($menu));
+		//$access=!empty($menu)?$menu->access : 0;
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+			die(JText::_('ACCESS_DENIED'));
+		}
+		$uid = JRequest::getVar('uid', null, 'GET', 'INT');
+		$validate = JRequest::getVar('validate', null, 'GET', 'INT');
+		$cible = JRequest::getVar('cible', null, 'GET', 'CMD'); 
+		$data = explode('.', $cible);
+		
+//		print_r($data);
+		if(!empty($uid) && is_numeric($uid)) {
+			$value = abs((int)$validate-1);
+			$db =& JFactory::getDBO();
+			$query = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `user` = '.$db->Quote((int)$uid); 
+			$db->setQuery($query);
+			$db->Query();
+			if ($value > 0){
+				$img = 'tick.png';
+				$btn = 'unvalidate|'.$uid;
+				$alt = JText::_('VALIDATED').'::'.JText::_('VALIDATED_NOTE');
+			} else {
+				$img = 'publish_x.png';
+				$btn = 'validate|'.$uid;
+				$alt = JText::_('UNVALIDATED').'::'.JText::_('VALIDATED_NOTE');
+			}
+			echo '<span class="hasTip" title="'.$alt.'">
+					<input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
+		} else echo JText::_('ERROR'); 
+		
+	}
+	
 }
 ?>

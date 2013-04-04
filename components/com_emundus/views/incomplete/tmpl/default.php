@@ -118,7 +118,7 @@ foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
         <td><?php 
 		echo ++$i+$limitstart; $i++;
-		echo "<div class='em_user_id'>#".$user->user."<div>";
+		//echo "<div class='em_user_id'>#".$user->user."<div>";
         echo $this->actions[$user->user][$user->user];
 		?> 
         </td>

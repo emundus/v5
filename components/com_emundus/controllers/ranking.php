@@ -14,6 +14,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport('joomla.application.component.controller');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
  
 /**
  * eMundus Component Controller
