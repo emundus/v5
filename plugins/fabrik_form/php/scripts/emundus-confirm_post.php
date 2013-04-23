@@ -14,9 +14,7 @@ defined( '_JEXEC' ) or die();
  */
 
 $db =& JFactory::getDBO();
-$query = 'SELECT id, subject, emailfrom, name, message 
-				 FROM #__emundus_setup_emails 
-			  WHERE lbl="confirm_post"';
+$query = 'SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="confirm_post"';
 $db->setQuery( $query );
 $db->query();
 $obj=$db->loadObject();
@@ -29,7 +27,20 @@ $replacements = array ($student->id, $student->name, $student->email, strftime("
 //cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id;
 $db->setQuery( $query );
-$db->query();
+try {
+	$db->Query();
+} catch (Exception $e) {
+	// catch any database errors.
+}
+
+// Confirm candidature
+// Insert data in #__emundus_campaign_candidature
+$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW() WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id);
+try {
+	$db->Query();
+} catch (Exception $e) {
+	// catch any database errors.
+}
 
 // Mail 
 $from = $obj->emailfrom;
@@ -47,7 +58,11 @@ $replytoname = $obj->name;
 $student->candidature_posted = 1;
 $res = JUtility::sendMail( $from, $fromname, $recipient, $subject, $body, true );
 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-				VALUES ('".$from_id."', '".$student->id."', '".$subject."', ".$db->quote($body).", NOW())";
+				VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 $db->setQuery( $sql );
-$db->query();
+try {
+	$db->Query();
+} catch (Exception $e) {
+	// catch any database errors.
+}
 ?>

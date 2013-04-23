@@ -1,7 +1,7 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -41,18 +41,18 @@ class EmundusController extends JController {
 	function display() {
 		// Set a default view if none exists
 		if ( ! JRequest::getCmd( 'view' ) ) {
-			$default = 'users';
+			if ($this->user->usertype == "Registered" && JRequest::getVar('view', null, 'GET' ) != 'renew_application') {
+				$checklist =& $this->getView( 'checklist', 'html' );die(JRequest::getVar('view', null, 'GET' ));
+				$checklist->setModel( $this->getModel( 'checklist'), true );
+				$checklist->display();
+			} else {
+				$default = 'users';
+			}
 			JRequest::setVar('view', $default );
 		}
 		
-		$user =& JFactory::getUser();
-		if ($user->usertype == "Registered" && JRequest::getVar('view', null, 'GET' ) != 'renew_application') {
-			$checklist =& $this->getView( 'checklist', 'html' );
-			$checklist->setModel( $this->getModel( 'checklist'), true );
-			$checklist->display();
-		} else {
-			parent::display();
-		}
+		parent::display();
+		
     }
 	
 	function clear() {
@@ -63,7 +63,7 @@ class EmundusController extends JController {
 	function getCampaign()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT schoolyear FROM #__emundus_setup_profiles WHERE published=1';
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
 		
@@ -344,17 +344,18 @@ function updateprofile() {
 		$requestData['password2'] = $passwd;
 		
 		
-		$query = 'SELECT schoolyear, acl_aro_groups FROM `#__emundus_setup_profiles` WHERE id='.$requestData['profile'];
+		$query = 'SELECT acl_aro_groups FROM `#__emundus_setup_profiles` WHERE id='.$requestData['profile'];
 		$db->setQuery($query);
 		$res = $db->loadObject();
 		
 		$requestData['groups'] = $res->acl_aro_groups;
-
+// @TODO Get year (schoolyear) from campaign
+/*
 		if (empty($requestData['schoolyear']) || !isset($requestData['schoolyear'])) {
 			// Set profile schoolyear
 			$requestData['schoolyear'] = $res->schoolyear;
 		}
-		
+		*/
 		$model = &$this->getModel('profile');
 		$tacl = $model->getProfile($requestData['profile']); 
 		// Bind the post array to the user object
@@ -668,7 +669,8 @@ function updateprofile() {
 			$db->Query();
 		} else {
 			$theuser = JUSER::getInstance($newuser['id']);
-			$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id = '.mysql_real_escape_string($newuser['profile']));
+// @TODO Get schoolyear from affected campaign
+			$db->setQuery('SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE profile_id = '.mysql_real_escape_string($newuser['profile']).' ORDER BY id DESC');
 			$schoolyear = $db->loadResult();
 			$query = 'INSERT INTO `#__emundus_users` (`user_id`, `registerDate`, `firstname`, `lastname`, `profile`, `schoolyear`, `disabled`, `disabled_date`, `cancellation_date`, `cancellation_received`)
 							VALUES ('.$theuser->id.', "'.$theuser->registerDate.'", "'.mysql_real_escape_string($newuser['firstname']).'", "'.mysql_real_escape_string($newuser['lastname']).'", 

@@ -47,7 +47,7 @@ class EmundusModelCandidate_evaluate extends JModel
 	function getCampaign()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT schoolyear FROM #__emundus_setup_profiles WHERE published=1';
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
 		

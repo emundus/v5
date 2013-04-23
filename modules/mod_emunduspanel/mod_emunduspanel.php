@@ -44,7 +44,7 @@ $user =& JFactory::getUser();
 			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id DESC, m.ordering, m.level, m.menutype, m.id ASC';
 		$db->setQuery($query);
 		$res = $db->loadObjectList();
-	
+
 		if (count($res > 0)) {
 			$tab = array();
 			$tab_temp = array();
@@ -52,13 +52,14 @@ $user =& JFactory::getUser();
 			$j = 0;
 			foreach($res as $r){
 				$src = $folder.''.$img[$j];
-				$tab[] .= '<a href="'.$r->link.'&Itemid='.$r->id.'"><img src="'.$src.'" /></a>';
+				$str = '<a href="'.$r->link.'&Itemid='.$r->id.'"><img src="'.$src.'" /></a>';
 				if($is_text == '1')
-					$tab_temp[] .= '<a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';	
+					$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+				$tab[] = $str;
 				$j++;
 			}
-			if($is_text == '1')
-				$tab = array_merge($tab,$tab_temp);
+			/*if($is_text == '1')
+				$tab = array_merge($tab,$tab_temp);*/
 			$col = count($tab);
 	
 			echo '</div>';

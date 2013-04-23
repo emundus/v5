@@ -15,16 +15,17 @@ defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
  */
 class EmundusControllerRenew_application extends JController
 {
-	
 	//var $_model = null;
 	//$this->_model =& $this->getModel( 'renew_application' );
 
 	function display() {
+		$user = JFactory::getUser();
 		// Set a default view if none exists
 		if ( ! JRequest::getCmd( 'view' ) ) {
 			$default = 'renew_application';
 			JRequest::setVar('view', $default );
 		}
+		if ($user != JRequest::getVar('uid', null, 'GET', 'none',0)) die(JText::_("ACCES_DENIED"));
 		parent::display();
 	}
 	
@@ -41,6 +42,7 @@ class EmundusControllerRenew_application extends JController
 
 	function edit_user(){
 		$session =& JFactory::getSession();
+		$current_user = JFactory::getUser();
 		$model = $this->getModel('renew_application');
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$profile = JRequest::getVar('up', null, 'GET', 'none',0);
@@ -59,11 +61,25 @@ class EmundusControllerRenew_application extends JController
 		if($model->isCompleteApplication($user)) $this->deleteInformations();
 		
 		//5.update the applicant's schoolyear
-		$model->updateUser($user,$profile);
+		$model->updateUser($user, $profile);
 		
 		
-		$session->restart();
-		$this->setRedirect('index.php', sprintf(JText::_('RENEW_OK'),$model->getSchoolyear($profile)), 'message');
+		//
+		//$current_user->firstname 			= @$res->firstname;
+		//$current_user->lastname	 			= @$res->lastname;
+		$current_user->profile	 			= 0;
+		$current_user->profile_label 		= "";
+		//$current_user->menutype	 			= "";
+		//$current_user->university_id		= "";
+		//$current_user->applicant			= 1;
+		//$current_user->candidature_start	= "";
+		//$current_user->candidature_end		= "";
+		$current_user->candidature_posted 	= 0;
+		$current_user->schoolyear			= "";
+		$current_user->campaign_id			= 0;
+		
+		//$session->restart();
+		$this->setRedirect('index.php', sprintf(JText::_('RENEW_OK'), $model->getSchoolyear($profile)), 'message');
 	}
 	
 	//Supprimer ce qui correspond aux référents (+learning agreement) ==> OKOKOKOKOKOK
@@ -73,22 +89,22 @@ class EmundusControllerRenew_application extends JController
 		$files_name = '';
 		
 		//first reference letter
-		$file = $model->getLinkAttachments(4,$user);
+		$file = $model->getLinkAttachments(4, $user);
 		if(!empty($file))
 			$files_name = implode(",",$file);
 
 		//Second reference letter
-		$file = $model->getLinkAttachments(6,$user);
+		$file = $model->getLinkAttachments(6, $user);
 		if(!empty($file))
 			$files_name .= ','.implode(',',$file);
 
 		//optionnal reference letter
-		$file = $model->getLinkAttachments(21,$user);
+		$file = $model->getLinkAttachments(21, $user);
 		if(!empty($file))
 			$files_name .= ','.implode(',',$file);
 		
 		//Learning agreement	
-		$file = $model->getLinkAttachments(22,$user);
+		$file = $model->getLinkAttachments(22, $user);
 		if(!empty($file))
 			$files_name .= ','.implode(',',$file);
 		
@@ -117,7 +133,7 @@ class EmundusControllerRenew_application extends JController
 	function deleteApplication(){
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$model = $this->getModel('renew_application');
-		$files_name = $model->getLinkAttachments(26,$user);
+		$files_name = $model->getLinkAttachments(26, $user);
 
 		foreach($files_name as $filename){
 			//delete in database
@@ -136,6 +152,7 @@ class EmundusControllerRenew_application extends JController
 		$model->deleteFinal_grade($user);
 		$model->deleteDeclaration($user);
 		$model->deleteGroups_eval($user);
+		$model->deleteTraining($user);
 	}
 
 }

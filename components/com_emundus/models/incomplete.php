@@ -160,17 +160,17 @@ class EmundusModelIncomplete extends JModel
 	function getCampaign()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT schoolyear FROM #__emundus_setup_profiles WHERE published=1';
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
 		
 		return $syear[0];
 	}
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT schoolyear 
-				FROM #__emundus_setup_profiles 
+		$query = 'SELECT DISTINCT year as schoolyear 
+				FROM #__emundus_setup_campaigns 
 				WHERE published=1 
-				ORDER BY schoolyear';
+				ORDER BY schoolyear DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResultArray();
 	}

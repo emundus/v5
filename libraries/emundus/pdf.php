@@ -17,6 +17,7 @@ function age($naiss) {
 	}
 function application_form_pdf($user_id, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 
 	$current_user = & JFactory::getUser();
 	// --- CONFIGURATION --- //
@@ -38,17 +39,19 @@ function application_form_pdf($user_id, $output = true) {
 	$registered = $db->loadResult();
 
 	// Users informations
-	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, p.schoolyear AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ed.time_date
+	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.year AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ed.time_date
 				FROM #__users AS u
 				LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
 				LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.'
 				LEFT JOIN #__emundus_setup_profiles AS p ON p.id = c.profile
+				LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = c.profile AND esc.published = 1 
 				LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id
 				LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id
-				WHERE u.id='.$user_id;
+				WHERE u.id='.$user_id. '
+				ORDER BY esc.id DESC';
 	$db->setQuery($query);
 	$item = $db->loadObject();
-	
+
 	//get logo
 	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
 	$db->setQuery($query);
@@ -131,9 +134,9 @@ $htmldata .= '
                         ORDER BY ff.label';
 	$db->setQuery($query);
 	$tableusers = implode(',', $db->loadResultArray());
-	
+
 	//get profile or result for 
-	$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;	
+	$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;
 	$db->setQuery( $query );
 	$db->query();
 	$num_rows = $db->getNumRows();
@@ -151,7 +154,7 @@ $htmldata .= '
 						WHERE fbtables.form_id IN ('.$tableusers.') AND esp.id = '.$user_profile.'
 						OR (fbtables.created_by_alias = "eval" AND (ff.id = '.$eval_form.' OR ff.id = 39)) 
 						ORDER BY fbtables.created_by_alias DESC, menu.ordering ASC, fbtables.label ASC';
-	}else{
+	} else {
 		$query = 'SELECT DISTINCT(fbtables.form_id), fbtables.id, fbtables.label, fbtables.db_table_name, fbtables.created_by_alias 
 						FROM #__menu AS menu 
 						INNER JOIN #__emundus_setup_profiles AS esp ON esp.menutype = menu.menutype
@@ -276,6 +279,7 @@ $htmldata .= '
 							ORDER BY fe.ordering';
 				$db->setQuery( $query );
 				$elements = EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
+/////////////////////////////////////////////////////////
 				if(count($elements)>0) {
 					$htmldata .= '<fieldset><h2>';
 					$htmldata .= $itemg->label;

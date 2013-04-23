@@ -18,6 +18,7 @@ function return_bytes($val) {
 }
 
 function zip_file($users) {
+	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 	//clearstatcache();
 	$current_user =& JFactory::getUser();
 	//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");

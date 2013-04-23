@@ -209,7 +209,7 @@ class EmundusHelperList{
 	function getFormsList($user_id){
 		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		$profile = & EmundusHelperList::getProfile($user_id);
-		return EmundusHelperMenu::buildMenuQuery($profile);;
+		return EmundusHelperMenu::buildMenuQuery($profile);
 	}
 	
 

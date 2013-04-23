@@ -104,6 +104,7 @@
 					'lastname',
 					'firstname',
 					'profile',
+					'campaign',
 				);
 		
                 foreach ($fields as $field)

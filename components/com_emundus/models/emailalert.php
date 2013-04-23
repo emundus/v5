@@ -35,8 +35,8 @@ class EmundusModelEmailalert extends JModel{
 	}
 	
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT schoolyear 
-				FROM #__emundus_setup_profiles 
+		$query = 'SELECT DISTINCT year as schoolyear 
+				FROM #__emundus_setup_campaigns 
 				WHERE published=1 
 				ORDER BY schoolyear';
 		$this->_db->setQuery( $query );
@@ -60,9 +60,11 @@ class EmundusModelEmailalert extends JModel{
 		}
 		
 		//liste d'envoi -- Rappel periodique ou rappel plus frequent avant fin de candidature
+		// @TODO Prendre en compte la table #__emundus_campaign_candidature !!
 		$query = 'SELECT u.id, u.name, u.email, ee.date_time, ee.email_id, ee.periode, esp.candidature_end, ed.validated, ese.subject, ed.time_date
 					FROM #__users u 
 					LEFT JOIN #__emundus_declaration as ed ON ed.user=u.id 
+					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.profile_id=eu.profile AND published=1
 					JOIN #__emundus_emailalert ee ON ee.user_id = u.id
 					LEFT JOIN #__emundus_setup_emails ese ON ese.id = ee.email_id
 					JOIN #__emundus_users eu ON u.id = eu.user_id

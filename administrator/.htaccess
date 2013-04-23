@@ -1,0 +1,6 @@
+AuthName "Private area"
+AuthType Basic
+AuthUserFile "C:\Program Files (x86)\Zend\Apache2\.htpasswd"
+<Limit GET POST>
+Require valid-user
+</Limit>

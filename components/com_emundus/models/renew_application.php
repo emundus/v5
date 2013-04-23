@@ -2,8 +2,8 @@
 /**
  * Profile Model for eMundus Component
  * 
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -29,8 +29,8 @@ class EmundusModelRenew_application extends JModel {
 	}
 	
 	function getSchoolyear($profile){
-		$query = 'SELECT schoolyear 
-				FROM #__emundus_setup_profiles
+		$query = 'SELECT year as schoolyear 
+				FROM #__emundus_setup_campaigns
 				WHERE id = '.$profile;
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResult();
@@ -111,9 +111,16 @@ class EmundusModelRenew_application extends JModel {
 		return $this->_db->query();
 	}
 	
-	function updateUser($user,$profile){
+	function deleteTraining($user){
+		//delete groups or single evaluator(s)
+		$query = 'DELETE FROM #__emundus_training WHERE user='.$user;
+		$this->_db->setQuery( $query );
+		return $this->_db->query();
+	}
+	
+	function updateUser($user, $profile){
 		$schoolyear = $this->getSchoolyear($profile);
-		$query = 'UPDATE #__emundus_users SET schoolyear = "'.$schoolyear.'" WHERE user_id = '.$user;
+		$query = 'UPDATE #__emundus_users SET schoolyear = "", profile="0" WHERE user_id = '.$user;
 		$this->_db->setQuery( $query );
 		return $this->_db->query();
 	}

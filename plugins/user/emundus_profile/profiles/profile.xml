@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-        <fields name="emundus_profile">
-                <fieldset name="default"
-                        label="PLG_USER_EMUNDUS_PROFILE_SLIDER_LABEL"
-                >
-                        <field
-                                name="lastname"
-                                type="text"
-                                id="lastname"
-                                description="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_DESC"
-                                filter="string"
-                                label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
-                                message="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_MESSAGE"
-                                size="30"
-                        />
-						<field
-                                name="firstname"
-                                type="text"
-                                id="firstname"
-                                description="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_DESC"
-                                filter="string"
-                                label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
-                                message="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_MESSAGE"
-                                size="30"
-                        />
-						<field 
-								name="profile" 
-								type="sql"
-								query="SELECT id, label FROM #__emundus_setup_profiles WHERE published=1"
-								key_field="id"
-								value_field="label"
-								description="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_DESC"
-                                filter="string"
-                                label="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
-                                message="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_MESSAGE"
-						/>
-                </fieldset>
-        </fields>
+	<fields name="emundus_profile">
+		<fieldset name="default"
+			label="PLG_USER_EMUNDUS_PROFILE_SLIDER_LABEL"
+		>
+		<field
+			name="lastname"
+			type="text"
+			id="lastname"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_DESC"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_LABEL"
+			message="PLG_USER_EMUNDUS_PROFILE_FIELD_LASTNAME_MESSAGE"
+			size="30"
+		/>
+		<field
+			name="firstname"
+			type="text"
+			id="firstname"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_DESC"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_LABEL"
+			message="PLG_USER_EMUNDUS_PROFILE_FIELD_FIRSTNAME_MESSAGE"
+			size="30"
+		/>
+		<field 
+			name="profile" 
+			type="sql"
+			query="SELECT id, label FROM #__emundus_setup_profiles WHERE published=1"
+			key_field="id"
+			value_field="label"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_DESC"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
+			message="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_MESSAGE"
+		/>
+		<field 
+			name="campaign" 
+			type="sql"
+			query="SELECT id, CONCAT(label,' (',year,')') AS label FROM #__emundus_setup_campaigns WHERE published=1 AND NOW() >= start_date AND end_date >= NOW()"
+			key_field="id"
+			value_field="label"
+			description="PLG_USER_EMUNDUS_CAMPAIGN_FIELD_CAMPAIGN_DESC"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
+			message="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_MESSAGE"
+		/>
+		</fieldset>
+	</fields>
 </form>

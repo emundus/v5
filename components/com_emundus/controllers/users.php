@@ -1,7 +1,7 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -15,10 +15,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
  
 /**
- * eMundus Component Controller
+ * users Controller
  *
- * @package    Joomla.Tutorials
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
+ * @since      2.0.0
  */
 class EmundusControllerUsers extends JController {
 	

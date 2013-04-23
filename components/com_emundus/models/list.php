@@ -1,13 +1,13 @@
 <?php
 /**
- * Users Model for eMundus Component
+ * eMundus Campaign model
  * 
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
+ * @package    	Joomla
+ * @subpackage 	eMundus
+ * @link       	http://www.emundus.fr
+ * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @license    	GNU/GPL
+ * @author     	Decision Publique - Benjamin Rivalland
  */
  
 // No direct access
@@ -191,10 +191,10 @@ class EmundusModelList extends JModel
 	}  
 	
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT schoolyear 
-				FROM #__emundus_setup_profiles 
+		$query = 'SELECT DISTINCT year as schoolyear 
+				FROM #__emundus_setup_campaigns 
 				WHERE published=1 
-				ORDER BY schoolyear';
+				ORDER BY schoolyear DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResultArray();
 	}

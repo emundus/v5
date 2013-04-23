@@ -47,6 +47,15 @@
 					<option value="1">JOPTION_OPTIONAL</option>
 					<option value="0">JDISABLED</option>
 				</field>
+				<field name="register-require_campaign" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
+ 
  
 				<field name="profile-user" type="spacer"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_NAME_PROFILE_REQUIRE_USER"
@@ -70,6 +79,14 @@
 				<field name="profile-require_profile" type="list"
 					description="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_DESC"
 					label="PLG_USER_EMUNDUS_PROFILE_FIELD_PROFILE_LABEL"
+				>
+					<option value="2">JOPTION_REQUIRED</option>
+					<option value="1">JOPTION_OPTIONAL</option>
+					<option value="0">JDISABLED</option>
+				</field>
+				<field name="profile-require_campaign" type="list"
+					description="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_DESC"
+					label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
 				>
 					<option value="2">JOPTION_REQUIRED</option>
 					<option value="1">JOPTION_OPTIONAL</option>

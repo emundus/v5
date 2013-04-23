@@ -53,7 +53,7 @@ class EmundusControllerCheck extends JController {
 	function getCampaign()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT schoolyear FROM #__emundus_setup_profiles WHERE published=1';
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
 		
@@ -245,7 +245,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	////// Export incomplete application form ///////////////////
-	function export_incomplete_to_xls() {
+/*	function export_incomplete_to_xls() {
 		$user =& JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
@@ -275,7 +275,7 @@ class EmundusControllerCheck extends JController {
 		else
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 	}
-	
+	*/
 	function export_zip() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
@@ -302,7 +302,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
-	function customEmail() {
+/*	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -409,6 +409,6 @@ class EmundusControllerCheck extends JController {
 		} else {
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('REPORTS_MAILS_SENT'), 'message');
 		}	
-	}
+	}*/
 }
 ?>

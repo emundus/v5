@@ -2,8 +2,8 @@
 /**
  * Profile Model for eMundus Component
  * 
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage eMundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -42,8 +42,10 @@ class EmundusModelProfile extends JModel
 	
 	function getAttachments($p)
 	{
-		$query = 'SELECT attachment.id, attachment.value, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed FROM #__emundus_setup_attachments AS attachment
-					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.mysql_real_escape_string($p).' ORDER BY attachment.ordering';
+		$query = 'SELECT attachment.id, attachment.value, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed 
+					FROM #__emundus_setup_attachments AS attachment
+					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.mysql_real_escape_string($p).' 
+					ORDER BY attachment.ordering';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
@@ -56,6 +58,14 @@ class EmundusModelProfile extends JModel
 					WHERE fbtable.created_by_alias = "form" ORDER BY selected DESC, menu.ordering ASC, fbtable.label ASC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
+	}
+	
+	function isProfileUserSet($uid) {
+		$query = 'SELECT count(user_id) as cpt, profile FROM #__emundus_users WHERE user_id = '.$uid. ' GROUP BY user_id';
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadAssocList();
+
+		return $res[0];
 	}
 }
 ?>
