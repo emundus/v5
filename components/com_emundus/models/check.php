@@ -228,7 +228,8 @@ class EmundusModelCheck extends JModel
 		$db =& JFactory::getDBO();
 		
 		$query = 'SELECT DISTINCT(#__emundus_users.user_id), '.$tab.'.'.$elem.' AS '.$tab.'__'.$elem;
-		$query .= '	FROM #__emundus_users 
+		$query .= '	FROM #__emundus_campaign_candidature
+					LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__emundus_campaign_candidature.applicant_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
 		
 		// subquery JOINS
@@ -238,7 +239,7 @@ class EmundusModelCheck extends JModel
 		$this->setJoins($this->elements_default, $query, $joined);
 		
 		// subquery WHERE
-		$query .= ' WHERE '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
+		$query .= ' WHERE #__emundus_campaign_candidature.submitted=1 AND '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
 		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
 		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
 		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
@@ -332,13 +333,15 @@ class EmundusModelCheck extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', 'jos_emundus_declaration');
 		
-		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated';
+		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
 		if(!empty($col_validate)) $query .= ', '.$col_validate;
-		$query .= '	FROM #__emundus_declaration 
+		$query .= '	FROM #__emundus_campaign_candidature
+					LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user =  #__emundus_campaign_candidature.applicant_id 
 					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
+					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
 					LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
 					LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
@@ -356,9 +359,9 @@ class EmundusModelCheck extends JModel
 		if(!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined))
 			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
 			
-		$query .= ' WHERE #__users.block = 0 ';
-		if(empty($schoolyears)) $query .= ' AND #__emundus_users.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'")';
-		
+		$query .= ' WHERE #__emundus_campaign_candidature.submitted = 1 AND #__users.block = 0 ';
+		if(empty($schoolyears)) $query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+				
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
 			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
 			$query .= ' AND (#__emundus_users.user_id IN (
@@ -405,7 +408,7 @@ class EmundusModelCheck extends JModel
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			$query.= '#__emundus_users.schoolyear IN ("'.implode('","',$schoolyears).'") ';
+			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
 		}
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';
@@ -459,6 +462,7 @@ class EmundusModelCheck extends JModel
 			else 
 				$query.= ' #__emundus_declaration.validated = 0';
 		}
+		$query .= ' GROUP BY #__emundus_campaign_candidature.applicant_id';
 		return $query;
 	}
 

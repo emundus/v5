@@ -109,7 +109,7 @@ class EmundusHelperFilters {
 		$db =& JFactory::getDBO();
 		$query = 'SELECT DISTINCT year as schoolyear 
 				FROM #__emundus_setup_campaigns 
-				WHERE published=1 
+				WHERE published = 1 AND end_date > NOW()
 				ORDER BY schoolyear DESC';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -167,11 +167,9 @@ class EmundusHelperFilters {
 	
 	function getSchoolyears(){
 		$db =& JFactory::getDBO();
-		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
-			FROM #__emundus_users 
-			WHERE schoolyear is not null 
-			AND schoolyear != "" 
-			ORDER BY schoolyear';
+		$query = 'SELECT DISTINCT(year) as schoolyear
+			FROM #__emundus_setup_campaigns 
+			ORDER BY schoolyear DESC';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}

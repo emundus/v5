@@ -101,9 +101,7 @@ if(!empty($this->users)) {
         </th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'jos_emundus_personal_detail__last_name', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'jos_emundus_personal_detail__nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-        <th><?php echo JHTML::_('grid.sort', JText::_('SCHOOL_YEAR'), 'c.schoolyear', $this->lists['order_Dir'], $this->lists['order']); ?> </th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('SEND_ON'), 'jos_emundus_declaration__time_date', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'date_submitted', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICATION_FORM_VALIDATION'), 'jos_emundus_declaration__validated', $this->lists['order_Dir'], $this->lists['order']); ?></th>
         
 	</tr>
@@ -127,39 +125,17 @@ foreach ($this->users as $user) { ?>
         echo $this->actions[$user['user_id']][$user['user_id']];
 		?> 
 		</td>
-		<td><?php 
-			if(strtoupper($user['name']) == strtoupper($user['jos_emundus_personal_detail__first_name']).' '.strtoupper($user['jos_emundus_personal_detail__last_name'])) 
+		<td>
+            <?php 
+			if(strtoupper($user['name']) == strtoupper($user['jos_emundus_personal_detail__last_name'].' '.$user['jos_emundus_personal_detail__first_name'])) 
 				echo '<strong>'.strtoupper($user['jos_emundus_personal_detail__last_name']).'</strong><br />'.$user['jos_emundus_personal_detail__first_name']; 
 			else 
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user['name'].'</font></span>'; 
 			?>
 		</td>
       <td><?php echo $user['jos_emundus_personal_detail__nationality']; ?></td>
-      <td>
-	  <div class="emundusprofile<?php echo $user['profile']; ?>"><?php echo $this->profiles[$user['profile']]->label; ?></div>
-	  <?php 
-	   $query = 'SELECT esp.id, esp.label
-					FROM #__emundus_users_profiles AS eup
-					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id=eup.profile_id
-					WHERE eup.user_id = '.$user['user_id'].'
-					ORDER BY eup.id';
-		$db->setQuery( $query );
-		$profiles=$db->loadObjectList();
-		$many_profiles = count($profiles)>1?true:false;
-		echo '<ul>';
-		foreach($profiles as $p){
-			if ($p->id == $user['profile'] && $many_profiles)
-				echo '<li class="bold">'.$p->label.' ('.JText::_('FIRST_CHOICE').')</li>';
-			else
-				echo '<li>'.$p->label.'</li>';
-		}
-		echo '</ul>';
-	   ?></td>
-      <td align="left" valign="middle"><?php echo $user['schoolyear']; ?></td>
-		<td><?php echo JHtml::_('date', $user['registerDate'], JText::_('DATE_FORMAT_LC2')); ?></td>
-		<td>
-        <?php echo $this->validate[$user['user_id']]; ?>
-		</td>	
+      <td><?php echo $this->campaigns[$user['user_id']][$user['user_id']]; ?></td>
+	  <td><?php echo $this->validate[$user['user_id']]; ?></td>	
 	</tr>
 <?php } ?>
 

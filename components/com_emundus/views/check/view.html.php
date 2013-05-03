@@ -1,15 +1,13 @@
 <?php
-/**
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
+ /**
+ * @package     Joomla
+ * @subpackage  eMundus
  * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
-*/
- 
+ * @copyright   Copyright (C) 2013 eMundus. All rights reserved.
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ */
+
 // no direct access
- 
 defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.view');
@@ -106,7 +104,7 @@ class EmundusViewCheck extends JView
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
 		
-		$schoolyears =& $this->get('schoolyears');
+		$schoolyears = $state->schoolyears;
 		$this->assignRef('schoolyears', $schoolyears);
         
 		$this->assignRef( 'lists', $lists );
@@ -132,6 +130,11 @@ class EmundusViewCheck extends JView
 		//$options = array('jos_emundus_declaration.validated', 'jos_emundus_declaration.certified_copies_received', 'jos_emundus_declaration.languages_result_received'); 
 		$validate =& EmundusHelperList::createValidateBlock($users, $validate_id);
 		$this->assignRef('validate', $validate);
+		
+		$param= array('submitted'		=> 1,
+					  'year'			=> implode('","', $schoolyears));
+		$campaigns =& EmundusHelperList::createApplicantsCampaignsBlock($users, $param); 
+		$this->assignRef('campaigns', $campaigns);
 
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {

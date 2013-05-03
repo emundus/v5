@@ -48,7 +48,7 @@ class EmundusViewIncomplete extends JView
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		$access = !empty($current_menu)?$current_menu->access:0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access))  die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access))  die("ACCESS_DENIED");
 
 		$users =& $this->get('Users');
 		
@@ -105,8 +105,8 @@ class EmundusViewIncomplete extends JView
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
-		
-		$schoolyears =& $this->get('schoolyears');
+
+		$schoolyears = $state->schoolyears;
 		$this->assignRef('schoolyears', $schoolyears);
 		
         $this->assignRef( 'lists', $lists );
@@ -125,6 +125,11 @@ class EmundusViewIncomplete extends JView
 		//$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
 		$actions =& EmundusHelperList::createActionsBlock($users, $actions); 
 		$this->assignRef('actions', $actions);
+		
+		$param= array('submitted'		=> 0,
+					  'year'			=> implode('","', $schoolyears));
+		$campaigns =& EmundusHelperList::createApplicantsCampaignsBlock($users, $param); 
+		$this->assignRef('campaigns', $campaigns);
 		
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {

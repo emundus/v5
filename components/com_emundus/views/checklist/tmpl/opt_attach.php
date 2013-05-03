@@ -26,12 +26,12 @@ $query='SELECT esa.value, esap.id, esa.id as _id
 			$cpt = $_db->loadResult();
 			$link 	= '<a href="'.$itemid['link'].'&Itemid='.$itemid['id'].'#a'.$form->_id.'">';
 			if ($cpt==0)
-				$class	= 'need_missing';
+				$class	= 'need_missing_fac';
 			else
 				$class	= 'need_ok';
 			$endlink= '</a>';
 ?>
-	<li class="<?php echo $class; ?>"><?php echo $link.$form->value.$endlink; ?></li>
+    <li class="em_module <?php echo $class; ?>"><div class="em_form"><?php echo $link.$form->value.$endlink; ?></div></li>
 <?php } ?>
 </ul>
 <?php 

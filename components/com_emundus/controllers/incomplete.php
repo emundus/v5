@@ -96,7 +96,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
@@ -125,7 +125,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', null, 0);
@@ -153,7 +153,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -192,7 +192,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -200,16 +200,21 @@ class EmundusControllerIncomplete extends JController {
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		
+		$model = &$this->getModel('profile');
+
 		foreach ($ids as $id) {
 			if(!empty($comment)) {
-				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
-						VALUES('.$id.','.$user->id.',"Consider application form as complete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
+				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment) 
+						VALUES('.$id.','.$user->id.',"Consider application form as complete","'.date("Y.m.d H:i:s").'",'.$db->quote($comment).')';
 				$db->setQuery( $query );
 				$db->query();
 			}
 			$query = 'INSERT INTO #__emundus_declaration (time_date, user) VALUES("'.date("Y.m.d H:i:s").'", '.$id.')';
 			$db->setQuery( $query );
 			$db->query();
+			$campaign_id = $model->getCurrentCampaignByApplicant($id);
+			$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted = 1, date_submitted = NOW() WHERE applicant_id = '.mysql_real_escape_string($id).' AND campaign_id='.$campaign_id);
+			$db->Query() or die($db->getErrorMsg());
 		}
 		$Itemid=JSite::getMenu()->getActive()->id;
 		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
@@ -224,7 +229,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		//require_once('libraries/emundus/excel.php');
 		
@@ -250,7 +255,7 @@ class EmundusControllerIncomplete extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCES_DENIED"));
 		}
 		require_once('libraries/emundus/excel.php');
 		
@@ -305,117 +310,5 @@ class EmundusControllerIncomplete extends JController {
 		zip_file($cid);
 		exit;
 	}
-	
-	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
-	/*function customEmail() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
-		}
-		
-		$mainframe =& JFactory::getApplication();
-
-		$db	= &JFactory::getDBO();
-		$current_user =& JFactory::getUser();
-
-		$cid		= JRequest::getVar( 'ud', array(), 'post', 'array' );
-		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
-
-		$subject	= JRequest::getVar( 'mail_subject', null, 'post' );
-		$message	= JRequest::getVar( 'mail_body', null, 'post' );
-		$elements_items = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$elements_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-	 	// Starting a session.
-		$session =& JFactory::getSession();
-		$session->set('s_elements', $elements_items);
-		$session->set('s_elements_values', $elements_values);
-		$Itemid=JSite::getMenu()->getActive()->id;
-		if ($captcha !== 1) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
-			return;
-		}
-		if (count( $cid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
-			return;
-		}
-		if ($subject == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
-			return;
-		}
-		if ($message == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid);
-			return;
-		}
-
-		JArrayHelper::toInteger( $cid, 0 );
-
-
-		$query = 'SELECT u.id, u.name, u.email' .
-					' FROM #__users AS u' .
-					' WHERE u.id IN ('.implode( ',', $cid ).')';
-		$db->setQuery( $query );
-		$users = $db->loadObjectList();
-
-
-		// setup mail
-		if (isset($current_user->email)) {
-			$from = $current_user->email;
-			$from_id = $current_user->id;
-			$fromname=$current_user->name;
-		} elseif ($mainframe->getCfg( 'mailfrom' ) != '' && $mainframe->getCfg( 'fromname' ) != '') {
-			$from = $mainframe->getCfg( 'mailfrom' );
-			$fromname = $mainframe->getCfg( 'fromname' );
-			$from_id = 62;
-		} else {
-			$query = 'SELECT id, name, email' .
-				' FROM #__users' .
-				// administrator
-				' WHERE gid = 25 LIMIT 1';
-			$db->setQuery( $query );
-			$admin = $db->loadObject();
-			$from = $admin->name;
-			$from_id = $admin->id;
-			$fromname = $admin->email;
-		}
-
-		// template replacements
-		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SITE_URL\]/', '/\n/');
-
-		$nUsers = count( $users );
-		for ($i = 0; $i < $nUsers; $i++) {
-			$user = &$users[$i];
-
-			// template replacements
-			$replacements = array ($user->id, $user->name, $user->email, JURI::base(), '<br />');
-			// template replacements
-			$body = preg_replace($patterns, $replacements, $message);
-
-			// mail function
-			//JMail( $from, $fromname, $user->email, $subject, $body ,1);
-			if (JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)) {
-				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-					VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
-				$db->setQuery( $sql );
-				$db->query();
-			} else {
-				$error++;
-			}
-		}
-		$Itemid=JSite::getMenu()->getActive()->id;
-		if ($error>0) {
-			JError::raiseWarning( 500, JText::_( 'ACTION_ABORDED' ) );
-			return;
-		} else {
-			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('REPORTS_MAILS_SENT'), 'message');
-		}
-		
-	}*/
 }
 ?>

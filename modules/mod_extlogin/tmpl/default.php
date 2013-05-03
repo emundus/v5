@@ -55,7 +55,7 @@ if($type == 'logout') : ?>
 		<!-- <input type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" /> -->
 	<?php endif; 
 		if ($usersConfig->get('allowUserRegistration')) { ?>
-            <span class="login-button">
+            <span class="register-button">
                 <button value="register" name="register" type="button" title="<?php echo JText::_('REGISTER'); ?>" onclick="location.href='index.php?option=com_users&view=registration'"><?php echo JText::_( 'REGISTER' ); ?></button>
             </span><?php
         } ?>

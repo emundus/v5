@@ -38,6 +38,7 @@
 .username, 
 .password,
 .login-button,
+.register-button,
 .home-button,
 .lostpassword, 
 .lostusername,
@@ -103,8 +104,21 @@
 	background-color:#3270B7;
 	-moz-border-radius: 10px;border-radius: 10px;
 }
+.register-button {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	padding:1px;
+	height: 20px;
+	/*background: url(images/button_bg.png) 0 0 no-repeat;  ie6png:crop */
+	background-color:#3270B7;
+	-moz-border-radius: 10px;border-radius: 10px;
+}
 
 .login-button:hover {
+	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
+	background-color:#FFFFFF;
+}
+.register-button:hover {
 	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
 	background-color:#FFFFFF;
 }
@@ -122,8 +136,24 @@
 	line-height: 20px;
 	color: #fff;
 }
+.register-button button {
+	display: block;
+	padding: 0px 0px 0px 0px;
+	width: 100%;
+	height: 20px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	overflow: hidden;
+	font-size: 11px;
+	line-height: 20px;
+	color: #fff;
+}
 
 .login-button button:hover {
+	color: #000000;
+}
+.register-button button:hover {
 	color: #000000;
 }
 

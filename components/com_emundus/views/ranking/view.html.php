@@ -1,19 +1,18 @@
 <?php
-/**
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
+ /**
+ * @package     Joomla
+ * @subpackage  eMundus
  * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
-*/
+ * @copyright   Copyright (C) 2013 eMundus. All rights reserved.
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ */
  
 // no direct access
- 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
 jimport( 'joomla.application.component.view');
-jimport( 'joomla.utilities.date' );
-JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
+//jimport( 'joomla.utilities.date' );
+//JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
 /**
  * HTML View class for the Emundus Component
  *
@@ -43,23 +42,21 @@ class EmundusViewRanking extends JView
     {
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
-		$allowed = array("Super Users", "Administrator", "Editor");
-		
-		//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Users", "Administrator", "Publisher", "Editor", "Author", "Observator")))
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
-		$user=$this->_user;
-		
-		JHTML::_('behavior.modal');
-		JHTML::_('behavior.tooltip'); 
-		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
+	
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+		$access = !empty($current_menu)?$current_menu->access:0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die(JText::_('ACCESS_DENIED'));
 		
 		//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
 		//$this->assignRef( 'isallowed', $isallowed );
 		
-		$tables 		= array(41);
+				//Filters
+		$tables 		= explode(',', $menu_params->get('em_tables_id')); //41
+		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
+		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
 		$filts_details	= array('profile'			=> '',
 								'evaluator'			=> '',
 								'evaluator_group'	=> '',
@@ -78,9 +75,25 @@ class EmundusViewRanking extends JView
 							  	'finalgrade'		=> NULL,
 							  	'validate'			=> NULL,
 							  	'other'				=> NULL);
-		//$filts = array('profile', 'evaluator', 'evaluator_group', 'schoolyear', 'finalgrade', 'other');
+		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+		$actions  		= explode(',', $menu_params->get('em_actions'));
+		$i = 0;
+		foreach ($filts_names as $filt_name) {
+			if (array_key_exists($i, $filts_values))
+				$filts_details[$filt_name] = $filts_values[$i];
+			else
+				$filts_details[$filt_name] = '';
+			if (array_key_exists($i, $filts_types))
+				$filts_options[$filt_name] = $filts_types[$i];
+			else
+				$filts_options[$filt_name] = '';
+			$i++;
+		}
+		unset($filts_names); unset($filts_values); unset($filts_types);
+
 		$filters =& EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
 		$this->assignRef('filters', $filters);
+		unset($filts_details); unset($filts_options);
 		
 		$users=& $this->get('Users');
 		$this->assignRef( 'users', $users );
@@ -118,14 +131,15 @@ class EmundusViewRanking extends JView
 		unset($options);
 		
 		//Email
-		if(EmundusHelperAccess::isAdministrator($user->id) ||  EmundusHelperAccess::isCoordinator($user->id) ||  EmundusHelperAccess::isPartner($user->id) ||  EmundusHelperAccess::isEvaluator($user->id) ) { 
+		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {
 			if($this->_user->profile!=16){
 				$options = array('applicants');
-				$email =& EmundusHelperEmails::createEmailBlock($options);
+				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
 				unset($options);
 			}
 		}
-		$this->assignRef('email', $email);
+		else $email_applicant = '';
+		$this->assignRef('email', $email_applicant);
 		
 		//List
 		$selection =& EmundusHelperList::createSelectionBlock($users);
@@ -149,7 +163,7 @@ class EmundusViewRanking extends JView
 		$this->assignRef('fg', $fg);
 
 		// Javascript
-        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
+       // JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();

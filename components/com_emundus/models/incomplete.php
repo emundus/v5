@@ -148,7 +148,7 @@ class EmundusModelIncomplete extends JModel
 		$filter_order     = $this->getState('filter_order');
        	$filter_order_Dir = $this->getState('filter_order_Dir');
 				
-		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'registerDate','profile');
+		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'registerDate','profile', 'date_time', 'year', 'label');
         /* Error handling is never a bad thing*/
         if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
@@ -186,107 +186,7 @@ class EmundusModelIncomplete extends JModel
 		
 		return $profiles;
 	}
-	/*
-	function _buildQuery()
-	{
-		$pid = JRequest::getVar('profil', null, 'POST', 'none', 0);
-		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		$nationality = JRequest::getVar('nationality', null, 'POST', 'none', 0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'int', 0);
 
-		// Starting a session.
-		$session =& JFactory::getSession();
-		
-		if(empty($profile) && $session->has( 'profile' )) $profile = $session->get( 'profile' );
-		if(empty($quick_search) && $session->has( 'quick_search' )) $quick_search = $session->get( 'quick_search' );
-		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
-		
-		$s_elements = $session->get('s_elements');
-		$s_elements_values = $session->get('s_elements_values');
-
-		if (count($search)==0) {
-			$search = $s_elements;
-			$search_values = $s_elements_values;
-		}
-		$user =& JFactory::getUser();
-		$query = 'SELECT eu.user_id AS user, a.filename AS avatar, eu.firstname, eu.lastname, u.name, u.username, u.email, epd.gender, epd.nationality, eu.profile, eu.schoolyear, u.registerDate, u.id, u.usertype,  u.block
-					FROM #__emundus_users AS eu 
-					LEFT JOIN #__emundus_personal_detail AS epd ON eu.user_id = epd.user 
-					LEFT JOIN #__emundus_uploads AS a ON a.user_id = eu.user_id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' 
-					LEFT JOIN #__users AS u ON eu.user_id = u.id 
-					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id=eu.profile ';
-						
-		if(!empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				$tab = explode('.', $s);
-				if (count($tab)>1) {
-					$query .= 'LEFT JOIN '.$tab[0].' AS j'.$i.' ON j'.$i.'.user=eu.user_id ';
-					$i++;
-				}
-			}
-		}
-		$query .= ' WHERE u.block=0 AND esp.published=1';
-		if(empty($schoolyears)) $query .= ' AND eu.schoolyear like "%'.$this->getCampaign().'%"';
-		
-		$and = true;
-
-		if(!empty($profile)) 
-			$query .= ' AND eu.user_id IN ('.implode(',',$this->getApplicantsByProfile($profile)).')';
-			
-		$query .= ' AND eu.user_id NOT IN (SELECT ed.user FROM #__emundus_declaration AS ed)';
-		
-		//$no_filter = array("Super Users", "Administrator");
-		if (!EmundusHelperAccess::isAdministrator($user->id)){
-			$user_list=count($this->getProfileAcces($user->id))>0?implode(',',$this->getProfileAcces($user->id)):0; 
-			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in ('.$user_list.')) ';
-		}
-		if(!empty($search)) {
-			$i = 0;
-			foreach ($search as $s) {
-				$tab = explode('.', $s);
-				if (count($tab)>1) {
-					$query .= ' AND ';
-					$query .= 'j'.$i.'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-					$i++;
-				}
-			}
-		}
-		if(isset($quick_search) && !empty($quick_search)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			if (is_numeric ($quick_search)) 
-				$query.= 'u.id = '.$quick_search.' ';
-			else
-				$query.= '(eu.lastname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR eu.firstname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR u.email LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%" )';
-		}
-
-		if(isset($pid) && !empty($pid)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= 'ege.profile_id='.mysql_real_escape_string($pid).' OR ege.user_id IN (select user_id FROM #__emundus_users WHERE profile='.mysql_real_escape_string($pid).')';
-		}
-		if(isset($uid) && !empty($uid)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= 'ege.user_id='.mysql_real_escape_string($uid);
-		}
-		if(isset($schoolyears) &&  !empty($schoolyears)) {
-			$s=is_array($schoolyears)?implode(',',$schoolyears):$schoolyears;
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= 'eu.schoolyear="'.$s.'"';
-		}	
-		return $query;
-	} 
-	*/
 	
 	function setSelect($search) {
 		$cols = array();
@@ -338,7 +238,7 @@ class EmundusModelIncomplete extends JModel
 	}
 	
 	function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default){
-		$current_user = & JFactory::getUser();
+		$current_user 			= & JFactory::getUser();
 		$search					= $this->getState('elements');
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
@@ -353,11 +253,13 @@ class EmundusModelIncomplete extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade');
 		
-		$query = 'SELECT DISTINCT(#__emundus_users.user_id), #__emundus_users.user_id as user, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile';
+		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_campaign_candidature.date_time, #__emundus_setup_campaigns.year, #__emundus_setup_campaigns.label';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
-		$query .= '	FROM #__emundus_users 
+		$query .= '	FROM #__emundus_campaign_candidature
+					LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__emundus_campaign_candidature.applicant_id
+					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
 					LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
 					LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
@@ -375,8 +277,8 @@ class EmundusModelIncomplete extends JModel
 		if(!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined))
 			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
 			
-		$query .= ' WHERE #__users.block = 0 ';
-		if(empty($schoolyears)) $query .= ' AND #__emundus_users.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		$query .= ' WHERE #__users.block = 0 AND (#__emundus_campaign_candidature.submitted = 0 OR #__emundus_campaign_candidature.submitted IS NULL)';
+		if(empty($schoolyears)) $query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
 		
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
 			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
@@ -413,7 +315,7 @@ class EmundusModelIncomplete extends JModel
 		
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
+			else { $and = true; $query .=' WHERE '; }
 			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
 		}
 		
@@ -424,7 +326,7 @@ class EmundusModelIncomplete extends JModel
 		if(isset($schoolyears) &&  !empty($schoolyears)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			$query.= '#__emundus_users.schoolyear IN ("'.implode('","',$schoolyears).'") ';
+			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
 		}
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';
@@ -478,6 +380,8 @@ class EmundusModelIncomplete extends JModel
 			else 
 				$query.= ' #__emundus_declaration.validated = 0';
 		}
+		$query.= ' GROUP BY #__emundus_campaign_candidature.applicant_id';
+		
 		return $query;
 	}
 	
@@ -502,7 +406,7 @@ class EmundusModelIncomplete extends JModel
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-		//echo str_replace('#_', 'jos',$query).'<br /><br />';
+//echo str_replace('#_', 'jos',$query).'<br /><br />';
 		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
 	} 
 
@@ -510,9 +414,10 @@ class EmundusModelIncomplete extends JModel
 	function getProfiles()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp 
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
-		ORDER BY caag.lft, esp.label';
+		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
+					FROM #__emundus_setup_profiles esp 
+					INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
+					ORDER BY caag.lft, esp.label';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}

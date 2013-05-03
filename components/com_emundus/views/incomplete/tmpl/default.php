@@ -23,7 +23,7 @@ $tmpl 				= JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $v 					= JRequest::getVar('view', null, 'GET', 'none',0);
 $itemid 			= JRequest::getVar('Itemid', null, 'GET', 'none',0);
 //$itemid=JSite::getMenu()->getActive()->id;
-$schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
+//$schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
 $session =& JFactory::getSession();
@@ -96,9 +96,13 @@ if(!empty($this->users)) {
         </th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-        <th><?php echo JHTML::_('grid.sort', 'SCHOOL_YEAR', 'c.schoolyear', $this->lists['order_Dir'], $this->lists['order']); ?> </th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('REGISTRED_ON'), 'registerDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php 
+		echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'label', $this->lists['order_Dir'], $this->lists['order']);
+		echo ' | '; 
+		echo JHTML::_('grid.sort', JText::_('CAMPAIGN'), 'year', $this->lists['order_Dir'], $this->lists['order']); 
+		echo ' | '; 
+		echo JHTML::_('grid.sort', JText::_('START_TO_FILL'), 'date_time', $this->lists['order_Dir'], $this->lists['order']); 
+		?></th>
 	</tr>
     </thead>
 	<tfoot>
@@ -130,26 +134,7 @@ foreach ($this->users as $user) { ?>
 			?>
 		</td>
       <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
-       <td><?php 
-	   $query = 'SELECT esp.id, esp.label
-					FROM #__emundus_users_profiles AS eup
-					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id=eup.profile_id
-					WHERE eup.user_id = '.$user->user.'
-					ORDER BY eup.id';
-		$db->setQuery( $query );
-		$profiles=$db->loadObjectList();
-		$many_profiles = count($profiles)>1?true:false;
-		echo '<ul>';
-		foreach($profiles as $p){
-			if ($p->id == $user->profile && $many_profiles)
-				echo '<li class="bold">'.$p->label.' ('.JText::_('FIRST_CHOICE').')</li>';
-			else
-				echo '<li>'.$p->label.'</li>';
-		}
-		echo '</ul>';
-	   ?></td>
-      <td align="left" valign="middle"><?php echo $user->schoolyear; ?></td>
-		<td><?php echo JHtml::_('date', $user->registerDate, JText::_('DATE_FORMAT_LC2')); ?></td>	
+      <td><?php echo $this->campaigns[$user->user][$user->user]; ?></td>
 	</tr>
 <?php } ?>
 </table>

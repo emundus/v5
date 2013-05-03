@@ -50,7 +50,7 @@ class EmundusHelperList{
             foreach ($multi_array as $key=>$row_array){  
 				if(is_array($row_array)){  
 					$user_id = $row_array['user_id'];
-                    $key_array[$key] = $row_array[$sort_key]; 
+                    @$key_array[$key] = @$row_array[$sort_key]; 
                 }else{  
                     return -1;  
                 } 
@@ -212,12 +212,88 @@ class EmundusHelperList{
 		return EmundusHelperMenu::buildMenuQuery($profile);
 	}
 	
+	// @description Get applicants list
+	// @param	int  	1 for submitted application, 0 for incomplete, 2 for all applicants
+	// @param	string	Year(s) of the campaigns comma separated, can be something like 2012-2013
+	// @return	array	Object of users ID and campaign info
+	function getApplicants($submitted, $year){
+		$db =& JFactory::getDBO();
+		$query = 'SELECT ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';
+		if ($submitted == 0)
+			$query .= ' WHERE (ecc.submitted = '.$submitted.' OR ecc.submitted IS NULL) ';
+		if ($submitted == 1)
+			$query .= ' WHERE ecc.submitted = '.$submitted;
+		else
+			$query .= ' WHERE 1 ';
+		$query .= '  AND esc.year IN ("'.$year.'") ';
+		//$query .= ' ORDER BY ecc.submitted, esc.label';
+		$db->setQuery( $query );
+		
+		return $db->loadObjectList();
+	}
+	
+	// @description Get applicants list
+	// @param	int  	1 for submitted application, 0 for incomplete, 2 for all applicants
+	// @param	string	Year(s) of the campaigns comma separated, can be something like 2012-2013
+	// @return	array	Object of users ID and campaign info
+	function getCampaignsByApplicantID($user, $submitted, $year){
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esc.year, ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted, ecc.date_time, esc.training
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';
+		$query .= ' WHERE 1 ';
+		if ($submitted == 0)
+			$query .= ' AND (ecc.submitted = '.$submitted.' OR ecc.submitted IS NULL) ';
+		if ($submitted == 1)
+			$query .= ' AND ecc.submitted = '.$submitted;
+		$query .= '  AND ecc.applicant_id = '.$user;
+		$query .= '  AND esc.year IN ("'.$year.'") ';
+		//$query .= ' ORDER BY ecc.submitted, esc.label';
+		$db->setQuery( $query );
+//echo str_replace('#_', 'jos', $query);		
+		return $db->loadObjectList();
+	}
+	
+	/*
+	** @description Get the list of campaign applied by applicant.
+	** @param array $users List of users to display in page.
+	** @param array $params $params['submitted'], $params['year'],... have a look in view.html.php
+	** @return array Array of HTML to display in page for "Applicant for" column.
+	*/	
+	function createApplicantsCampaignsBlock($users, $params){
+		$actions = array(); 
+		foreach($users as $user) { 
+			if (is_object($user)) {
+					$json  = json_encode($user); 
+					$user = json_decode($json, true);
+				}
 
+			$campaigns_list = & EmundusHelperList::getCampaignsByApplicantID($user['user_id'], $params['submitted'], $params['year']);
+//	print_r($campaigns_list);				
+			@$actions[$user['user_id']][$user['user']] .= '<div class="em_campaigns" id="em_campaigns_'.$user['user_id'].'">';
+			@$actions[$user['user_id']][$user['user']] .= '<ul>';
+			foreach($campaigns_list as $c) {
+				$dt = $params['submitted']==0?$c->date_time:$c->date_submitted;
+				@$actions[$user['user_id']][$user['user']] .= '<li>';
+				@$actions[$user['user_id']][$user['user']] .= '<div class="em_campaigns_'.$c->training.'" >';
+				@$actions[$user['user_id']][$user['user']] .= '<span class="em_campaign_label">'.$c->label.'</span> | '.$c->year.' | '.JHtml::_('date', $dt, JText::_('DATE_FORMAT_LC2'));
+				@$actions[$user['user_id']][$user['user']] .= '</div>';
+				@$actions[$user['user_id']][$user['user']] .= '</li>';
+			}
+			@$actions[$user['user_id']][$user['user']] .= '</ul>';
+			@$actions[$user['user_id']][$user['user']] .= '</div>';
+		}
+		return $actions;
+	}
+	
+	
 	/*
 	** @description Get icone on first column.
-	** @param array $users List of user to display in page.
+	** @param array $users List of users to display in page.
 	** @param array $params Type of action that can be done for user (checkbox / gender /email / details / photo / upload / attachments / forms / evaluation / selection_outcome).
-	** @return array Arary of HTML to display in page for action block indexed by user ID.
+	** @return array Array of HTML to display in page for action block indexed by user ID.
 	*/	
 	function createActionsBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -358,7 +434,9 @@ class EmundusHelperList{
 		return $validate;
 	}
 	
-	//create icones for selection outcome
+	// @description	Create icones for selection outcome
+	// @param 	array Array of user id
+	// @return 	array Array of HTML to display in page
 	function createSelectionBlock($users){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$selection = array();
@@ -655,11 +733,11 @@ class EmundusHelperList{
 	}
 	
 	function createApplicationStatutblock($params){
-        $statut = '<div><span><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue)this.value=\'\'">Comments</textarea></span>';
-        $statut .= '<span>';
+        $statut = '<div id="em_comments"><img class="selectallarrow" width="38" height="22" alt="'.JText::_('FOR_SELECTION').'" src="'.JURI::Base().'media/com_emundus/images/icones/arrow_ltr.png"><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue) this.value=\'\'">'.JText::_('COMMENTS').'</textarea>';
+        $statut .= '<div id="em_comments_action">';
 		if(in_array('complete',$params)) $statut .= '<input type="submit" class="green" name="push_true" value="'.JText::_('PUSH_TRUE').'" onclick="document.pressed=this.name" />';
 		if(in_array('incomplete',$params)) $statut .= '<input type="submit" class="red" name="push_false" value="'.JText::_('PUSH_FALSE').'" onclick="document.pressed=this.name" />';
-         $statut .= '</span></div>';
+         $statut .= '</div></div>';
 		return $statut;
 	}
 	
@@ -728,7 +806,7 @@ class EmundusHelperList{
 	}
 	
 	/*
-	** @description		génère une liste html à partir d'un tableau
+	** @description		génère une liste html à partir d'un tableau de données
 	** @param array		tableau à une dimension
 	*/
 	function createHtmlList($tab) {

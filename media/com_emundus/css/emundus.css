@@ -1,7 +1,5 @@
 /******************************** 
- *
  *        com_emundus
- *
  ********************************/
  .hidden{
  	display:none;
@@ -49,20 +47,22 @@ p.need_missing {margin-left: 25px;}
 	background: url(../images/icones/tick.png) 0 0 no-repeat;
 	padding:1px 0px 4px 20px;
 	text-align:left;
+	height: 16px;
 }
 p.need_ok{margin-left: 25px;}
 .print {
 	background: url(../images/icones/printer.png) 0 0 no-repeat;
-	padding-left:48px;
-	padding-top:20px;
-	height:48px;
-}
-.need_missing_fac {
-	background: url(../images/icones/button_cancel_black.png) 0 0 no-repeat;
-	padding-left:30px;
+	padding:1px 0px 4px 20px;
 	text-align:left;
+	height: 16px;
 }
 p.need_missing_fac{margin-left: 25px;}
+.need_missing_fac {
+	background: url(../images/icones/tick-grey.png) 0 0 no-repeat;
+	padding:1px 0px 4px 20px;
+	text-align:left;
+	height: 16px;
+}
 p.description  {
 	color:#777777;
 	font-style:italic;
@@ -370,3 +370,7 @@ input.btnhov {
 .em_attachments, .em_forms {margin: 0px 3px 0px 3px; display: inline-block;}
 .em_photo {float: right;}
 .em_validation {display:inline;}
+.em_campaign_label{font-weight:bold;}
+
+#em_comments{display:inline; float:left; margin-left: 15px;}
+#em_comments_action{display:inline;float:right; padding:8px}
