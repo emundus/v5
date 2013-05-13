@@ -780,7 +780,7 @@ class EmundusHelperList{
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id';
 		$query .= ' WHERE concat_ws(".", tab.db_table_name, element.name) IN ('.$elements.')';
 		$db->setQuery($query);
-echo str_replace("#_", "jos", $query);
+//echo str_replace("#_", "jos", $query);
 		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
 	}
 	

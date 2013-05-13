@@ -23,7 +23,8 @@ include_once(JPATH_BASE.'/components/com_emundus/models/evaluation.php');
 $evaluations = new EmundusModelEvaluation;
 $evaluation = $evaluations->getEvaluationByID($evaluations_id);
 $reason = $evaluations->getEvaluationReasons();
-
+$eligibility = $evaluations->getEvaluationEligibility();
+//die(print_r($eligibility));
 $campaign = EmundusHelperfilters::getCampaignByID($evaluation[0]["campaign_id"]);
 
 unset($evaluation[0]["id"]);
@@ -49,10 +50,10 @@ else
 
 	$chemin = EMUNDUS_PATH_REL;
 
-//print_r($_GET);
-/*
+/*print_r($_GET);
+
 echo "<pre>";
-print_r($campaign);
+print_r($evaluation_details);
 echo "</pre>";
 */
 
@@ -64,10 +65,12 @@ foreach ($evaluation_details as $ed) {
 		if($ed->element_name=="reason") {
 			$result .= '<ul>';
 			foreach ($evaluation as $e) {
-				$result .= '<li>'.$reason[$e["reason"]]->text.'</li>';
+				$result .= '<li>'.$reason[$e[$ed->element_name]]->text.'</li>';
 			}
 			$result .= '</ul>';
-		} else
+		} elseif($ed->element_name=="result") {
+				$result .= $eligibility[$evaluation[0][$ed->element_name]]->text;
+		}else
 			$result .= $evaluation[0][$ed->element_name];
 	}
 }

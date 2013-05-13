@@ -618,6 +618,13 @@ class EmundusModelEvaluation extends JModel
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList('id');
 	}
+
+	function getEvaluationEligibility(){
+		$query = 'SELECT * FROM #__emundus_setup_checklist WHERE whenneed > 1 AND page="checklist"';
+//		echo str_replace("#_", "jos", $query);
+		$this->_db->setQuery($query);
+		return $this->_db->loadObjectList('whenneed');
+	}
 	
 
 	function getPagination(){
