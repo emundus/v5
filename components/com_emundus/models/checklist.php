@@ -97,7 +97,7 @@ class EmundusModelChecklist extends JModel
 	}
 
 	function getSent() {
-		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$this->_user->id;
+		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$this->_user->id.' AND time_date != "0000-00-00 00:00:00"';
 		$this->_db->setQuery( $query );
 		$res = $this->_db->loadResult();
 		return $res>0;

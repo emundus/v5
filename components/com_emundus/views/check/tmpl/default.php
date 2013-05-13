@@ -67,15 +67,11 @@ $db = JFactory::getDBO();
 <input type="hidden" name="validation_list" value="" />
 
 <?php  echo $this->filters; ?>
-<div class="emundusraw">
 <?php
-if(!empty($this->users)) {
- if($current_user->profile!=16){
-	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
-	echo '<span class="editlinktip hasTip" title="'.JText::_('SEND_ELEMENTS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name" /></span>'; 
-}
-?>
-</div>
+if(!empty($this->users)) { ?>
+	<div class="emundusraw">
+		<?php echo $this->export_icones; ?>
+	</div>
 <?php 
 	if($tmpl == 'component') {
 		echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('COMPLETED_APPLICANTS_LIST').'"/>'.JText::_('COMPLETED_APPLICANTS_LIST').'</h3>';
@@ -101,7 +97,13 @@ if(!empty($this->users)) {
         </th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'jos_emundus_personal_detail__last_name', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'jos_emundus_personal_detail__nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'date_submitted', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+		<th><?php 
+		echo JHTML::_('grid.sort', JText::_('CAMPAIGN'), 'label', $this->lists['order_Dir'], $this->lists['order']);
+		echo ' | '; 
+		echo JHTML::_('grid.sort', JText::_('ACADEMIC_YEAR'), 'schoolyear', $this->lists['order_Dir'], $this->lists['order']); 
+		echo ' | '; 
+		echo JHTML::_('grid.sort', JText::_('SUBMITTED_ON'), 'jos_emundus_campaign_candidature.date_submitted', $this->lists['order_Dir'], $this->lists['order']); 
+		?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('APPLICATION_FORM_VALIDATION'), 'jos_emundus_declaration__validated', $this->lists['order_Dir'], $this->lists['order']); ?></th>
         
 	</tr>
@@ -115,14 +117,14 @@ if(!empty($this->users)) {
 		</tr>
 	</tfoot>
 <?php 
-$i=0;
+$i=1;
 $j=0;
 foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
         <td> <?php 
-		echo ++$i+$limitstart; $i++;
+		echo $i+$limitstart; $i++;
 		//echo "<div class='em_user_id'>#".$user['user_id']."<div>";
-        echo $this->actions[$user['user_id']][$user['user_id']];
+        echo $this->actions[$user['user_id']][$user['user_id']][@$user['campaign_id']];
 		?> 
 		</td>
 		<td>

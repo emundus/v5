@@ -58,7 +58,7 @@ p.need_ok{margin-left: 25px;}
 }
 p.need_missing_fac{margin-left: 25px;}
 .need_missing_fac {
-	background: url(../images/icones/tick-grey.png) 0 0 no-repeat;
+	background: url(../images/icones/publish_x-grey.png) 0 0 no-repeat;
 	padding:1px 0px 4px 20px;
 	text-align:left;
 	height: 16px;
@@ -327,6 +327,9 @@ input.btnhov {
 #schoolyear.em_filters {
 	float:right;
 }
+#campaign.em_filters {
+	float:right;
+}
 #finalgrade.em_filters {
 	float:right;
 }
@@ -373,4 +376,4 @@ input.btnhov {
 .em_campaign_label{font-weight:bold;}
 
 #em_comments{display:inline; float:left; margin-left: 15px;}
-#em_comments_action{display:inline;float:right; padding:8px}
+#em_comments_action{display:inline;/*float:right;*/ padding:8px}

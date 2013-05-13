@@ -59,16 +59,11 @@ $db = JFactory::getDBO();
 <input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 
 <?php  echo $this->filters; ?>
-
-
-<div class="emundusraw">
 <?php
-if(!empty($this->users)) {
-  if($current_user->profile!=16) {
-	echo '<span class="editlinktip hasTip" title="'.JText::_('SEND_ELEMENTS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_to_xls" onclick="document.pressed=this.name" /></span>'; 
- }
-?>
-</div>
+if(!empty($this->users)) { ?>
+	<div class="emundusraw">
+		<?php echo $this->export_icones; ?>
+	</div>
 <?php 
 	if($tmpl == 'component') {
 		echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</h3>';
@@ -97,11 +92,11 @@ if(!empty($this->users)) {
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php 
-		echo JHTML::_('grid.sort', JText::_('APPLICANT_FOR'), 'label', $this->lists['order_Dir'], $this->lists['order']);
+		echo JHTML::_('grid.sort', JText::_('CAMPAIGN'), 'label', $this->lists['order_Dir'], $this->lists['order']);
 		echo ' | '; 
-		echo JHTML::_('grid.sort', JText::_('CAMPAIGN'), 'year', $this->lists['order_Dir'], $this->lists['order']); 
+		echo JHTML::_('grid.sort', JText::_('ACADEMIC_YEAR'), 'jos_emundus_setup_campaigns.year', $this->lists['order_Dir'], $this->lists['order']); 
 		echo ' | '; 
-		echo JHTML::_('grid.sort', JText::_('START_TO_FILL'), 'date_time', $this->lists['order_Dir'], $this->lists['order']); 
+		echo JHTML::_('grid.sort', JText::_('STARTED_ON'), 'date_time', $this->lists['order_Dir'], $this->lists['order']); 
 		?></th>
 	</tr>
     </thead>
@@ -116,14 +111,14 @@ if(!empty($this->users)) {
 		</tr>
 	</tfoot>
 <?php 
-$i=0;
+$i=1;
 $j=0;
 foreach ($this->users as $user) { ?>
 	<tr class="row<?php echo $j++%2; ?>">
         <td><?php 
-		echo ++$i+$limitstart; $i++;
+		echo $i+$limitstart; $i++;
 		//echo "<div class='em_user_id'>#".$user->user."<div>";
-        echo $this->actions[$user->user][$user->user];
+        echo $this->actions[$user->user][$user->user][$user->campaign_id];
 		?> 
         </td>
 		<td><?php 
@@ -134,7 +129,7 @@ foreach ($this->users as $user) { ?>
 			?>
 		</td>
       <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
-      <td><?php echo $this->campaigns[$user->user][$user->user]; ?></td>
+      <td><?php echo $this->campaigns[$user->user][$user->user][$user->campaign_id]; ?></td>
 	</tr>
 <?php } ?>
 </table>

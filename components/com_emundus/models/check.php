@@ -69,6 +69,7 @@ class EmundusModelCheck extends JModel
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -89,6 +90,7 @@ class EmundusModelCheck extends JModel
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
+		$this->setState('campaigns', $campaigns);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -156,7 +158,8 @@ class EmundusModelCheck extends JModel
 		$select_list = $this->getSelectList();
 		if(!empty($select_list))
 			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
-		//print_r($this->getSelectList());
+		$can_be_ordering[] = 'schoolyear';
+//	print_r($this->_applicants);
 		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
 			$this->_applicants = $this->multi_array_sort($this->_applicants, $filter_order, $sort);
 		} 
@@ -172,7 +175,7 @@ class EmundusModelCheck extends JModel
 		return $tmp;
 	}
 	
-		function multi_array_sort($multi_array=array(),$sort_key,$sort=SORT_ASC){  
+	function multi_array_sort($multi_array=array(), $sort_key, $sort=SORT_ASC) {  echo "-->".$sort_key;
         if(is_array($multi_array)){  
             foreach ($multi_array as $key=>$row_array){  
                 if(is_array($row_array)){  
@@ -191,20 +194,14 @@ class EmundusModelCheck extends JModel
 	
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
-		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
-		$db->setQuery( $query );
-		$syear = $db->loadRow();
-		
-		return $syear[0];
+		return EmundusHelperFilters::getCampaign();
 	}
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT year as schoolyear 
-				FROM #__emundus_setup_campaigns 
-				WHERE published=1 
-				ORDER BY schoolyear DESC';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		return EmundusHelperFilters::getCurrentCampaign();
+	}
+
+	function getCurrentCampaignsID(){
+		return EmundusHelperFilters::getCurrentCampaignsID();
 	}
 	
 	function getProfileAcces($user)
@@ -333,7 +330,8 @@ class EmundusModelCheck extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', 'jos_emundus_declaration');
 		
-		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted';
+		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.date_submitted,
+		#__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -385,6 +383,7 @@ class EmundusModelCheck extends JModel
 		$finalgrade				= $this->getState('finalgrade');
 		$quick_search			= $this->getState('s');
 		$schoolyears			= $this->getState('schoolyears');
+		$campaigns				= $this->getState('campaigns');
 		$gid					= $this->getState('groups');
 		$uid					= $this->getState('user');
 		$profile				= $this->getState('profile');
@@ -410,6 +409,11 @@ class EmundusModelCheck extends JModel
 			else { $and = true; $query .='WHERE '; }
 			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
 		}
+		if(empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$this->getCurrentCampaignsID()).'")';
+		else
+			$query.= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$campaigns).'") ';
+
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }

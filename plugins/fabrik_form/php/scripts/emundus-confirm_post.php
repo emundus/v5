@@ -35,7 +35,16 @@ try {
 
 // Confirm candidature
 // Insert data in #__emundus_campaign_candidature
-$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW() WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id);
+$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW() WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id;
+$db->setQuery($query);
+try {
+	$db->Query();
+} catch (Exception $e) {
+	// catch any database errors.
+}
+
+$query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user='.$student->id;
+$db->setQuery($query);
 try {
 	$db->Query();
 } catch (Exception $e) {

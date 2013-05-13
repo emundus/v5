@@ -23,6 +23,7 @@
  
 #form-login-nav {
 	float:right;
+	width:auto;
 	padding-top: 10px;
 	z-index:90;
 }
@@ -126,7 +127,7 @@
 .login-button button {
 	display: block;
 	padding: 0px 0px 0px 0px;
-	width: 100%;
+	/*width: 100%;*/
 	height: 20px;
 	border: none;
 	background: none;
@@ -139,7 +140,7 @@
 .register-button button {
 	display: block;
 	padding: 0px 0px 0px 0px;
-	width: 100%;
+	/*width: 100%;*/
 	height: 20px;
 	border: none;
 	background: none;
@@ -198,7 +199,7 @@
 .logout-button button {
 	/*display: block;*/
 	padding: 0px 0px 0px 0px;
-	width: 100%;
+	/*width: 100%;*/
 	height: 20px;
 	border: none;
 	background: none;

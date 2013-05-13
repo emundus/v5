@@ -1,7 +1,7 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage Emundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -17,7 +17,7 @@ JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
 /**
  * eMundus Component Controller
  *
- * @package    Joomla.Tutorials
+ * @package    Joomla.eMundus
  * @subpackage Components
  */
 class EmundusControllerEvaluation extends JController {
@@ -83,7 +83,7 @@ class EmundusControllerEvaluation extends JController {
 		//$itemid=JSite::getMenu()->getActive()->id;
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -142,7 +142,7 @@ class EmundusControllerEvaluation extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
 		$aid = JRequest::getVar('aid', null, 'GET', null, 0);
@@ -171,7 +171,7 @@ class EmundusControllerEvaluation extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
@@ -212,25 +212,25 @@ class EmundusControllerEvaluation extends JController {
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+			die("ACCESS_DENIED");
 		}
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'GET', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
 		$view = JRequest::getVar('view', null, 'GET', null, 0);
-		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
-		$sid = JRequest::getVar('sid', null, 'GET', 'null', 0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT', 0);
+		$sid = JRequest::getVar('sid', null, 'GET', null, 0);
 		$sids = explode('-',$sid);
 
 		$db =& JFactory::getDBO();
 		
-		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id)){
-			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$user->id;
-		}else{
-			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];
-		}
-		
+		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id))//{
+			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
+		//}else{
+		//	$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];
+		//}
+
 		$db->setQuery($query);
 		$db->query();
 		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);

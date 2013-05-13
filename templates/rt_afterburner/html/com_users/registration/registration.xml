@@ -10,7 +10,7 @@
 		
 		<field name="name" type="hidden"
 			filter="string"
-			default="to_set"
+			default=""
 		/>
 
 		<field name="username" type="text"

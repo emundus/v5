@@ -50,19 +50,19 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 					foreach($this->users as $evalu){ ?>
                         <tr class="row<?php echo $j++%2; ?>" id="<?php echo 'em_line_'.$i.'_'.$evalu['user_id']; ?>"><?php
                             foreach ($evalu as $key=>$value){
-								if($key != 'user') {
+								if($key != 'user' && $key != 'campaign_id' && $key != 'evaluation_id') {
                                 if($key=='user_id'){ ?>
                                     <td> 
 										<?php 
                                         echo $i+$limitstart; $i++; 
-                                        echo $this->actions[$value][$evalu['user']];
-                                        echo "#".$value;  
+                                        echo $this->actions[$value][$evalu['user']][$evalu['campaign_id']];
+                                       // echo "#".$value;  
                                         ?>  
                                     </td><?php 	
                                 }elseif($key == 'profile'){
                                     echo '<td><div class="emundusprofile'.$evalu['profile'].'">'.$this->profiles_label[$evalu['profile']]->label.'</div></td>';
                                 }elseif($key == 'comment'){
-									echo '<td>'.$this->comment[$evalu['user_id']][$evalu['user']].'</td>';
+									echo '<td>'.$this->comment[$evalu['user_id']][$evalu['user']][$evalu['campaign_id']].'</td>';
                                 }elseif(empty($value) && $value !== '0' && $key != 'overall' && $key !='application_mark')
                                     echo '<td class="red">'.$value.'</td>';
 								else

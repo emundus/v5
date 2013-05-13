@@ -1,14 +1,12 @@
 <?php
 /**
- * Users Model for eMundus Component
- * 
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
- */
+ * @package    	Joomla
+ * @subpackage 	eMundus
+ * @link       	http://www.emundus.fr
+ * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @license    	GNU/GPL
+ * @author     	Decision Publique - Benjamin Rivalland
+*/
  
 // No direct access
  
@@ -17,6 +15,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.model' );
 jimport( 'joomla.application.application' );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
  
 class EmundusModelEvaluation extends JModel
 {
@@ -40,21 +39,50 @@ class EmundusModelEvaluation extends JModel
 		$this->_db =& JFactory::getDBO();
 		$this->_user = & JFactory::getUser();
 	
-        // Get pagination request variables
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-        $limitstart = JRequest::getVar('limitstart', 0, '', 'int');
- 
-        // In case limit has been changed, adjust it
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-		
-		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'overall', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
+		//Set session variables
+		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
+        $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
+		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
+		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
+		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
+		$elements_values_other	= $mainframe->getUserStateFromRequest( $option.'elements_values_other', 'elements_values_other' );
+		$finalgrade				= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
+		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
+		$groups					= $mainframe->getUserStateFromRequest( $option.'groups', 'groups', @$filts_details['evaluator_group'] );
+		$user					= $mainframe->getUserStateFromRequest( $option.'user', 'user', @$filts_details['evaluator'] );
+		$profile				= $mainframe->getUserStateFromRequest( $option.'profile', 'profile', @$filts_details['profile'] );
+		$missing_doc			= $mainframe->getUserStateFromRequest( $option.'missing_doc', 'missing_doc', @$filts_details['missing_doc'] );
+		$complete				= $mainframe->getUserStateFromRequest( $option.'complete', 'complete', @$filts_details['complete'] );
+		$validate				= $mainframe->getUserStateFromRequest( $option.'validate', 'validate', @$filts_details['validate'] );
+		 // Get pagination request variables
+        $limit 					= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+        $limitstart 			= ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
+		$this->setState('schoolyears', $schoolyears);
+		$this->setState('campaigns', $campaigns);
+		$this->setState('elements', $elements);
+		$this->setState('elements_values', $elements_values);
+		$this->setState('elements_other', $elements_other);
+		$this->setState('elements_values_other', $elements_values_other);
+		$this->setState('finalgrade', $finalgrade);
+		$this->setState('s', $s);
+		$this->setState('groups', $groups);
+		$this->setState('user', $user);
+		$this->setState('profile', $profile);
+		$this->setState('missing_doc', $missing_doc);
+		$this->setState('complete', $complete);
+		$this->setState('validate', $validate);
 
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
+		
+		$col_elt	= $this->getState('elements');
+		$col_other	= $this->getState('elements_other');
 	}
 	
 	function _buildContentOrderBy(){
@@ -166,11 +194,21 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildSelect(){
-		$session =& JFactory::getSession();
+	/*	$session =& JFactory::getSession();
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$s_elements = $session->get('s_elements');
-		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
-		
+		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);*/
+
+		$current_user 			= & JFactory::getUser();
+		$search					= $this->getState('elements');
+		$s_elements				= $this->getState('s_elements');
+		$search_other			= $this->getState('elements_other');
+		$schoolyears			= $this->getState('schoolyears');
+		$gid					= $this->getState('groups');
+		$uid					= $this->getState('user');
+		$miss_doc				= $this->getState('missing_doc');
+		$validate_application	= $this->getState('validate');
+
 		if (count($search)==0) $search = $s_elements;
 
 		if(!empty($search)) {
@@ -193,11 +231,13 @@ class EmundusModelEvaluation extends JModel
 				$cols = implode(', ',$cols);
 		}
 		
-		$query = 'SELECT DISTINCT(ee.student_id), eu.user_id, eu.firstname, eu.lastname, esp.id as profile, ee.user ';
+		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id ';
 		if(!empty($cols)) $query .= ', '.$cols;
-		$query .= '	FROM #__emundus_users eu
+		$query .= '	FROM #__emundus_campaign_candidature ecc
+			LEFT JOIN  #__emundus_users eu ON eu.user_id = ecc.applicant_id 
+			LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=ecc.campaign_id
 			LEFT JOIN #__users u ON u.id = eu.user_id
-			LEFT JOIN #__emundus_evaluations ee ON ee.student_id = eu.user_id
+			LEFT JOIN #__emundus_evaluations ee ON (ee.student_id = eu.user_id AND ee.campaign_id=ecc.campaign_id)
 			LEFT JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
 			LEFT JOIN #__emundus_personal_detail epd ON epd.user = eu.user_id
 			LEFT JOIN #__emundus_declaration ed ON ed.user = u.id
@@ -222,17 +262,33 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildFilters(){
-		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
-		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		$finalgrade = JRequest::getVar('finalgrade', null, 'POST', 'none', 0);
+		//$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
+		//$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
+		//$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
+		//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		//$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
+		//$finalgrade = JRequest::getVar('finalgrade', null, 'POST', 'none', 0);
 		$view_calc = JRequest::getVar('view_calc', null, 'POST', 'none', 0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
-		
+		//$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
+		//$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
+		//$campaigns = JRequest::getVar('campaigns', null, 'POST', 'none', 0);
+		//$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
+
+		$search					= $this->getState('elements');
+		$search_values			= $this->getState('elements_values');
+		$search_other			= $this->getState('elements_other');
+		$search_values_other	= $this->getState('elements_values_other');
+		$finalgrade				= $this->getState('finalgrade');
+		$quick_search			= $this->getState('s');
+		$schoolyears			= $this->getState('schoolyears');
+		$campaigns				= $this->getState('campaigns');
+		$gid					= $this->getState('groups');
+		$uid					= $this->getState('user');
+		$profile				= $this->getState('profile');
+		$miss_doc				= $this->getState('missing_doc');
+		$complete				= $this->getState('complete');
+		$validate_application	= $this->getState('validate');
+
 		// Starting a session.
 		$session =& JFactory::getSession();
 		
@@ -242,6 +298,7 @@ class EmundusModelEvaluation extends JModel
 		if(empty($gid) && $session->has( 'groups' )) $gid = $session->get( 'groups' );
 		if(empty($uid) && $session->has( 'evaluator' )) $uid = $session->get( 'evaluator' );
 		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
+		if(empty($campaigns) && $session->has( 'campaigns' )) $campaigns = $session->get( 'campaigns' );
 		if(empty($profile)) $profile = JRequest::getVar('profile', null, 'GET', 'none', 0);
 		
 		$s_elements = $session->get('s_elements');
@@ -253,7 +310,15 @@ class EmundusModelEvaluation extends JModel
 		}
 		$query = '';
 		$and = true;
-		if(empty($schoolyears)) $query .= ' AND eu.schoolyear IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		if(empty($schoolyears)) 
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		else
+			$query.= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
+
+		if(empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$this->getCurrentCampaignsID()).'")';
+		else
+			$query.= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$campaigns).'") ';
 		
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
@@ -309,13 +374,13 @@ class EmundusModelEvaluation extends JModel
 			$query.= $miss_doc.' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE eup.user_id = u.id)';
 		}
 		
-		$query .= ' ORDER BY eu.user_id';
+		//$query .= ' ORDER BY eu.user_id';
 		return $query;
 	}
 	
 	function _buildQuery_myGroup(){
 		$query = $this->_buildSelect();
-		$query .= ' WHERE ed.validated=1';
+		$query .= ' WHERE ed.validated=1 AND ecc.submitted=1';
 		$pa = $this->getProfileAcces($this->_user->id);
 		$query .= ' AND (eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id IN ('.implode(',',$pa).')) OR eu.user_id IN (select user_id from #__emundus_users where profile IN ('.implode(',',$pa).'))) ';
 		$query .= $this->_buildFilters();
@@ -332,7 +397,7 @@ class EmundusModelEvaluation extends JModel
 		$query .= ' AND (ege.user_id='.$this->_user->id.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$this->_user->id.'))';
 		$query .= $this->_buildFilters();
 		$this->_db->setQuery($query);
-		//echo str_replace('#_','jos',$query);
+//echo str_replace('#_','jos',$query);
 		$applicants=$this->_db->loadObjectlist();
 		return $applicants;
 	}
@@ -364,6 +429,7 @@ class EmundusModelEvaluation extends JModel
 				$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user ';
 			$query .= ' WHERE ed.validated=1';
 			$query .= $this->_buildFilters();
+//echo str_replace('#_', "jos", $query);
 			$this->_db->setQuery($query);
 			$applicants=$this->_db->loadObjectlist();
 		}
@@ -378,8 +444,10 @@ class EmundusModelEvaluation extends JModel
 				$eval_list=array();
 				$eval_list['user_id']=$applicant->user_id;
 				$eval_list['name']='<b>'.strtoupper($applicant->lastname).'</b> <br / >'.$applicant->firstname;
-				$eval_list['profile']=$applicant->profile;
-				
+				//$eval_list['profile']=$applicant->profile;
+				$eval_list['campaign']=$applicant->campaign;
+				$eval_list['campaign_id']=$applicant->campaign_id;
+				$eval_list['evaluation_id'] = $applicant->evaluation_id;
 					
 				if(!empty($search)){
 					foreach($search as $c){
@@ -393,7 +461,7 @@ class EmundusModelEvaluation extends JModel
 				}
 				// evaluation list
 				foreach($evals as $eval){
-					//replace values by labels
+					//replace values b labels
 					$sub_values = explode('|',$eval['sub_values']);
 					$sub_labels = explode('|',$eval['sub_labels']);
 					$i = 0;
@@ -402,7 +470,8 @@ class EmundusModelEvaluation extends JModel
 						$i++;
 					}
 					//$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND user = '.$applicant->user;
-					$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id;
+			//print_r($applicant);
+					$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND campaign_id='.$eval_list['campaign_id'];
 					$this->_db->setQuery( $query );
 					$val = $this->_db->loadResult();
 					
@@ -499,7 +568,8 @@ class EmundusModelEvaluation extends JModel
 		$cols = array();
 		$cols[] = array('name' =>'user_id', 'label'=>'USER_ID');
 		$cols[] = array('name' =>'name', 'label'=>'NAME'); 
-		$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
+		//$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
+		$cols[] = array('name' =>'campaign', 'label'=>'CAMPAIGN'); 
 		
 		return $cols;
 	}
@@ -513,12 +583,17 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT year as schoolyear 
+		/*$query = 'SELECT DISTINCT year as schoolyear 
 				FROM #__emundus_setup_campaigns 
 				WHERE published=1 
 				ORDER BY schoolyear DESC';
 		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		return $this->_db->loadResultArray();*/
+		return EmundusHelperFilters::getCurrentCampaign();
+	}
+
+	function getCurrentCampaignsID(){
+		return EmundusHelperFilters::getCurrentCampaignsID();
 	}
 
 	function getPublished(){
@@ -528,6 +603,23 @@ class EmundusModelEvaluation extends JModel
 		return $this->_db->loadResultArray();
 	}
 	
+	function getEvaluationByID($id){
+		$query = 'SELECT * FROM #__emundus_evaluations AS ee 
+		LEFT JOIN #__emundus_evaluations_repeat_reason AS eerr ON eerr.parent_id=ee.id
+		WHERE ee.id = '.$id;
+//		echo str_replace("#_", "jos", $query);
+		$this->_db->setQuery($query);
+		return $this->_db->loadAssocList();
+	}
+
+	function getEvaluationReasons(){
+		$query = 'SELECT * FROM #__emundus_setup_checklist WHERE page="evaluation"';
+//		echo str_replace("#_", "jos", $query);
+		$this->_db->setQuery($query);
+		return $this->_db->loadObjectList('id');
+	}
+	
+
 	function getPagination(){
 		// Load the content if it doesn't already exist
 		if (empty($this->_pagination)) {

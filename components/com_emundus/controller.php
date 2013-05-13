@@ -909,6 +909,16 @@ function updateprofile() {
 			}
 		}
 	}
+
+	function sendmail_applicant(){ 
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$sid = JRequest::getVar('mail_to', null, 'POST', 'INT',0);
+		$model = &$this->getModel('emails');
+		$email = $model->sendmail();
+		
+
+		$this->setRedirect('index.php?option=com_emundus&view=application_form&Itemid='.$itemid.'&sid='.$sid.'&tmpl=component');
+	}
 	
 	/*
 	** @description Validate / Unvalidate a column from table (used in administrative validation). Ajax request

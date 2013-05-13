@@ -1,6 +1,6 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2010-01-26 14:10:00Z guillossou
+ * @version		$Id: email.php 14401 2010-01-26 14:10:00Z guillossou
  * @package		Joomla
  * @subpackage	Emundus
  * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
@@ -20,11 +20,12 @@ jimport('joomla.application.component.helper');
  *
  * @static
  * @package		Joomla
- * @subpackage	Content
+ * @subpackage	Helper
  * @since 1.5
  */
 class EmundusHelperEmails{
 	function createEmailBlock($params){
+		$current_user =& JFactory::getUser();
 		$email = '<div class="em_email_block">';
 		if(in_array('default',$params)){
 			$email .= '<fieldset>
@@ -82,7 +83,7 @@ class EmundusHelperEmails{
 				<input type="submit" name="custom_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
 			</fieldset>';
 		}
-		if(in_array('applicants',$params)){
+		if(in_array('applicants', $params)){
 			$email.= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP').'">
@@ -104,6 +105,36 @@ class EmundusHelperEmails{
 				<input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
 			</fieldset>';
 		}
+		if(in_array('evaluation_result', $params)){
+			$editor = &JFactory::getEditor();
+			$mail_body = $editor->display( 'mail_body', '', '99%', '400', '20', '20', false, 'mail_body', null, null );
+
+			$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
+			$applicant =& JFactory::getUser($student_id);
+			$email.= '<div class="em_email_block_nav">
+			<input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="'.JText::_( 'BACK' ).'" >
+			</div>';
+			$email.= '<fieldset>
+				<legend> 
+					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.'
+					</span>
+				</legend>
+				<div>
+				<p><label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
+					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
+				<p>
+					<input name="mail_to" type="hidden" class="inputbox" id="mail_to" value="'.$applicant->id.'" />
+				</div>
+				<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
+				</p>
+					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
+					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
+				<br><br>
+				<p><input type="submit" name="evaluation_result_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+				</p>
+			</fieldset>';
+		}
 		$email .= '</div>';
 		return $email;
 	}
@@ -114,7 +145,7 @@ class EmundusHelperEmails{
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($current_user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCESS_DENIED"));
 		}
 		$mainframe =& JFactory::getApplication();
 		$db =& JFactory::getDBO();
@@ -258,7 +289,7 @@ class EmundusHelperEmails{
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCESS_DENIED"));
 		}
 		$mainframe =& JFactory::getApplication();
 		
@@ -388,7 +419,7 @@ class EmundusHelperEmails{
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCESS_DENIED"));
 		}
 		
 		$mainframe =& JFactory::getApplication();
@@ -483,5 +514,6 @@ class EmundusHelperEmails{
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('REPORTS_MAILS_SENT'), 'message');
 		}	
 	}
+
 }
 ?>

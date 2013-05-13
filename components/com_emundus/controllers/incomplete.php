@@ -17,7 +17,7 @@ jimport('joomla.application.component.controller');
 /**
  * eMundus Component Controller
  *
- * @package    Joomla.Tutorials
+ * @package    Joomla.eMundus
  * @subpackage Components
  */
 class EmundusControllerIncomplete extends JController {
@@ -90,7 +90,7 @@ class EmundusControllerIncomplete extends JController {
 		return $syear[0];
 	}
 
-	function unvalidate() {
+/*	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
@@ -185,7 +185,7 @@ class EmundusControllerIncomplete extends JController {
 			$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
 	}
 	
-	
+	*/
 	function push_true(){
 		$user =& JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
@@ -210,6 +210,9 @@ class EmundusControllerIncomplete extends JController {
 				$db->query();
 			}
 			$query = 'INSERT INTO #__emundus_declaration (time_date, user) VALUES("'.date("Y.m.d H:i:s").'", '.$id.')';
+			$db->setQuery( $query );
+			$db->query();
+			$query = 'UPDATE #__emundus_declaration SET time_date = NOW() WHERE user = '.$id;
 			$db->setQuery( $query );
 			$db->query();
 			$campaign_id = $model->getCurrentCampaignByApplicant($id);

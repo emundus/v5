@@ -38,7 +38,7 @@ foreach ($forms as $form) {
 $forms = floor(100*$nb/count($forms));
 
 
-$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$user->id;
+$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$user->id.' AND time_date != "0000-00-00 00:00:00"';
 $db->setQuery( $query );
 $sent = $db->loadResult();
 require(JModuleHelper::getLayoutPath('mod_emundusflow'));

@@ -62,18 +62,18 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
 <script>
 function check_field(){
     <?php $i=0; foreach($fields as $field){?>
-		name = document.getElementById("jform_name");
 		firstname = document.getElementById("jform_emundus_profile_firstname");
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
 			if (field[0].value == "")
 				field[0].setStyles({backgroundColor: '#FCC530'});
-			field[0].onblur = function(){this.setStyles({backgroundColor: '#fff'}); name.value = firstname.value + ' ' + lastname.value;}
+			field[0].onblur = function(){this.setStyles({backgroundColor: '#fff'}); $("jform_name").value = firstname.value + ' ' + lastname.value; }
 			field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
 			field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
 		}
 	<?php }?>
 }
 check_field();
+
 </script>

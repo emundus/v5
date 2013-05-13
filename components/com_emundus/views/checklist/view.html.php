@@ -58,6 +58,10 @@ class EmundusViewChecklist extends JView
 		$this->assignRef('forms', $forms);
 		$this->assignRef('attachments', $attachments);
 		$this->assignRef('instructions', $instructions);
+
+		/*$evaluation =  &$this->getModel('evaluation');
+		$evaluation->getEvalColumns();
+		$this->assignRef('evaluation', $evaluation);*/
 		
 		$result = $this->get('Result');
 		$this->assignRef('result', $result);

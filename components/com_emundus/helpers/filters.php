@@ -1,8 +1,8 @@
 <?php
 /**
- * @version		$Id: query.php 14401 2013-03-21 14:10:00Z brivalland $
+ * @version		$Id: filter.php 14401 2013-03-21 14:10:00Z brivalland $
  * @package		Joomla
- * @subpackage	Content
+ * @subpackage	eMundus
  * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
  * @license		GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
@@ -44,6 +44,7 @@ class EmundusHelperFilters {
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -115,6 +116,42 @@ class EmundusHelperFilters {
 		return $db->loadResultArray();
 	}
 
+	function getCurrentCampaignsID(){
+		$db =& JFactory::getDBO();
+		$query = 'SELECT id 
+				FROM #__emundus_setup_campaigns 
+				WHERE published = 1 AND end_date > NOW()
+				ORDER BY year DESC';
+		$db->setQuery( $query ); 
+		return $db->loadResultArray();
+	}
+
+	function getCampaigns() {
+		$db =& JFactory::getDBO();
+		$query = 'SELECT id, label FROM #__emundus_setup_campaigns WHERE published=1 ORDER BY year DESC';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+
+	function getCampaign()
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
+		$db->setQuery( $query );
+		$syear = $db->loadRow();
+		
+		return $syear[0];
+	}
+
+	function getCampaignByID($id)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_setup_campaigns WHERE id='.$id;
+		$db->setQuery( $query );
+
+		return $db->loadAssoc();
+	}
+
 	function getApplicants(){
 		$db =& JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label
@@ -150,7 +187,7 @@ class EmundusHelperFilters {
 		$query = 'SELECT ege.group_id
 		FROM #__emundus_groups_eval ege
 		ORDER BY ege.group_id';
-		echo str_replace("#_", "jos", $query);
+	//echo str_replace("#_", "jos", $query);
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
@@ -268,6 +305,8 @@ class EmundusHelperFilters {
 			$db =& JFactory::getDBO();
 			if($element_name == 'result_for')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
+			elseif($element_name == 'campaign_id')
+				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name;
 			else
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
 			$db->setQuery($query);
@@ -288,7 +327,7 @@ class EmundusHelperFilters {
 	** @param array $search_values Liste of search values.
 	** @param string $query Name for HTML tag.
 	** @return string The query WHERE.
-	*/	
+	*/
 	function setWhere($search, $search_values, &$query) {
 		if(isset($search) && !empty($search)) {
 			$i = 0;
@@ -380,18 +419,19 @@ class EmundusHelperFilters {
 		$mainframe =& JFactory::getApplication();
 		
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
-		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', $params['profile'] );
-		$current_eval			= $mainframe->getUserStateFromRequest(  $option.'user', 'user', $params['evaluator'] );
-		$current_group			= $mainframe->getUserStateFromRequest(  $option.'groups', 'groups', $params['evaluator_group'] );
-		$miss_doc				= $mainframe->getUserStateFromRequest(  $option.'missing_doc', 'missing_doc', $params['missing_doc'] );
-		$current_finalgrade		= $mainframe->getUserStateFromRequest(  $option.'finalgrade', 'finalgrade', $params['finalgrade'] );
+		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', @$params['profile'] );
+		$current_eval			= $mainframe->getUserStateFromRequest(  $option.'user', 'user', @$params['evaluator'] );
+		$current_group			= $mainframe->getUserStateFromRequest(  $option.'groups', 'groups', @$params['evaluator_group'] );
+		$miss_doc				= $mainframe->getUserStateFromRequest(  $option.'missing_doc', 'missing_doc', @$params['missing_doc'] );
+		$current_finalgrade		= $mainframe->getUserStateFromRequest(  $option.'finalgrade', 'finalgrade', @$params['finalgrade'] );
 		$current_schoolyear		= $mainframe->getUserStateFromRequest(  $option.'schoolyears', 'schoolyears', EmundusHelperFilters::getSchoolyears() );
+		$current_campaign		= $mainframe->getUserStateFromRequest(  $option.'campaigns', 'campaigns', EmundusHelperFilters::getCampaigns() );
 		$search					= $mainframe->getUserStateFromRequest(  $option.'elements', 'elements' );
 		$search_values			= $mainframe->getUserStateFromRequest(  $option.'elements_values', 'elements_values' );
 		$search_other		 	= $mainframe->getUserStateFromRequest(  $option.'elements_other', 'elements_other' );
 		$search_values_other	= $mainframe->getUserStateFromRequest(  $option.'elements_values_other', 'elements_values_other' );
-		$complete_application	= $mainframe->getUserStateFromRequest(  $option.'complete', 'complete', $params['complete'] );
-		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', $params['validate'] );
+		$complete_application	= $mainframe->getUserStateFromRequest(  $option.'complete', 'complete', @$params['complete'] );
+		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', @$params['validate'] );
 		
 		$option;
 		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
@@ -400,7 +440,7 @@ class EmundusHelperFilters {
 		$quick .= '<div class="em_filtersElement"><input type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
 		$filters .= $quick;
 		
-		if($params['profile'] !== NULL){
+		if(@$params['profile'] !== NULL){
 			$profile = '';
 			if ($types['profile'] != 'hidden') $profile .= '<div class="em_filters" id="profile">
 															<div class="em_label"><label>'.JText::_('PROFILE').'</label></div>
@@ -491,21 +531,40 @@ class EmundusHelperFilters {
 			//$schoolyear .= '<option value="">'.JText::_('ALL').'</option>';
 			foreach($schoolyearList as $s) { 
 				$schoolyear .= '<option value="'.$s.'"';
-				if(!empty($current_schoolyear) && in_array($s,$current_schoolyear)) $schoolyear .= ' selected';
+				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
 				$schoolyear .= '>'.$s.'</option>'; 
 			}
 			$schoolyear .= '</select>';
 			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
 			$filters .= $schoolyear;
 		}
+
+		if(@$params['campaign'] !== NULL){
+			$campaignList =& EmundusHelperFilters::getCampaigns();
+			$campaign = '';
+			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
+																  <div class="em_label"><label>'.JText::_('CAMPAIGNS').'</label></div>
+																  <div class="em_filtersElement">';
+			$campaign .= '<select name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
+			//$campaign .= '<option value="">'.JText::_('ALL').'</option>';
+			foreach($campaignList as $c) { 
+				$campaign .= '<option value="'.$c->id.'"';
+				if(!empty($current_campaign) && in_array($c->id, $current_campaign)) $campaign .= ' selected';
+				$campaign .= '>'.$c->label.'</option>'; 
+			}
+			$campaign .= '</select>';
+			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
+			$filters .= $campaign;
+		}
 		
-		if($params['missing_doc'] !== NULL){
+		if(@$params['missing_doc'] !== NULL){
 			$missing_docList =& EmundusHelperFilters::getMissing_doc();
 			$missing_doc = '';
-			if ($types['missing_doc'] != 'hidden') $missing_doc .= '<div class="em_filters" id="missing_doc"><div class="em_label">
+			if (@$types['missing_doc'] != 'hidden') $missing_doc .= '<div class="em_filters" id="missing_doc"><div class="em_label">
 																	<label>'.JText::_('MISSING_DOC').'</label></div>
 																	<div class="em_filtersElement">';
-			$missing_doc .= '<select name="missing_doc" '.($types['missing_doc'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$missing_doc .= '<select name="missing_doc" '.(@$types['missing_doc'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 							<option value="0">'.JText::_('ALL').'</option>'; 
 			foreach($missing_docList as $md) { 
 				$missing_doc .= '<option value="'.$md->attachment_id.'"';

@@ -62,6 +62,9 @@ class EmundusControllerRenew_application extends JController
 		
 		//5.update the applicant's schoolyear
 		$model->updateUser($user, $profile);
+
+		//6.make attachments editable
+		$model->updateAttachments($user);
 		
 		
 		//

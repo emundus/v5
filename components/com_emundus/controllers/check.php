@@ -176,7 +176,8 @@ class EmundusControllerCheck extends JController {
 				$db->setQuery( $query );
 				$db->query();
 			}
-			$query = 'DELETE FROM #__emundus_declaration WHERE user='.$id;
+			//$query = 'DELETE FROM #__emundus_declaration WHERE user='.$id;
+			$query ='UPDATE #__emundus_declaration SET time_date = "0000-00-00 00:00:00" WHERE user = '.$id;
 			$db->setQuery( $query );
 			$db->query();
 			$campaign_id = $model->getCurrentCampaignByApplicant($id);

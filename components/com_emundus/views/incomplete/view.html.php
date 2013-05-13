@@ -31,7 +31,7 @@ class EmundusViewIncomplete extends JView
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -61,6 +61,7 @@ class EmundusViewIncomplete extends JView
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -70,6 +71,7 @@ class EmundusViewIncomplete extends JView
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -96,6 +98,13 @@ class EmundusViewIncomplete extends JView
 		$this->assignRef('filters', $filters);
 		unset($filts_details); unset($filts_options);
 		
+				//Export
+		$options = array('xls');
+		if($this->_user->profile!=16) // devra être remplacé par un paramétrage au niveau du menu
+			$export_icones =& EmundusHelperExport::export_icones($options);
+		$this->assignRef('export_icones', $export_icones);
+		unset($options);
+
 		$applicantsProfiles =& $this->get('ApplicantsProfiles');
 		$elements =& $this->get('Elements');
         $pagination =& $this->get('Pagination');

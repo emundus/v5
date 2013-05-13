@@ -8,11 +8,10 @@
  */
  
 // no direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
 
+defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.view');
-//jimport( 'joomla.utilities.date' );
-//JHTML::addIncludePath(JPATH_COMPONENT.DS.'helpers');
+jimport( 'joomla.utilities.date' );
 /**
  * HTML View class for the Emundus Component
  *
@@ -41,7 +40,10 @@ class EmundusViewRanking extends JView
 	function display($tpl = null)
     {
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+		JHTML::_('behavior.modal');
+		JHTML::_('behavior.tooltip'); 
+		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 	
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();

@@ -240,12 +240,15 @@ class plgUserEmundus extends JPlugin
 					}
 				}*/
 			}
-			else { //die(print_r($details));
+			elseif(!empty($lastname) && !empty($firstname)) { //die(print_r($details));
 				// Update name and fistname from #__users
 				$db->setQuery('UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'" WHERE id='.$user['id']);
 				$db->Query();
 				
 				$db->setQuery('UPDATE #__emundus_users SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'" WHERE user_id='.$user['id']);
+				$db->Query();
+
+				$db->setQuery('UPDATE #__emundus_personal_detail SET last_name="'.strtoupper($lastname).'", first_name="'.ucfirst($firstname).'" WHERE user='.$user['id']);
 				$db->Query();
 			}
 		}
@@ -282,7 +285,7 @@ class plgUserEmundus extends JPlugin
 				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
 				//$mainframe->redirect("index.php?option=com_emundus&view=campaign");
 			else {// @TODO Get data with active campaign for applicant
-				$query = '	SELECT count(ed.id) as candidature_posted, eu.firstname, eu.lastname, eu.profile, eu.university_id, 
+				$query = '	SELECT count(ed.id) as candidature_posted, ed.time_date as candidature_posted_date, eu.firstname, eu.lastname, eu.profile, eu.university_id, 
 								esp.label AS profile_label, esp.menutype, esp.published, 
 								ecc.campaign_id, esc.year as schoolyear, esc.start_date as candidature_start, esc.end_date as candidature_end
 							FROM #__emundus_users AS eu 
@@ -305,7 +308,7 @@ class plgUserEmundus extends JPlugin
 				$current_user->applicant			= @$res->published;
 				$current_user->candidature_start	= @$res->candidature_start;
 				$current_user->candidature_end		= @$res->candidature_end;
-				$current_user->candidature_posted 	= @$res->candidature_posted>0?1:0;
+				$current_user->candidature_posted 	= (@$res->candidature_posted_date== "0000-00-00 00:00:00" || @$res->candidature_posted==0)?0:1;
 				$current_user->schoolyear			= @$res->schoolyear;
 				$current_user->campaign_id			= @$res->campaign_id;
 //die(print_r($current_user));

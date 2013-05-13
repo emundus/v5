@@ -1,10 +1,12 @@
 <?php 
+defined('_JEXEC') or die('Restricted access'); 
+
 JHTML::_('behavior.modal'); 
+JHTML::_('behavior.tooltip'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-JHTML::stylesheet( 'template.css', JURI::Base().'templates/emundus/css/' );
+JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
 JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
 JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
-defined('_JEXEC') or die('Restricted access'); 
 
 $current_user =& JFactory::getUser();
 

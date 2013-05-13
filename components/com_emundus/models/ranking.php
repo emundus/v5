@@ -361,7 +361,7 @@ class EmundusModelRanking extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', 'jos_emundus_declaration');
 		
-		$query = 'SELECT #__emundus_users.user_id, CONCAT_WS(" ", UPPER(#__emundus_users.lastname), #__emundus_users.firstname) as name, #__emundus_setup_profiles.id as profile, #__emundus_final_grade.id, #__emundus_final_grade.Final_grade, #__emundus_final_grade.engaged, #__emundus_final_grade.result_for, #__emundus_final_grade.scholarship, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated';
+		$query = 'SELECT #__emundus_users.user_id, CONCAT_WS(" ", UPPER(#__emundus_users.lastname), #__emundus_users.firstname) as name, #__emundus_setup_profiles.id as profile, #__emundus_final_grade.id, #__emundus_final_grade.Final_grade, #__emundus_final_grade.engaged, #__emundus_final_grade.result_for, #__emundus_final_grade.scholarship, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.campaign_id';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -743,7 +743,7 @@ class EmundusModelRanking extends JModel
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
 
-echo str_replace("#_", "jos", $query);
+//echo str_replace("#_", "jos", $query);
 		$this->_db->setQuery($query);
 		$applicants = $this->_db->loadObjectlist();
 
@@ -755,9 +755,9 @@ echo str_replace("#_", "jos", $query);
 				foreach($head_values as $head){
 					$head_val[] = $head['name'];
 					$eval_list[$head['name']] = $applicant->$head['name'];
-					$eval_list['user'] = $applicant->user_id;
-					$eval_list['schoolyear'] = $applicant->schoolyear;
-					$eval_list['registerDate'] = $applicant->registerDate;
+					//$eval_list['user'] = $applicant->user_id;
+					//$eval_list['schoolyear'] = $applicant->schoolyear;
+					//$eval_list['registerDate'] = $applicant->registerDate;
 				}
 				// add an advance filter columns only if not already exist 
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);

@@ -52,6 +52,7 @@ class EmundusModelIncomplete extends JModel
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -69,6 +70,7 @@ class EmundusModelIncomplete extends JModel
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -89,6 +91,7 @@ class EmundusModelIncomplete extends JModel
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
+		$this->setState('campaigns', $campaigns);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -148,7 +151,7 @@ class EmundusModelIncomplete extends JModel
 		$filter_order     = $this->getState('filter_order');
        	$filter_order_Dir = $this->getState('filter_order_Dir');
 				
-		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'registerDate','profile', 'date_time', 'year', 'label');
+		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'registerDate','profile', 'date_time', 'year', 'label', 'jos_emundus_setup_campaigns.year');
         /* Error handling is never a bad thing*/
         if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
@@ -159,22 +162,23 @@ class EmundusModelIncomplete extends JModel
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+	/*	$db =& JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
 		
-		return $syear[0];
-	}
-	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT year as schoolyear 
-				FROM #__emundus_setup_campaigns 
-				WHERE published=1 
-				ORDER BY schoolyear DESC';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		return $syear[0];*/
+		return EmundusHelperFilters::getCampaign();
 	}
 	
+	function getCurrentCampaign(){
+		return EmundusHelperFilters::getCurrentCampaign();
+	}
+
+	function getCurrentCampaignsID(){
+		return EmundusHelperFilters::getCurrentCampaignsID();
+	}
+
 	function getProfileAcces($user)
 	{
 		$db =& JFactory::getDBO();
@@ -246,14 +250,14 @@ class EmundusModelIncomplete extends JModel
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
-		
+
 		$cols = $this->setSelect($search);
 		$cols_other = $this->setSelect($search_other);
 		$cols_default = $this->setSelect($this->elements_default);
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade');
 		
-		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_campaign_candidature.date_time, #__emundus_setup_campaigns.year, #__emundus_setup_campaigns.label';
+		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_campaign_candidature.date_time, #__emundus_campaign_candidature.campaign_id, #__emundus_setup_campaigns.year, #__emundus_setup_campaigns.label';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -303,6 +307,7 @@ class EmundusModelIncomplete extends JModel
 		$finalgrade				= $this->getState('finalgrade');
 		$quick_search			= $this->getState('s');
 		$schoolyears			= $this->getState('schoolyears');
+		$campaigns				= $this->getState('campaigns');
 		$gid					= $this->getState('groups');
 		$uid					= $this->getState('user');
 		$profile				= $this->getState('profile');
@@ -328,6 +333,11 @@ class EmundusModelIncomplete extends JModel
 			else { $and = true; $query .='WHERE '; }
 			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
 		}
+		if(empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$this->getCurrentCampaignsID()).'")';
+		else
+			$query.= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$campaigns).'") ';
+
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }

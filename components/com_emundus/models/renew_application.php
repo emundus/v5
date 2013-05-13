@@ -99,7 +99,8 @@ class EmundusModelRenew_application extends JModel {
 	
 	function deleteDeclaration($user){
 		//delete declaration 
-		$query = 'DELETE FROM #__emundus_declaration WHERE user='.$user;
+		//$query = 'DELETE FROM #__emundus_declaration WHERE user='.$user;
+		$query ='UPDATE #__emundus_declaration SET time_date = "0000-00-00 00:00:00" WHERE user = '.$user;
 		$this->_db->setQuery( $query );
 		return $this->_db->query();
 	}
@@ -121,6 +122,12 @@ class EmundusModelRenew_application extends JModel {
 	function updateUser($user, $profile){
 		$schoolyear = $this->getSchoolyear($profile);
 		$query = 'UPDATE #__emundus_users SET schoolyear = "", profile="0" WHERE user_id = '.$user;
+		$this->_db->setQuery( $query );
+		return $this->_db->query();
+	}
+
+	function updateAttachments($user){
+		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = 1 WHERE user_id = '.$user;
 		$this->_db->setQuery( $query );
 		return $this->_db->query();
 	}

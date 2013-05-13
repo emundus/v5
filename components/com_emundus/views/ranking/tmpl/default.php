@@ -50,14 +50,14 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                         </tr>
                     </thead>
                     <tbody><?php 
-                        $i=1; $j=0;
+                        $i=1; $j=0; 
                         foreach($this->users as $evalu){ ?>
                             <tr class="row<?php echo $j++%2; ?>"><?php
                                 foreach ($evalu as $key=>$value){ 
                                     if($key=='user_id'){ ?>
                                         <td> <?php 
                                         echo $i+$limitstart; $i++; 
-                                        echo $this->actions[$value][@$evalu['user']];
+                                        echo $this->actions[$value][@$evalu['user']][@$evalu['campaign_id']];
                                         //echo "#".$value;  
                                         ?> 
                                         </td><?php 	

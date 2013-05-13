@@ -129,11 +129,40 @@ require(YOURBASEPATH . DS . "rt_utils.php");
       		<div id="footer_l">
       		  <div id="footer_r">
       		    <p id="power_by"><?php echo JText::_('Powered by') ?>
-      		      <em><a href="http://www.emundus.fr" title="Your open source candidatures management" target="		_blank">eMundus&reg;</a> - <a href="http://www.decisionpublique.fr" title="Société de conseil 		en organisation et management public" target="_blank">Décision Publique</a></em></p>
+      		      <em><a href="http://www.emundus.fr" title="Your open source candidatures management" target="_blank">eMundus&reg;</a> - <a href="http://www.decisionpublique.fr" title="Société de conseil en organisation et management public" target="_blank">Décision Publique</a></em></p>
       		  </div>
       		</div>
     	</div>
 	</div>
 </div>
+<?php $user =& JFactory::getUser(); ?>
+<script id="IntercomSettingsScriptTag">
+  window.intercomSettings = {
+    // Current logged in user's email address.
+    email: "<?php echo $user->email; ?>",
+    // Current logged in user's sign-up date as a Unix timestamp.
+    created_at: <?php echo strtotime($user->registerDate); ?>,
+    company: {
+    id: '1',
+    name: 'eMundus',
+    // The current company created at UNIX timestamp here
+    created_at: 1234567890,
+    // The name of the plan the current company is on
+    plan: 'demo',
+    // The amount the current company spends a month
+    monthly_spend: 0,
+    // Custom data, e.g.
+    profile: <?php echo $user->profile; ?>
+  },
+  user_hash: "<?php echo 
+    hash_hmac("sha256", $user->email, "ySCm5ylfuMKbsSeEp1QQdvJOusuCiq-_Zo9Ea5gG"); 
+  ?>",
+  widget: {
+    activator: '#IntercomDefaultWidget'
+  },
+    app_id: "a89be3ac341ad68e9d8c8f185237355092f8f3ef"
+  };
+</script>
+<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://api.intercom.io/api/js/library.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()</script>
 </body>
 </html>
