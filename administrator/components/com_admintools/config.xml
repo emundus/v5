@@ -18,6 +18,19 @@
 		/>
 	
 	</fieldset>
+	
+	<fieldset
+		name="backend"
+		label="COM_ADMINTOOLS_JCONFIG_BACKEND_LABEL"
+		description="COM_ADMINTOOLS_JCONFIG_BACKEND_DESC"
+	>
+		<field name="showstats" type="list" default="1"
+				label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"
+				description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+	</fieldset>
 
 	<fieldset
 		name="updates"

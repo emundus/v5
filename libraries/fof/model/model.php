@@ -175,6 +175,13 @@ class FOFModel extends JObject
 	protected $_formData = array();
 
 	/**
+	 * An instance of FOFConfigProvider to provision configuration overrides
+	 *
+	 * @var    FOFConfigProvider
+	 */
+	protected $configProvider = null;
+
+	/**
 	 * Returns a new model object. Unless overriden by the $config array, it will
 	 * try to automatically populate its state from the request variables.
 	 *
@@ -186,6 +193,15 @@ class FOFModel extends JObject
 	 */
 	public static function &getAnInstance($type, $prefix = '', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$type = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
 		$modelClass = $prefix . ucfirst($type);
 		$result = false;
@@ -342,6 +358,15 @@ class FOFModel extends JObject
 	 */
 	public static function &getTmpInstance($type, $prefix = '', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$ret = self::getAnInstance($type, $prefix, $config)
 			->getClone()
 			->clearState()
@@ -447,6 +472,15 @@ class FOFModel extends JObject
 	 */
 	public function __construct($config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		// Get the input
 		if (array_key_exists('input', $config))
 		{
@@ -463,6 +497,9 @@ class FOFModel extends JObject
 		{
 			$this->input = new FOFInput;
 		}
+
+		// Load the configuration provider
+		$this->configProvider = new FOFConfigProvider;
 
 		// Set the $name/$_name variable
 		$component = $this->input->getCmd('option', 'com_foobar');
@@ -532,6 +569,12 @@ class FOFModel extends JObject
 		else
 		{
 			$path = JPATH_ADMINISTRATOR . '/components/' . $this->option . '/tables';
+			$altPath = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.table_path', null);
+			if ($altPath)
+			{
+				$path = JPATH_ADMINISTRATOR . '/components/' . $this->option . '/' . $altPath;
+			}
+
 			$this->addTablePath($path);
 		}
 
@@ -542,11 +585,15 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->table = FOFInflector::singularize($view);
+			$table = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.table', FOFInflector::singularize($view));
+			$this->table = $table;
 		}
 
 		// Set the internal state marker - used to ignore setting state from the request
-		if (!empty($config['ignore_request']))
+		if (
+			!empty($config['ignore_request']) ||
+			!is_null($this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.ignore_request', null))
+		)
 		{
 			$this->__state_set = true;
 		}
@@ -584,6 +631,10 @@ class FOFModel extends JObject
 		{
 			$cid = $config['cid'];
 		}
+		elseif ($cid = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.cid', null))
+		{
+			$cid = explode(',', $cid);
+		}
 		else
 		{
 			$cid = $this->input->get('cid', array(), 'array');
@@ -592,6 +643,11 @@ class FOFModel extends JObject
 		if (array_key_exists('id', $config))
 		{
 			$id = $config['id'];
+		}
+		elseif ($id = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.id', null))
+		{
+			$id = explode(',', $id);
+			$id = array_shift($id);
 		}
 		else
 		{
@@ -608,34 +664,67 @@ class FOFModel extends JObject
 		}
 
 		// Populate the event names from the $config array
+
+		$configKey = $this->option . '.views.' . FOFInflector::singularize($view) . '.config.';
+
 		if (isset($config['event_after_delete']))
 		{
 			$this->event_after_delete = $config['event_after_delete'];
+		}
+		else
+		{
+			$this->event_after_delete = $this->configProvider->get($configKey . 'event_after_delete',
+				$this->event_after_delete);
 		}
 
 		if (isset($config['event_after_save']))
 		{
 			$this->event_after_save = $config['event_after_save'];
 		}
+		else
+		{
+			$this->event_after_save = $this->configProvider->get($configKey . 'event_after_save',
+				$this->event_after_save);
+		}
 
 		if (isset($config['event_before_delete']))
 		{
 			$this->event_before_delete = $config['event_before_delete'];
+		}
+		else
+		{
+			$this->event_before_delete = $this->configProvider->get($configKey . 'event_before_delete',
+				$this->event_before_delete);
 		}
 
 		if (isset($config['event_before_save']))
 		{
 			$this->event_before_save = $config['event_before_save'];
 		}
+		else
+		{
+			$this->event_before_save = $this->configProvider->get($configKey . 'event_before_save',
+				$this->event_before_save);
+		}
 
 		if (isset($config['event_change_state']))
 		{
 			$this->event_change_state = $config['event_change_state'];
 		}
+		else
+		{
+			$this->event_change_state = $this->configProvider->get($configKey . 'event_change_state',
+				$this->event_change_state);
+		}
 
 		if (isset($config['event_clean_cache']))
 		{
 			$this->event_clean_cache = $config['event_clean_cache'];
+		}
+		else
+		{
+			$this->event_clean_cache = $this->configProvider->get($configKey . 'event_clean_cache',
+				$this->event_clean_cache);
 		}
 
 	}
@@ -898,7 +987,9 @@ class FOFModel extends JObject
 	 */
 	public function &getFirstItem($overrideLimits = false)
 	{
-		$table = $this->getTable($this->table);
+		// we have to clone the instance, or when multiple getFirstItem calls occuer,
+		// we'll update EVERY instance created
+		$table = clone $this->getTable($this->table);
 
 		$list = $this->getItemList($overrideLimits);
 
@@ -951,7 +1042,11 @@ class FOFModel extends JObject
 				if (!empty($error))
 				{
 					$this->setError($error);
-			JFactory::getSession()->set($this->getHash() . 'savedata', serialize($table->getProperties(true)));
+					$session = JFactory::getSession();
+					$tableprops = $table->getProperties(true);
+					unset($tableprops['input']);
+					$hash = $this->getHash() . 'savedata';
+					$session->set($hash, serialize($tableprops));
 				}
 			}
 
@@ -1534,6 +1629,15 @@ class FOFModel extends JObject
 	 */
 	protected function &_createTable($name, $prefix = 'Table', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$result = null;
 
 		// Clean the model name
@@ -1597,7 +1701,14 @@ class FOFModel extends JObject
 			$filterName = ($fieldname == $tableKey) ? 'id' : $fieldname;
 			$filterState = $this->getState($filterName, null);
 
-			if (!empty($filterState) || ($filterState === '0'))
+			if ($filterName == $table->getColumnAlias('enabled'))
+			{
+				if (!is_null($filterState) && ($filterState !== ''))
+				{
+					$query->where($db->qn($fieldname) . ' = ' . $db->q((int) $filterState));
+				}
+			}
+			elseif (!empty($filterState) || ($filterState === '0'))
 			{
 				switch ($fieldname)
 				{
@@ -1607,15 +1718,20 @@ class FOFModel extends JObject
 
 						break;
 
-					case $table->getColumnAlias('enabled'):
-						if ($filterState !== '')
-						{
-							$query->where($db->qn($fieldname) . ' = ' . $db->q((int) $filterState));
-						}
-						break;
-
 					default:
-						$query->where('(' . $db->qn($fieldname) . '=' . $db->q($filterState) . ')');
+						if (is_array($filterState))
+						{
+							$tmp = array();
+							foreach ($filterState as $k => $v)
+							{
+								$tmp[] = $db->q($v);
+							}
+							$query->where('(' . $db->qn($fieldname) . ' IN(' . implode(',', $tmp) . '))');
+						}
+						else
+						{
+							$query->where('(' . $db->qn($fieldname) . '=' . $db->q($filterState) . ')');
+						}
 						break;
 				}
 			}
@@ -1750,6 +1866,22 @@ class FOFModel extends JObject
 	 */
 	protected function populateState()
 	{
+	}
+
+	/**
+	 * Applies view access level filtering for the specified user. Useful to
+	 * filter a front-end items listing.
+	 *
+	 * @param   integer  $userID  The user ID to use. Skip it to use the currently logged in user.
+	 *
+	 * @return  FOFModel  Reference to self
+	 */
+	public function applyAccessFiltering($userID = null)
+	{
+		$user = JFactory::getUser($userID);
+		$this->setState('access', $user->getAuthorisedViewLevels());
+
+		return $this;
 	}
 
 	/**

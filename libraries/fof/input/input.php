@@ -277,7 +277,7 @@ class FOFInput extends JInput
 		}
 		else
 		{
-			$this->filter->clean($var, $type);
+			$var = $this->filter->clean($var, $type);
 		}
 		return $var;
 	}

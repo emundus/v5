@@ -10,11 +10,17 @@ defined('_JEXEC') or die();
 /**
  * Field header for Published (enabled) columns
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderPublished extends FOFFormHeaderFieldselectable
 {
 
+	/**
+	 * Create objects for the options
+	 *
+	 * @return  array  The array of option objects
+	 */
 	protected function getOptions()
 	{
 		$config = array(

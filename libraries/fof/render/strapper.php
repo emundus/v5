@@ -49,6 +49,19 @@ class FOFRenderStrapper extends FOFRenderAbstract
 		}
 		$this->renderButtons($view, $task, $input, $config);
 		$this->renderLinkbar($view, $task, $input, $config);
+
+		if (!$isCli && version_compare(JVERSION, '3.0.0', 'ge'))
+		{
+			$sidebarEntries = JHtmlSidebar::getEntries();
+			if (!empty($sidebarEntries))
+			{
+				$html = '<div id="j-sidebar-container" class="span2">' . "\n";
+				$html .= "\t" . JHtmlSidebar::render() ."\n";
+				$html .= "</div>\n";
+				$html .= '<div id="j-main-container" class="span10">' . "\n";
+				echo $html;
+			}
+		}
 	}
 
 	/**
@@ -64,6 +77,15 @@ class FOFRenderStrapper extends FOFRenderAbstract
 		$format = $input->getCmd('format', 'html');
 		if ($format != 'html' || $isCli)
 			return;
+
+		if (!$isCli && version_compare(JVERSION, '3.0.0', 'ge'))
+		{
+			$sidebarEntries = JHtmlSidebar::getEntries();
+			if (!empty($sidebarEntries))
+			{
+				echo '</div>';
+			}
+		}
 
 		echo "</div>\n";
 		echo "</div>\n";
@@ -101,6 +123,41 @@ ENDJAVASCRIPT;
 	 * @param   array     $config  Extra configuration variables for the toolbar
 	 */
 	protected function renderLinkbar($view, $task, $input, $config = array())
+	{
+		$style = 'classic';
+
+		if(array_key_exists('linkbar_style', $config))
+		{
+			$style = $config['linkbar_style'];
+		}
+
+		if (!version_compare(JVERSION, '3.0.0', 'ge'))
+		{
+			$style = 'classic';
+		}
+
+		switch ($style)
+		{
+			case 'joomla':
+				$this->renderLinkbar_joomla($view, $task, $input);
+				break;
+
+			case 'classic':
+			default:
+				$this->renderLinkbar_classic($view, $task, $input);
+				break;
+		}
+	}
+
+	/**
+	 * Renders the submenu (link bar)
+	 *
+	 * @param   string    $view    The active view name
+	 * @param   string    $task    The current task
+	 * @param   FOFInput  $input   The input object
+	 * @param   array     $config  Extra configuration variables for the toolbar
+	 */
+	protected function renderLinkbar_classic($view, $task, $input, $config = array())
 	{
 		list($isCli, ) = FOFDispatcher::isCliAdmin();
 		if($isCli)
@@ -196,6 +253,41 @@ ENDJAVASCRIPT;
 	}
 
 	/**
+	 * Renders the submenu (link bar) using Joomla!'s style
+	 *
+	 * @param   string    $view    The active view name
+	 * @param   string    $task    The current task
+	 * @param   FOFInput  $input   The input object
+	 * @param   array     $config  Extra configuration variables for the toolbar
+	 */
+	protected function renderLinkbar_joomla($view, $task, $input, $config = array())
+	{
+		list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
+
+		// On command line don't do anything
+		if($isCli)
+		{
+			return;
+		}
+
+		// Do not render a submenu unless we are in the the admin area
+		$toolbar = FOFToolbar::getAnInstance($input->getCmd('option', 'com_foobar'), $config);
+		$renderFrontendSubmenu = $toolbar->getRenderFrontendSubmenu();
+
+		if (!$isAdmin && !$renderFrontendSubmenu)
+			return;
+
+		$links = $toolbar->getLinks();
+		if (!empty($links))
+		{
+			foreach ($links as $link)
+			{
+				JHtmlSidebar::addEntry($link['name'], $link['link'], $link['active']);
+			}
+		}
+	}
+
+	/**
 	 * Renders the toolbar buttons
 	 *
 	 * @param   string    $view    The active view name
@@ -276,6 +368,12 @@ ENDJAVASCRIPT;
 	 */
 	protected function renderFormBrowse(FOFForm &$form, FOFModel $model, FOFInput $input)
 	{
+		static $isCli = null, $isAdmin = null;
+		if (is_null($isCli))
+		{
+			list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
+		}
+
 		$html = '';
 
 		// Joomla! 3.0+ support
@@ -361,9 +459,12 @@ ENDJS;
 					$tdwidth = '';
 				}
 
-				$header_html .= "\t\t\t\t\t<th $tdwidth>" . PHP_EOL;
-				$header_html .= "\t\t\t\t\t\t" . $header;
-				$header_html .= "\t\t\t\t\t</th>" . PHP_EOL;
+				if(!empty($header))
+				{
+					$header_html .= "\t\t\t\t\t<th $tdwidth>" . PHP_EOL;
+					$header_html .= "\t\t\t\t\t\t" . $header;
+					$header_html .= "\t\t\t\t\t</th>" . PHP_EOL;
+				}
 
 				if (version_compare(JVERSION, '3.0', 'ge'))
 				{
@@ -429,6 +530,11 @@ ENDJS;
 		$html .= "\t" . '<input type="hidden" name="option" value="' . $input->getCmd('option') . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="view" value="' . FOFInflector::pluralize($input->getCmd('view')) . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="task" value="' . $input->getCmd('task', 'browse') . '" />' . PHP_EOL;
+		// The id field is required in Joomla! 3 front-end to prevent the pagination limit box from screwing it up. Huh!!
+		if (version_compare(JVERSION, '3.0', 'ge') && !$isAdmin && !$isCli)
+		{
+			$html .= "\t" . '<input type="hidden" name="id" value="' . $input->getCmd('id', '') . '" />' . PHP_EOL;
+		}
 		$html .= "\t" . '<input type="hidden" name="boxchecked" value="" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="hidemainmenu" value="" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="filter_order" value="' . $filter_order . '" />' . PHP_EOL;
@@ -714,7 +820,37 @@ ENDJS;
 			$class = '';
 		}
 
-		$html .= '<form action="index.php" method="post" name="adminForm" id="adminForm" class="form-horizontal' . $class . '">' . PHP_EOL;
+		// Check form enctype. Use enctype="multipart/form-data" to upload binary files in your form.
+		$template_form_enctype = $form->getAttribute('enctype');
+
+		if (!empty($template_form_enctype))
+		{
+			$enctype = ' enctype="' . $form->getAttribute('enctype') . '" ';
+		}
+		else
+		{
+			$enctype = '';
+		}
+
+		// Check form name. Use name="yourformname" to modify the name of your form.
+		$formname = $form->getAttribute('name');
+
+		if (empty($formname))
+		{
+			$formname = 'adminForm';
+		}
+
+		// Check form ID. Use id="yourformname" to modify the id of your form.
+		$formid = $form->getAttribute('name');
+
+		if (empty($formname))
+		{
+			$formid = 'adminForm';
+		}
+
+		$html .= '<form action="index.php" method="post" name="' . $formname .
+			'" id="' . $formid . '"' . $enctype . ' class="form-horizontal' .
+			$class . '">' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="option" value="' . $input->getCmd('option') . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="view" value="' . $input->getCmd('view', 'edit') . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="task" value="" />' . PHP_EOL;
@@ -751,23 +887,31 @@ ENDJS;
 
 				$input = $field->input;
 
-				$html .= "\t\t\t" . '<div class="control-group">' . PHP_EOL;
-				$html .= "\t\t\t\t" . '<label class="control-label ' . $labelClass . '" for="' . $field->id . '">' . PHP_EOL;
-				$html .= "\t\t\t\t" . JText::_($title) . PHP_EOL;
-				if ($required)
+				if (!is_null($title))
 				{
-					$html .= ' *';
+
+					$html .= "\t\t\t" . '<div class="control-group">' . PHP_EOL;
+					$html .= "\t\t\t\t" . '<label class="control-label ' . $labelClass . '" for="' . $field->id . '">' . PHP_EOL;
+					$html .= "\t\t\t\t" . JText::_($title) . PHP_EOL;
+					if ($required)
+					{
+						$html .= ' *';
+					}
+					$html .= "\t\t\t\t" . '</label>' . PHP_EOL;
+					$html .= "\t\t\t\t" . '<div class="controls">' . PHP_EOL;
+					$html .= "\t\t\t\t" . $input . PHP_EOL;
+					if (!empty($description))
+					{
+						$html .= "\t\t\t\t" . '<span class="help-block">';
+						$html .= JText::_($description) . '</span>' . PHP_EOL;
+					}
+					$html .= "\t\t\t\t" . '</div>' . PHP_EOL;
+					$html .= "\t\t\t" . '</div>' . PHP_EOL;
 				}
-				$html .= "\t\t\t\t" . '</label>' . PHP_EOL;
-				$html .= "\t\t\t\t" . '<div class="controls">' . PHP_EOL;
-				$html .= "\t\t\t\t" . $input . PHP_EOL;
-				if (!empty($description))
+				else
 				{
-					$html .= "\t\t\t\t" . '<span class="help-block">';
-					$html .= JText::_($description) . '</span>' . PHP_EOL;
+					$html .= "\t\t\t\t" . $input . PHP_EOL;
 				}
-				$html .= "\t\t\t\t" . '</div>' . PHP_EOL;
-				$html .= "\t\t\t" . '</div>' . PHP_EOL;
 			}
 
 			$html .= "\t" . '</div>' . PHP_EOL;

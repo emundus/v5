@@ -56,7 +56,7 @@ if(function_exists('date_default_timezone_get') && function_exists('date_default
 
 // Load FOF
 include_once JPATH_ADMINISTRATOR.'/components/com_admintools/fof/include.php';
-if(!defined('FOF_INCLUDED') || !class_exists('FOFForm', true)) 
+if(!defined('FOF_INCLUDED') || !class_exists('FOFForm', true))
 {
 	JError::raiseError ('500', 'Your Admin Tools installation is broken; please re-install. Alternatively, extract the installation archive and copy the fof directory inside your site\'s libraries directory.');
 }
@@ -74,23 +74,23 @@ if(!$isPro) {
 	JLoader::import('joomla.filesystem.folder');
 	$pf = JPATH_BASE.DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'system'.DIRECTORY_SEPARATOR.'admintools'.DIRECTORY_SEPARATOR.'pro.php';
 	if(JFile::exists($pf)) JFile::delete($pf);
-	
+
 	$pf = JPATH_BASE.DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'system'.DIRECTORY_SEPARATOR.'admintools'.DIRECTORY_SEPARATOR.'admintools'.DIRECTORY_SEPARATOR.'pro.php';
 	if(JFile::exists($pf)) JFile::delete($pf);
-	
+
 	$files = array('controllers/geoblock.php','controllers/htmaker.php','controllers/log.php','controllers/redires.php',
 		'controllers/wafconfig.php','helpers/geoip.php','models/badwords.php','models/geoblock.php','models/htmaker.php',
 		'models/ipbl.php','models/ipwl.php','models/log.php','models/redirs.php','models/wafconfig.php');
 	$dirs = array('assets/geoip','views/badwords','views/geoblock','views/htmaker','views/ipbl','views/ipwl',
 		'views/log','views/masterpw','views/redirs','views/waf','views/wafconfig');
-	
+
 	foreach($files as $fname) {
 		$file = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.$fname;
 		if(JFile::exists($file)) {
 			JFile::delete($file);
 		}
 	}
-	
+
 	foreach($dirs as $fname) {
 		$dir = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.$fname;
 		if(JFolder::exists($dir)) {

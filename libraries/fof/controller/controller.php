@@ -63,11 +63,23 @@ class FOFController extends JObject
 	protected $config = array();
 
 	/**
-	 * Set to true to enable CSRF protection on selected tasks
+	 * An instance of FOFConfigProvider to provision configuration overrides
 	 *
-	 * @var    boolean
+	 * @var    FOFConfigProvider
 	 */
-	protected $csrfProtection = true;
+	protected $configProvider = null;
+
+	/**
+	 * Set to true to enable CSRF protection on selected tasks. The possible
+	 * values are:
+	 * 0	Disabled; no token checks are performed
+	 * 1	Enabled; token checks are always performed
+	 * 2	Only on HTML requests and backend; token checks are always performed in the back-end and in the front-end only when format is 'html'
+	 * 3	Only on back-end; token checks are performer only in the back-end
+	 *
+	 * @var    integer
+	 */
+	protected $csrfProtection = 2;
 
 	/**
 	 * The default view for the display method.
@@ -217,6 +229,15 @@ class FOFController extends JObject
 	{
 		static $instances = array();
 
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$hash = $option . $view;
 
 		if (!array_key_exists($hash, $instances))
@@ -239,9 +260,42 @@ class FOFController extends JObject
 	 */
 	public static function &getTmpInstance($option = null, $view = null, $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
+		// Get an input object
+		if (array_key_exists('input', $config))
+		{
+			$input = $config['input'];
+		}
+		else
+		{
+			$input = null;
+		}
+
+		if (array_key_exists('input_options', $config))
+		{
+			$input_options = $config['input_options'];
+		}
+		else
+		{
+			$input_options = array();
+		}
+
+		if (!($input instanceof FOFInput))
+		{
+			$input = new FOFInput($input, $input_options);
+		}
+
 		// Determine the option (component name) and view
-		$config['option'] = !is_null($option) ? $option : $this->input->getCmd('option', 'com_foobar');
-		$config['view'] = !is_null($view) ? $view : $this->input->getCmd('view', 'cpanel');
+		$config['option'] = !is_null($option) ? $option : $input->getCmd('option', 'com_foobar');
+		$config['view'] = !is_null($view) ? $view : $input->getCmd('view', 'cpanel');
 
 		// Get the class base name, e.g. FoobarController
 		$classBaseName = ucfirst(str_replace('com_', '', $config['option'])) . 'Controller';
@@ -294,11 +348,37 @@ class FOFController extends JObject
 			{
 				array_unshift($searchPaths, $config['searchpath']);
 			}
+			else
+			{
+				$configProvider = new FOFConfigProvider;
+				$searchPath = $configProvider->get($config['option'] . '.views.' . FOFInflector::singularize($config['view']) . '.config.searchpath', null);
+				if ($searchPath)
+				{
+					array_unshift($searchPaths, JPATH_ADMINISTRATOR . '/components/' . $config['option'] . '/' . $searchPath);
+					array_unshift($searchPaths, $basePath . '/components/' . $config['option'] . '/' . $searchPath);
+				}
+			}
 
-			// Try to find the path to this file
-			$path = JPath::find(
-					$searchPaths, strtolower($suffix) . '.php'
-			);
+			// Try to find the path to this file. First try to find the
+			// format-specific controller file, e.g. foobar.json.php for
+			// format=json, then the regular one-size-fits-all controller
+
+			$format = $input->getCmd('format', 'html');
+			$path = null;
+
+			if (!empty($format))
+			{
+				$path = JPath::find(
+					$searchPaths, strtolower($suffix) . '.' . strtolower($format) . '.php'
+				);
+			}
+
+			if (!$path)
+			{
+				$path = JPath::find(
+						$searchPaths, strtolower($suffix) . '.php'
+				);
+			}
 
 			// The path is found. Load the file and make sure the expected class name exists.
 
@@ -332,17 +412,21 @@ class FOFController extends JObject
 	 */
 	public function __construct($config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$this->methods = array();
 		$this->message = null;
 		$this->messageType = 'message';
 		$this->paths = array();
 		$this->redirect = null;
 		$this->taskMap = array();
-
-		if (defined('JDEBUG') && JDEBUG)
-		{
-			JLog::addLogger(array('text_file' => 'fofcontroller.log.php'), JLog::ALL, array('controller'));
-		}
 
 		// Cache the config
 		$this->config = $config;
@@ -376,6 +460,9 @@ class FOFController extends JObject
 			$this->input = new FOFInput($input, $input_options);
 		}
 
+		// Load the configuration provider
+		$this->configProvider = new FOFConfigProvider;
+
 		// Determine the methods to exclude from the base class.
 		$xMethods = get_class_methods('FOFController');
 
@@ -404,8 +491,19 @@ class FOFController extends JObject
 		}
 
 		// Get the default values for the component and view names
-		$this->component = $this->input->get('option', 'com_filter', 'cmd');
-		$this->view = $this->input->get('view', 'cpanel', 'cmd');
+		$classNameParts = FOFInflector::explode(get_class($this));
+		if (count($classNameParts) == 3)
+		{
+			$defComponent = "com_" . $classNameParts[0];
+			$defView = $classNameParts[2];
+		}
+		else
+		{
+			$defComponent = 'com_foobar';
+			$defView = 'cpanel';
+		}
+		$this->component = $this->input->get('option', $defComponent, 'cmd');
+		$this->view = $this->input->get('view', $defView, 'cmd');
 		$this->layout = $this->input->get('layout', null, 'cmd');
 
 		// Overrides from the config
@@ -423,6 +521,7 @@ class FOFController extends JObject
 		{
 			$this->layout = $config['layout'];
 		}
+		$this->layout = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.layout', $this->layout);
 
 		$this->input->set('option', $this->component);
 
@@ -441,17 +540,23 @@ class FOFController extends JObject
 		{
 			$basePath = $config['base_path'];
 		}
+		$altBasePath = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.base_path', null);
+		if (!is_null($altBasePath))
+		{
+			$basePath = JPATH_SITE . '/' . $altBasePath;
+		}
 
 		$this->basePath = $basePath;
 
 		// If the default task is set, register it as such
+		$defaultTask = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.default_task', 'display');
 		if (array_key_exists('default_task', $config))
 		{
 			$this->registerDefaultTask($config['default_task']);
 		}
 		else
 		{
-			$this->registerDefaultTask('display');
+			$this->registerDefaultTask($defaultTask);
 		}
 
 		// Set the models prefix
@@ -465,6 +570,7 @@ class FOFController extends JObject
 			else
 			{
 				$this->model_prefix = $this->name . 'Model';
+				$this->model_prefix = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.model_prefix', $this->model_prefix);
 			}
 		}
 
@@ -476,7 +582,13 @@ class FOFController extends JObject
 		}
 		else
 		{
-			$this->addModelPath($this->basePath . '/models', $this->model_prefix);
+			$modelPath = $this->basePath . '/models';
+			$altModelPath = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.model_path', null);
+			if (!is_null($altModelPath))
+			{
+				$modelPath = $this->basePath . '/' . $altModelPath;
+			}
+			$this->addModelPath($modelPath, $this->model_prefix);
 		}
 
 		// Set the default view search path
@@ -487,7 +599,13 @@ class FOFController extends JObject
 		}
 		else
 		{
-			$this->setPath('view', $this->basePath . '/views');
+			$viewPath = $this->basePath . '/views';
+			$altViewPath = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.view_path', null);
+			if (!is_null($altViewPath))
+			{
+				$viewPath = $this->basePath . '/' . $altViewPath;
+			}
+			$this->setPath('view', $viewPath);
 		}
 
 		// Set the default view.
@@ -495,9 +613,13 @@ class FOFController extends JObject
 		{
 			$this->default_view = $config['default_view'];
 		}
-		elseif (empty($this->default_view))
+		else
 		{
-			$this->default_view = $this->getName();
+			if (empty($this->default_view))
+			{
+				$this->default_view = $this->getName();
+			}
+			$this->default_view = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.default_view', $this->default_view);
 		}
 
 		// Set the CSRF protection
@@ -505,16 +627,33 @@ class FOFController extends JObject
 		{
 			$this->csrfProtection = $config['csrf_protection'];
 		}
+		$this->csrfProtection = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.csrf_protection', $this->csrfProtection);
 
 		// Set any model/view name overrides
 		if (array_key_exists('viewName', $config))
 		{
 			$this->setThisViewName($config['viewName']);
 		}
+		else
+		{
+			$overrideViewName = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.viewName', null);
+			if ($overrideViewName)
+			{
+				$this->setThisViewName($overrideViewName);
+			}
+		}
 
 		if (array_key_exists('modelName', $config))
 		{
 			$this->setThisModelName($config['modelName']);
+		}
+		else
+		{
+			$overrideModelName = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.modelName', null);
+			if ($overrideModelName)
+			{
+				$this->setThisModelName($overrideModelName);
+			}
 		}
 
 		// Caching
@@ -525,12 +664,42 @@ class FOFController extends JObject
 				$this->cacheableTasks = $config['cacheableTasks'];
 			}
 		}
+		else
+		{
+			$cacheableTasks = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.cacheableTasks', null);
+			if ($cacheableTasks)
+			{
+				$cacheableTasks = explode(',', $cacheableTasks);
+				if (count($cacheableTasks))
+				{
+					$temp = array();
+					foreach ($cacheableTasks as $t)
+					{
+						$temp[] = trim($t);
+					}
+					$temp = array_unique($temp);
+					$this->cacheableTasks = $temp;
+				}
+			}
+		}
 
 		// Bit mask for auto routing on setRedirect
+		$this->autoRouting = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.config.autoRouting', $this->autoRouting);
 		if (array_key_exists('autoRouting', $config))
 		{
 			$this->autoRouting = $config['autoRouting'];
 		}
+
+		// Apply task map
+		$taskmap = $this->configProvider->get($this->component . '.views.' . FOFInflector::singularize($this->view) . '.taskmap');
+		if (is_array($taskmap) && !empty($taskmap))
+		{
+			foreach ($taskmap as $aliasedtask => $realmethod)
+			{
+				$this->registerTask($aliasedtask, $realmethod);
+			}
+		}
+
 	}
 
 	/**
@@ -673,14 +842,22 @@ class FOFController extends JObject
 
 		$method_name = 'onBefore' . ucfirst($task);
 
-		if (method_exists($this, $method_name))
+		if (!method_exists($this, $method_name))
+		{
+			$result = $this->onBeforeGenericTask($task);
+		}
+		elseif (method_exists($this, $method_name))
 		{
 			$result = $this->$method_name();
+		}
+		else
+		{
+			$result = true;
+		}
 
-			if (!$result)
-			{
-				return false;
-			}
+		if (!$result)
+		{
+			throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
 		}
 
 		// Do not allow the display task to be directly called
@@ -701,14 +878,9 @@ class FOFController extends JObject
 
 		if ($doTask == 'display')
 		{
-			if (version_compare(JVERSION, '3.0', 'ge'))
-			{
-				throw new Exception('Bad Request', 400);
-			}
-			else
-			{
-				JError::raiseError(400, 'Bad Request');
-			}
+			JResponse::setHeader('Status', '400 Bad Request', true);
+
+			throw new Exception('Bad Request', 400);
 		}
 
 		$this->doTask = $doTask;
@@ -723,7 +895,7 @@ class FOFController extends JObject
 
 			if (!$result)
 			{
-				return false;
+				throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
 			}
 		}
 
@@ -810,6 +982,8 @@ class FOFController extends JObject
 			// Display without caching
 			$view->display();
 		}
+
+		return true;
 	}
 
 	/**
@@ -848,6 +1022,8 @@ class FOFController extends JObject
 		}
 
 		$this->display(in_array('browse', $this->cacheableTasks));
+
+		return true;
 	}
 
 	/**
@@ -883,6 +1059,8 @@ class FOFController extends JObject
 
 		// Display
 		$this->display(in_array('read', $this->cacheableTasks));
+
+		return true;
 	}
 
 	/**
@@ -944,7 +1122,7 @@ class FOFController extends JObject
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view);
 			$this->setRedirect($url, $model->getError(), 'error');
 
-			return;
+			return false;
 		}
 
 		// Set the layout to form, if it's not set in the URL
@@ -966,6 +1144,8 @@ class FOFController extends JObject
 
 		// Display
 		$this->display(in_array('edit', $this->cacheableTasks));
+
+		return true;
 	}
 
 	/**
@@ -989,16 +1169,6 @@ class FOFController extends JObject
 
 		if ($result)
 		{
-			// Check if i'm using an AJAX call, in this case there is no need to redirect
-			$format = $this->input->get('format', '', 'string');
-
-			if ($format == 'json')
-			{
-				echo json_encode($result);
-
-				return;
-			}
-
 			$id = $this->input->get('id', 0, 'int');
 			$textkey = strtoupper($this->component) . '_LBL_' . strtoupper($this->view) . '_SAVED';
 
@@ -1009,6 +1179,8 @@ class FOFController extends JObject
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=edit&id=' . $id;
 			$this->setRedirect($url, JText::_($textkey));
 		}
+
+		return $result;
 	}
 
 	/**
@@ -1031,16 +1203,6 @@ class FOFController extends JObject
 
 		$status = $model->copy();
 
-		// Check if i'm using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1052,10 +1214,13 @@ class FOFController extends JObject
 		if (!$status)
 		{
 			$this->setRedirect($url, $model->getError(), 'error');
+			return false;
 		}
 		else
 		{
+			JResponse::setHeader('Status', '201 Created', true);
 			$this->setRedirect($url);
+			return true;
 		}
 	}
 
@@ -1078,16 +1243,6 @@ class FOFController extends JObject
 
 		if ($result)
 		{
-			// Check if i'm using an AJAX call, in this case there is no need to redirect
-			$format = $this->input->get('format', '', 'string');
-
-			if ($format == 'json')
-			{
-				echo json_encode($result);
-
-				return;
-			}
-
 			$textkey = strtoupper($this->component) . '_LBL_' . strtoupper($this->view) . '_SAVED';
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1097,6 +1252,8 @@ class FOFController extends JObject
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view);
 			$this->setRedirect($url, JText::_($textkey));
 		}
+
+		return $result;
 	}
 
 	/**
@@ -1126,6 +1283,8 @@ class FOFController extends JObject
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=add';
 			$this->setRedirect($url, JText::_($textkey));
 		}
+
+		return $result;
 	}
 
 	/**
@@ -1150,6 +1309,8 @@ class FOFController extends JObject
 		}
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view);
 		$this->setRedirect($url);
+
+		return true;
 	}
 
 	/**
@@ -1167,7 +1328,7 @@ class FOFController extends JObject
 			$this->_csrfProtection();
 		}
 
-		$this->setaccess(0);
+		return $this->setaccess(0);
 	}
 
 	/**
@@ -1185,7 +1346,7 @@ class FOFController extends JObject
 			$this->_csrfProtection();
 		}
 
-		$this->setaccess(1);
+		return $this->setaccess(1);
 	}
 
 	/**
@@ -1203,7 +1364,7 @@ class FOFController extends JObject
 			$this->_csrfProtection();
 		}
 
-		$this->setaccess(2);
+		return $this->setaccess(2);
 	}
 
 	/**
@@ -1219,7 +1380,7 @@ class FOFController extends JObject
 			$this->_csrfProtection();
 		}
 
-		$this->setstate(1);
+		return $this->setstate(1);
 	}
 
 	/**
@@ -1235,7 +1396,7 @@ class FOFController extends JObject
 			$this->_csrfProtection();
 		}
 
-		$this->setstate(0);
+		return $this->setstate(0);
 	}
 
 	/**
@@ -1278,16 +1439,6 @@ class FOFController extends JObject
 
 		$status = $model->reorder();
 
-		// Check if i'm using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1296,6 +1447,8 @@ class FOFController extends JObject
 		}
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view);
 		$this->setRedirect($url);
+
+		return $status;
 	}
 
 	/**
@@ -1320,16 +1473,6 @@ class FOFController extends JObject
 
 		$status = $model->move(1);
 
-		// Check if i'm using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1346,6 +1489,8 @@ class FOFController extends JObject
 		{
 			$this->setRedirect($url);
 		}
+
+		return $status;
 	}
 
 	/**
@@ -1367,16 +1512,6 @@ class FOFController extends JObject
 
 		$status = $model->move(-1);
 
-		// Check if i'm using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1393,6 +1528,8 @@ class FOFController extends JObject
 		{
 			$this->setRedirect($url);
 		}
+
+		return $status;
 	}
 
 	/**
@@ -1414,16 +1551,6 @@ class FOFController extends JObject
 			$model->setIDsFromRequest();
 		$status = $model->delete();
 
-		// Check if i'm deleting using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'input'))
@@ -1440,6 +1567,8 @@ class FOFController extends JObject
 		{
 			$this->setRedirect($url);
 		}
+
+		return $status;
 	}
 
 	/**
@@ -1453,9 +1582,20 @@ class FOFController extends JObject
 		{
 			$app = JFactory::getApplication();
 			$app->redirect($this->redirect, $this->message, $this->messageType);
+			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns true if there is a redirect set in the controller
+	 *
+	 * @return  boolean
+	 */
+	public function hasRedirect()
+	{
+		return !empty($this->redirect);
 	}
 
 	/**
@@ -1611,16 +1751,6 @@ class FOFController extends JObject
 
 		$status = $model->publish($state);
 
-		// Check if i'm using an AJAX call, in this case there is no need to redirect
-		$format = $this->input->get('format', '', 'string');
-
-		if ($format == 'json')
-		{
-			echo json_encode($status);
-
-			return;
-		}
-
 		// Redirect
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
@@ -1637,6 +1767,8 @@ class FOFController extends JObject
 		{
 			$this->setRedirect($url);
 		}
+
+		return $status;
 	}
 
 	/**
@@ -1686,6 +1818,8 @@ class FOFController extends JObject
 		{
 			$this->setRedirect($url);
 		}
+
+		return $status;
 	}
 
 	/**
@@ -1710,6 +1844,8 @@ class FOFController extends JObject
 
 		if ($status && ($id != 0))
 		{
+			JResponse::setHeader('Status', '201 Created', true);
+
 			// Try to check-in the record if it's not a new one
 			$status = $model->checkin();
 
@@ -1723,16 +1859,6 @@ class FOFController extends JObject
 
 		if (!$status)
 		{
-			// Check if i'm using an AJAX call, in this case there is no need to redirect
-			$format = $this->input->get('format', '', 'string');
-
-			if ($format == 'json')
-			{
-				echo json_encode($status);
-
-				return;
-			}
-
 			// Redirect on error
 			$id = $model->getId();
 
@@ -1765,6 +1891,15 @@ class FOFController extends JObject
 	{
 		if (!is_object($this->_modelObject))
 		{
+			// Make sure $config is an array
+			if (is_object($config))
+			{
+				$config = (array)$config;
+			} elseif (!is_array($config))
+			{
+				$config = array();
+			}
+
 			if (!empty($this->modelName))
 			{
 				$parts = FOFInflector::explode($this->modelName);
@@ -1798,6 +1933,15 @@ class FOFController extends JObject
 	 */
 	public function getModel($name = '', $prefix = '', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		if (empty($name))
 		{
 			$name = $this->getName();
@@ -1846,6 +1990,15 @@ class FOFController extends JObject
 	{
 		if (!is_object($this->_viewObject))
 		{
+			// Make sure $config is an array
+			if (is_object($config))
+			{
+				$config = (array)$config;
+			} elseif (!is_array($config))
+			{
+				$config = array();
+			}
+
 			$prefix = null;
 			$viewName = null;
 			$viewType = null;
@@ -1946,6 +2099,15 @@ class FOFController extends JObject
 	{
 		static $views;
 
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		if (!isset($views))
 		{
 			$views = array();
@@ -1987,6 +2149,15 @@ class FOFController extends JObject
 	 */
 	protected function createModel($name, $prefix = '', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$result = null;
 
 		// Clean the model name
@@ -2026,12 +2197,26 @@ class FOFController extends JObject
 	 */
 	protected function createView($name, $prefix = '', $type = '', $config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$result = null;
 
 		// Clean the view name
 		$viewName = preg_replace('/[^A-Z0-9_]/i', '', $name);
 		$classPrefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 		$viewType = preg_replace('/[^A-Z0-9_]/i', '', $type);
+
+		if (!isset($config['input']))
+		{
+			$config['input'] = $this->input;
+		}
 
 		if (($config['input'] instanceof FOFInput))
 		{
@@ -2186,12 +2371,24 @@ class FOFController extends JObject
 			}
 		}
 
+		$extraTemplatePath = $this->configProvider->get($config['option'] . '.views.' . $config['view'] . '.config.template_path', null);
+		if ($extraTemplatePath)
+		{
+			array_unshift($config['template_path'], $basePath . '/components/' . $config['option'] . '/' . $extraTemplatePath);
+		}
+
 		if (!array_key_exists('helper_path', $config))
 		{
 			$config['helper_path'] = array(
 				$basePath . '/components/' . $config['option'] . '/helpers',
 				JPATH_ADMINISTRATOR . '/components/' . $config['option'] . '/helpers'
 			);
+		}
+
+		$extraHelperPath = $this->configProvider->get($config['option'] . '.views.' . $config['view'] . '.config.helper_path', null);
+		if ($extraHelperPath)
+		{
+			$config['helper_path'][] = $basePath . '/components/' . $config['option'] . '/' . $extraHelperPath;
 		}
 
 		$result = new $viewClass($config);
@@ -2265,10 +2462,25 @@ class FOFController extends JObject
 		{
 			return true;
 		}
+		elseif (in_array(strtolower($area), array('false','0','no','403')))
+		{
+			return false;
+		}
+		elseif (empty($area))
+		{
+			return true;
+		}
 		else
 		{
 			return JFactory::getUser()->authorise($area, $this->component);
 		}
+	}
+
+	protected function onBeforeGenericTask($task)
+	{
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.' . $task, '');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2301,7 +2513,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeAccesspublic()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.accesspublic', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2311,7 +2525,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeAccessregistered()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.accessregistered', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2321,7 +2537,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeAccessspecial()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.accessspecial', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2331,7 +2549,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeAdd()
 	{
-		return $this->checkACL('core.create');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.add', 'core.create');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2341,7 +2561,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeApply()
 	{
-		return $this->checkACL('core.edit');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.apply', 'core.edit');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2355,12 +2577,16 @@ class FOFController extends JObject
 
 		if ($isAdmin)
 		{
-			return $this->checkACL('core.manage');
+			$defaultPrivilege = 'core.manage';
 		}
 		else
 		{
-			return true;
+			$defaultPrivilege = '';
 		}
+
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+				FOFInflector::singularize($this->view) . '.acl.browse', $defaultPrivilege);
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2370,7 +2596,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeCancel()
 	{
-		return $this->checkACL('core.edit');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.cancel', 'core.edit');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2380,7 +2608,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeEdit()
 	{
-		return $this->checkACL('core.edit');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.edit', 'core.edit');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2390,7 +2620,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeOrderdown()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.orderdown', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2400,7 +2632,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeOrderup()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.orderup', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2410,7 +2644,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforePublish()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.publish', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2420,7 +2656,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeRemove()
 	{
-		return $this->checkACL('core.delete');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.remove', 'core.delete');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2430,7 +2668,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeSave()
 	{
-		return $this->checkACL('core.edit');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.save', 'core.edit');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2440,7 +2680,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeSavenew()
 	{
-		return $this->checkACL('core.edit');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.savenew', 'core.edit');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2450,7 +2692,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeSaveorder()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.saveorder', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2460,7 +2704,9 @@ class FOFController extends JObject
 	 */
 	protected function onBeforeUnpublish()
 	{
-		return $this->checkACL('core.edit.state');
+		$privilege = $this->configProvider->get($this->component . '.views.' .
+			FOFInflector::singularize($this->view) . '.acl.unpublish', 'core.edit.state');
+		return $this->checkACL($privilege);
 	}
 
 	/**
@@ -2472,6 +2718,45 @@ class FOFController extends JObject
 	 */
 	protected function _csrfProtection()
 	{
+		static $isCli = null, $isAdmin = null;
+
+		if (is_null($isCli))
+		{
+			list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
+		}
+
+		switch ($this->csrfProtection)
+		{
+			// Never
+			case 0:
+				return true;
+				break;
+
+			// Always
+			case 1:
+				break;
+
+			// Only back-end and HTML format
+			case 2:
+				if ($isCli)
+				{
+					return true;
+				}
+				elseif (!$isAdmin && ($this->input->get('format', 'html', 'cmd') != 'html'))
+				{
+					return true;
+				}
+				break;
+
+			// Only back-end
+			case 3:
+				if (!$isAdmin)
+				{
+					return true;
+				}
+				break;
+		}
+
 		$hasToken = false;
 		$session = JFactory::getSession();
 

@@ -9,8 +9,23 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.framework');
+if(version_compare(JVERSION, '3.0', 'ge')) {
+	JHTML::_('behavior.framework');
+} else {
+	JHTML::_('behavior.mootools');
+}
 JHtml::_('behavior.modal');
+
+FOFTemplateUtils::addCSS('media://com_admintools/css/jquery.jqplot.min.css');
+
+AkeebaStrapper::addJSfile('media://com_admintools/js/excanvas.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jquery.jqplot.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.highlighter.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.dateAxisRenderer.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.barRenderer.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.pieRenderer.min.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/jqplot.hermite.js?'.ADMINTOOLS_VERSION);
+AkeebaStrapper::addJSfile('media://com_admintools/js/cpanelgraphs.js?'.ADMINTOOLS_VERSION);
 
 $lang = JFactory::getLanguage();
 $option = 'com_admintools';
@@ -39,7 +54,7 @@ function warnBeforeOptimize(e)
 function showChangelog()
 {
 	var akeebaChangelogElement = $('akeeba-changelog').clone();
-	
+
     SqueezeBox.fromElement(
         akeebaChangelogElement, {
             handler: 'adopt',
@@ -73,14 +88,15 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 <?php endif; ?>
 
 <div class="row-fluid">
-	<div id="cpanel" class="span8">
+
+	<div id="cpanel" class="span6">
 
 		<?php if(!$this->hasValidPassword): ?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="well">
 			<input type="hidden" name="option" value="com_admintools" />
 			<input type="hidden" name="view" value="cpanel" />
 			<input type="hidden" name="task" value="login" />
-			
+
 			<h3><?php echo JText::_('ATOOLS_LBL_CP_MASTERPWHEAD') ?></h3>
 			<p class="help-block"><?php echo JText::_('ATOOLS_LBL_CP_MASTERPWINTRO') ?></p>
 			<label for="userpw"><?php echo JText::_('ATOOLS_LBL_CP_MASTERPW') ?></label>
@@ -110,7 +126,7 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 		</div>
 
 		<?php echo LiveUpdate::getIcon(); ?>
-		
+
 		<div style="clear: both;"></div>
 
 		<h2><?php echo JText::_('ATOOLS_LBL_CP_SECURITY') ?></h2>
@@ -309,7 +325,7 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 			</div>
 		</div>
 		<?php endif; ?>
-	
+
 		<?php if($this->enable_cleantmp && $this->isMySQL): ?>
 		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
@@ -358,16 +374,8 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 
 	</div>
 
-	<div id="sidepanes" class="span4">
-	<?php
-		if(version_compare(JVERSION, '3.0', 'ge')) {
-			JHTML::_('behavior.framework');
-		} else {
-			JHTML::_('behavior.mootools');
-		}
-	?>
-
-		<div class="well">
+	<div id="sidepanes" class="span6">
+		<div>
 			<h3><?php echo JText::_('ATOOLS_LBL_CP_UPDATESTATS'); ?></h3>
 			<table class="table table-striped" cellpadding="0" cellspacing="0">
 				<tr>
@@ -394,7 +402,12 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 			</p>
 			<?php endif; ?>
 		</div>
-		
+
+		<?php if($this->isPro && $this->showstats):
+			echo $this->loadTemplate('graphs');
+			echo $this->loadTemplate('stats');
+		endif; ?>
+
 		<div class="well">
 			<h3><?php echo JText::_('ATOOLS_LBL_CREDITS'); ?></h3>
 			<?php
@@ -442,7 +455,6 @@ $mysql5 = $this->isMySQL && (strpos( $db->getVersion(), '5' ) === 0);
 			<p><?php echo JText::_('ATOOLS_LBL_CP_DISTEXT'); ?></p>
 		</div>
 	</div>
-	
 </div>
 
 <div style="clear: both;"></div>

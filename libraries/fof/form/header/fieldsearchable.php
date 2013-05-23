@@ -10,24 +10,30 @@ defined('_JEXEC') or die();
 /**
  * Generic field header, with text input (search) filter
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderFieldsearchable extends FOFFormHeaderField
 {
 
+	/**
+	 * Get the filter field
+	 *
+	 * @return  string  The HTML
+	 */
 	protected function getFilter()
 	{
 		// Initialize some field attributes.
-		$size = $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
-		$maxLength = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
+		$size        = $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
+		$maxLength   = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
 		$filterclass = $this->element['filterclass'] ? ' class="' . (string) $this->element['filterclass'] . '"' : '';
 		$placeholder = $this->element['placeholder'] ? $this->element['placeholder'] : $this->getLabel();
-		$name = $this->element['searchfieldname'] ? $this->element['searchfieldname'] : $this->name;
+		$name        = $this->element['searchfieldname'] ? $this->element['searchfieldname'] : $this->name;
 		$placeholder = 'placeholder="' . JText::_($placeholder) . '"';
 
 		if ($this->element['searchfieldname'])
 		{
-			$model = $this->form->getModel();
+			$model       = $this->form->getModel();
 			$searchvalue = $model->getState((string) $this->element['searchfieldname']);
 		}
 		else
@@ -50,10 +56,16 @@ class FOFFormHeaderFieldsearchable extends FOFFormHeaderField
 			. htmlspecialchars($searchvalue, ENT_COMPAT, 'UTF-8') . '"' . $filterclass . $size . $placeholder . $onchange . $maxLength . '/>';
 	}
 
+	/**
+	 * Get the buttons HTML code
+	 *
+	 * @return  string  The HTML
+	 */
 	protected function getButtons()
 	{
 		$buttonclass = $this->element['buttonclass'] ? ' class="' . (string) $this->element['buttonclass'] . '"' : '';
-		$show_buttons = !($this->element['buttons'] == 'false');
+		$buttonsState = strtolower($this->element['buttons']);
+		$show_buttons = !in_array($buttonsState, array('no', 'false', '0'));
 
 		if (!$show_buttons)
 		{

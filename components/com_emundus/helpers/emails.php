@@ -111,9 +111,7 @@ class EmundusHelperEmails{
 
 			$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
 			$applicant =& JFactory::getUser($student_id);
-			$email.= '<div class="em_email_block_nav">
-			<input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="'.JText::_( 'BACK' ).'" >
-			</div>';
+	
 			$email.= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">

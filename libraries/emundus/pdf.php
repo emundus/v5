@@ -14,7 +14,194 @@ function age($naiss) {
 			$annees--;
 		}
 		return $annees;
+}
+
+// @description Generate the letter result
+// @params Applicant user ID
+// @params Eligibility ID of the evaluation
+// @params Code of the programme
+// @params Type of output
+
+function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true) {
+	$current_user = & JFactory::getUser();
+	$user = & JFactory::getUser($user_id);
+	$db = &JFactory::getDBO();
+
+	$files = array();
+
+	$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$db->Quote($training);
+	$db->setQuery($query);
+	$letters = $db->loadAssocList();
+
+	$query = "SELECT * FROM #__emundus_setup_campaigns WHERE id=".$campaign_id;
+	$db->setQuery($query);
+	$campaign = $db->loadAssoc();
+
+	set_time_limit(0);
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
+	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+	
+	$emails = new EmundusModelEmails;
+
+	// Extend the TCPDF class to create custom Header and Footer
+	class MYPDF extends TCPDF {
+
+		var $logo = "";
+		var $footer = "";
+
+		//Page header
+		public function Header() {
+			// Logo
+			$this->Image($this->logo, 10, 10, 15, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			// Set font
+			$this->SetFont('helvetica', 'B', 20);
+			// Title
+			$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+		}
+
+		// Page footer
+		public function Footer() {
+			// Position at 15 mm from bottom
+			$this->SetY(-15);
+			// Set font
+			$this->SetFont('helvetica', 'I', 8);
+			// Page number
+			$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+			// footer
+			$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+			//logo
+			$this->Image($this->logo, 180, 280, 15, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			
+		}
 	}
+
+	foreach ($letters as $letter) {
+		$htmldata = "";
+		$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$letter['attachment_id'];
+		$db->setQuery($query);
+		$attachment = $db->loadAssoc();
+
+		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+//die(PDF_UNIT.' : '.PDF_PAGE_FORMAT);
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor($current_user->name);
+		$pdf->SetTitle($letter['title']);
+
+		//set margins
+//		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, 50);
+		$pdf->SetMargins(5, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		//get logo
+	/*	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
+		$db->setQuery($query);
+		$logo = $db->loadResult(); */
+		preg_match('#src="(.*?)"#i', $letter['header'], $tab);
+		$logo = JPATH_BASE.DS.$tab[1]; 
+		$pdf->logo = $logo;
+		$pdf->footer = $letter["footer"];
+		//get title
+	/*	$config =& JFactory::getConfig(); 
+		$title = $config->getValue('config.sitename');*/
+		$title = "";
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+		unset($logo);
+		unset($title);
+		
+		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+		$pdf->SetFont('helvetica', '', 9);
+
+		//$dimensions = $pdf->getPageDimensions();
+
+//
+// Evaluation result
+//
+		include_once(JPATH_BASE.'/components/com_emundus/models/evaluation.php');
+
+		$evaluations = new EmundusModelEvaluation;
+		$evaluation = $evaluations->getEvaluationByID($evaluation_id);
+		$reason = $evaluations->getEvaluationReasons();
+		unset($evaluation[0]["id"]);
+		unset($evaluation[0]["user"]);
+		unset($evaluation[0]["time_date"]);
+		unset($evaluation[0]["student_id"]);
+		unset($evaluation[0]["parent_id"]);
+		unset($evaluation[0]["campaign_id"]);
+		unset($evaluation[0]["comment"]);
+		if(empty($evaluation[0]["reason"])) {
+			unset($evaluation[0]["reason"]);
+			unset($evaluation[0]["reason_other"]);
+		} elseif(empty($evaluation[0]["reason_other"])) {
+			unset($evaluation[0]["reason_other"]);
+		}
+		$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
+
+		$result = "";
+		foreach ($evaluation_details as $ed) {
+			if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
+				//$result .= '<br>'.$ed->element_label.' : ';
+				if($ed->element_name=="reason") {
+					$result .= '<ul>';
+					foreach ($evaluation as $e) {
+						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->text.'</li>';
+					}
+					$result .= '</ul>';
+				} /*elseif($ed->element_name=="result") {
+						$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
+				} else
+					$result .= $evaluation[0][$ed->element_name];*/
+			}
+		}
+
+//
+// Replacement
+//
+		$post = array(  'TRAINING_CODE' => $training, 
+						'TRAINING_PROGRAMME' => $campaign['label'],
+						'REASON' => $result );
+
+		$tags = $emails->setTags($user_id, $post);
+
+		//$htmldata .= $letter["header"];
+		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], $letter["body"]); 
+		//$htmldata .= $letter["footer"];
+//die($htmldata);
+		$pdf->AddPage();
+
+	// Print text using writeHTMLCell()
+	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+
+		@chdir('tmp');
+		if($output){
+				//$output?'FI':'F'
+			$name = $attachment['lbl'].date('Y-m-d_H-i-s').'.pdf';
+			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
+			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 0)';
+			$db->setQuery($query);
+			$db->query();
+			//die(str_replace("#_", "jos", $query));
+		}else{
+			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
+		}
+		$file_info['path'] = EMUNDUS_PATH_ABS.$user_id.DS.$name;
+		$file_info['id'] = $letter['attachment_id'];
+		$file_info['name'] = $attachment['value'];
+		$file_info['url'] = EMUNDUS_PATH_REL.$user_id.'/'.$name;
+
+		$files[] = $file_info;
+	}
+//die(print_r($files));
+	return $files;
+}	
+
+
 function application_form_pdf($user_id, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -57,7 +244,7 @@ function application_form_pdf($user_id, $output = true) {
 	$db->setQuery($query);
 	$logo = $db->loadResult();
 	preg_match('#src="(.*?)"#i', $logo,$tab);
-	$logo = $tab[1];
+	$logo = JPATH_BASE.DS.$tab[1];
 	//get title
 	$config =& JFactory::getConfig(); 
 	$title = $config->getValue('config.sitename');

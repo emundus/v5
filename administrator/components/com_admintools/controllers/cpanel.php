@@ -60,7 +60,7 @@ class AdmintoolsControllerCpanel extends FOFController
 				}
 				if(version_compare(ADMINTOOLS_VERSION, $versionLast, 'ne') || empty($versionLast)) {
 					$this->setRedirect('index.php?option=com_admintools&view=postsetup');
-					return;
+					return true;
 				}
 			}
 		}

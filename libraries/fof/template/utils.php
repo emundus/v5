@@ -60,13 +60,12 @@ class FOFTemplateUtils
 		// Get the local LESS file
 		$localFile = self::parsePath($path, true);
 
-		JLoader::import('joomla.filesystem.file');
 		JLoader::import('joomla.filesystem.folder');
 
 		if (is_null($sanityCheck))
 		{
 			// Make sure the cache directory exists
-			if (!JFolder::exists(JPATH_SITE . '/media/lib_fof/compiled/'))
+			if (!is_dir(JPATH_SITE . '/media/lib_fof/compiled/'))
 			{
 				$sanityCheck = JFolder::create(JPATH_SITE . '/media/lib_fof/compiled/');
 			}
@@ -77,7 +76,7 @@ class FOFTemplateUtils
 		}
 
 		// No point continuing if the source file is not there or we can't write to the cache
-		if (!$sanityCheck || !JFile::exists($localFile))
+		if (!$sanityCheck || !is_file($localFile))
 		{
 			if (!$returnPath)
 			{
@@ -195,7 +194,16 @@ class FOFTemplateUtils
 
 		$altPaths = self::getAltPaths($path);
 		$filePath = $altPaths['normal'];
-		if (isset($altPaths['alternate']))
+
+		// If JDEBUG is enabled, prefer that path, else prefer an alternate path if present
+		if (defined('JDEBUG') && JDEBUG && isset($altPaths['debug']))
+		{
+			if (file_exists(JPATH_SITE . '/' . $altPaths['debug']))
+			{
+				$filePath = $altPaths['debug'];
+			}
+		}
+		elseif (isset($altPaths['alternate']))
 		{
 			if (file_exists(JPATH_SITE . '/' . $altPaths['alternate']))
 			{
@@ -274,6 +282,35 @@ class FOFTemplateUtils
 					'normal' => $path
 				);
 				break;
+		}
+
+		// For CSS and JS files, add a debug path if the supplied file is compressed
+		JLoader::import('joomla.filesystem.file');
+		$ext = JFile::getExt($ret['normal']);
+		if (in_array($ext, array('css', 'js')))
+		{
+			$file = basename(JFile::stripExt($ret['normal']));
+
+			/*
+			 * Detect if we received a file in the format name.min.ext
+			 * If so, strip the .min part out, otherwise append -uncompressed
+			 */
+			if (strlen($file) > 4 && strrpos($file, '.min', '-4'))
+			{
+				$position = strrpos($file, '.min', '-4');
+				$filename = str_replace('.min', '.', $file, $position);
+			}
+			else
+			{
+				$filename = $file . '-uncompressed.' . $ext;
+			}
+
+			// Clone the $ret array so we can manipulate the 'normal' path a bit
+			$temp = (array)(clone (object)$ret);
+			$normalPath = explode('/', $temp['normal']);
+			array_pop($normalPath);
+			$normalPath[] = $filename;
+			$ret['debug'] = implode('/', $normalPath);
 		}
 
 		return $ret;

@@ -10,11 +10,17 @@ defined('_JEXEC') or die();
 /**
  * Row selection checkbox
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderRowselect extends FOFFormHeader
 {
 
+	/**
+	 * Get the header
+	 *
+	 * @return  string  The header HTML
+	 */
 	protected function getHeader()
 	{
 		return '<input type="checkbox" name="checkall-toggle" value="" title="'

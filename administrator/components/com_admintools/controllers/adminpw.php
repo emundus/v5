@@ -39,17 +39,17 @@ class AdmintoolsControllerAdminpw extends FOFController
 
 		if(empty($username)) {
 			$this->setRedirect('index.php?option=com_admintools&view=adminpw',JText::_('ATOOLS_ERR_ADMINPW_NOUSERNAME'),'error');
-			return;
+			return true;
 		}
 
 		if(empty($password)) {
 			$this->setRedirect('index.php?option=com_admintools&view=adminpw',JText::_('ATOOLS_ERR_ADMINPW_NOPASSWORD'),'error');
-			return;
+			return true;
 		}
 
 		if($password != $password2) {
 			$this->setRedirect('index.php?option=com_admintools&view=adminpw',JText::_('ATOOLS_ERR_ADMINPW_PASSWORDNOMATCH'),'error');
-			return;
+			return true;
 		}
 
 		$model = $this->getThisModel();

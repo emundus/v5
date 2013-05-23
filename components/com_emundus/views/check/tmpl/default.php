@@ -136,7 +136,7 @@ foreach ($this->users as $user) { ?>
 			?>
 		</td>
       <td><?php echo $user['jos_emundus_personal_detail__nationality']; ?></td>
-      <td><?php echo $this->campaigns[$user['user_id']][$user['user_id']]; ?></td>
+      <td><?php echo $this->campaigns[$user['user_id']][$user['user_id']][$user->campaign_id]; ?></td>
 	  <td><?php echo $this->validate[$user['user_id']]; ?></td>	
 	</tr>
 <?php } ?>

@@ -10,7 +10,8 @@ defined('_JEXEC') or die();
 /**
  * Language field header
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderLanguage extends FOFFormHeaderFieldselectable
 {
@@ -26,6 +27,7 @@ class FOFFormHeaderLanguage extends FOFFormHeaderFieldselectable
 	{
 		// Initialize some field attributes.
 		$client = (string) $this->element['client'];
+
 		if ($client != 'site' && $client != 'administrator')
 		{
 			$client = 'site';

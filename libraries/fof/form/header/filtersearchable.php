@@ -10,11 +10,17 @@ defined('_JEXEC') or die();
 /**
  * Generic filter, text box entry with optional buttons
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderFiltersearchable extends FOFFormHeaderFieldsearchable
 {
 
+	/**
+	 * Get the header
+	 *
+	 * @return  string  The header HTML
+	 */
 	protected function getHeader()
 	{
 		return '';

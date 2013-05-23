@@ -40,6 +40,15 @@ class FOFToolbar
 	{
 		static $instances = array();
 
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		$hash = $option;
 		if (!array_key_exists($hash, $instances))
 		{
@@ -115,6 +124,15 @@ class FOFToolbar
 
 	public function __construct($config = array())
 	{
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		// Cache the config
 		$this->config = $config;
 
@@ -450,7 +468,7 @@ class FOFToolbar
 			'active' => $active,
 			'icon'	 => $icon
 		);
-		array_unshift($this->linkbar[], $linkDefinition);
+		array_unshift($this->linkbar, $linkDefinition);
 	}
 
 	/**

@@ -6,8 +6,8 @@
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU GPL v3</license>
-	<version>2.5.3</version>
-	<creationDate>2013-03-14</creationDate>
+	<version>revA16BC0E</version>
+	<creationDate>2013-04-27</creationDate>
 	<files>
 		<filename module="mod_atjupgrade">mod_atjupgrade.php</filename>
 		<folder>css</folder>

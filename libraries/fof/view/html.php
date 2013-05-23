@@ -34,6 +34,15 @@ class FOFViewHtml extends FOFView
 	{
 		list($isCli, ) = FOFDispatcher::isCliAdmin();
 
+		// Make sure $config is an array
+		if (is_object($config))
+		{
+			$config = (array)$config;
+		} elseif (!is_array($config))
+		{
+			$config = array();
+		}
+
 		parent::__construct($config);
 
 		$this->config = $config;

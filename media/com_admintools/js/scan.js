@@ -167,15 +167,14 @@ function start_scan_timer()
 	}
 	
 	admintools_scan_responseago = 0;
-	
+	set_scan_timermsg();
 	admintools_scan_timerid = window.setInterval('step_scan_timer()', 1000);
 }
 
 function step_scan_timer()
 {
 	admintools_scan_responseago++;
-	var myText = admintools_scan_msg_ago;
-	document.id('admintools-lastupdate-text').innerHTML = myText.replace('%s',admintools_scan_responseago);
+	set_scan_timermsg();
 }
 
 function stop_scan_timer()
@@ -183,4 +182,10 @@ function stop_scan_timer()
 	if(admintools_scan_timerid >= 0) {
 		window.clearInterval(admintools_scan_timerid);
 	}
+}
+
+function set_scan_timermsg()
+{
+	var myText = admintools_scan_msg_ago;
+	document.id('admintools-lastupdate-text').innerHTML = myText.replace('%s',admintools_scan_responseago);
 }

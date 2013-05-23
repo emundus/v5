@@ -1,4 +1,18 @@
 <?php die() ?>
+Admin Tools 2.5.5
+================================================================================
++ Option to hide security exception stats & graphs
++ Added "Robert button" (accept the mandatory information in the post-setup page without ticking each box)
+~ Changed the control panel page's layout
+# [HIGH] Joomla! 3.1.0 broke several aspects of the component
+
+Admin Tools 2.5.4
+================================================================================
+~ Additional rules in PHP File Change Scanner
+# [HIGH] Fatal error saving the permissions configuration
+# [HIGH] 403 errors accessing the component when FOF 2.0.5 or later is installed
+# [LOW] Even though the bad behavior integration was removed the interface was not updated
+
 Admin Tools 2.5.3
 ================================================================================
 + Filters in the PHP File Scanner report page

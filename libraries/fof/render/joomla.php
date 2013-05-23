@@ -45,9 +45,12 @@ class FOFRenderJoomla extends FOFRenderAbstract
 			echo "<div class=\"joomla-version-$version\">\n";
 		}
 
-		// Render submenu and toolbar
-		$this->renderButtons($view, $task, $input, $config);
-		$this->renderLinkbar($view, $task, $input, $config);
+		// Render submenu and toolbar (only if asked to)
+		if ($input->getBool('render.toolbar', true))
+		{
+			$this->renderButtons($view, $task, $input, $config);
+			$this->renderLinkbar($view, $task, $input, $config);
+		}
 	}
 
 	/**
@@ -60,12 +63,19 @@ class FOFRenderJoomla extends FOFRenderAbstract
 	public function postRender($view, $task, $input, $config = array())
 	{
 		list($isCli,) = FOFDispatcher::isCliAdmin();
+		$format = $input->getCmd('format', 'html');
+		if (empty($format))
+			$format = 'html';
+		if ($format != 'html')
+			return;
 
 		// Closing tag only if we're not in CLI
-		if(!$isCli)
+		if($isCli)
 		{
-			echo "</div>\n";
+			return;
 		}
+
+		echo "</div>\n";
 	}
 
 	/**
@@ -328,18 +338,47 @@ class FOFRenderJoomla extends FOFRenderAbstract
 
 		$html = '';
 
-		if ($validate = $form->getAttribute('validate'))
+		$validate = $form->getAttribute('validate');
+		$class = '';
+
+		if (!empty($validate))
 		{
 			JHTML::_('behavior.formvalidation');
 			$class = ' class="form-validate"';
 			$this->loadValidationScript($form);
 		}
+
+		// Check form enctype. Use enctype="multipart/form-data" to upload binary files in your form.
+		$template_form_enctype = $form->getAttribute('enctype');
+
+		if (!empty($template_form_enctype))
+		{
+			$enctype = ' enctype="' . $form->getAttribute('enctype') . '" ';
+		}
 		else
 		{
-			$class = '';
+			$enctype = '';
 		}
 
-		$html .= '<form action="index.php" method="post" name="adminForm" id="adminForm"' . $class . '>' . PHP_EOL;
+		// Check form name. Use name="yourformname" to modify the name of your form.
+		$formname = $form->getAttribute('name');
+
+		if (empty($formname))
+		{
+			$formname = 'adminForm';
+		}
+
+		// Check form ID. Use id="yourformname" to modify the id of your form.
+		$formid = $form->getAttribute('name');
+
+		if (empty($formname))
+		{
+			$formid = 'adminForm';
+		}
+
+		$html .= '<form action="index.php" method="post" name="' . $formname .
+			'" id="' . $formid . '"' . $enctype . ' class="' . $class .
+			'">' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="option" value="' . $input->getCmd('option') . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="view" value="' . $input->getCmd('view', 'edit') . '" />' . PHP_EOL;
 		$html .= "\t" . '<input type="hidden" name="task" value="" />' . PHP_EOL;
@@ -373,7 +412,10 @@ class FOFRenderJoomla extends FOFRenderAbstract
 				$label = $field->label;
 				$input = $field->input;
 
-				$html .= "\t\t\t" . $label . PHP_EOL;
+				if (!is_null($title))
+				{
+					$html .= "\t\t\t" . $label . PHP_EOL;
+				}
 				$html .= "\t\t\t" . $input . PHP_EOL;
 			}
 

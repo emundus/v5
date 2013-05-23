@@ -10,11 +10,17 @@ defined('_JEXEC') or die();
 /**
  * Ordering field header
  *
- * @since 2.0
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFFormHeaderOrdering extends FOFFormHeader
 {
 
+	/**
+	 * Get the header
+	 *
+	 * @return  string  The header HTML
+	 */
 	protected function getHeader()
 	{
 		$sortable = ($this->element['sortable'] != 'false');
@@ -35,6 +41,7 @@ class FOFFormHeaderOrdering extends FOFFormHeader
 			// Ye olde Joomla! 2.5 method
 			$html = JHTML::_('grid.sort', 'JFIELD_ORDERING_LABEL', 'ordering', $view->getLists()->order_Dir, $view->getLists()->order, 'browse');
 			$html .= JHTML::_('grid.order', $model->getList());
+
 			return $html;
 		}
 		else

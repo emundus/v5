@@ -25,11 +25,11 @@ class AdmintoolsModelCpanels extends FOFModel
 	{
 		parent::__construct();
 	}
-	
+
 	public function getPluginID()
 	{
 		$db = $this->getDBO();
-		
+
 		$query = $db->getQuery(true)
 			->select($db->qn('extension_id'))
 			->from($db->qn('#__extensions'))
@@ -43,7 +43,7 @@ class AdmintoolsModelCpanels extends FOFModel
 
 		return $id;
 	}
-	
+
 	/**
 	 * Automatically migrates settings from the component's parameters storage
 	 * to our version 2.1+ dedicated storage table.
@@ -58,7 +58,7 @@ class AdmintoolsModelCpanels extends FOFModel
 			->from($db->qn('#__extensions'))
 			->where($db->qn('type').' = '.$db->quote('component'))
 			->where($db->qn('element').' = '.$db->quote('com_admintools'));
-		$db->setQuery($query); 
+		$db->setQuery($query);
 		$rawparams = $db->loadResult();
 		$cparams = new JRegistry();
 		if(version_compare(JVERSION, '3.0', 'ge')) {
@@ -66,13 +66,14 @@ class AdmintoolsModelCpanels extends FOFModel
 		} else {
 			$cparams->loadJSON($rawparams);
 		}
-		
+
 		// Migrate parameters
 		$allParams = $cparams->toArray();
 		$safeList = array(
 			'liveupdate', 'downloadid', 'lastversion', 'minstability',
 			'scandiffs', 'scanemail', 'htmaker_folders_fix_at240',
-			'acceptlicense', 'acceptsupport', 'sitename');
+			'acceptlicense', 'acceptsupport', 'sitename',
+			'showstats',);
 		if(interface_exists('JModel')) {
 			$params = JModelLegacy::getInstance('Storage','AdmintoolsModel');
 		} else {
@@ -82,9 +83,9 @@ class AdmintoolsModelCpanels extends FOFModel
 		foreach($allParams as $k => $v) {
 			if(in_array($k, $safeList)) continue;
 			if($v == '') continue;
-			
+
 			$modified++;
-			
+
 			if(version_compare(JVERSION, '3.0', 'ge')) {
 				$cparams->set($k, null);
 			} else {
@@ -92,12 +93,12 @@ class AdmintoolsModelCpanels extends FOFModel
 			}
 			$params->setValue($k, $v);
 		}
-		
+
 		if($modified == 0) return;
-		
+
 		// Save new parameters
 		$params->save();
-		
+
 		// Save component parameters
 		$db = JFactory::getDBO();
 		$data = $cparams->toString();
@@ -111,11 +112,11 @@ class AdmintoolsModelCpanels extends FOFModel
 		$db->setQuery($sql);
 		$db->execute();
 	}
-	
+
 	public function needsDownloadID()
 	{
 		JLoader::import('joomla.application.component.helper');
-		
+
 		// Do I need a Download ID?
 		$ret = false;
 		$isPro = ADMINTOOLS_PRO;
@@ -133,10 +134,10 @@ class AdmintoolsModelCpanels extends FOFModel
 				$ret = true;
 			}
 		}
-				
+
 		// Deactivate update site for Admin Tools
 		$component = JComponentHelper::getComponent('com_admintools');
-		
+
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('update_site_id')
@@ -144,21 +145,21 @@ class AdmintoolsModelCpanels extends FOFModel
 			->where($db->qn('extension_id').' = '.$db->q($component->id));
 		$db->setQuery($query);
 		$updateSite = $db->loadResult();
-		
+
 		if($updateSite) {
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__update_sites'))
 				->where($db->qn('update_site_id').' = '.$db->q($updateSite));
 			$db->setQuery($query);
 			$db->execute();
-			
+
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__update_sites_extensions'))
 				->where($db->qn('update_site_id').' = '.$db->q($updateSite));
 			$db->setQuery($query);
 			$db->execute();
 		}
-		
+
 		// Deactivate the update site for FOF
 		$query = $db->getQuery(true)
 			->from('#__update_sites')
@@ -167,47 +168,47 @@ class AdmintoolsModelCpanels extends FOFModel
 			->where($db->qn('location').' = '.$db->q('http://cdn.akeebabackup.com/updates/libraries/fof'));
 		$db->setQuery($query);
 		$updateSite = $db->loadResult();
-		
+
 		if($updateSite) {
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__update_sites'))
 				->where($db->qn('update_site_id').' = '.$db->q($updateSite));
 			$db->setQuery($query);
 			$db->execute();
-			
+
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__update_sites_extensions'))
 				->where($db->qn('update_site_id').' = '.$db->q($updateSite));
 			$db->setQuery($query);
 			$db->execute();
 		}
-		
+
 		return $ret;
 	}
-	
+
 	/**
 	 * Makes sure that the Professional release can be updated using Joomla!'s
 	 * own update system. THIS IS AN AKEEBA ORIGINAL!
-	 * 
+	 *
 	 * @return bool False if the Download ID is of an incorrect format
 	 */
 	public function applyJoomlaExtensionUpdateChanges($isPro = -1)
 	{
 		$ret = true;
-		
+
 		// Do we have Admin Tools Professional?
 		if($isPro === -1) {
 			$isPro = ADMINTOOLS_PRO;
 		}
-		
+
 		// Action parameters
 		$action = 'none'; // What to do: none, update, create, delete
 		$purgeUpdates = false; // Should I purge existing updates?
 		$fetchUpdates = false; // Should I fetch new udpates
-		
+
 		// Init
 		$db = $this->getDbo();
-		
+
 		// Figure out the correct XML update stream URL
 		if($isPro) {
 			$update_url = 'https://www.akeebabackup.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=6';
@@ -231,10 +232,10 @@ class AdmintoolsModelCpanels extends FOFModel
 		} else {
 			$url = 'http://cdn.akeebabackup.com/updates/atcore.xml';
 		}
-		
+
 		// Get the extension ID
 		$extensionID = JComponentHelper::getComponent('com_admintools')->id;
-		
+
 		// Get the update site record
 		$query = $db->getQuery(true)
 			->select(array(
@@ -250,8 +251,8 @@ class AdmintoolsModelCpanels extends FOFModel
 			$db->qn('map').'.'.$db->qn('extension_id').' = '.$db->q($extensionID)
 		);
 		$db->setQuery($query);
-		$update_site = $db->loadObject();		
-		
+		$update_site = $db->loadObject();
+
 		// Decide on the course of action to take
 		if($url) {
 			if(!is_object($update_site)) {
@@ -271,13 +272,13 @@ class AdmintoolsModelCpanels extends FOFModel
 				$purgeUpdates = true;
 			}
 		}
-		
+
 		switch($action)
 		{
 			case 'none':
 				// No change
 				break;
-			
+
 			case 'create':
 			case 'update':
 				// Remove old update site
@@ -310,7 +311,7 @@ class AdmintoolsModelCpanels extends FOFModel
 				);
 				$db->insertObject('#__update_sites_extensions', $oUpdateSitesExtensions);
 				break;
-			
+
 			case 'delete':
 				// Remove update sites
 				$query = $db->getQuery(true)
@@ -326,7 +327,7 @@ class AdmintoolsModelCpanels extends FOFModel
 				$db->execute();
 				break;
 		}
-		
+
 		// Do I have to purge updates?
 		if($purgeUpdates) {
 			$query = $db->getQuery(true)
@@ -335,14 +336,14 @@ class AdmintoolsModelCpanels extends FOFModel
 			$db->setQuery($query);
 			$db->execute();
 		}
-		
+
 		// Do I have to fetch updates?
 		if($fetchUpdates) {
 			JLoader::import('joomla.update.update');
 			$x = new JUpdater();
 			$x->findUpdates($extensionID);
 		}
-		
+
 		return $ret;
 	}
 

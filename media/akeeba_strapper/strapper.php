@@ -140,15 +140,7 @@ class AkeebaStrapper
         }
         else
         {
-            $script = <<<ENDSCRIPT
-if(typeof(akeeba) == 'undefined') {
-	var akeeba = {};
-}
-if(typeof(akeeba.jQuery) == 'undefined') {
-	akeeba.jQuery = jQuery.noConflict();
-}
-ENDSCRIPT;
-            JFactory::getDocument()->addScriptDeclaration($script);
+            self::$scriptURLs[] = FOFTemplateUtils::parsePath('media://akeeba_strapper/js/namespace.js');
         }
     }
 
@@ -273,7 +265,7 @@ ENDSCRIPT;
             array_unshift($altCss, 'media://akeeba_strapper/css/bootstrap.j3.css');
 			if ($source == 'less')
 			{
-				self::$lessURLs[] = array('media://akeeba_strapper/less/bootstrap.j30.less', $altCss);
+				self::$lessURLs[] = array('media://akeeba_strapper/less/bootstrap.j3.less', $altCss);
 			}
         }
 

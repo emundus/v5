@@ -23,7 +23,7 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 		$query = $db->getQuery(true)
 			->select(array('*'))
 			->from($db->quoteName('#__admintools_customperms'));
-		
+
 		$fltPath			= $this->getState('filter_path', null, 'string');
 		if($fltPath) {
 			$fltPath = $fltPath.'%';
@@ -35,7 +35,7 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 			$fltReason = '%'.$fltReason.'%';
 			$query->where($db->quoteName('reason').' LIKE '.$db->quote($fltReason));
 		}
-		
+
 		if(!$overrideLimits) {
 			$order = $this->getState('filter_order',null,'cmd');
 			if(!in_array($order, array_keys($this->getTable()->getData()))) $order = 'id';
@@ -65,7 +65,7 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 
 		$params->setValue('dirperms', '0'.decoct($dirperms));
 		$params->setValue('fileperms', '0'.decoct($fileperms));
-		
+
 		$params->save();
 	}
 
@@ -158,13 +158,9 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 	public function savePermissions($apply = false)
 	{
 		if($apply) {
-			if(interface_exists('JModel')) {
-				$fixmodel = JModelLegacy::getInstance('Fixperms', 'AdmintoolsModel');
-			} else {
-				$fixmodel = JModel::getInstance('Fixperms', 'AdmintoolsModel');
-			}
+			$fixmodel = FOFModel::getTmpInstance('Fixperms', 'AdmintoolsModel');
 		}
-		
+
 		$db = $this->getDBO();
 		$relpath = $this->getState('filter_path','');
 
@@ -188,13 +184,13 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 			{
 				$query = $db->getQuery(true)
 				->delete($db->quoteName('#__admintools_customperms'));
-				
+
 				$sqlparts = array();
 				foreach($folders as $folder => $perms)
 				{
 					$sqlparts[] = $db->Quote($folder);
 				}
-				
+
 				$query->where($db->quoteName('path').' IN ('.implode(', ',$sqlparts).')');
 				$db->setQuery($query);
 				$db->execute();
@@ -231,13 +227,13 @@ class AdmintoolsModelFixpermsconfig extends FOFModel
 			{
 				$query = $db->getQuery(true)
 				->delete($db->quoteName('#__admintools_customperms'));
-				
+
 				$sqlparts = array();
 				foreach($files as $file => $perms)
 				{
 					$sqlparts[] = $db->Quote($file);
 				}
-				
+
 				$query->where($db->quoteName('path').' IN ('.implode(', ',$sqlparts).')');
 				$db->setQuery($query);
 				$db->execute();

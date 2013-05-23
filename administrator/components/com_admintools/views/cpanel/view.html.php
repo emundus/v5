@@ -21,6 +21,26 @@ class AdmintoolsViewCpanel extends FOFViewHtml
 		$isPro = (ADMINTOOLS_PRO == 1);
 		$this->assign('isPro', $isPro);
 
+		// Should we show the stats and graphs?
+		JLoader::import('joomla.html.parameter');
+		JLoader::import('joomla.application.component.helper');
+
+		$db = JFactory::getDbo();
+		$sql = $db->getQuery(true)
+			->select($db->qn('params'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type').' = '.$db->q('component'))
+			->where($db->qn('element').' = '.$db->q('com_admintools'));
+		$db->setQuery($sql);
+		$rawparams = $db->loadResult();
+		$params = new JRegistry();
+		if(version_compare(JVERSION, '3.0', 'ge')) {
+			$params->loadString($rawparams, 'JSON');
+		} else {
+			$params->loadJSON($rawparams);
+		}
+		$this->showstats = $params->get('showstats', 1);
+
 		// Load the models
 		$model = $this->getModel();
 		$updates = $this->getModel('jupdate');
@@ -47,7 +67,7 @@ class AdmintoolsViewCpanel extends FOFViewHtml
 
 		// Do we have to show a master password box?
 		$this->assign('hasValidPassword',		$mpModel->hasValidPassword());
-		
+
 		// Is this MySQL?
 		$dbType = JFactory::getDbo()->name;
 		$isMySQL = stristr($dbType, 'mysql');
@@ -59,9 +79,9 @@ class AdmintoolsViewCpanel extends FOFViewHtml
 		$this->assign('enable_purgesessions',	$mpModel->accessAllowed('purgesessions'));
 		$this->assign('enable_dbtools',			$mpModel->accessAllowed('dbtools'));
 		$this->assign('enable_dbchcol',			$mpModel->accessAllowed('dbchcol'));
-		
+
 		$this->assign('isMySQL',				$isMySQL);
-		
+
 		$this->assign('pluginid',				$model->getPluginID());
 
 		if(version_compare(JVERSION, '3.0', 'ge')) {
@@ -69,7 +89,7 @@ class AdmintoolsViewCpanel extends FOFViewHtml
 		} else {
 			JHTML::_('behavior.mootools');
 		}
-		
+
 		return true;
 	}
 }
