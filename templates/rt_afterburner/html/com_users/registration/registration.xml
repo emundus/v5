@@ -8,9 +8,10 @@
 				label="COM_USERS_REGISTER_REQUIRED"
 		/>
 		
-		<field name="name" type="hidden"
+		<field name="name" type="text" readonly="true"
 			filter="string"
 			default=""
+			required="true"
 		/>
 
 		<field name="username" type="text"
@@ -49,7 +50,7 @@
 			size="30"
 		/>
 
-		<field name="email1" type="email"
+		<field name="email1" type="text"
 			description="COM_EXTUSER_REGISTER_EMAIL1_DESC"
 			field="id"
 			filter="string"
@@ -61,7 +62,7 @@
 			validate="email"
 		/>
 
-		<field name="email2" type="email"
+		<field name="email2" type="text"
 			description="COM_EXTUSER_REGISTER_EMAIL2_DESC"
 			field="email1"
 			filter="string"

@@ -1,0 +1,382 @@
+@import url('http://fonts.googleapis.com/css?family=PT Sans:700');
+
+.blackBg {
+    background: #000000;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+.blackBg.hide{
+  display:none;
+}
+
+.OfflajnWindow{
+  width: 680px;
+  height: 500px;
+  background: #f5f5f5 url('../images/close.png') right top no-repeat;
+  
+  border-radius: 7px;
+  z-index: 10000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: -250px 0 0 -340px;
+  box-shadow: 0px 0px 3px #565656;
+  overflow:hidden;
+}
+
+.OfflajnWindow.hide{
+  display:none;
+}
+
+.OfflajnWindowClose{
+  position:absolute;
+  cursor: pointer;
+  height: 17px;
+  width: 20px;
+  top: 0;
+  right: 0;
+}
+
+.OfflajnWindowInner{
+  margin: 20px 30px 0 30px;
+  float:left;
+}
+
+.OfflajnWindowInner h3{
+  font-family: 'PT Sans';
+  font-size: 17px;
+  line-height: 26px;
+  font-weight: 700;
+  color: #5d5c5c;
+  text-shadow: #fff 1px 1px 2px;
+  margin: -5px 0 0 0;
+  border: 1px #d1d1d1 solid;
+  border-width: 0 0 1px 0;
+}
+
+.OfflajnWindowLine{
+  width: 100%;
+  height: 9px;
+  border: 1px #fff solid;
+  border-width: 1px 0 0 0;
+}
+
+.OfflajnWindowImgAreaOuter{
+  position: relative;
+  height: 238px;
+  border-radius: 6px;
+  border: 1px #d1d1d1 solid;
+  background-color: #ededed;
+  overflow: hidden;
+  padding: 0px 0px;
+}
+
+.OfflajnWindowImgArea{
+  position: absolute;
+}
+
+.OfflajnWindowImgFrame{
+  position: relative;
+  width: 86px;
+  height: 86px;
+  background: url('../images/frame.png') 0 0 no-repeat;
+  float:left;
+  margin: 9px 11px;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.OfflajnWindowImgFrame.active{
+  background-image: url('../images/frame-active.png');
+}
+
+.OfflajnWindowImgFrameImg{
+  height: 100%;
+  width: 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.OfflajnWindowImgFrame img{
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  display:none;
+  width: 86px;
+  height: 86px;
+  background-color: #fff;
+}
+
+.OfflajnWindowImgFrame img.show{
+  display: block;
+}
+
+.OfflajnWindowImgFrameCaption{
+  position: absolute;
+  bottom: 7px;
+  left: 7px;
+  width: 86px;
+  height: 19px;
+  background: url('../images/captionbg.png') 0 0 repeat;
+  overflow: hidden;
+}
+
+.OfflajnWindowImgFrameCaption span{
+  position: absolute;
+  top:0;
+  left: 0;
+  display: block;
+  width: 76px;
+  margin: 0 5px;
+  font-family: 'PT Sans';
+  font-weight: bold;
+  font-size: 10px;
+  color: #fff;
+  overflow: hidden;
+  line-height: 19px;
+  text-align: center;
+  float:left;
+}
+
+.OfflajnWindowImgFrameCaption .progress{
+  position: absolute;
+  height: 17px;
+  top:0;
+  left: 0;
+  border: 1px solid #6c992c;
+  background: url('../images/progress.png') 0 0 repeat;
+}
+
+.OfflajnWindowImgFrameSelected{
+  width: 24px;
+  height: 25px;
+  background: url('../images/selected.png') 0 0 no-repeat;
+  position: absolute;
+  top: 49px;
+  left: 68px;
+  display: none;
+}
+
+.OfflajnWindowImgFrame.active .OfflajnWindowImgFrameSelected{
+  display: block;
+}
+
+.OfflajnWindowLeftContainer{
+  margin-top: 15px;
+  width: 372px;
+  height: 182px;
+  border: 1px #d1d1d1 solid;
+  border-width: 0 1px 0 0;
+  float:left;
+}
+
+.OfflajnWindowRightContainer{
+  position: relative;
+  margin-top: 15px;
+  width: 246px;
+  height: 182px;
+  border: 1px #fff solid;
+  border-width: 0 0 0 1px;
+  float:left;
+  
+}
+
+.OfflajnWindowInner h4{
+  font-family: 'PT Sans';
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 700;
+  color: #888;
+  text-shadow: #fff 1px 1px 2px;
+  border: 1px #d1d1d1 solid;
+  border-width: 0 0 1px 0;
+  margin: 1px 0 0 0;
+  padding-left: 22px;
+}
+
+.OfflajnWindowInner .OfflajnWindowLeftContainer h4{
+  background: url('../images/upload.png') 4px center no-repeat;
+}
+
+.OfflajnWindowInner .OfflajnWindowRightContainer h4{
+  background: url('../images/confirm.png') 5px center no-repeat;
+  margin-left: -1px;
+  padding-left: 23px;
+}
+
+.OfflajnWindowUploadarea{
+  position: relative;
+  border: 1px #fff solid;
+  border-width: 1px 0 0 0;
+  background: url('../images/uploadarea.png') 0px 10px no-repeat;
+  height: 70px;
+  font-family: 'PT Sans';
+  font-size: 13px;
+  color: #888888;
+  font-weight: 700;
+  text-align: center;
+  line-height: 30px;
+  padding-top: 80px;
+  padding-right: 8px;
+}
+
+.OfflajnWindowUploadarea.over{
+  background-position: 0 -150px;
+}
+
+.OfflajnWindowUploadarea .upload,
+.OfflajnWindowUploadareaForm button{
+  border: 1px solid #579901;
+  border-radius: 10px;
+  line-height: 15px;
+  background: #77ba01; /* Old browsers */
+  background: -moz-linear-gradient(top, #77ba01 0%, #579901 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#77ba01), color-stop(100%,#579901)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #77ba01 0%,#579901 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #77ba01 0%,#579901 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #77ba01 0%,#579901 100%); /* IE10+ */
+  background: linear-gradient(top, #77ba01 0%,#579901 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#77ba01', endColorstr='#579901',GradientType=0 ); /* IE6-9 */
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  padding: 0 10px 1px 9px;
+  cursor: pointer;
+  font-weight: bold;  
+  box-shadow: 1px 1px 2px #bfbfbf, inset 1px 1px 1px #a0db38;
+}
+
+.dj_ie .OfflajnWindowUploadareaForm button{
+  border-radius: 0px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.OfflajnWindowUploadareaForm input{
+  vertical-align: middle;
+}
+
+.OfflajnWindowUploadarea .upload:HOVER{
+  background-image:-moz-linear-gradient(top, #6fad02, #518f01);
+}
+
+.OfflajnWindowUploadarea .upload:ACTIVE{  
+  box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.4) inset;
+}
+
+.OfflajnWindowUploadareaForm{
+  position: relative;
+  border: 1px #fff solid;
+  border-width: 1px 0 0 0;
+  height: 70px;
+  font-family: 'PT Sans';
+  font-size: 13px;
+  color: #888888;
+  font-weight: 700;
+  text-align: center;
+  line-height: 30px;
+  padding-top: 80px;
+  padding-right: 8px;
+}
+
+.OfflajnWindowDescription{
+  font-family: 'PT Sans';
+  font-size: 12px;
+  line-height: 14px;
+  color: #888888;
+  float: right;
+  width: 114px;
+  margin: 9px 10px 9px 0;
+  font-weight: 700;
+  height: 100px;
+}
+
+.OfflajnWindowSaveContainer{
+  width: 162px;
+  float: left;
+  position: relative;
+  left: 50%;
+  bottom: 5px;
+  margin-left: -81px;
+  background: #d3d3d3;
+  padding: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.OfflajnWindowSave{
+  width: 160px;
+  height: 20px;
+  border: 1px solid #579901;
+  line-height: 20px;
+  border-radius: 3px;
+  background: #77ba01; /* Old browsers */
+  background: -moz-linear-gradient(top, #77ba01 0%, #569801 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#77ba01), color-stop(100%,#569801)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #77ba01 0%,#569801 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #77ba01 0%,#569801 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #77ba01 0%,#569801 100%); /* IE10+ */
+  background: linear-gradient(top, #77ba01 0%,#569801 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#77ba01', endColorstr='#569801',GradientType=0 ); /* IE6-9 */
+  text-align: center;
+  font-family: 'PT Sans';
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  box-shadow: 1px 1px 2px #BFBFBF, 1px 1px 1px #A0DB38 inset;
+}
+
+.OfflajnWindowSave:HOVER{  
+  background-image:-moz-linear-gradient(top, #6fad02, #518f01);
+}
+
+.OfflajnWindowSave:ACTIVE{  
+  box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.4) inset;
+}
+
+/*
+*Button and selected image
+*/
+
+.offlajnimagemanager {
+  width: auto;
+  cursor: pointer;
+  float: left;
+  height: 33px;
+  margin-top: auto;
+}
+
+.offlajnimagemanagerimg {
+  width: 33px;
+  height: 33px;
+  background: url("../images/image_bg.png") no-repeat;
+  float: left;
+  margin-right: 10px;
+}
+
+.offlajnimagemanagerimg div {
+  width: 27px;
+  height: 27px;
+  margin: 3px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.offlajnimagemanagerbtn {
+  width: 84px;
+  height: 22px;
+  background: url("../images/image_btn.png") no-repeat;
+  float: left;
+  margin-top: 5px;
+}
+
+.offlajnimagemanagerbtn:HOVER {
+  background: url("../images/image_btn.png") 0 -24px no-repeat;
+}

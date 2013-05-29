@@ -1,0 +1,35 @@
+.offlajncombinefieldcontainer{
+  float: left;
+  white-space:nowrap;
+  margin-bottom: 4px;
+  margin-right: 10px;
+}
+
+.offlajncombinefieldcontainer label,
+.offlajncombinefieldcontainer .offlajncombinefield {
+  float: left;
+  white-space:nowrap;
+  clear: left;
+}
+
+div div.offlajncombinefieldcontainer label{
+  line-height: 20px;
+  color: #454545;
+  font-family: 'PT Sans';
+  font-size: 11px;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.offlajncombine_hider {
+ /* width: auto;*/
+  height: 20px;
+  display: none;
+  position: absolute;
+}
+
+.offlajncombine_outer {
+  float: left;
+}

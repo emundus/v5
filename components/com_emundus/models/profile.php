@@ -68,6 +68,12 @@ class EmundusModelProfile extends JModel
 		return $res[0];
 	}
 
+	function updateProfile($uid, $campaign) {
+		$query = 'UPDATE #__emundus_users SET profile='.$campaign->profile_id.', schoolyear="'.$campaign->year.'" WHERE user_id='.$uid;
+		$this->_db->setQuery( $query ); 
+		return $this->_db->query();
+	}
+
 	function getCurrentCampaignByApplicant($uid) {
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id = '.$uid. ' ORDER BY date_time DESC';
 		$this->_db->setQuery( $query );

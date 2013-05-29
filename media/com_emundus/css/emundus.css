@@ -36,6 +36,7 @@ input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-g
 }
 .need_missing {
 	background: url(../images/icones/publish_x.png) 0 0 no-repeat;
+	list-style: none;
 	padding:1px 0px 4px 20px;
 	text-align:left;
 }
@@ -45,23 +46,25 @@ input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-g
 p.need_missing {margin-left: 25px;}
 .need_ok {
 	background: url(../images/icones/tick.png) 0 0 no-repeat;
+	list-style: none;
 	padding:1px 0px 4px 20px;
 	text-align:left;
-	height: 16px;
+	height: 18px;
 }
 p.need_ok{margin-left: 25px;}
 .print {
 	background: url(../images/icones/printer.png) 0 0 no-repeat;
 	padding:1px 0px 4px 20px;
 	text-align:left;
-	height: 16px;
+	height: 18px;
 }
 p.need_missing_fac{margin-left: 25px;}
 .need_missing_fac {
 	background: url(../images/icones/publish_x-grey.png) 0 0 no-repeat;
+	list-style: none;
 	padding:1px 0px 4px 20px;
 	text-align:left;
-	height: 16px;
+	height: 18px;
 }
 p.description  {
 	color:#777777;
@@ -84,7 +87,8 @@ p.description  {
 	float:left;
 }
 #attachment_list_opt {
-	margin-left:50%;
+	width: 47%;
+	float: right;
 }
 #attachment_list h2{
 	margin-top:0;

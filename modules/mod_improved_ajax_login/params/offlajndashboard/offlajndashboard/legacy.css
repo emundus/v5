@@ -1,0 +1,4 @@
+#content-box div.legacy div.pane-slider fieldset.panelform li{
+  padding: 0;
+  min-height: 0px;
+}

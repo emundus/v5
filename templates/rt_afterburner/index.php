@@ -136,12 +136,13 @@ require(YOURBASEPATH . DS . "rt_utils.php");
 	</div>
 </div>
 <?php $user =& JFactory::getUser(); ?>
+<!--
 <script id="IntercomSettingsScriptTag">
   window.intercomSettings = {
     // Current logged in user's email address.
     email: "<?php echo $user->email; ?>",
     // Current logged in user's sign-up date as a Unix timestamp.
-    created_at: <?php echo strtotime($user->registerDate); ?>,
+    created_at: "<?php echo (!empty($user->registerDate))?strtotime($user->registerDate):"0000-00-00 00:00:00"; ?>",
     company: {
     id: '1',
     name: 'eMundus',
@@ -152,7 +153,7 @@ require(YOURBASEPATH . DS . "rt_utils.php");
     // The amount the current company spends a month
     monthly_spend: 0,
     // Custom data, e.g.
-    profile: <?php echo $user->profile; ?>
+    profile: "<?php echo (!empty($user->profile))?$user->profile:0; ?>"
   },
   user_hash: "<?php echo 
     hash_hmac("sha256", $user->email, "ySCm5ylfuMKbsSeEp1QQdvJOusuCiq-_Zo9Ea5gG"); 
@@ -164,5 +165,6 @@ require(YOURBASEPATH . DS . "rt_utils.php");
   };
 </script>
 <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://api.intercom.io/api/js/library.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()</script>
+-->
 </body>
 </html>

@@ -64,12 +64,13 @@ class  plgSystemEmundus_period extends JPlugin
 			$id = JRequest::getVar('id', null, 'GET', 'none',0);
 			$option = JRequest::getVar('option', null, 'GET', 'none',0);
 			$task = JRequest::getVar('task', null, 'POST', 'none',0);
+			$task_get = JRequest::getVar('task', null, 'GET', 'none',0);
 			$view =JRequest::getVar('view', null, 'GET', 'none',0);
 			
 			$no_profile = (empty($user->profile) || !isset($user->profile))?1:0; 
 			if ($no_profile) $user->applicant = 1;
 			if ( $r != 1 && $user->applicant==1 && !in_array($user->id, $applicants) ) {	
-				if($no_profile && $task != "user.logout") { 
+				if($no_profile && $task != "user.logout" && $task_get != "cancel_renew" && $option != 'com_users' && $option != 'com_content') { 
 					die($app->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0&r=1"));
 				}
 				/*date_default_timezone_set('Europe/London');

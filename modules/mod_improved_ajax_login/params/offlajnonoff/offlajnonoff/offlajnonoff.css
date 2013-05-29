@@ -1,0 +1,59 @@
+.onoff {
+  float: left;
+  background: url("onoff.png") no-repeat;
+  width: 48px;
+  height: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid #adbcc5;
+  margin: -1px 0;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+}
+
+.onoff-off{
+  background-position: -26px 0;
+}
+
+.onoffbutton {
+  font-family: 'PT Sans';
+  font-size: 11px;
+  color: #575656;
+  text-shadow: 1px 1px 1px #fff;
+  cursor: pointer;
+  height: 11px;
+  width: 8px;
+  padding:4px 6px 4px 6px;
+  line-height: 18px;
+  float: left;
+  border: 1px solid #d3d3d3;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;  
+  background: -moz-linear-gradient(top, #fafafa 0%, #dcdcdc 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#dcdcdc)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* IE10+ */
+  background: linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#dcdcdc',GradientType=0 ); /* IE6-9 */
+  margin-right: 3px;   
+  box-shadow: 1px 1px 1px RGBA(255,255,255,0.5) inset, 0px 1px 0px RGBA(0,0,0,0.2);
+}
+
+.onoffbutton_img {
+  height: 11px;
+  width: 9px;
+  background-position: 0px 0px;
+  margin-top: 1px;
+}
+
+.onoffbutton.selected {
+  background: #B8B8B8;
+  border: none;
+  border-color: #919191;
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3) inset, 0 1px 0 #FFFFFF;
+  height: 13px;
+  margin-right: 4px;
+  width: 9px;
+}

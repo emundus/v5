@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install SYSTEM "http://www.joomla.org/xml/dtd/1.5/plugin-install.dtd">
+<install type="plugin" group="system" version="1.5" method="upgrade">
+	<name>System - Offlajn Params</name>
+	<description></description>
+	<version>1.0.0</version>
+	<creationDate>Apr 2012</creationDate>
+	<author>Soós Roland</author>
+	<authorEmail>info@offlajn.com</authorEmail>
+	<authorUrl>http://offlajn.com</authorUrl>
+	<copyright>Copyright (C) Offlajn.com</copyright>
+	<license>http://www.gnu.org/licenseses/gpl-2.0.html GNU/GPL</license>
+
+	<!-- Files -->
+	<files>
+		<filename plugin="offlajnparams">offlajnparams.php</filename>
+		<filename>tab15.tpl.php</filename>
+		<filename>tab16.tpl.php</filename>
+		<filename>offlajnparams.xml</filename>
+    <filename>index.html</filename>
+		<filename>imageuploader.php</filename>
+		<filename>formrenderer.php</filename>
+	</files>
+
+	<!-- Parameters -->
+	<params></params>
+</install>

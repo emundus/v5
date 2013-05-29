@@ -1,0 +1,5 @@
+.pane-sliders .panel h3.offlajnloading{
+  background-image: url('../images/loading.gif');
+  background-repeat: no-repeat;
+  background-position: 95% center;;
+}

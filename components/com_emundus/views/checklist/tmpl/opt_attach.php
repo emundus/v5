@@ -14,7 +14,7 @@ $itemid = $_db->loadAssoc();
 $query='SELECT esa.value, esap.id, esa.id as _id
 	FROM #__emundus_setup_attachment_profiles esap
 	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-	WHERE esap.mandatory = 0 AND esap.profile_id ='.$user->profile.'  
+	WHERE esap.displayed = 1 AND esap.mandatory = 0 AND esap.profile_id ='.$user->profile.'  
 	ORDER BY esa.ordering';
 		$_db->setQuery( $query );
 		$forms = $_db->loadObjectList();

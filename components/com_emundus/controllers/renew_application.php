@@ -40,7 +40,42 @@ class EmundusControllerRenew_application extends JController
 		unlink(EMUNDUS_PATH_ABS.$user.DS.'application.pdf');
 	}
 
-	function edit_user(){
+	/**
+	 * Cancel renew. Come back to previous application
+	 */
+	function cancel_renew(){ 
+		$session =& JFactory::getSession();
+		$current_user = JFactory::getUser();
+		$profile = $this->getModel('profile');
+		$campaign = $this->getModel('campaign');
+
+		$previous_profiles = $campaign->getCampaignByApplicant($current_user->id);
+
+		if(count($previous_profiles) > 0) {
+			$profile->updateProfile($current_user->id, $previous_profiles[0]);
+			//$current_user->firstname 			= @$res->firstname;
+			//$current_user->lastname	 			= @$res->lastname;
+			$current_user->profile	 			= $previous_profiles[0]->profile_id;
+			$current_user->profile_label 		= $previous_profiles[0]->profile_label;
+			$current_user->menutype	 			= $previous_profiles[0]->menutype;
+			//$current_user->university_id		= "";
+			$current_user->applicant			= 1;
+			$current_user->candidature_start	= $previous_profiles[0]->start_date;
+			$current_user->candidature_end		= $previous_profiles[0]->end_date;
+			$current_user->candidature_posted 	= 1;
+			$current_user->schoolyear			= $previous_profiles[0]->year;
+			$current_user->campaign_id			= $previous_profiles[0]->id;
+		}
+		
+		//$session->restart();
+		$this->setRedirect('index.php', JText::_('RENEW_CANCEL'), 'message');
+
+	}
+
+	/**
+	 * Renew application. Define what to do/delete
+	 */
+	function edit_user(){ 
 		$session =& JFactory::getSession();
 		$current_user = JFactory::getUser();
 		$model = $this->getModel('renew_application');
@@ -83,6 +118,7 @@ class EmundusControllerRenew_application extends JController
 		
 		//$session->restart();
 		$this->setRedirect('index.php', sprintf(JText::_('RENEW_OK'), $model->getSchoolyear($profile)), 'message');
+
 	}
 	
 	//Supprimer ce qui correspond aux référents (+learning agreement) ==> OKOKOKOKOKOK

@@ -48,12 +48,14 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	class MYPDF extends TCPDF {
 
 		var $logo = "";
+		var $logo_footer = "";
 		var $footer = "";
 
 		//Page header
 		public function Header() {
 			// Logo
-			$this->Image($this->logo, 10, 10, 15, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			if (is_file($this->logo))
+				$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 			// Set font
 			$this->SetFont('helvetica', 'B', 20);
 			// Title
@@ -71,7 +73,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			// footer
 			$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 			//logo
-			$this->Image($this->logo, 180, 280, 15, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			if (is_file($this->logo_footer))
+				$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 			
 		}
 	}
@@ -83,35 +86,37 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$attachment = $db->loadAssoc();
 
 		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-//die(PDF_UNIT.' : '.PDF_PAGE_FORMAT);
+
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor($current_user->name);
 		$pdf->SetTitle($letter['title']);
 
-		//set margins
-//		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, 50);
-		$pdf->SetMargins(5, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+		// set margins
+		$pdf->SetMargins(5, 40, 5);
+		//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		$pdf->footer = $letter["footer"];
 
 		//get logo
-	/*	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
-		$db->setQuery($query);
-		$logo = $db->loadResult(); */
 		preg_match('#src="(.*?)"#i', $letter['header'], $tab);
-		$logo = JPATH_BASE.DS.$tab[1]; 
-		$pdf->logo = $logo;
-		$pdf->footer = $letter["footer"];
+		$pdf->logo = JPATH_BASE.DS.$tab[1];
+		
+		preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
+		$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
+
+		
+
 		//get title
 	/*	$config =& JFactory::getConfig(); 
-		$title = $config->getValue('config.sitename');*/
+		$title = $config->getValue('config.sitename');
 		$title = "";
-		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);*/
 		unset($logo);
-		unset($title);
+		unset($logo_footer);
 		
-		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+		//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -164,7 +169,9 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 //
 		$post = array(  'TRAINING_CODE' => $training, 
 						'TRAINING_PROGRAMME' => $campaign['label'],
-						'REASON' => $result );
+						'REASON' => $result, 
+						'TRAINING_FEE' => "???", 
+						'TRAINING_PERIODE' => "???" );
 
 		$tags = $emails->setTags($user_id, $post);
 
@@ -243,12 +250,12 @@ function application_form_pdf($user_id, $output = true) {
 	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
 	$db->setQuery($query);
 	$logo = $db->loadResult();
-	preg_match('#src="(.*?)"#i', $logo,$tab);
+	preg_match('#src="(.*?)"#i', $logo, $tab);
 	$logo = JPATH_BASE.DS.$tab[1];
 	//get title
 	$config =& JFactory::getConfig(); 
 	$title = $config->getValue('config.sitename');
-	$pdf->SetHeaderData(JPATH_ROOT.DS.$logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
 	unset($logo);
 	unset($title);
 	
@@ -453,7 +460,7 @@ $htmldata .= '
 						ORDER BY ff.ordering';
 			$db->setQuery( $query );
 			$groups = $db->loadObjectList();
-			
+
 			/*-- Liste des groupes -- */
 			foreach($groups as $keyg => $itemg) {
 				// liste des items par groupe
@@ -515,12 +522,12 @@ $htmldata .= '
 							}
 						 }
 				// TABLEAU DE PLUSIEURS LIGNES
-					} elseif ($itemg->repeated>0){
+					} elseif ($itemg->repeated>0){ 
 						$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
 								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$item->user_id.')';
 						$db->setQuery($query);
 						$repeated_elements = $db->loadObjectList();
-//echo str_replace('#_','jos',$query);
+//echo str_replace('#_','jos',$query); die();
 						foreach ($repeated_elements as $r_element) {
 							$j = 0;
 							foreach ($r_element as $key => $r_elt) {
@@ -585,10 +592,11 @@ $htmldata .= '
 			$db->setQuery($query);
 			$db->query();
 		}else{
-			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'application.pdf', 'FI');
+			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'application.pdf', 'F');
 		}
 	}else{
 		$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.'application.pdf', 'F');
 	}
+
 }
 ?>

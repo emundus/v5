@@ -138,7 +138,10 @@ class plgUserEmundus extends JPlugin
 	
 					$schoolyear = $campaign[0]['year'];
 					$profile = $campaign[0]['profile_id'];
-					
+				} else {
+					$schoolyear = "";
+					$profile = 0;
+				}	
 					
 					/*
 					$db->setQuery('SELECT schoolyear FROM #__emundus_setup_profiles WHERE id='.$profile);
@@ -186,7 +189,7 @@ class plgUserEmundus extends JPlugin
 					} catch (Exception $e) {
 						// catch any database errors.
 					}
-		
+				if (isset($campaign_id) && !empty($campaign_id)) {
 					// Insert data in #__emundus_campaign_candidature
 					$db->setQuery('INSERT INTO #__emundus_campaign_candidature (applicant_id, campaign_id) VALUES ('.$user['id'].','.$campaign_id.')');
 					try {
@@ -194,8 +197,8 @@ class plgUserEmundus extends JPlugin
 					} catch (Exception $e) {
 						// catch any database errors.
 					}
-
 				}
+				//}
 				
 				/*if ($app->isAdmin()) {
 					if ($mail_to_user) {

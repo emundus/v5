@@ -1,0 +1,211 @@
+.clear{
+  clear: both;
+}
+
+.offlajnradiocontainer{
+  float: left;
+  margin-top: 7px;
+}
+
+.offlajnradiocontainer .radioelement {
+
+  /*height: 20px;*/
+  height: 11px;
+  /*line-height: 22px;*/
+  /*background: url("bg.png") 0 6.5px no-repeat;*/
+  background: url("rdbtn.png") 0 0 no-repeat;
+  
+  padding-left: 15px;
+  float: left;
+  margin-right: 10px;
+  font-family: 'PT Sans';
+  font-size: 12px;
+  color: #575656;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  vertical-align: center;
+  /*  background-color: #F4F4F4;
+    border: 1px solid #B3B3B3;
+    border-radius: 4px 4px 4px 4px;*/
+    padding: 0 5px 0 17px;
+  /*  background-position: 4px center;*/
+ /* line-height: 20px;*/
+ line-height: 11px;
+}
+
+.offlajnradiocontainer .radioelement.selected {
+  /*background-image: url("bg-active.png");*/
+  background: url("rdbtn.png")0 -13px no-repeat;
+ /* background-color: #ececec;*/
+}
+
+.offlajnradiocontainerbutton{
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  
+  /*
+   Introduced in IE 10.
+   See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+  */
+  -ms-user-select: none;
+  user-select: none;
+
+}
+
+.offlajnradiocontainerbutton .radioelement{
+  font-family: 'PT Sans';
+  font-size: 11px;
+  color: #575656;
+  text-shadow: 1px 1px 1px #fff;
+  cursor: pointer;
+  padding: 0 14px;
+  height: 20px;
+  line-height: 20px;
+  float: left;
+ /* border: 1px solid #cacaca;*/
+  border-left-color: #fbfbfb;
+  /*
+  background: -moz-linear-gradient(top, #ffffff 0%, #dcdcdc 100%); /* FF3.6+ */
+ /* background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#dcdcdc)); /* Chrome,Safari4+ */
+/*  background: -webkit-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* Chrome10+,Safari5.1+ */
+/*  background: -o-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* Opera 11.10+ */
+ /* background: -ms-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* IE10+ */
+ /* background: linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* W3C */
+/* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dcdcdc',GradientType=0 ); /* IE6-9 */
+  
+}
+
+/*
+*Definitions for TABS
+*/
+
+.OfflajnWindowInner .offlajnradiocontainer .radioelement {
+  height: 20px;
+  background-color: #F4F4F4;
+  border: 1px solid #B3B3B3;
+  border-radius: 4px 4px 4px 4px;
+  background-position: 4px center;
+  line-height: 20px;
+}
+
+.OfflajnWindowInner .offlajnradiocontainer .radioelement.selected {
+  background-color: #ececec;
+}
+
+.OfflajnWindowInner .offlajnradiocontainerbutton .radioelement {
+  border: 1px solid #cacaca;
+  line-height: 22px;
+  border-left-color: #fbfbfb;
+  background: -moz-linear-gradient(top, #ffffff 0%, #dcdcdc 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#dcdcdc)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* IE10+ */
+  background: linear-gradient(top, #ffffff 0%,#dcdcdc 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dcdcdc',GradientType=0 ); /* IE6-9 */
+  
+}
+
+
+.offlajnradiocontainerbutton .radioelement.emufirst{
+  border-left-color: #cacaca;
+}
+
+.offlajnradiocontainerbutton .radioelement.first{
+  border: 1px solid #cacaca;
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.offlajnradiocontainerbutton .radioelement.last{
+  -webkit-border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-bottomright: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.offlajnradiocontainerbutton .radioelement.selected{
+  color: #fff;
+  text-shadow: 1px 1px 1px #575656;
+  border-color: #6ca502;
+  background: -moz-linear-gradient(top, #689e02 0%, #72ae02 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#689e02), color-stop(100%,#72ae02)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #689e02 0%,#72ae02 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #689e02 0%,#72ae02 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #689e02 0%,#72ae02 100%); /* IE10+ */
+  background: linear-gradient(top, #689e02 0%,#72ae02 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#689e02', endColorstr='#72ae02',GradientType=0 ); /* IE6-9 */
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3) inset, 0 1px 0 #FFFFFF;
+  border: none;
+  height: 22px;
+}
+
+.offlajnradiocontainerimage .radioelement{
+  font-family: 'PT Sans';
+  font-size: 11px;
+  color: #575656;
+  text-shadow: 1px 1px 1px #fff;
+  cursor: pointer;
+  /*padding: 0 14px;*/
+  height: 7px;
+  width: 12px;
+  padding:6px 4px 6px 4px;
+  line-height: 20px;
+  float: left;
+  border: 1px solid #D3D3D3;
+  border-left-color: #fbfbfb;
+  background: -moz-linear-gradient(top, #fafafa 0%, #dcdcdc 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#dcdcdc)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* IE10+ */
+  background: linear-gradient(top, #fafafa 0%,#dcdcdc 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#dcdcdc',GradientType=0 ); /* IE6-9 */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dcdcdc',GradientType=0 ); /* IE6-9 */   
+}
+
+.offlajnradiocontainerimage .radioelement.first{
+  border: 1px solid #d3d3d3;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.offlajnradiocontainerimage .radioelement.last{
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.offlajnradiocontainerimage .radioelement.selected {
+  background: #b8b8b8;  
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3) inset, 0 1px 0 #FFFFFF;
+  border: none;
+  margin-top: 1px;
+  height: 8px;
+}
+
+.offlajnradiocontainerimage .radioelement_img {
+  width: 11px;
+  height: 8px;
+  background-position: 0px 0px;
+}

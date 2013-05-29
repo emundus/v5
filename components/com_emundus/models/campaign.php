@@ -82,8 +82,9 @@ class EmundusModelCampaign extends JModel
 	{
 		$query = 'SELECT esc.* 
 					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc 
-					WHERE esc.applicant_id='.$this->_user->id;
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					WHERE esc.applicant_id='.$this->_user->id.' 
+					ORDER BY ecc.date_submitted DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
@@ -92,19 +93,22 @@ class EmundusModelCampaign extends JModel
 	{
 		$query = 'SELECT esc.* 
 					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc 
-					WHERE esc.applicant_id='.$this->_user->id. 'AND submitted=1';
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					WHERE esc.applicant_id='.$this->_user->id. 'AND ecc.submitted=1
+					ORDER BY ecc.date_submitted DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
 	
 	function getCampaignByApplicant($aid)
 	{
-		$query = 'SELECT esc.* 
+		$query = 'SELECT esc.*, esp.menutype, esp.label as profile_label
 					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc 
-					WHERE esc.applicant_id='.$aid;
-		$this->_db->setQuery( $query );
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
+					WHERE ecc.applicant_id='.$aid.' 
+					ORDER BY ecc.date_time DESC';
+		$this->_db->setQuery( $query ); 
 		return $this->_db->loadObjectList();
 	}
 	
@@ -112,8 +116,9 @@ class EmundusModelCampaign extends JModel
 	{
 		$query = 'SELECT esc.* 
 					FROM #__emundus_campaign_candidature AS ecc 
-					LEFT JOIN #__emundus_setup_campaigns AS esc 
-					WHERE esc.applicant_id='.$aid. 'AND submitted=1';
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					WHERE esc.applicant_id='.$aid. 'AND submitted=1
+					ORDER BY ecc.date_submitted DESC';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}

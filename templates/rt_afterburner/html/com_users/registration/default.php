@@ -17,6 +17,8 @@ $template = JFactory::getApplication()->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
 $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
+<style> #jform_name {border:solid 0px #FFF;} </style>
+
 <div class="registration<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading')) : ?>
 	<h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -59,6 +61,23 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
 		</div>
 	</form>
 </div>
+<?php
+$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+//Detection du browser
+if(eregi('Safari', $HTTP_USER_AGENT) && !eregi('Konqueror', $HTTP_USER_AGENT))
+	$browser='Safari';
+elseif (eregi('msie', $HTTP_USER_AGENT) && !eregi('opera', $HTTP_USER_AGENT))
+	$browser='IE';
+elseif (eregi('opera', $HTTP_USER_AGENT))
+	$browser='Opera';
+elseif (eregi('Mozilla', $HTTP_USER_AGENT))
+	$browser='FireFox';
+else {
+	$browser=$HTTP_USER_AGENT;
+}
+ 
+?>
+
 <script>
 function check_field(){
     <?php $i=0; foreach($fields as $field){?>
@@ -66,11 +85,17 @@ function check_field(){
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
-			if (field[0].value == "")
+			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#FCC530'});
-			field[0].onblur = function(){this.setStyles({backgroundColor: '#fff'}); $("jform_name").value = firstname.value + ' ' + lastname.value; }
-			field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
-			field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
+			field[0].onblur = function() {
+				if ("<?php echo $browser; ?>" != "IE")
+					this.setStyles({backgroundColor: '#fff'}); 
+				$("jform_name").value = firstname.value + ' ' + lastname.value;
+			}
+			if ("<?php echo $browser; ?>" != "IE") {
+				field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
+				field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
+			}
 		}
 	<?php }?>
 }

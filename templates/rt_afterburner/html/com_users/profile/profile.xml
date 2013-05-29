@@ -44,7 +44,7 @@
 			size="30"
 		/>
 
-		<field name="email1" type="email"
+		<field name="email1" type="text"
 			description="COM_USERS_PROFILE_EMAIL1_DESC"
 			filter="string"
 			label="COM_USERS_PROFILE_EMAIL1_LABEL"
@@ -55,7 +55,7 @@
 			validate="email"
 		/>
 
-		<field name="email2" type="email"
+		<field name="email2" type="text"
 			description="COM_USERS_PROFILE_EMAIL2_DESC"
 			field="email1"
 			filter="string"

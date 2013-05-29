@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin"  group="system" method="upgrade">
+  <name>System - Improved AJAX Login and Register</name>
+  <author>Balint Polgarfi</author>
+  <creationDate>March 2013</creationDate>
+  <copyright>Copyright (C) 2013 All rights reserved.</copyright>
+  <license>http://www.gnu.org/licenses/gpl-2.0.html</license>
+  <authorEmail>balint.polgarfi|at|offlajn.com</authorEmail>
+  <authorUrl>www.offlajn.com</authorUrl>
+  <version>1.1</version>
+  <description>
+		System - Improved AJAX Login and Register is a system plugin for Social Login and Registration.
+    It's also able to override the default Joomla Login and Registration forms with Improved AJAX Login and Register.
+  </description>
+  <files>
+    <filename plugin="improved_ajax_login">improved_ajax_login.php</filename>
+    <filename>improved_ajax_login.xml</filename>
+    <filename>index.html</filename>
+  </files>
+	<params>
+		<param name="override" type="radio" default="1" label="Override Login and &lt;br /&gt; Registration pages:"
+      description="Override the default Joomla Login and Registration forms with Improved AJAX Login &amp; Register">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+	</params>
+	<config>
+  	<fields name="params">
+  		<fieldset name="basic">
+    		<field name="override" type="radio" default="1" label="Override Login and &lt;br /&gt; Registration pages:"
+          description="Override the default Joomla Login and Registration forms with Improved AJAX Login &amp; Register">
+          <option value="1">JYes</option>
+    			<option value="0">JNo</option>
+    		</field>
+  		</fieldset>
+  	</fields>
+	</config>
+</install>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme>
+  <params>
+    <param name="themeskin" type="offlajnskin" default="lightblue" size="5" label="Theme skin" description="">
+      <blue>
+        <blackoutcomb>40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png</blackoutcomb>
+        <popupcomb>f5f5f5|*|3|*|c4c4c4|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"5d5c5c"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-309dff-1186bb</btngrad>
+        <hovergrad>1-297dc9-104f88</hovergrad>
+        <buttoncomb>4|*|0d70cb|*|3</buttoncomb>
+        <txtcomb>eeeeee|*|ffffff</txtcomb>
+        <textfont>{"Text":{"color":"5d5c5c"},"Hover":{"color":"1186bb"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-FFFFFF-F5F5F5</hintgrad>
+        <hintcolor>5E5E5E</hintcolor>
+      </blue>
+      <orange>
+        <blackoutcomb>40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png</blackoutcomb>
+        <popupcomb>f5f5f5|*|3|*|c4c4c4|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"5d5c5c"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-ef8c00-e05a00</btngrad>
+        <hovergrad>1-e27b2f-cf4e1e</hovergrad>
+        <buttoncomb>4|*|b24400|*|3</buttoncomb>
+        <txtcomb>eeeeee|*|ffffff</txtcomb>
+        <textfont>{"Text":{"color":"5d5c5c"},"Hover":{"color":"e05a00"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-FFFFFF-F5F5F5</hintgrad>
+        <hintcolor>5E5E5E</hintcolor>
+      </orange>
+      <red>
+        <blackoutcomb>40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png</blackoutcomb>
+        <popupcomb>f5f5f5|*|3|*|c4c4c4|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"5d5c5c"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-d44f47-aa2b0d</btngrad>
+        <hovergrad>1-b6443d-87220a</hovergrad>
+        <buttoncomb>4|*|87220a|*|3</buttoncomb>
+        <txtcomb>eeeeee|*|ffffff</txtcomb>
+        <textfont>{"Text":{"color":"5d5c5c"},"Hover":{"color":"aa2b0d"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-FFFFFF-F5F5F5</hintgrad>
+        <hintcolor>5E5E5E</hintcolor>
+      </red>
+      <green>
+        <blackoutcomb>40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png</blackoutcomb>
+        <popupcomb>f5f5f5|*|3|*|c4c4c4|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"5d5c5c"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-86bc35-559222</btngrad>
+        <hovergrad>1-729e31-3a611a</hovergrad>
+        <buttoncomb>4|*|3a611a|*|3</buttoncomb>
+        <txtcomb>eeeeee|*|ffffff</txtcomb>
+        <textfont>{"Text":{"color":"5d5c5c"},"Hover":{"color":"559222"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-FFFFFF-F5F5F5</hintgrad>
+        <hintcolor>5E5E5E</hintcolor>
+      </green>
+      <grey>
+        <blackoutcomb>40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png</blackoutcomb>
+        <popupcomb>f5f5f5|*|3|*|c4c4c4|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"5d5c5c"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-8b8b8b-5e5e5e</btngrad>
+        <hovergrad>1-646464-3b3b3b</hovergrad>
+        <buttoncomb>4|*|3b3b3b|*|3</buttoncomb>
+        <txtcomb>eeeeee|*|ffffff</txtcomb>
+        <textfont>{"Text":{"color":"5d5c5c"},"Hover":{"color":"5e5e5e"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-FFFFFF-F5F5F5</hintgrad>
+        <hintcolor>5E5E5E</hintcolor>
+      </grey>
+      <darkblue>
+        <blackoutcomb>60|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn6.png</blackoutcomb>
+        <popupcomb>282828|*|3|*|474747|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"7e7e7e"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-309dff-0d70cb</btngrad>
+        <hovergrad>1-2684d6-0a65af</hovergrad>
+        <buttoncomb>4|*|0d5f95|*|3</buttoncomb>
+        <txtcomb>f4f4f4|*|f4f4f4</txtcomb>
+        <textfont>{"Text":{"color":"7e7e7e"},"Hover":{"color":"0d70cb"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-f4f4f4-e4e4e4</hintgrad>
+        <hintcolor>474747</hintcolor>
+      </darkblue>
+      <darkorange>
+        <blackoutcomb>60|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn6.png</blackoutcomb>
+        <popupcomb>282828|*|3|*|474747|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"7e7e7e"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-e27b2f-cf4e1e</btngrad>
+        <hovergrad>1-e0650d-cc3702</hovergrad>
+        <buttoncomb>4|*|e04800|*|3</buttoncomb>
+        <txtcomb>f4f4f4|*|f4f4f4</txtcomb>
+        <textfont>{"Text":{"color":"7e7e7e"},"Hover":{"color":"cf4e1e"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-f4f4f4-e4e4e4</hintgrad>
+        <hintcolor>474747</hintcolor>
+
+      </darkorange>
+      <darkred>
+        <blackoutcomb>60|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn6.png</blackoutcomb>
+        <popupcomb>282828|*|3|*|474747|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"7e7e7e"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-d44f47-aa2b0d</btngrad>
+        <hovergrad>1-ce1610-961900</hovergrad>
+        <buttoncomb>4|*|7f1d07|*|3</buttoncomb>
+        <txtcomb>f4f4f4|*|f4f4f4</txtcomb>
+        <textfont>{"Text":{"color":"7e7e7e"},"Hover":{"color":"aa2b0d"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-f4f4f4-e4e4e4</hintgrad>
+        <hintcolor>474747</hintcolor>
+
+      </darkred>
+      <darkgreen>
+        <blackoutcomb>60|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn6.png</blackoutcomb>
+        <popupcomb>282828|*|3|*|474747|*|7</popupcomb>
+        <titlefont>{"Text":{"color":"7e7e7e"}}</titlefont>
+        <btnfont>{"Text":{"color":"ffffff", "lineheight":"normal"}}</btnfont>
+        <btngrad>1-77ba01-569801</btngrad>
+        <hovergrad>1-5e9100-3f7000</hovergrad>
+        <buttoncomb>4|*|3f7000|*|3</buttoncomb>
+        <txtcomb>f4f4f4|*|f4f4f4</txtcomb>
+        <textfont>{"Text":{"color":"7e7e7e"},"Hover":{"color":"569801"}}</textfont>
+        <errorgrad>1-e0401d-b73016</errorgrad>
+        <errorcolor>ffffff</errorcolor>
+        <hintgrad>1-f4f4f4-e4e4e4</hintgrad>
+        <hintcolor>474747</hintcolor>
+      </darkgreen>
+    </param>
+    <param name="fontskin" type="offlajnskin" default="carme" size="5" label="Font skin" description="">
+      <helvetica>
+        <titlefont>{"Text":{"lineheight":"normal","type":"0","subset":"","family":"","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"0","subset":"","family":"","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"0","subset":"","family":"","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </helvetica>
+      <arial>
+        <titlefont>{"Text":{"lineheight":"normal","type":"0","subset":"","family":"","size":"14||px","afont":"Arial||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"0","subset":"","family":"","size":"12||px","afont":"Arial||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"0","subset":"","family":"","size":"12||px","afont":"Arial||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </arial>
+      <arimo>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Arimo","size":"15||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Arimo","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Arimo","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1|*|"}}</btnfont>
+        <smalltext>11</smalltext>
+      </arimo>
+      <cabin>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Cabin","size":"15||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Cabin","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Cabin","size":"13||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </cabin>
+      <carme>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Carme","size":"15||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Carme","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Carme","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </carme>
+      <magra>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Magra","size":"15||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Magra","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Magra","size":"13||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </magra>
+      <mako>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Mako","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Mako","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Mako","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1|*|"}}</btnfont>
+        <smalltext>11</smalltext>
+      </mako>
+      <opensans>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Open Sans","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":Open Sans","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Open Sans","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </opensans>
+      <ptsans>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"PT Sans","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"PT Sans","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"PT Sans","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1|*|"}}</btnfont>
+        <smalltext>11</smalltext>
+      </ptsans>
+      <rosario>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Rosario","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Rosario","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Rosario","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </rosario>
+      <shanti>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Shanti","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Shanti","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Shanti","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </shanti>
+      <viga>
+        <titlefont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Viga","size":"14||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</titlefont>
+        <textfont>{"Text":{"lineheight":"normal","underline":"0","type":"Latin","subset":"Latin","family":"Viga","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"0|*|0|*|0|*|000000b3|*|0"}}</textfont>
+        <btnfont>{"Text":{"lineheight":"normal","type":"Latin","subset":"Latin","family":"Viga","size":"12||px","afont":"Helvetica||1","bold":"0","tshadow":"1||px|*|1||px|*|0|*|000000b3|*|1"}}</btnfont>
+        <smalltext>11</smalltext>
+      </viga>
+    </param>
+    <param type="offlajncombine" name="blackoutcomb" default="40|*|/modules/mod_improved_ajax_login/themes/elegant/images/samples/ptrn1.png" label="Blackout">
+      <param type="offlajntext" validation="int" size="2" label="Opacity" description="">
+        <unit>%</unit>
+      </param>
+      <param type="offlajnimagemanager" label="Pattern" folder="/modules/mod_improved_ajax_login/themes/elegant/images/samples/"/>
+    </param>
+    <param type="offlajncombine" name="popupcomb" default="f5f5f5|*|3|*|c4c4c4|*|7" label="Login window">
+      <param alpha="0" type="offlajncolor" size="7" label="Background" />
+      <param type="offlajntext" validation="int" size="2" label="Border width">
+        <unit>px</unit>
+      </param>
+      <param type="offlajnclear"/>
+      <param alpha="0" type="offlajncolor" size="7" label="Border color" />
+      <param type="offlajntext" size="2" validation="int" label="Border radius">
+        <unit>px</unit>
+      </param>
+    </param>
+    <param name="titlefont" type="offlajnfont" tabs="Text" alpha="1" default="{&quot;Text&quot;:{&quot;lineheight&quot;:&quot;normal&quot;,&quot;type&quot;:&quot;Latin&quot;,&quot;subset&quot;:&quot;Latin&quot;,&quot;family&quot;:&quot;Carme&quot;,&quot;color&quot;:&quot;5d5c5c&quot;,&quot;lineheight&quot;:&quot;21px&quot;,&quot;size&quot;:&quot;14||px&quot;,&quot;align&quot;:&quot;left&quot;,&quot;afont&quot;:&quot;Helvetica||1&quot;,&quot;bold&quot;:&quot;0&quot;}}" label="Login header font" />
+    <param name="btnfont" type="offlajnfont" tabs="Text" alpha="1" default="{&quot;Text&quot;:{&quot;lineheight&quot;:&quot;normal&quot;,&quot;type&quot;:&quot;Latin&quot;,&quot;family&quot;:&quot;Carme&quot;,&quot;subset&quot;:&quot;Latin&quot;,&quot;size&quot;:&quot;12||px&quot;,&quot;color&quot;:&quot;ffffff&quot;,&quot;tshadow&quot;:&quot;1||px|*|1||px|*|0|*|000000b3|*|1|*|&quot;,&quot;afont&quot;:&quot;Helvetica||1&quot;,&quot;bold&quot;:&quot;0&quot;,&quot;lineheight&quot;:&quot;normal&quot;}}" label="Button font" />
+    <param name="btngrad" type="offlajngradient" onoff="0" default="1-1fb0e4-1685d7" size="15" label="Button background" description="" />
+    <param name="hovergrad" type="offlajngradient" onoff="0" default="1-188bd8-1868a1" size="15" label="Hover Button background" description="" />
+    <param type="offlajncombine" name="buttoncomb" default="4|*|0d5f95|*|3" label="Button style">
+      <param validation="int" type="offlajntext" size="1" label="Padding">
+        <unit>px</unit>
+      </param>
+      <param alpha="0" type="offlajncolor" size="7" label="Border color"/>
+      <param validation="int" type="offlajntext" size="1" label="Border radius">
+        <unit>px</unit>
+      </param>
+    </param>
+    <param type="offlajncombine" name="txtcomb" default="eeeeee|*|ffffff" label="Textfield">
+      <param alpha="0" type="offlajncolor" size="7" label="Background" />
+      <param alpha="0" type="offlajncolor" size="7" label="Background : active"/>
+    </param>
+    <param name="textfont" tabs="Text|Hover" type="offlajnfont" alpha="1" default="{&quot;Text&quot;:{&quot;lineheight&quot;:&quot;normal&quot;,&quot;type&quot;:&quot;Latin&quot;,&quot;subset&quot;:&quot;Latin&quot;,&quot;family&quot;:&quot;Carme&quot;,&quot;size&quot;:&quot;12||px&quot;,&quot;color&quot;:&quot;5d5c5c&quot;,&quot;afont&quot;:&quot;Helvetica||1&quot;,&quot;underline&quot;:&quot;0&quot;},&quot;Link&quot;:{&quot;color&quot;:&quot;1685d7&quot;,&quot;underline&quot;:&quot;0&quot;},&quot;Hover&quot;:{&quot;color&quot;:&quot;1685d7&quot;,&quot;underline&quot;:&quot;0&quot;}}" label="Text font" description="Font of textfields and menuitems" />
+    <param name="smalltext" validation="int" type="offlajntext" default="11" size="2" label="Small text size" description="Like 'Remember me' or 'Forgot your password?'">
+      <unit>px</unit>
+    </param>
+    <param name="errorcolor" alpha="0" type="offlajncolor" default="ffffff" size="7" label="Error message color" description="" />
+    <param name="errorgrad" type="offlajngradient" onoff="0" default="1-BD6060-B04D4D" label="Error msg background" description="" />
+    <param name="hintcolor" alpha="0" type="offlajncolor" default="5E5E5E" size="7" label="Hint message color" description="" />
+    <param name="hintgrad" type="offlajngradient" onoff="0" default="1-FFFFFF-F5F5F5" label="Hint msg background" description="" />
+  </params>
+
+</theme>

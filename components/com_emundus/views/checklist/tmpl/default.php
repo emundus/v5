@@ -17,8 +17,11 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                 if ($this->sent && count($this->result) == 0) echo '<h2>'.JText::_('APPLICATION_SENT').'</h2>';
 				else echo $this->text;
                 if(!$this->need) { ?>
-                    <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':'index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22'; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h2><?php 
-                } ?>
+                    <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':'index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22'; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h2>
+                <?php if ($this->sent) { ?>
+                    <p><a href="index.php?option=com_emundus&view=renew_application"><img src="<?php echo JURI::Base().'media/com_emundus/images/icones/renew.png'; ?>" align="middle" /> <?php echo JText::_('RENEW_APPLICATION').'</a></p>'; ?>
+                <?php } ?>
+            <?php } ?>
         </div>
     </fieldset>
 <?php //} ?>
@@ -33,7 +36,7 @@ if (count($this->attachments) > 0) {
 <form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">
     <div id="attachment_list">
         <h3><?php echo JText::_('ATTACHMENTS'); ?></h3>
-        <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('octets'); ?></h4>
+        <h4><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?></h4>
         <div id="legend">
             <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>
             <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>
