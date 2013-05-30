@@ -316,7 +316,7 @@ function updateprofile() {
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		$this->setRedirect('index.php?option=com_emundus&view=profile&rowid='.$profile_id.'&Itemid='.$Itemid, '', '');
 }
-	/*function adduser() {
+	function adduser() {
 		$current_user =& JFactory::getUser();
 		//$Itemid=JSite::getMenu()->getActive()->id;
 		$Itemid="9";
@@ -349,7 +349,13 @@ function updateprofile() {
 		$res = $db->loadObject();
 		
 		$requestData['groups'] = $res->acl_aro_groups;
-		
+// @TODO Get year (schoolyear) from campaign
+/*
+		if (empty($requestData['schoolyear']) || !isset($requestData['schoolyear'])) {
+			// Set profile schoolyear
+			$requestData['schoolyear'] = $res->schoolyear;
+		}
+		*/
 		$model = &$this->getModel('profile');
 		$tacl = $model->getProfile($requestData['profile']); 
 		// Bind the post array to the user object
@@ -361,8 +367,24 @@ function updateprofile() {
 		}
 		// Set some initial user values
 		$user->set('id', 0);
-		
+		//$user->set('groups', $res->acl_aro_groups);
+		// $user->set('gid', $authorize->get_group_id( '', $newuser['usertype'], 'ARO' ));
 		$user->set('registerDate', date('Y-m-d H:i:s'));
+
+		// If user activation is turned on, we need to set the activation information
+		// $useractivation = $usersConfig->get( 'useractivation' );
+		// if ($useractivation == '1') {
+			// jimport('joomla.user.helper');
+			// $user->set('activation', md5( JUserHelper::genRandomPassword()) );
+			// $user->set('block', '1');
+		// }
+		/*require(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'usersext.php');
+		$extuser =& JTable::getInstance('Usersext', 'Table');
+		if (!$extuser->bind($newuser)) {
+			JError::raiseWarning(500, $extuser->getError());
+			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid);
+			return;
+		}*/
 
 		// If there was an error with registration, set the message and display form
 		if ( !$user->save() ) {
@@ -370,11 +392,19 @@ function updateprofile() {
 			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid,$user->getError(),'error');
 			return;
 		}
-	
+		/*$extuser->set('registerDate', $user->get('registerDate'));
+		$extuser->set('user_id', $user->id);
+		if (!$extuser->store()) {
+			JError::raiseWarning(500, $extuser->getError());
+			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid);
+			return;
+		}*/
 		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
 			return JError::raiseWarning(500, 'Unable to create user file');
 		}
-		
+		//
+		// Affectation a/aux groupe(s) (ex : Doctorat Erasmus Mundus...)
+		//$groups = JRequest::getVar('cb_groups', null, 'POST', 'array', 0);
 		$groups = $requestData['groups'];
 		foreach($groups as $grp) {
 			$query = 'INSERT INTO `#__emundus_groups` (`user_id`, `group_id`)
@@ -383,7 +413,47 @@ function updateprofile() {
 			$db->Query() or die($db->getErrorMsg());
 		}
 		
+		/* enregistrement du profil => valable si 1 profil correspond à 1 group */
+			/* récupération de l'user_id OK 
+			$query = 'SELECT MAX(user_id) FROM `#__emundus_users`';
+			$db->setQuery($query);
+			$id = $db->loadResult();*/
+			
+			//$id_profils=$requestData['profile'];
+			/* ajout du lien user <-> profile OK 
+			$query = 'INSERT INTO `#__emundus_users_profiles` (`user_id`, `profile_id`)
+							VALUES ('.$id.', '.$id_profils.')';
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());*/
+			
+			/* récupération de acl_aro_groups = id_groups OK
+			$query = 'SELECT acl_aro_groups FROM `#__emundus_setup_profiles` WHERE id='.$id_profils.' ';
+			$db->setQuery($query);
+			$id_groups = $db->loadResult(); */
+			
+			/* insertion du lien user <-> group 
+			$query = 'INSERT INTO `#__user_usergroup_map` VALUES ('.$id.','.$id_groups.')';
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());*/
+		/* fin enregistrement profil */
 		
+		/* enregistrement du name 
+			$name=$newuser['name'];
+			$query = 'UPDATE #__users SET name="'.$name.'" WHERE id='.$id;
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());*/
+		/* fin enregistrement name */
+		
+		// Affectation a/aux autres profil(s)
+		/*$other_prof = JRequest::getVar('cb_profiles', null, 'POST', 'array', 0);
+		foreach($other_prof as $op) {
+			$query = 'INSERT INTO `#__emundus_users_profiles` (`user_id`, `profile_id`)
+						VALUES ('.$user->id.', '.$op.')';
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());
+		}*/
+		
+		//
 		// Envoi de la confirmation de création de compte par email
 		$model = &$this->getModel('emails');
 		$email = $model->getEmail('new_account');
@@ -393,51 +463,6 @@ function updateprofile() {
 		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
 
 		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid, JText::_('Users successfully added'), 'message');
-	}*/
-	function adduser(){
-		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
-		$current_user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
-		
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
-			return;
-		}
-		$firstname = JRequest::getVar('firstname', null, 'POST', 'none',0);
-		$lastname = JRequest::getVar('lastname', null, 'POST', 'none',0);
-		$username = JRequest::getVar('login', null, 'POST', 'none',0);
-		$name = strtolower($firstname).' '.strtoupper($lastname);
-		$email = JRequest::getVar('email', null, 'POST', 'none',0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'none',0);
-		$acl_aro_groups = JRequest::getVar('acl_aro_groups', null, 'POST', 'none',0);
-		$univ_id = JRequest::getVar('university_id', null, 'POST', 'none',0);
-		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array',0);
-		$params='{"admin_language":"","language":"","editor":"","helpsite":"","timezone":""}';
-		$password = JUserHelper::genRandomPassword();
-		// die(var_dump($acl_aro_groups));		
-		$user = clone(JFactory::getUser(0));
-		$user->name=$name;
-		$user->username=$username;
-		$user->email=$email;
-		$user->password=md5($password);
-		$user->registerDate=date('Y-m-d H:i:s');
-		$user->lastvisitDate=date('Y-m-d H:i:s');
-		$user->block=0;
-		
-		$other_param['firstname']=$firstname;
-		$other_param['lastname']=$lastname;
-		$other_param['profile']=$profile;
-		$other_param['univ_id']=$univ_id;
-		$other_param['groups']=$groups;
-		
-		$model = &$this->getModel('users');
-		
-		$usertype = $model->found_usertype($acl_aro_groups);
-		$user->usertype=$usertype;
-		
-		$model->adduser($user,$other_param);
-		
-		$this->setRedirect('index.php?option=com_emundus&view=addusers');
 	}
 
 	function delusers($reqids = null) {

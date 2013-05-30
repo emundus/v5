@@ -149,7 +149,7 @@ class EmundusModelUsers extends JModel
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
-	
+		
 	function getEditProfiles(){
 		$db =& JFactory::getDBO();
 		$current_user =& JFactory::getUser();
@@ -337,6 +337,60 @@ class EmundusModelUsers extends JModel
 		}
 
 		return $this->data;
+	}
+	
+	function adduser($user,$other_params){
+		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
+		$mainframe =& JFactory::getApplication();
+		$db =& JFactory::getDBO();
+		$pathway 	=& $mainframe->getPathway();
+		$config		=& JFactory::getConfig();
+		$authorize	=& JFactory::getACL();
+		$document   =& JFactory::getDocument();
+		
+		if ( !$user->save() ) {
+		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER'), 'message');
+		}else{			
+			$firstname=$other_params['firstname'];
+			$lastname=$other_params['lastname'];
+			$profile=$other_params['profile'];
+			$groups=$other_params['groups'];
+			$univ_id=$other_param['univ_id'];
+			
+			if(empty($univ_id)){
+				$query="INSERT INTO `#__emundus_users` VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
+				$db->setQuery($query);
+				$db->Query() or die($db->getErrorMsg());
+			}else{
+				$query="INSERT INTO `#__emundus_users` VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','','".$univ_id."')";
+				$db->setQuery($query);
+				$db->Query() or die($db->getErrorMsg());
+			}
+			
+			foreach($groups as $group){
+				$query="INSERT INTO `#__emundus_groups` VALUES ('',".$user->id.",".$group.")";
+				$db->setQuery($query);
+				$db->Query() or die($db->getErrorMsg());
+			}
+			
+			$query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'','')";
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());
+			
+			$query="INSERT INTO `#__emundus_users_profiles_history` VALUES ('','".date('Y-m-d H:i:s')."',".$user->id.",".$profile.",'profile')";
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());
+			
+			JFactory::getApplication()->enqueueMessage(JText::_('USERS_SUCCESSFULLY_ADDED'), 'message');
+		}
+		
+	}
+	
+	function found_usertype($acl_aro_groups){
+		$db =& JFactory::getDBO();
+		$query="SELECT title FROM jos_usergroups WHERE id=".$acl_aro_groups;
+		$db->setQuery($query);
+		return $db->loadResult();		
 	}
 
 }

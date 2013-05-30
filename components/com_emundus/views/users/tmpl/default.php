@@ -29,7 +29,12 @@ if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $curre
 }
 ?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
-
+<?php
+echo'<a rel="{handler:\'iframe\',size:{x:window.innerWidth-innerWidth*0.2,y:window.innerHeight-innerHeight*0.1}}" 
+href="'.$this->baseurl.'/index.php?option=com_emundus&view=addusers&Itemid='.$itemid.'" target="_self">
+<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="50" align="bottom" />
+</a>';
+?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
 <SCRIPT TYPE="text/javascript">
 <!--
