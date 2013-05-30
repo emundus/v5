@@ -349,7 +349,7 @@ class EmundusModelUsers extends JModel
 		$document   =& JFactory::getDocument();
 		
 		if ( !$user->save() ) {
-		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER'), 'message');
+		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
 		}else{			
 			$firstname=$other_params['firstname'];
 			$lastname=$other_params['lastname'];

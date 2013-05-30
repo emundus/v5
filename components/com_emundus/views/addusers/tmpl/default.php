@@ -13,8 +13,8 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value=""/></td></tr>
 	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value=""/></td></tr>
 	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value=""/></td></tr>
-	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input type="text" size="30" name="email" value="" onChange="validateEmail(email);"/>
-	<div style="color:red;"id="email_valid"></div></td></tr>
+	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="" onChange="validateEmail(email);"/>
+	</td></tr>
 	
 	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
 			<?php foreach($this->profiles as $profile) { 
@@ -66,11 +66,13 @@ function hidden_tr(div1,div2, profile)
 }
 function validateEmail(email) { 
 	var reg = new RegExp('^[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*@[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*[\.]{1}[a-z]{2,6}$', 'i');
-
+	
 	if(reg.test(email.value)){
-		document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_VALID'); ?>";
+		//document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_VALID'); ?>";
+		email.style.background="url(<?php echo $this->baseurl ?>/media/com_emundus/images/icones/button_ok.png) no-repeat left";
 	}else{
-		document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_NOT_VALID'); ?>";
+		//document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_NOT_VALID'); ?>";
+		email.style.background="url(<?php echo $this->baseurl ?>/media/com_emundus/images/icones/button_cancel.png) no-repeat left";
 	}
 }
 </script>
