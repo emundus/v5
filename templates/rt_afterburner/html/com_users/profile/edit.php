@@ -20,7 +20,6 @@ JHtml::_('behavior.noframes');
 $template = JFactory::getApplication()->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 $this->form->loadFile( dirname(__FILE__) . DS . "profile.xml");
-
 ?>
 <div class="profile-edit<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading')) : ?>
@@ -65,21 +64,28 @@ $this->form->loadFile( dirname(__FILE__) . DS . "profile.xml");
 		</div>
 	</form>
 </div>
+
 <script>
 function check_field(){
     <?php $i=0; foreach($fields as $field){?>
-		name = document.getElementById("jform_name");
 		firstname = document.getElementById("jform_emundus_profile_firstname");
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
-			if (field[0].value == "")
+			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#D0C2BD'});
-			field[0].onblur = function(){this.setStyles({backgroundColor: '#fff'}); name.value = firstname.value + ' ' + lastname.value;}
-			field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
-			field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
+			field[0].onblur = function() {
+				if ("<?php echo $browser; ?>" != "IE")
+					this.setStyles({backgroundColor: '#fff'}); 
+				$("jform_name").value = firstname.value + ' ' + lastname.value;
+			}
+			if ("<?php echo $browser; ?>" != "IE") {
+				field[0].onchange = function(){this.setStyles({backgroundColor: '#fff'});}
+				field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
+			}
 		}
 	<?php }?>
 }
 check_field();
+
 </script>
