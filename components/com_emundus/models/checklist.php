@@ -115,5 +115,16 @@ class EmundusModelChecklist extends JModel
 		if($this->_db->loadResult() == 8) return false;
 		return true;
 	}
+
+	function getIsOtherActiveCampaign() {
+		$query='SELECT count(id) as cpt 
+				FROM #__emundus_setup_campaigns 
+				WHERE id NOT IN (
+								select campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$this->_user->id.'
+								)';
+		$this->_db->setQuery($query); 
+		$cpt = $this->_db->loadResult();
+		return $cpt>0?true:false;
+	}
 }
 ?>

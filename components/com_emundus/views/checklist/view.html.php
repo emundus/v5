@@ -51,6 +51,8 @@ class EmundusViewChecklist extends JView
 		$greeting = $this->get('Greeting');
 		$need = $this->get('Need');
 		$instructions = $this->get('Instructions');
+		$is_other_campaign = $this->get('isOtherActiveCampaign');
+		
 		$this->assignRef('title', $greeting->title);
 		$this->assignRef('text', $greeting->text);
 		$this->assignRef('need', $need);
@@ -58,6 +60,7 @@ class EmundusViewChecklist extends JView
 		$this->assignRef('forms', $forms);
 		$this->assignRef('attachments', $attachments);
 		$this->assignRef('instructions', $instructions);
+		$this->assignRef('is_other_campaign', $is_other_campaign);
 
 		/*$evaluation =  &$this->getModel('evaluation');
 		$evaluation->getEvalColumns();

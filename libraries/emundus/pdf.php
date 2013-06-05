@@ -154,8 +154,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 				if($ed->element_name=="reason") {
 					$result .= '<ul>';
 					foreach ($evaluation as $e) {
-						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->text.'</li>';
+						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
 					}
+					if (@!empty($evaluation[0]["reason_other"]))
+						$result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
 					$result .= '</ul>';
 				} /*elseif($ed->element_name=="result") {
 						$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
@@ -210,6 +212,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 
 function application_form_pdf($user_id, $output = true) {
+	jimport( 'joomla.html.parameter' );
+
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 
@@ -453,7 +457,7 @@ $htmldata .= '
 			$htmldata .= '</h1>';
 			
 			// liste des groupes pour le formulaire d'une table
-			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, INSTR(fg.params,"\"repeat_group_button\":1") as repeated
+			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated
 						FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 						WHERE ff.group_id = fg.id AND
 						ff.form_id = "'.$itemt->form_id.'" 
@@ -481,9 +485,11 @@ $htmldata .= '
 					foreach($elements as &$iteme) {
 						if($iteme->name == 'result_for'){	
 							//Attribs columns from jos_fabrik_elements (to have the label of 'result for')
-							$paramsdefs = JPATH_BASE.DS.'components'.DS.'com_fabrik'.DS.'plugins'.DS.'element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml';
+							$paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml'; 
+							//$paramsdefs = JPATH_BASE.DS.'components'.DS.'com_fabrik'.DS.'plugins'.DS.'element'.DS.'fabrikdatabasejoin'.DS.'fabrikdatabasejoin.xml';
 							$params = new JParameter( $iteme->params, $paramsdefs );
-							$params = $params->_registry['_default']['data'];
+							$params = json_decode($params);
+							//$params = $params->_registry['_default']['data'];
 							//die(print_r($params->database_join_where_sql));
 							$params->database_join_where_sql = preg_replace('#id in#','join_t.id in',$params->database_join_where_sql);
 							$query = 'SELECT join_t.`'.$params->join_val_column.'` FROM `'.$itemt->db_table_name.'` t LEFT JOIN `'.$params->join_db_name.'` join_t ON join_t.id = t.`'.$iteme->name.'` '.preg_replace('#{(.*)}#',$item->user_id,$params->database_join_where_sql).' and `student_id`='.$item->user_id;
@@ -530,12 +536,23 @@ $htmldata .= '
 //echo str_replace('#_','jos',$query); die();
 						foreach ($repeated_elements as $r_element) {
 							$j = 0;
-							foreach ($r_element as $key => $r_elt) {
+							foreach ($r_element as $key => $r_elt) {  
 								if ($key != 'id' && $key != 'parent_id') {
 									if ($elements[$j - 2]->plugin=='date') {
 										$date_params = json_decode($elements[$j - 2]->params);
 										$elt = strftime($date_params->date_form_format, strtotime($r_elt));
-									} else $elt = $r_elt;
+									} elseif($elements[$j - 2]->plugin=='databasejoin') {
+										$params = json_decode($elements[$j-2]->params);
+										$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+										$from = $params->join_db_name;
+										$where = $params->join_key_column.'='.$db->Quote($r_elt);
+										$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+										$query = preg_replace('#{thistable}#', $from, $query);
+										$query = preg_replace('#{my->id}#', $item->user_id, $query);
+										$db->setQuery( $query );
+										$elt = $db->loadResult();
+									} else 
+										$elt = $r_elt;
 									$htmldata .= '<b>'.$elements[$j - 2]->label.': </b>'.$elt.'<br/>';
 								}
 								$j++;

@@ -126,11 +126,23 @@ class EmundusModelCampaign extends JModel
 	function setSelectedCampaign($cid, $aid)
 	{
 		$query = 'INSERT INTO #__emundus_campaign_candidature (campaign_id, applicant_id) VALUES ('.$cid.', '.$aid.')';
+		$this->_db->setQuery( $query );
 		try {
-			$db->Query();
+			$this->_db->Query();
 		} catch (Exception $e) {
 			// catch any database errors.
 		}
+	}
+
+	function isOtherActiveCampaign($aid) {
+		$query='SELECT count(id) as cpt 
+				FROM #__emundus_setup_campaigns 
+				WHERE id NOT IN (
+								select campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$aid.'
+								)';
+		$this->_db->setQuery($query); 
+		$cpt = $this->_db->loadResult();
+		return $cpt>0?true:false;
 	}
 	
 	function getPagination()

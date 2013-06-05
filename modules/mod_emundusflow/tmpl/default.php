@@ -11,7 +11,24 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusflow/style/' 
 		<td class="flowfleche"></td>
 		<td id="flowpj"><?php if($attachments<100) echo $attachments.'%'; else {?><img src="modules/mod_emundusflow/style/images/ok.png" width="25" length="25" alt="<?php echo $attachments.'%';?>" align="middle" /><?php } ?><?php echo JText::_('ATTACHMENT_SENT'); ?></td>
 		<td class="flowfleche"></td>
-		<td id="flowsent" class="flow"><img src="modules/mod_emundusflow/style/images/<?php echo $sent>0?'ok.png':'no.png'; ?>" width="25" length="25" alt="<?php echo $sent>0?JText::_('APPLICATION_SENT'):JText::_('APPLICATION_NOT_SENT'); ?>" align="middle" /><?php echo $sent>0?JText::_('APPLICATION_SENT').' <a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" width="25" length="25" align="middle" /></a>':'<a href="index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22" title="'.JText::_('RENEW_APPLICATION').'">'.JText::_('APPLICATION_NOT_SENT').'</a>'; ?></td>
+		<td id="flowsent" class="flow">
+		<?php 
+			if ($sent>0) {
+				// Apply again
+				$query='SELECT count(id) as cpt FROM #__emundus_setup_campaigns 
+						WHERE id NOT IN (
+							select campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user->id.'
+						)';
+				$db->setQuery($query);
+				$cpt = $db->loadResult();
+				echo '<img src="modules/mod_emundusflow/style/images/ok.png" width="25" length="25" alt="'.JText::_('APPLICATION_SENT').'" align="middle" />'.JText::_('APPLICATION_SENT');
+				if($cpt>0)
+					echo ' <a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" width="25" length="25" align="middle" />'.JText::_('RENEW_APPLICATION').'</a>';
+			} else {
+				echo '<img src="modules/mod_emundusflow/style/images/no.png" width="25" length="25" alt="'.JText::_('APPLICATION_NOT_SENT').'" align="middle" /><a href="index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22" title="'.JText::_('APPLICATION_NOT_SENT').'">'.JText::_('APPLICATION_NOT_SENT').'</a>';
+			}
+		?>
+		</td>
 	</tr>
 </table>
 </fieldset>

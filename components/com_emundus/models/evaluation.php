@@ -613,8 +613,10 @@ class EmundusModelEvaluation extends JModel
 	}
 
 	function getEvaluationReasons(){
-		$query = 'SELECT * FROM #__emundus_setup_checklist WHERE page="evaluation"';
-//		echo str_replace("#_", "jos", $query);
+		$query = 'SELECT esr.id, esr.reason, esrc.course FROM #__emundus_setup_reasons AS esr
+				LEFT JOIN #__emundus_setup_reasons_repeat_course AS esrc ON esrc.parent_id=esr.id
+				ORDER BY esr.ordering';
+	//echo str_replace("#_", "jos", $query);
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList('id');
 	}

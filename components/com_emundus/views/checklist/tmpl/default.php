@@ -18,12 +18,18 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 				else echo $this->text;
                 if(!$this->need) { ?>
                     <h2><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':'index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22'; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h2>
-                <?php if ($this->sent) { ?>
-                    <p><a href="index.php?option=com_emundus&view=renew_application"><img src="<?php echo JURI::Base().'media/com_emundus/images/icones/renew.png'; ?>" align="middle" /> <?php echo JText::_('RENEW_APPLICATION').'</a></p>'; ?>
                 <?php } ?>
-            <?php } ?>
         </div>
     </fieldset>
+    <?php 
+    if ($this->sent) { 
+        if($this->is_other_campaign) {
+            echo "<fieldset><legend>".JText::_('RENEW_APPLICATION')."</legend>";
+            echo '<p><a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" align="left" /> '.JText::_('RENEW_APPLICATION_DESC').'</a></p>'; 
+            echo "</fieldset>";
+        }
+    } 
+    ?>
 <?php //} ?>
 <div id="instructions">
 	<h3><?php echo $this->instructions->title; ?></h3>
