@@ -231,26 +231,25 @@ class EmundusModelUsers extends JModel
 		return $db->loadResultArray();
 	}
 	
-	
-  function getTotal()
-  {
-        // Load the content if it doesn't already exist
-        if (empty($this->_total)) {
-            $query = $this->_buildQuery();
-            $this->_total = $this->_getListCount($query);    
-        }
-        return $this->_total;
-  }
+	function getTotal()
+	{
+		// Load the content if it doesn't already exist
+		if (empty($this->_total)) {
+			$query = $this->_buildQuery();
+			$this->_total = $this->_getListCount($query);    
+		}
+		return $this->_total;
+	}
 
-  function getPagination()
-  {
-        // Load the content if it doesn't already exist
-        if (empty($this->_pagination)) {
-            jimport('joomla.html.pagination');
-            $this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
-        }
-        return $this->_pagination;
-  }
+	function getPagination()
+	{
+		// Load the content if it doesn't already exist
+		if (empty($this->_pagination)) {
+			jimport('joomla.html.pagination');
+			$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
+		}
+		return $this->_pagination;
+	}
 
 /**
 	 * Method to get the registration form.

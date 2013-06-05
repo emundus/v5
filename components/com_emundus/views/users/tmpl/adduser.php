@@ -1,14 +1,16 @@
-<?php 
+<?php
+defined('_JEXEC') or die('Restricted access');
+
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-defined('_JEXEC') or die('Restricted access');
+
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php'); 
 
 ?>
 <div class="emundusraw">
 <form action="index.php?option=com_emundus&task=adduser" method="POST" name="adduser"/>
-<fieldset><legend><?php echo JText::_('NEW_USER'); ?></legend>
+<fieldset><legend><?php echo JText::_('ADD_USER'); ?></legend>
 <table>
 	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value=""/></td></tr>
 	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value=""/></td></tr>

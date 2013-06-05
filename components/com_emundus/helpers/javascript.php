@@ -44,7 +44,9 @@ function OnSubmitForm() {
 					return false;
 			break;
 			case \'export_zip\': 
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				if (is_checked())
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				else alert("'.JText::_("PLEASE_SELECT_APPLICANT").'");
 			break;
 			case \'export_to_xls\': 
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=transfert_view&v='.$view.'";
@@ -173,7 +175,7 @@ function OnSubmitForm() {
 		$script = 
 		'function delayAct(user_id){
 			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#cb"+user_id;
-			setTimeout("document.adminForm.submit()",500) }';
+			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}
 }

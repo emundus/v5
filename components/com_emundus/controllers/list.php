@@ -281,27 +281,18 @@ class EmundusControllerList extends JController {
 	}
 
 	function export_zip() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+		$user =& JFactory::getUser();
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+			die(JText::_('ACCESS_DENIED'));
 		}
-		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		JArrayHelper::toInteger( $cid, 0 );
 
-		if (count( $cid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
-			exit;
-		}
-		zip_file($cid);
+		EmundusHelperExport::export_zip($cid);
+
 		exit;
 	}
 	

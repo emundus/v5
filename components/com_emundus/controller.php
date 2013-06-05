@@ -403,6 +403,7 @@ function updateprofile() {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$firstname = JRequest::getVar('firstname', null, 'POST', 'none',0);
 		$lastname = JRequest::getVar('lastname', null, 'POST', 'none',0);
 		$username = JRequest::getVar('login', null, 'POST', 'none',0);
@@ -412,7 +413,7 @@ function updateprofile() {
 		$acl_aro_groups = JRequest::getVar('acl_aro_groups', null, 'POST', 'none',0);
 		$univ_id = JRequest::getVar('university_id', null, 'POST', 'none',0);
 		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array',0);
-		$params='{"admin_language":"","language":"","editor":"","helpsite":"","timezone":""}';
+		//$params='{"admin_language":"","language":"","editor":"","helpsite":"","timezone":""}';
 		$password = JUserHelper::genRandomPassword();
 		// die(var_dump($acl_aro_groups));		
 		$user = clone(JFactory::getUser(0));
@@ -435,16 +436,28 @@ function updateprofile() {
 		$usertype = $model->found_usertype($acl_aro_groups);
 		$user->usertype=$usertype;
 		
-		$model->adduser($user,$other_param);
+		$model->adduser($user, $other_param);
+
+		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
+			return JError::raiseWarning(500, 'Unable to create user file');
+		}
+
+		// Envoi de la confirmation de création de compte par email
+		$model = &$this->getModel('emails');
+		$email = $model->getEmail('new_account');
+
+		$body = $model->setBody($user, $email->message, $passwd);
 		
-		$this->setRedirect('index.php?option=com_emundus&view=addusers');
+		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
+		
+		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
 	}
 
 	function delusers($reqids = null) {
 		$Itemid=JSite::getMenu()->getActive()->id;
 		$user =& JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id)&& !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
+			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
 		$db =& JFactory::getDBO();

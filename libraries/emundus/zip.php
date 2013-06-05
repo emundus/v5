@@ -88,11 +88,11 @@ function zip_file($users) {
 		$zip->close();
 		if($view != 'renew_application'){
 			//////////////////////////////////////////////
-			($view != 'renew_application')?$realpath = EMUNDUS_PATH_ABS.'tmp'.DS.$nom:$realpath = EMUNDUS_PATH_ABS.'archives'.DS.$nom;
+			$realpath = ($view != 'renew_application')?EMUNDUS_PATH_ABS.'tmp'.DS.$nom:EMUNDUS_PATH_ABS.'archives'.DS.$nom;
 			$mtime = ($mtime = @filemtime($realpath)) ? $mtime : microtime();
 			$size = intval(sprintf("%u", @filesize($realpath)));
 			if (!file_exists($realpath) && $view != 'renew_application') {
-				die('Too much files have been selected to zip for server capability. Please select less applicants for zip extraction : <a href="'.JURI::base().'images/emundus/files/tmp/'.$nom.'">'.$nom.'<a> ('.$i.' compressed /'.count($users).' selected)');
+				die('Too much files have been selected to zip for server capability. Please select less applicants for zip extraction : <a href="'.JURI::base().'images/emundus/files/tmp/'.$nom.'">'.$nom.'<a> ('.$i.' compressed /'.count($users).' selected)<br /> PATH : '.$realpath);
 			}
 			
 			// Maybe the problem is we are running into PHPs own memory limit, so:

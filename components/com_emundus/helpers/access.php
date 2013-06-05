@@ -25,32 +25,35 @@ jimport('joomla.application.component.helper');
  */
 class EmundusHelperAccess{
 	
-	function isAllowed($usertype,$allowed){
+	function isAllowed($usertype, $allowed){
 		return in_array($usertype, $allowed);
 	}
 	
 	function isAllowedAccessLevel($user_id, $current_menu_access){
-		$user_access_level=JAccess::getAuthorisedViewLevels($user_id);
+		$user_access_level = JAccess::getAuthorisedViewLevels($user_id);
 		return in_array($current_menu_access, $user_access_level);
 	}
 	
 	function isAdministrator($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,8);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 8);
 	}
 	
 	function isCoordinator($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,7);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 7);
 	}
 	function isPartner($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,6);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
 	}
 	
 	function isEvaluator($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,5);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 5);
 	}
 	
 	function isApplicant($user_id){
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id,4);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 4);
+	}
+	function isPublic($user_id){
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
 	}
 	
 	/**

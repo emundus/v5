@@ -30,7 +30,7 @@ class EmundusControllerCheck extends JController {
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -252,27 +252,18 @@ class EmundusControllerCheck extends JController {
 	
 
 	function export_zip() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		$user =& JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
-		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		JArrayHelper::toInteger( $cid, 0 );
 
-		if (count( $cid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
-			exit;
-		}
-		zip_file($cid);
+		EmundusHelperExport::export_zip($cid);
+
 		exit;
 	}
 	

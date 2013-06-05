@@ -45,19 +45,19 @@ class EmundusModelEmails extends JModel
 	{
 		/*$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/', '/\[USERNAME\]/', '/\[PASSWORD\]/', '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/');
 		$replacements = array ($user->id, $user->name, $user->email, '<br />', $user->username, $passwd, JURI::base()."index.php?option=com_user&task=activate&activation=".$user->get('activation'), JURI::base());*/
-		$constants = $this->setConstants($user->id);
+		$constants = $this->setConstants($user->id, null, $passwd);
 		$strval = html_entity_decode(preg_replace($constants['patterns'], $constants['replacements'], $str), ENT_QUOTES);
 		
 		return $strval;
 	}
 
-	function setConstants($user_id, $post)
+	function setConstants($user_id, $post=null, $passwd='')
 	{
 		$current_user = & JFactory::getUser();
 		$user = & JFactory::getUser($user_id);
 
 		$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/','/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/', '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/','/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/');
-		$replacements = array($current_user->id, $current_user->name, $current_user->email, $current_user->username, $current_user->id, $current_user->name, $current_user->email, '<br />', $current_user->username, $passwd, JURI::base()."index.php?option=com_user&task=activate&activation=".$user->get('activation'), JURI::base(), $user->id, $user->name, $user->email, $user->username, date("F j, Y"));
+		$replacements = array($user->id, $user->name, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, '<br />', $current_user->username, $passwd, JURI::base()."index.php?option=com_user&task=activate&activation=".$user->get('activation'), JURI::base(), $user->id, $user->name, $user->email, $user->username, date("F j, Y"));
 
 		if(count($post) > 0) {
 			foreach ($post as $key => $value) {

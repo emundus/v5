@@ -12,15 +12,30 @@ function prepare() {
 	forminputs = formblock.getElementsByTagName('input');
 }
 
-function check_all(name, value) {
+function check_all(name, value) { 
+	for (i = 1; i < forminputs.length; i++) {
+		// regex here to check name attribute
+		var regex = new RegExp(name, "i");
+		if (regex.test(forminputs[i].getAttribute('name'))) { 
+			if(forminputs[i].id == "checkall")
+				var checked = forminputs[i].checked;
+			//if(forminputs[i].id != "checkall")
+				forminputs[i].checked = checked;
+			//if (value.checked == true) forminputs[i].checked = true;
+			//else forminputs[i].checked = false;
+		}
+	}
+}
+
+function is_checked(name) { 
 	for (i = 0; i < forminputs.length; i++) {
 		// regex here to check name attribute
 		var regex = new RegExp(name, "i");
 		if (regex.test(forminputs[i].getAttribute('name'))) {
-			if (value.checked == true) forminputs[i].checked = true;
-			else forminputs[i].checked = false;
+			if(forminputs[i].checked) return true;
 		}
 	}
+	return false;
 }
 
 function removeElement(divNum, opt) {

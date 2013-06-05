@@ -76,7 +76,7 @@ class EmundusViewUsers extends JView
         
 		$pagination =& $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
-		
+
 		/* Call the state object */
 		$state =& $this->get( 'state' );
 		/* Get the values from the state object that were inserted in the model's construct function */

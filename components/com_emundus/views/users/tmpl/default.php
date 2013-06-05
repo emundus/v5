@@ -30,15 +30,15 @@ if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $curre
 ?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <?php
-echo'<a rel="{handler:\'iframe\',size:{x:window.innerWidth-innerWidth*0.2,y:window.innerHeight-innerHeight*0.1}}" 
-href="'.$this->baseurl.'/index.php?option=com_emundus&view=addusers&Itemid='.$itemid.'" target="_self">
+echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid.'" rel="{handler:\'iframe\',size:{x:window.innerWidth*0.4,y:window.innerHeight*0.8}}" 
+>
 <img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="50" align="bottom" />
 </a>';
 ?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
 <SCRIPT TYPE="text/javascript">
 <!--
-function submitenter(myfield,e) {
+function submitenter(myfield, e) {
 	var keycode;
 	if (window.event) keycode = window.event.keyCode;
 	else if (e) keycode = e.which;
@@ -185,8 +185,6 @@ if(!empty($this->users)) {
         <tr>
             <td align="center" colspan="10">
                 <?php echo $this->pagination->getResultsCounter(); ?>
-                <br />
-                <?php echo $this->pagination->getPagesLinks(); ?>
             </td>
         </tr>
         <tr>
@@ -259,8 +257,7 @@ foreach ($this->users as $user) { ?>
 <?php 
         	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
-                	<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?>
-                    </a><?php 
+				<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?></a><?php 
 				 } ?>
         	</div>
         </td>
@@ -361,52 +358,6 @@ foreach ($this->users as $user) { ?>
 </fieldset>
 </form>
 </div>
-<?php 
-JHtml::_('behavior.keepalive');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
-JHtml::_('behavior.noframes');
-?>
-
-<form id="member-registration" action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user&Itemid=<?php echo $itemid; ?>" method="post" class="form-validate">
-<?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
-	<?php $fields = $this->form->getFieldset($fieldset->name);?>
-	<?php if (count($fields)):?>
-		<fieldset>
-		<?php if (isset($fieldset->label)):// If the fieldset has a label set, display it as the legend.
-		?>
-			<legend><?php echo JText::_($fieldset->label);?></legend>
-		<?php endif;?>
-			<dl>
-		<?php foreach($fields as $field):// Iterate through the fields in the set and display them.?>
-			<?php if ($field->hidden):// If the field is hidden, just display the input.?>
-				<?php echo $field->input;?>
-			<?php else:?>
-				<dt>
-					<?php echo $field->label; ?>
-					<?php if (!$field->required && $field->type!='Spacer'): ?>
-						<span class="optional"><?php echo JText::_('COM_EMUNDUS_OPTIONAL'); ?></span>
-					<?php endif; ?>
-				</dt>
-				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;"; ?></dd>
-			<?php endif;?>
-		<?php endforeach;?>
-			</dl>
-		</fieldset>
-	<?php endif;?>
-<?php endforeach;?>
-		<div>
-			<button type="submit" class="validate"><?php echo JText::_('JREGISTER');?></button>
-			<?php echo JText::_('COM_EMUNDUS_OR');?>
-			<a href="<?php echo JRoute::_('');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
-			<input type="hidden" name="option" value="com_emundus" />
-            <input type="hidden" name="itemid" value="<?php echo $itemid; ?>" />
-			<input type="hidden" name="task" value="<?php echo $edit==1?'edit':'add'; ?>user" />
-			<?php echo JHtml::_('form.token');?>
-		</div>
-	</form>
-</div>
-
 
 
 <script>
