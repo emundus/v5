@@ -174,7 +174,7 @@ function OnSubmitForm() {
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$script = 
 		'function delayAct(user_id){
-			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#cb"+user_id;
+			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'";
 			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}

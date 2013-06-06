@@ -33,6 +33,20 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($training). "AND date_start > NOW() ORDER BY date_start ASC";
+	$db->setQuery($query);
+	$courses = $db->loadAssocList();
+	
+	$courses_list = '<ul>';
+	$courses_fee = ' ';
+	foreach ($courses as $c) {
+		$ds = strftime("%d/%m/%Y", strtotime($c['date_start']));
+		$de = strftime("%d/%m/%Y", strtotime($c['date_end']));
+		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
+		$courses_fee  .= $c['price'].' &euro; <br>';
+	}
+	$courses_list .= '</ul>';
+
 	$query = "SELECT * FROM #__emundus_setup_campaigns WHERE id=".$campaign_id;
 	$db->setQuery($query);
 	$campaign = $db->loadAssoc();
@@ -172,8 +186,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$post = array(  'TRAINING_CODE' => $training, 
 						'TRAINING_PROGRAMME' => $campaign['label'],
 						'REASON' => $result, 
-						'TRAINING_FEE' => "???", 
-						'TRAINING_PERIODE' => "???" );
+						'TRAINING_FEE' => $courses_fee, 
+						'TRAINING_PERIODE' => $courses_list );
 
 		$tags = $emails->setTags($user_id, $post);
 
@@ -192,7 +206,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 				//$output?'FI':'F'
 			$name = $attachment['lbl'].date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
-			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 0)';
+			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed,campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 0'.$campaign_id.')';
 			$db->setQuery($query);
 			$db->query();
 			//die(str_replace("#_", "jos", $query));
@@ -232,6 +246,10 @@ function application_form_pdf($user_id, $output = true) {
 	$pdf->SetTitle('Application Form');
 	$db = &JFactory::getDBO();
 	
+	$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user_id.' ORDER BY date_submitted DESC';
+	$db->setQuery($query);
+	$campaign_id = $db->loadResult();
+
 	$query = 'SELECT id FROM #__usergroups WHERE title="Registered"';
 	$db->setQuery($query);
 	$registered = $db->loadResult();
@@ -602,10 +620,10 @@ $htmldata .= '
 			//$output?'FI':'F'
 			$name = 'application_form_'.date('Y-m-d_H-i-s').'_'.rand(1000,9999).'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$item->user_id.DS.$name, 'FI');
-			$query = 'INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed) VALUES ('.$item->user_id.',(
+			$query = 'INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed,campaign_id) VALUES ('.$item->user_id.',(
 										   SELECT id 
 										   FROM #__emundus_setup_attachments 
-										   WHERE lbl = "_application_form"),"'.$name.'","'.date('Y-m-d H:i:s').'",0,0)';
+										   WHERE lbl = "_application_form"),"'.$name.'","'.date('Y-m-d H:i:s').'",0,0,'.$campaign_id.')';
 			$db->setQuery($query);
 			$db->query();
 		}else{

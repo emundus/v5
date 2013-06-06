@@ -35,29 +35,10 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	//die(print_r($eligibility));
 	$campaign = EmundusHelperfilters::getCampaignByID($evaluation[0]["campaign_id"]);
-	/*
-	unset($evaluation[0]["id"]);
-	unset($evaluation[0]["user"]);
-	unset($evaluation[0]["time_date"]);
-	unset($evaluation[0]["student_id"]);
-	unset($evaluation[0]["parent_id"]);
-	unset($evaluation[0]["campaign_id"]);
-	unset($evaluation[0]["comment"]);
-	if(empty($evaluation[0]["reason"])) {
-		unset($evaluation[0]["reason"]);
-		unset($evaluation[0]["reason_other"]);
-	} elseif(empty($evaluation[0]["reason_other"])) {
-		unset($evaluation[0]["reason_other"]);
-	}
 
-	$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
-	*/
-	if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered') 
-		$user =& JFactory::getUser($student_id);
-	else
-		$user =& JFactory::getUser();
+	$user =& JFactory::getUser($student_id);
 
-		$chemin = EMUNDUS_PATH_REL;
+	$chemin = EMUNDUS_PATH_REL;
 
 	// Get email 
 	if($result_id == 4)
