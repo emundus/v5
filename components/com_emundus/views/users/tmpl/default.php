@@ -255,10 +255,10 @@ foreach ($this->users as $user) { ?>
 		<td align="center">
         	<div class="emundusraw">
 <?php 
-        	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
+        	//if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
 				<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?></a><?php 
-				 } ?>
+				 //} ?>
         	</div>
         </td>
   	</tr>
@@ -296,7 +296,7 @@ foreach ($this->users as $user) { ?>
 <?php } } ?>
 </form>
 <div class="emundusraw">
-<form action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user" method="POST" name="adduser"/>
+<form action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user&Itemid=<?php echo $itemid; ?>" method="POST" name="adduser"/>
 <fieldset><legend><?php echo $edit==1?JText::_('EDIT_USER'):JText::_('ADD_USER'); ?></legend>
 <input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
 <table>

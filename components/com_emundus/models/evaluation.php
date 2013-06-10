@@ -416,12 +416,12 @@ class EmundusModelEvaluation extends JModel
 		$s_elements = $session->get('s_elements');
 		if (count($search)==0) $search = $s_elements;
 		
-		if(EmundusHelperAccess::isEvaluator($this->_user->id)){
+		if( EmundusHelperAccess::isEvaluator($this->_user->id) ){ 
 			if($eval_access>0)
 				$applicants = $this->union($this->_buildQuery_myGroup(),$this->_buildQuery_myAffect());
 			else
 				$applicants = $this->_buildQuery_myAffect();		
-		}elseif (EmundusHelperAccess::isPartner($this->_user->id)){
+		}elseif ( EmundusHelperAccess::isPartner($this->_user->id) ){
 			$applicants = $this->_buildQuery_myGroup();
 		}else{
 			$query = $this->_buildSelect();
@@ -495,8 +495,6 @@ class EmundusModelEvaluation extends JModel
 						$eval_list['General ranking'] = $all['General ranking'];*/
 						//$eval_list['global_mean'] = $all['global_mean'];
 				$eval_lists[]=$eval_list;
-				
-				
 			}
 			if(!empty($eval_lists))
 				$this->_applicants=$eval_lists;	

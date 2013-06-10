@@ -88,6 +88,15 @@ class EmundusModelCampaign extends JModel
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}
+
+	function getCampaignByID($campaign_id)
+	{
+		$query = 'SELECT esc.* 
+					FROM #__emundus_setup_campaigns AS esc 
+					WHERE esc.id='.$campaign_id;
+		$this->_db->setQuery( $query );
+		return $this->_db->loadAssoc();
+	}
 	
 	function getMySubmittedCampaign()
 	{

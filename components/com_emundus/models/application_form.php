@@ -78,7 +78,7 @@ class EmundusModelApplication_form extends JModel
 	function getComments(){ 
 		$user =& JFactory::getUser();
 		$db =& JFactory::getDBO();
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
+		if(!EmundusHelperAccess::asEvaluatorAccessLevel($user->id)) {
 			JError::raiseWarning('403', JText::_('RESTRICT_ACCES_ON_COMMENTS')); 
 			return;
 		}

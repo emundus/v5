@@ -86,6 +86,7 @@ class EmundusController extends JController {
 			application_form_pdf($user->id);
 			exit;
 		}
+		exit();
 	}
 
 	function delete() {
@@ -404,6 +405,8 @@ function updateprofile() {
 			return;
 		}
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
+		$layout = JRequest::getVar('layout', null, 'GET', 'none',0);
 		$firstname = JRequest::getVar('firstname', null, 'POST', 'none',0);
 		$lastname = JRequest::getVar('lastname', null, 'POST', 'none',0);
 		$username = JRequest::getVar('login', null, 'POST', 'none',0);
@@ -432,8 +435,10 @@ function updateprofile() {
 		$other_param['groups']=$groups;
 		
 		$model = &$this->getModel('users');
-		
-		$usertype = $model->found_usertype($acl_aro_groups);
+		$acl_aro_groups = $model->getDefaultGroup($profile);
+		$user->groups=$acl_aro_groups;
+
+		$usertype = $model->found_usertype($acl_aro_groups[0]);
 		$user->usertype=$usertype;
 		
 		$model->adduser($user, $other_param);
@@ -446,11 +451,14 @@ function updateprofile() {
 		$model = &$this->getModel('emails');
 		$email = $model->getEmail('new_account');
 
-		$body = $model->setBody($user, $email->message, $passwd);
+		$body = $model->setBody($user, $email->message, $password);
 		
 		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
 		
-		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
+		if(!empty($layout))
+			$this->setRedirect('index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid);
+		else
+			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
 	}
 
 	function delusers($reqids = null) {
@@ -603,9 +611,10 @@ function updateprofile() {
 	function edituser() {
 		$db =& JFactory::getDBO();
 		$current_user =& JFactory::getUser();
-		$Itemid=JSite::getMenu()->getActive()->id;
+		$Itemid=JSite::getMenu()->getActive()->id; 
+		//$Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);die($Itemid);
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
-			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
+			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
 		$authorize	=& JFactory::getACL();

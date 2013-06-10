@@ -14,8 +14,8 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 
 $current_user =& JFactory::getUser();
 if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
-	echo "<script>window.parent.document.getElementById( 'sbox-window' ).close();</script>";
-	die(JText::_("SAVED"));
+	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
+	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
 } else {
 	$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0); 
 	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT',0); 

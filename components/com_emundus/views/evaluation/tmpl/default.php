@@ -69,8 +69,10 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 									echo '<td>'.$value.'</td>';
 								}
                             } //end foreach($evalu)
-                            echo '<td>'.$this->evaluator[$evalu['user_id']].'</td>'; 
-							?> 
+                            if ( EmundusHelperAccess::isAdministrator($this->_user->id) ||  EmundusHelperAccess::isCoordinator($this->_user->id)  
+								)
+                           		echo '<td>'.$this->evaluator[$evalu['user_id']].'</td>'; 
+						?> 
                         </tr>
 					<?php } //end foreach($this->users)?>
                 </tbody>

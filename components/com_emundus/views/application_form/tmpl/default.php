@@ -12,7 +12,7 @@ $current_user = & JFactory::getUser();
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 //$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die("You are not allowed to access to this report.");
+if(!EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id)) die("ACCESS_DENIED");
 	 
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
@@ -269,11 +269,11 @@ if ($sent == 0) {
 				  echo '<div id="comment_tab">';
                                   echo $this->comments;
 				  echo '</div>';
-				  echo '<label><b>Add a comment</b></label><br /><textarea id="comment_'.$this->user->user_id.'" rows="8" cols="35" name="comments"></textarea>';
+				/*  echo '<label><b>Add a comment</b></label><br /><textarea id="comment_'.$this->user->user_id.'" rows="8" cols="35" name="comments"></textarea>';
 				  echo '<button type="button" id="btn_comment_'.$this->user->user_id.'"><img width="20" heigth="20" src="images/apply_f2.png"></button>';
 				  echo '<div id="c_'.$this->user->user_id.'"></div>';
 				  $url_set = 'index.php?option=com_emundus&controller=application_form&task=set_comment&uid='.$this->user->user_id.'&format=raw';
-				  $url_get = 'index.php?option=com_emundus&controller=application_form&task=get_comment&sid='.$this->user->user_id.'&format=raw';
+				  $url_get = 'index.php?option=com_emundus&controller=application_form&task=get_comment&sid='.$this->user->user_id.'&format=raw';*/
               ?>    
           </fieldset>
 		  <?php } ?>
@@ -297,14 +297,14 @@ if ($sent == 0) {
   <tr>
 	 <td valign="top">
 	<?php 
-	if($current_user->profile!="16"){
+	/*if($current_user->profile!="16"){
 	if($this->can_evaluate){ 
 		if($this->is_evaluated > 0)
 			$url = 'index.php?option=com_fabrik&c=form&view=form&fabrik=29&tableid=31&rowid='.$this->is_evaluated.'&usekey=id&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
 		else
 			$url = 'index.php?option=com_fabrik&c=form&view=form&formid=29&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$this->user->user_id.'&student_id='.$this->user->user_id.'&tmpl=component';
 		echo '<iframe src="'.$url.'" scrolling="auto" frameborder="0" height="850" width="100%" ></iframe>';
-	} }
+	} }*/
 	?>
 	</td>
     </tr>

@@ -71,15 +71,16 @@ class EmundusModelEmails extends JModel
 		return $constants;
 	}
 
-	function setTags($user_id, $post)
+	function setTags($user_id, $post=null, $passwd='')
 	{
 		$db = &JFactory::getDBO();
+		$user = & JFactory::getUser($user_id);
 
 		$query = "SELECT tag, request FROM #__emundus_setup_tags";
 		$db->setQuery($query);
 		$tags = $db->loadAssocList();
 
-		$constants = $this->setConstants($user_id, $post);
+		$constants = $this->setConstants($user_id, $post, $passwd);
 
 		$patterns = array();
 		$replacements = array(); 

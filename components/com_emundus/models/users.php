@@ -387,9 +387,16 @@ class EmundusModelUsers extends JModel
 	
 	function found_usertype($acl_aro_groups){
 		$db =& JFactory::getDBO();
-		$query="SELECT title FROM jos_usergroups WHERE id=".$acl_aro_groups;
+		$query="SELECT title FROM #__usergroups WHERE id=".$acl_aro_groups;
 		$db->setQuery($query);
 		return $db->loadResult();		
+	}
+
+	function getDefaultGroup($pid){
+		$db =& JFactory::getDBO();
+		$query="SELECT acl_aro_groups FROM #__emundus_setup_profiles WHERE id=".$pid;
+		$db->setQuery($query);
+		return $db->loadResultArray();		
 	}
 
 }

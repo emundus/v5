@@ -34,26 +34,64 @@ class EmundusHelperAccess{
 		return in_array($current_menu_access, $user_access_level);
 	}
 	
-	function isAdministrator($user_id){
+	function asAdministratorAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 8);
 	}
 	
-	function isCoordinator($user_id){
+	function asCoordinatorAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 7);
 	}
-	function isPartner($user_id){
+	function asPartnerAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
 	}
 	
-	function isEvaluator($user_id){
+	function asEvaluatorAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 5);
 	}
 	
-	function isApplicant($user_id){
+	function asApplicantAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 4);
 	}
-	function isPublic($user_id){
+	function asPublicAccessLevel($user_id){
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
+	}
+
+	function check_group($user_id, $group, $inherited){
+		// 1:Public / 2:Registered / 3:Author / 4:Editor / 5:Publisher / 6:Manager / 7:Administrator / 8:Super Users / 9:Guest / 10:Nobody
+		$user =& JFactory::getUser($user_id);
+
+		if($inherited){
+			//include inherited groups
+			jimport( 'joomla.access.access' );
+			$groups = JAccess::getGroupsByUser($user_id);
+		} else {
+			//exclude inherited groups
+			$user =& JFactory::getUser($user_id);
+			$groups = isset($user->groups) ? $user->groups : array();
+		}
+		return (in_array($group, $groups))?true:0;
+	}
+
+	function isAdministrator($user_id){
+		return EmundusHelperAccess::check_group($user_id, 8, false);
+	}
+	
+	function isCoordinator($user_id){
+		return EmundusHelperAccess::check_group($user_id, 7, false);
+	}
+	function isPartner($user_id){
+		return EmundusHelperAccess::check_group($user_id, 4, false);
+	}
+	
+	function isEvaluator($user_id){
+		return EmundusHelperAccess::check_group($user_id, 3, false);
+	}
+	
+	function isApplicant($user_id){
+		return EmundusHelperAccess::check_group($user_id, 2, false);
+	}
+	function isPublic($user_id){
+		return EmundusHelperAccess::check_group($user_id, 1, false);
 	}
 	
 	/**

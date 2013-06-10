@@ -272,6 +272,30 @@ class EmundusModelGroups extends JModel
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
+
+	function getGroupsByCourse($course)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esg.id, esg.label  
+		FROM #__emundus_setup_groups esg
+		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
+		WHERE esg.published=1 AND esgrc.course='.$db->Quote($course).'
+		ORDER BY esg.label';
+		$db->setQuery( $query );
+		return $db->loadObjectList('id');
+	}
+
+	function getGroupsIdByCourse($course)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esg.id  
+		FROM #__emundus_setup_groups esg
+		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
+		WHERE esg.published=1 AND esgrc.course='.$db->Quote($course).'
+		ORDER BY esg.label';
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
 	
 	function getGroupsEval()
 	{
@@ -289,6 +313,41 @@ class EmundusModelGroups extends JModel
 		FROM #__emundus_groups eg';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
+	}
+
+	function getUsersByGroup($gid)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT eg.user_id, eg.group_id  
+		FROM #__emundus_groups eg 
+		WHERE eg.group_id='.$gid;
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
+
+	function getUsersByGroups($gids)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT eg.user_id, eg.group_id  
+		FROM #__emundus_groups eg 
+		WHERE eg.group_id IN ('.implode(",", $gids).')';
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
+
+	function affectEvaluatorsGroups($groups, $aid) { 
+		$db =& JFactory::getDBO();
+		foreach ($groups as $group) {
+			$query = "INSERT INTO #__emundus_groups_eval (applicant_id, group_id) VALUES (".$aid.", ".$group.")";
+
+			$db->setQuery($query);
+			try {
+				$db->Query();
+			} catch (Exception $e) {
+				// catch any database errors.
+			}
+		}
+
 	}
 	
 	function getAuthorUsers()
