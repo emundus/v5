@@ -731,8 +731,8 @@ class EmundusHelperFilters {
 			$filters .= $other_filter;
 		}
 
-		$filters .= '</div><div class="buttons"><input type="submit" name="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
-		$filters .='<input type="submit" name="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
+		$filters .= '</div><div class="buttons"><input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
+		$filters .='<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
 		$filters .= '</fieldset>';
 		
 		return $filters;
