@@ -776,7 +776,7 @@ function updateprofile() {
 		
 		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		export_xls($cid, $elements);
+		export_xls($cid, $elements); 
 		exit();
 	}
 	

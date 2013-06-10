@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 function return_bytes($val) {
@@ -36,13 +36,26 @@ function return_bytes($val) {
 			
 			$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
 			$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
-			$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+			/*$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+			die(str_replace("#_","jos",$query));
 			$db->setQuery( $query );
 			$result = $db->loadRowList();
+			
 			$sub_values = explode('|', $result[0][0]);
 			foreach($sub_values as $sv)
 				$patterns[]="/".$sv."/";
-			$grade = explode('|', $result[0][1]);
+			$grade = explode('|', $result[0][1]);*/
+			
+			$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+			$db->setQuery( $query );
+			//die(str_replace('#_','jos',$query));
+			$params = $db->loadResult();
+			$params=json_decode($params);
+			$sub_options=$params->sub_options;
+			$sub_values=$sub_options->sub_values;
+			
+			foreach($sub_values as $sv)
+				$patterns[]="/".$sv."/";
 			
 			// Create new PHPExcel object
 			$objPHPExcel = new PHPExcel();
@@ -78,15 +91,15 @@ function return_bytes($val) {
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
-			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.attribs,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 						INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-						INNER JOIN #__menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1)
-						WHERE tab.state = 1 
+						INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+						WHERE tab.published = 1 
 						AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
-						AND element.state=1 
+						AND element.published=1 
 						AND element.hidden=0 
 						AND element.label!=" " 
 						AND element.label!="" 
@@ -146,10 +159,10 @@ function return_bytes($val) {
 			$query .= $join;
 			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
-			//die(str_replace('#_','jos',$query));
+			// die(str_replace('#_','jos',$query));
 			$db->setQuery( $query );
 			$valeurs = $db->loadObjectList('user');			
-			
+
 			$query='';
 			$query = 'SELECT ';
 			$query .= $select_comment;
@@ -159,6 +172,7 @@ function return_bytes($val) {
 			$query .= $join_comment;
 			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
+			// die(str_replace('#_','jos',$query));
 			$db->setQuery( $query );
 			$comments = $db->loadObjectList();
 			
@@ -190,6 +204,7 @@ function return_bytes($val) {
 			
 			$tab_com = '';
 			$count = 0;
+
 			foreach($elements as $element) {
 				//Only one header of comment
 				if($element->table_name == 'jos_emundus_comments'){ 
@@ -229,9 +244,8 @@ function return_bytes($val) {
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 						$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 						$colonne++;
-					}
+					}	
 				}
-				
 			// ********************************************
 			//				Application form
 			// ********************************************
@@ -258,6 +272,7 @@ function return_bytes($val) {
 								if($comment->user == $user['user_id']) {
 									if($element->element_name == 'user_id'){
 										$query = 'SELECT name FROM #__users WHERE id ='.$comment->$el;
+										// die(str_replace('#_','jos',$query));
 										$db->setQuery( $query );
 										$tab_value[] = $db->loadResult();
 									}else{
@@ -287,14 +302,14 @@ function return_bytes($val) {
 							$value = '';
 						}
 					}
-				}				
+				}			
 				$i++;	
 			}
 			$objPHPExcel->setActiveSheetIndex(0);
 			$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel); 
 			//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007'); 
 			$objWriter->save($realpath); 
-
+			
 	//////////////////////////////////////////////
 			
 			$mtime = ($mtime = filemtime($realpath)) ? $mtime : gmtime();

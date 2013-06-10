@@ -96,6 +96,12 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
     
 </form>
 <script>
+function check_all() {
+ var checked = document.getElementById('checkall').checked;
+<?php foreach ($this->users as $user) { ?>
+  document.getElementById('cb<?php echo $user['user_id']; ?>').checked = checked;
+<?php } ?>
+}
 <?php 
 	echo $this->addElement;
 	echo $this->onSubmitForm; 

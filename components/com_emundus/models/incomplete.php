@@ -1,14 +1,12 @@
-﻿<?php
+<?php
 /**
- * Users Model for eMundus Component
- * 
- * @package    eMundus
- * @subpackage Components
- *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
- * @license    GNU/GPL
- * @author     Benjamin Rivalland
- */
+ * @package    	Joomla
+ * @subpackage 	eMundus
+ * @link       	http://www.emundus.fr
+ * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
+ * @license    	GNU/GPL
+ * @author     	Decision Publique - Benjamin Rivalland
+*/
  
 // No direct access
  
@@ -17,7 +15,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.model' );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-
+ 
 class EmundusModelIncomplete extends JModel
 {
 	var $_total = null;
@@ -407,7 +405,7 @@ class EmundusModelIncomplete extends JModel
 		
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
-		
+
 		return $query;
 	}
 	

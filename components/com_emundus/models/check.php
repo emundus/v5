@@ -546,7 +546,7 @@ class EmundusModelCheck extends JModel
 		}else
 			$this->_applicants=$applicants;
 			
-		//echo '<pre>'; print_r($this->_applicants);
+		// var_dump($this->_applicants);
 	}
 	
 	function getUsers()

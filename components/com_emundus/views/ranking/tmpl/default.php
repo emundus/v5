@@ -105,7 +105,14 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 	} else echo '<h2>'.JText::_('NO_RESULT').'</h2>'; ?>
 </form>
 
-<script><?php 
+<script>
+function check_all() {
+ var checked = document.getElementById('checkall').checked;
+<?php foreach ($this->users as $user) { ?>
+  document.getElementById('cb<?php echo $user['user_id']; ?>').checked = checked;
+<?php } ?>
+}
+<?php 
 	echo $this->addElement;
 	echo $this->addElementOther;
 	echo $this->onSubmitForm;

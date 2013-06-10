@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
 function return_bytes($val) {
     $val = trim($val);
@@ -36,65 +36,68 @@ function return_bytes($val) {
 		
 		$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
 		$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
-		$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+		
+		$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 		$db->setQuery( $query );
-		$result = $db->loadRowList();
-		$sub_values = explode('|', $result[0][0]);
+		//die(str_replace('#_','jos',$query));
+		$params = $db->loadResult();
+		$params=json_decode($params);
+		$sub_options=$params->sub_options;
+		$sub_values=$sub_options->sub_values;
 		
 		foreach($sub_values as $sv)
 			$patterns[]="/".$sv."/";
-			$grade = explode('|', $result[0][1]);
-			// Create new PHPExcel object
-			$objPHPExcel = new PHPExcel();
-			// Initiate cache
-			$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-			$cacheSettings = array( 'memoryCacheSize' => '32MB');
-			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-			// Set properties
-			$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-			$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-			$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-			$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
-	
 			
-			$objPHPExcel->setActiveSheetIndex(0);
-			$objPHPExcel->getActiveSheet()->setTitle('Incomplete application forms');
-			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+		// Create new PHPExcel object
+		$objPHPExcel = new PHPExcel();
+		// Initiate cache
+		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+		$cacheSettings = array( 'memoryCacheSize' => '32MB');
+		PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+		// Set properties
+		$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
+		$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
+		$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
+		$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
+		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
 
-			//include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
-			//$mod = new EmundusModelIncomplete;
-			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
-			$mod = new EmundusModelCheck;
-			$model = $mod->_buildQuery();
-			$db->setQuery( $model );
-			$users = $db->loadObjectList();
-			$p = new $mod;
-			$profile = $p->getProfiles();
+		
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setTitle('Incomplete application forms');
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
+		
+		$mod = new EmundusModelIncomplete;
+		$model = $mod->_buildQuery();
+		$db->setQuery($model);
+		$users = $db->loadObjectList();
+		
+		$profile = $mod->getProfiles();
 		
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
-			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.attribs,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 						INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-						INNER JOIN #__menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1)
-						WHERE tab.state = 1 
+						INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+						WHERE tab.published = 1 
 						AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
-						AND element.state=1 
+						AND element.published=1 
 						AND element.hidden=0 
 						AND element.label!=" " 
 						AND element.label!="" 
 						AND element.id IN ("'.implode('","', $element_id).'") 
 						ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering'; 
 			$db->setQuery( $query );
-			//die(str_replace("#_","jos",$query));
+			// die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 
-			// @TODO : générer une chaine de caractère avec tous les user_id
+			// @TODO : gÃ©nÃ©rer une chaine de caractÃ¨re avec tous les user_id
 			
 			
 			// Starting a session.
@@ -108,12 +111,12 @@ function return_bytes($val) {
 				$user_id = $uids;
 				$users = $us;
 				$session->clear( 'uid' );
-			}else{
+			}else{		
 				foreach($users as $user){
 					$user_id[] = $user->user;
 				}
 			}
-			
+			// die(var_dump($users));
 			$session->clear( 'profile' );
 			$session->clear( 'quick_search' );
 			unset($us);
@@ -141,7 +144,7 @@ function return_bytes($val) {
 			$query .= $join;
 			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
-			//die(str_replace('#_','jos',$query));
+			// die(str_replace('#_','jos',$query));
 			$db->setQuery( $query );
 			$valeurs = $db->loadObjectList('user');			
 			
@@ -154,6 +157,7 @@ function return_bytes($val) {
 			$query .= $join_comment;
 			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
+			// die(str_replace('#_','jos',$query));
 			$db->setQuery( $query );
 			$comments = $db->loadObjectList();
 			
@@ -246,16 +250,16 @@ function return_bytes($val) {
 						$colonne++;
 					}
 				}
-		
 			// ***************************************
 			// Avancement de la saisie des formulaires
-					
-			/*	$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
+			/*		
+				$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
 							FROM #__fabrik_lists AS fbtables 
-							INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1)
+							INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 							INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$user->profile.' 
-							WHERE fbtables.state = 1 AND fbtables.created_by_alias = "form" 
+							WHERE fbtables.published = 1 AND fbtables.created_by_alias = "form" 
 						ORDER BY menu.ordering';
+				// die(str_replace('#_','jos',$query));
 				$db->setQuery($query);
 				$forms = $db->loadObjectList();
 				$nb = 0;
@@ -298,6 +302,7 @@ function return_bytes($val) {
 				FROM #__emundus_setup_attachment_profiles AS profiles 
 				LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$user->user.'
 				WHERE profiles.profile_id = '.$user->profile.' AND profiles.displayed = 1 AND profiles.mandatory = 1 ';
+				// die(str_replace('#_','jos',$query));
 				$db->setQuery($query);
 				$attachments = floor($db->loadResult());
 				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
@@ -343,6 +348,7 @@ function return_bytes($val) {
 									if($element->element_name == 'user_id'){
 										//die(print_r($comment->$el));
 										$query = 'SELECT name FROM #__users WHERE id ='.$comment->$el;
+										// die(str_replace('#_','jos',$query));
 										$db->setQuery( $query );
 										$tab_value[] = $db->loadResult();
 									}else{
@@ -376,6 +382,28 @@ function return_bytes($val) {
 				$i++;	
 			}
 			
+			// debug file
+			ob_start(); 
+			var_export(var_dump($objPHPExcel)); 
+
+			$tab_debug=ob_get_contents(); 
+			ob_end_clean(); 
+
+			$fichier=fopen('test.log','w'); 
+			fwrite($fichier,$tab_debug); 
+			fclose($fichier);
+			// end debug file
+			
+			$lastRow = $objPHPExcel->getActiveSheet()->getHighestRow();
+			$lastColumn = $objPHPExcel->getActiveSheet()->getHighestColumn();
+			$lastColumn++;
+			for ($column = 'A'; $column != $lastColumn; $column++) {
+				for ($row = 1; $row <= $lastRow; $row++) {
+				$cell[$column][$row] = $objPHPExcel->getActiveSheet()->getCell($column.$row);
+				}
+			}
+			// die(var_dump($cell));
+	//////////////////////////////////////////////
 			$objPHPExcel->setActiveSheetIndex(0);
 			$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel); 
 			//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007'); 

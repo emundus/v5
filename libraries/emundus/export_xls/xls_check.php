@@ -36,13 +36,17 @@ function return_bytes($val) {
 			
 			$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
 			$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
-			$query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+			
+			$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 			$db->setQuery( $query );
-			$result = $db->loadRowList();
-			$sub_values = explode('|', $result[0][0]);
+			//die(str_replace('#_','jos',$query));
+			$params = $db->loadResult();
+			$params=json_decode($params);
+			$sub_options=$params->sub_options;
+			$sub_values=$sub_options->sub_values;
+		
 			foreach($sub_values as $sv)
 				$patterns[]="/".$sv."/";
-			$grade = explode('|', $result[0][1]);
 			
 			// Create new PHPExcel object
 			$objPHPExcel = new PHPExcel();
@@ -66,24 +70,27 @@ function return_bytes($val) {
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
 			
 			$mod = new EmundusModelCheck;
-			$model = $mod->_buildQuery();
+			$mod->getUsers();
+			$users = $mod->_applicants;
+			/*$model = $mod->_buildQuery();
 			$db->setQuery( $model );
-			$users = $db->loadObjectList();
+			$users = $db->loadObjectList();*/
+			
 			$p = new $mod;
 			$profile = $p->getProfiles();
 			
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
-			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.attribs,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 						INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-						INNER JOIN #__menu AS menu ON tab.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("tableid=",menu.link)+8, 3), "&", 1)
-						WHERE tab.state = 1 
+						INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+						WHERE tab.published = 1 
 						AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
-						AND element.state=1 
+						AND element.published=1 
 						AND element.hidden=0 
 						AND element.label!=" " 
 						AND element.label!="" 
@@ -99,7 +106,7 @@ function return_bytes($val) {
 			$session =& JFactory::getSession();
 			if($uids != ''){
 				foreach($users as $key=>$value){
-					if(in_array($value->user,$uids)){
+					if(in_array($value['user'],$uids)){
 						$us[] = $users[$key];
 					}
 				}
@@ -108,7 +115,7 @@ function return_bytes($val) {
 				$session->clear( 'uid' );
 			}else{
 				foreach($users as $user){
-					$user_id[] = $user->user;
+					$user_id[] = $user['user'];
 				}
 			}
 			$session->clear( 'profile' );
@@ -203,70 +210,134 @@ function return_bytes($val) {
 			// ********************************************
 			
 			// If export selected users
-			
+			// die(var_dump($users));
 				foreach ($users as $user){
 					$colonne = 0;
 					foreach($user as $key=>$value) {
-						if($key == 'avatar') {
-							$colonne_photo = $colonne;
-							$photo = isset($value)?$value:'';
-							if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo)){
+						if(is_array($user)){
+														if($key == 'avatar') {
+								$colonne_photo = $colonne;
+								$photo = isset($value)?$value:'';
+								if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user['user'].DS.'tn_'.$photo)){
+									$colonne++;
+									continue;
+								}
+								$objDrawing[$user['user']] = new PHPExcel_Worksheet_Drawing();
+								$objDrawing[$user['user']]->setWorksheet($objPHPExcel->getActiveSheet());
+								$objDrawing[$user['user']]->setName("Photo");
+								$objDrawing[$user['user']]->setDescription("Photo");
+								$objDrawing[$user['user']]->setPath(EMUNDUS_PATH_ABS.$user['user'].DS.'tn_'.$photo);
+								$objDrawing[$user['user']]->setWidth(60);
+								$objDrawing[$user['user']]->setCoordinates($colonne_by_id[$colonne].$i);
+								$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user['user']]->getHeight());
 								$colonne++;
-								continue;
+							}elseif($key == 'user'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
+								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
+								$colonne++;
+							}elseif($key == 'profile'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$profile[$user['profile']]->label);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif ($key == 'email')  {
+								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl('mailto:'.$value);
+								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key == 'validated'){
+							
+							// ***************************************
+							// Validated or not	
+								if($value == 1) {
+									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+										array('fill' 	=> array(
+																'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+																'color'		=> array('argb' => 'FF66FF00')
+															),
+										 )
+									);
+								}else{
+									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+										array('fill' 	=> array(
+																'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+																'color'		=> array('argb' => 'FFCC3300')
+															),
+										 )
+									);
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
 							}
-							$objDrawing[$user->user] = new PHPExcel_Worksheet_Drawing();
-							$objDrawing[$user->user]->setWorksheet($objPHPExcel->getActiveSheet());
-							$objDrawing[$user->user]->setName("Photo");
-							$objDrawing[$user->user]->setDescription("Photo");
-							$objDrawing[$user->user]->setPath(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo);
-							$objDrawing[$user->user]->setWidth(60);
-							$objDrawing[$user->user]->setCoordinates($colonne_by_id[$colonne].$i);
-							$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user->user]->getHeight());
-							$colonne++;
-						}elseif($key == 'user'){
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
-							$colonne++;
-						}elseif($key == 'profile'){
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$profile[$user->profile]->label);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}elseif ($key == 'email')  {
-							$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl('mailto:'.$value);
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}elseif($key == 'validated'){
-						
-						// ***************************************
-						// Validated or not	
-							if($value == 1) {
-								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
-									array('fill' 	=> array(
-															'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-															'color'		=> array('argb' => 'FF66FF00')
-														),
-									 )
-								);
-							}else{
-								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
-									array('fill' 	=> array(
-															'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-															'color'		=> array('argb' => 'FFCC3300')
-														),
-									 )
-								);
+						}else{
+							if($key == 'avatar') {
+								$colonne_photo = $colonne;
+								$photo = isset($value)?$value:'';
+								if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo)){
+									$colonne++;
+									continue;
+								}
+								$objDrawing[$user->user] = new PHPExcel_Worksheet_Drawing();
+								$objDrawing[$user->user]->setWorksheet($objPHPExcel->getActiveSheet());
+								$objDrawing[$user->user]->setName("Photo");
+								$objDrawing[$user->user]->setDescription("Photo");
+								$objDrawing[$user->user]->setPath(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo);
+								$objDrawing[$user->user]->setWidth(60);
+								$objDrawing[$user->user]->setCoordinates($colonne_by_id[$colonne].$i);
+								$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user->user]->getHeight());
+								$colonne++;
+							}elseif($key == 'user'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
+								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
+								$colonne++;
+							}elseif($key == 'profile'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$profile[$user->profile]->label);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif ($key == 'email')  {
+								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl('mailto:'.$value);
+								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key == 'validated'){
+							
+							// ***************************************
+							// Validated or not	
+								if($value == 1) {
+									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+										array('fill' 	=> array(
+																'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+																'color'		=> array('argb' => 'FF66FF00')
+															),
+										 )
+									);
+								}else{
+									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+										array('fill' 	=> array(
+																'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+																'color'		=> array('argb' => 'FFCC3300')
+															),
+										 )
+									);
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
 							}
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}elseif($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
 						}
 					}
 				
@@ -325,6 +396,17 @@ function return_bytes($val) {
 				}				
 				$i++;	
 			}
+			// debug file
+			/*ob_start(); 
+			var_export(var_dump($objPHPExcel)); 
+
+			$tab_debug=ob_get_contents(); 
+			ob_end_clean(); 
+
+			$fichier=fopen('test2.log','w'); 
+			fwrite($fichier,$tab_debug); 
+			fclose($fichier);*/
+			// end debug file
 			
 			$objPHPExcel->setActiveSheetIndex(0);
 			$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel); 
