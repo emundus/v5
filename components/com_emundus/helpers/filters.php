@@ -435,9 +435,32 @@ class EmundusHelperFilters {
 		
 		$option;
 		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
-		
-		$quick = '<div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
-		$quick .= '<div class="em_filtersElement"><input type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
+		$research_filters =& EmundusHelperFilters::getEmundusFilters();
+		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid;border-radius: 10px;">
+		<table style="border-spacing:10px;">
+			<tr>
+				<td  colspan="2">'.JText::_('SELECT_FILTER').'</td>
+			</tr><tr>
+				<td>
+				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this); }else{ document.getElementById(\'search_button\').click(); }; ">
+				<option value="0">'.JText::_('ALL').'</option>';
+				foreach($research_filters as $filter){
+					$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+				}
+			$filters .='
+				</select>
+				</td>
+				<td>
+					<input type="button" name="save_as_filter" value="'.JText::_('SAVE_AS').'" onclick="save_filter();"/>
+					<input type="button" name="delete_filter" value="'.JText::_('DELETE').'" onclick="if($(\'select_filter\').value==0){alert(\''.JText::_('CAN_NOT_DELETE_FILTER').'\')}else{if(confirm(\''.JText::_('WANT_TO_DELETE').'\')){ delete_filters(); clear_filter();}}" />
+				</td>
+			</tr>
+		</table>
+		<div id="emundus_filters_response"></div>
+		</div>
+		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().'</script>';
+		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
+		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
 		$filters .= $quick;
 		
 		if(@$params['profile'] !== NULL){
@@ -445,7 +468,7 @@ class EmundusHelperFilters {
 			if ($types['profile'] != 'hidden') $profile .= '<div class="em_filters" id="profile">
 															<div class="em_label"><label>'.JText::_('PROFILE').'</label></div>
 															<div class="em_filtersElement">';
-			$profile .= '<select name="profile" '.($types['profile'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$profile .= '<select id="select_profile" name="profile" '.($types['profile'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 						 <option value="0">'.JText::_('ALL').'</option>';
 			$profiles = EmundusHelperFilters::getApplicants();
 			foreach($profiles as $prof) { 
@@ -464,7 +487,7 @@ class EmundusHelperFilters {
 			if ($types['evaluator'] != 'hidden') $eval .= '<div class="em_filters" id="evaluator">
 														   <div class="em_label"><label>'.JText::_('ASSESSOR_USER_FILTER').'</label></div>
 														   <div class="em_filtersElement">';
-			$eval .= '<select name="user" '.($types['evaluator'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$eval .= '<select id="select_user" name="user" '.($types['evaluator'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 					  <option value="0">'.JText::_('ALL').'</option>';
 			$evaluators = EmundusHelperFilters::getEvaluators();
 			foreach($evaluators as $evaluator) { 
@@ -482,7 +505,7 @@ class EmundusHelperFilters {
 			if ($types['evaluator_group'] != 'hidden') $group_eval .= '<div class="em_filters" id="gp_evaluator">
 																	   <div class="em_label"><label>'.JText::_('ASSESSOR_GROUP_FILTER').'</label></div>
 																	   <div class="em_filtersElement">';
-			$group_eval .= '<select name="groups" '.($types['evaluator_group'] == 'hidden' ? 'style="visibility:hidden" ' : '"" ').'onChange="javascript:submit()">
+			$group_eval .= '<select id="select_groups" name="groups" '.($types['evaluator_group'] == 'hidden' ? 'style="visibility:hidden" ' : '"" ').'onChange="javascript:submit()">
 							<option value="0">'.JText::_('ALL').'</option>'; 
 			$groups = EmundusHelperFilters::getGroups();
 			foreach($groups as $group) { 
@@ -505,7 +528,7 @@ class EmundusHelperFilters {
 			if ($types['finalgrade'] != 'hidden') $final_grade .= '<div class="em_filters" id="finalgrade">
 																   <div class="em_label"><label>'.JText::_('FINAL_GRADE_FILTER').'</label></div>
 																   <div class="em_filtersElement">';
-			$final_grade .= '<select name="finalgrade" '.($types['finalgrade'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$final_grade .= '<select id="select_finalgrade" name="finalgrade" '.($types['finalgrade'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 							 <option value="0">'.JText::_('PLEASE_SELECT').'</option>';  
 							$groupe ="";
 							for($i=0; $i<count($final_gradeList); $i++) { 
@@ -526,7 +549,7 @@ class EmundusHelperFilters {
 			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
 																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
 																  <div class="em_filtersElement">';
-			$schoolyear .= '<select name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
 			//$schoolyear .= '<option value="">'.JText::_('ALL').'</option>';
 			foreach($schoolyearList as $s) { 
@@ -545,7 +568,7 @@ class EmundusHelperFilters {
 			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
 																  <div class="em_label"><label>'.JText::_('CAMPAIGNS').'</label></div>
 																  <div class="em_filtersElement">';
-			$campaign .= '<select name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
 			//$campaign .= '<option value="">'.JText::_('ALL').'</option>';
 			foreach($campaignList as $c) { 
@@ -564,7 +587,7 @@ class EmundusHelperFilters {
 			if (@$types['missing_doc'] != 'hidden') $missing_doc .= '<div class="em_filters" id="missing_doc"><div class="em_label">
 																	<label>'.JText::_('MISSING_DOC').'</label></div>
 																	<div class="em_filtersElement">';
-			$missing_doc .= '<select name="missing_doc" '.(@$types['missing_doc'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$missing_doc .= '<select id="select_missing-doc" name="missing_doc" '.(@$types['missing_doc'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 							<option value="0">'.JText::_('ALL').'</option>'; 
 			foreach($missing_docList as $md) { 
 				$missing_doc .= '<option value="'.$md->attachment_id.'"';
@@ -581,7 +604,7 @@ class EmundusHelperFilters {
 			if ($types['complete'] != 'hidden') $complete .= '<div class="em_filters" id="complete">
 																 <div class="em_label"><label>'.JText::_('COMPLETE_APPLICATION').'</label></div>
 																 <div class="em_filtersElement">';
-			$complete .= '<select name="complete" '.($types['complete'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$complete .= '<select id="select_complete" name="complete" '.($types['complete'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 							<option value="0">'.JText::_('ALL').'</option>'; 
 			$complete .= '<option value="1"';
 			if($complete_application == 1) $complete .= ' selected';
@@ -599,7 +622,7 @@ class EmundusHelperFilters {
 			if ($types['validate'] != 'hidden') $validate .= '<div class="em_filters" id="validate">
 															  <div class="em_label"><label>'.JText::_('VALIDATED_APPLICATION').'</label></div>
 															  <div class="em_filtersElement">';
-			$validate .= '<select name="validate" '.($types['validate'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+			$validate .= '<select id="select_validate" name="validate" '.($types['validate'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
 							<option value="0">'.JText::_('ALL').'</option>'; 
 			$validate .= '<option value="1"';
 			if($validate_application == 1) $validate .= ' selected';
@@ -624,7 +647,7 @@ class EmundusHelperFilters {
 			$selected_adv = "";
 			foreach($search as $sf) {
 				$adv_filter .= '<div id="filter'.$i.'">';
-				$adv_filter .= '<select name="elements[]" id="elements" onChange="javascript:submit()">
+				$adv_filter .= '<select id="select_elements" name="elements[]" onChange="javascript:submit()">
 				<option value="">'.JText::_('PLEASE_SELECT').'</option>';  
 					$groupe ="";
 					$length = 50;
@@ -672,7 +695,7 @@ class EmundusHelperFilters {
 				$selected_other = "";
 				foreach($search_other as $sf) {
 					$other_filter .= '<div id="filter_other'.$i.'">';
-					$other_filter .= '<select name="elements_other[]" id="elements_other" onChange="javascript:submit()">
+					$other_filter .= '<select id="select_elements-others" name="elements_other[]" id="elements_other" onChange="javascript:submit()">
 					<option value="">'.JText::_('PLEASE_SELECT').'</option>';
 					$groupe = "";
 					$length = 50;
@@ -708,11 +731,20 @@ class EmundusHelperFilters {
 			$filters .= $other_filter;
 		}
 
-		$filters .= '<div class="buttons"><input type="submit" name="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
+		$filters .= '</div><div class="buttons"><input type="submit" name="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
 		$filters .='<input type="submit" name="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
 		$filters .= '</fieldset>';
 		
 		return $filters;
+	}
+	
+		function getEmundusFilters(){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$user =& JFactory::getUser();
+		$db =& JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
+		$db->setQuery( $query );
+		return $db->loadObjectlist();
 	}
 }
 ?>

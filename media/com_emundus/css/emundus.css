@@ -12,6 +12,8 @@
 input[name="search_button"]{background-color:#09F;background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);}
 input[name="clear_button"]{background-color:#FC0;background-image: -moz-linear-gradient(center top , #FFFFFF, #FC0);}
 input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);}
+input[name="delete_filter"]{background-image:-moz-linear-gradient(center top , #FFFFFF, #F4E46F);}
+input[name="save_as_filter"]{background-image:-moz-linear-gradient(center top , #FFFFFF, #E2CDAF);}
 #legend {
 	margin:0px auto 20px auto;
 }

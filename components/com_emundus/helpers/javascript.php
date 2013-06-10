@@ -178,5 +178,267 @@ function OnSubmitForm() {
 			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}
+	
+	function getPreferenceFilters(){
+		
+		$script = '
+		function save_filter()
+		{
+			var name=prompt("Name of your filter :","");
+			while (name=="")
+			{
+				alert("The name of the filter is empty, please try again");
+				name=prompt("Name of your filter :","name");
+			}
+			if(name){
+				getJsonInput(name);
+			}
+		}
+
+
+		function makeArray(items)
+		{
+			try {
+				//this converts object into an array in non-ie browsers
+				return Array.prototype.slice.call(items);
+			}catch (ex) {
+				var i = 0,
+				len = items.length,
+				result = Array(len);
+				while(i < len) {
+					result[i] = items[i];
+					i++;
+				}
+				return result; 
+			}	
+		}
+
+		function getJsonInput(name){
+			var selects_object = document.getElementById(\'filters\').getElementsByTagName(\'select\');
+			var inputs_object = document.getElementById(\'quick\').getElementsByTagName(\'input\');
+			var inputs = makeArray(inputs_object);
+			var selects = makeArray(selects_object);
+			var jsonObj = [];
+			
+			for(var i=0;i<selects.length;i++){
+				var select = selects[i];
+				var name_s = select.id;
+				var research = name_s.split(\'_\');
+				if(research[0]==\'select-multiple\'){
+					for(j=0;j<select.length;j++) {
+						if(select[j].selected){
+							var value_s = select[j].value;
+							// alert(name_s+" "+value_s);
+							jsonObj.push({\'id\': name_s, \'value\': value_s});
+						}
+					}
+				}else{
+					var value_s = select.value;
+					// alert(name_s+" "+value_s);
+					jsonObj.push({\'id\': name_s, \'value\': value_s});
+				}
+			}
+			for(var i=0;i<inputs.length;i++){
+				var input = inputs[i];
+				var name_i = input.id;
+				var value_i = input.value;
+				// alert(name_i+" "+value_i);
+				jsonObj.push({\'id\': name_i, \'value\': value_i});
+			}
+			// alert(jsonObj[1][\'id\']+" "+jsonObj[1][\'value\']);
+			
+			var jsonObjString = JSON.stringify(jsonObj); // constraints
+
+			var xhr = getXMLHttpRequest();
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+				{
+					window.document.getElementById(\'emundus_filters_response\').innerHTML = xhr.responseText;
+					if(xhr.responseText!="SQL Error"){
+						// var filter_id = $(\'select_filter\').options[$(\'select_filter\').options.length - 1].value; // lastSavedFilter();
+						var xhr2 = getXMLHttpRequest();
+						xhr2.onreadystatechange = function(){
+							if(xhr2.readyState == 4){
+								var filter_id = xhr2.responseText;
+								// filter_id=parseInt(filter_id)+1;
+								$(\'select_filter\').options[$(\'select_filter\').options.length] = new Option(name, filter_id);
+							}
+						}
+						xhr2.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=lastSavedFilter&Itemid="+itemid, true);
+						xhr2.send(null);
+					}
+				}
+			};
+			var itemid = getUrlVars()["Itemid"];
+			// alert(itemid);
+			xhr.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=savefilters&Itemid="+itemid, true); // document.location.href
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.send("&constraints="+jsonObjString+"&name="+name+"&Itemid="+itemid);
+
+		}
+		
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+				vars[key] = value;
+			});
+			return vars;
+		}
+
+		function getXMLHttpRequest() {
+			var xhr = null;
+			 
+			if (window.XMLHttpRequest || window.ActiveXObject) {
+				if (window.ActiveXObject) {
+					try {
+						xhr = new ActiveXObject("Msxml2.XMLHTTP");
+					} catch(e) {
+						xhr = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+				} else {
+					xhr = new XMLHttpRequest();
+				}
+			} else {
+				alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+				return null;
+			}
+			 
+			return xhr;
+		}
+
+		function getConstraints(select){
+			var select_id = select.options[select.selectedIndex].value; 
+			var xhr = getXMLHttpRequest();
+			var constraints=[];
+			// alert(select_id);
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+				{
+					constraints = xhr.responseText; //getConstraintsFilter
+					if(constraints!=""){
+						setFilters(select, constraints);
+						submitFilters();
+					}
+				}
+			};
+			xhr.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=getConstraintsFilter", true); // document.location.href
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.send("&filter_id="+select_id);
+		}
+
+		function setFilters(select, constraints) {
+			var constraintsObj = JSON.parse(constraints);
+			
+			for (var i = 0; i < constraintsObj.length; i++) {
+				// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
+				var field = $(constraintsObj[i].id);
+				var define_type = constraintsObj[i].id.split(\'_\');
+				if(define_type[0]==\'select\'){
+					field.value = constraintsObj[i].value;
+				}else if(define_type[0]==\'select-multiple\'){
+					for(j=0;j<field.length;j++) {
+						if(field[j].value == constraintsObj[i].value){
+							field[j].selected = true;
+						}
+					}
+				}else if(define_type[0]==\'text\'){
+					field.value = constraintsObj[i].value;
+				}
+				
+			}
+			
+		}
+
+		function clear_filter(){
+			var selects_object = document.getElementById(\'filters\').getElementsByTagName(\'select\');
+			var inputs_object = document.getElementById(\'quick\').getElementsByTagName(\'input\');
+			var inputs = makeArray(inputs_object);
+			var selects = makeArray(selects_object);
+			
+			for(var i=0;i<selects.length;i++){
+				var select = selects[i];
+				var name_s = select.id;
+				var research = name_s.split(\'_\');
+				if(research[0]==\'select-multiple\'){
+					for(j=0;j<select.length;j++) {
+						if(select[j].selected){
+							select[j].selected = false;
+						}
+					}
+				}else{
+					select.value = 0;
+				}
+			}
+			for(var i=0;i<inputs.length;i++){
+				var input = inputs[i];
+				input.value  = "";
+			}
+			return;
+		}
+
+		function delete_filters(){
+		//deleteFilter
+			var select_id = $(\'select_filter\').value;
+			var xhr = getXMLHttpRequest();
+			
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+				{
+					window.document.getElementById(\'emundus_filters_response\').innerHTML = xhr.responseText;
+					if(xhr.responseText!="SQL Error"){
+						for(var i=0; i<$(\'select_filter\').options.length;i++)
+						if($(\'select_filter\').options[i].selected){
+							// alert(i);
+							$(\'select_filter\').remove(i);
+						}
+					}
+				}
+			};
+			xhr.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=deletefilters", true);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.send("&filter_id="+select_id);
+		}
+		
+		function setCookie(pLabel, pVal, psec)
+		{
+			var tExpDate=new Date();
+			tExpDate.setTime( tExpDate.getTime()+(psec*1000) );
+			document.cookie= pLabel + "=" +escape(pVal)+ ( (psec==null) ? "" : ";expires="+ tExpDate.toGMTString() );
+		}	
+		
+		function getCookie(c_name)
+		{
+			var c_value = document.cookie;
+			var c_start = c_value.indexOf(" " + c_name + "=");
+			if (c_start == -1){
+				c_start = c_value.indexOf(c_name + "=");
+			}
+			if (c_start == -1){
+				c_value = null;
+			}else{
+				c_start = c_value.indexOf("=", c_start) + 1;
+				var c_end = c_value.indexOf(";", c_start);
+				if (c_end == -1){
+					c_end = c_value.length;
+				}
+				c_value = unescape(c_value.substring(c_start,c_end));
+			}
+			return c_value;
+		}
+		
+		window.onload=function() {
+			$(\'select_filter\').value=getCookie(\'selected_id\');
+		}
+
+		function submitFilters(){
+			var selected_id = $(\'select_filter\').options[$(\'select_filter\').selectedIndex].value;
+			setCookie("selected_id",selected_id,3);
+			document.getElementById(\'search_button\').click();
+		}';
+		return $script;
+	}
 }
 ?>

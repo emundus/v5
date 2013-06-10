@@ -172,5 +172,62 @@ class EmundusControllerUsers extends JController {
 		}
 	}
 	
+	
+	function savefilters(){
+		$constraints = JRequest::getVar('constraints', null, 'POST', 'none',0);
+		$name = JRequest::getVar('name', null, 'POST', 'none',0);
+		$current_user = JFactory::getUser();
+		$user_id = $current_user->id;
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		if(empty($itemid)){
+			$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
+		}
+		$db =& JFactory::getDBO();
+		$time_date = (date('Y-m-d H:i:s'));
+		
+		$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
+		$db->setQuery( $query );
+		$result=$db->Query();// or die($db->getErrorMsg());
+		// echo $result;
+		if($result!=1){
+			echo JText::_('SQL_ERROR');
+		}else{
+			echo JText::_('FILTER_SAVED');
+		}
+	}
+	
+	function lastSavedFilter(){
+		$db =& JFactory::getDBO();
+		$query="SELECT MAX(id) FROM #__emundus_filters";
+		$db->setQuery( $query );
+		$result=$db->loadResult();
+		echo $result;
+	}
+	
+	function getConstraintsFilter(){
+		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
+		$db =& JFactory::getDBO();
+		$query="SELECT constraints FROM #__emundus_filters WHERE id=".$filter_id;
+		// echo $query;
+		$db->setQuery( $query );
+		$result=$db->loadResult();
+		echo $result;
+	}
+	
+	function deletefilters(){
+		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
+		$db =& JFactory::getDBO();
+		$query="DELETE FROM #__emundus_filters WHERE id=".$filter_id;
+		// echo $query.'<BR />';
+		$db->setQuery( $query );
+		$result=$db->Query();// or die($db->getErrorMsg());
+		
+		if($result!=1){
+			echo JText::_('SQL_ERROR');
+		}else{
+			echo JText::_('FILTER_DELETED');
+		}
+	}
+	
 } //END CLASS
 ?>
