@@ -80,7 +80,16 @@ else {
 
 <script>
 function check_field(){
-    <?php $i=0; foreach($fields as $field){?>
+	//$('select option[value="2"]').attr("selected",true);
+	//$("#jform_emundus_profile_campaign").val("2");
+	//$('jform_emundus_profile_campaign').options[1].selected=true;
+	campaign = $('jform_emundus_profile_campaign');
+	for (var i=0; i<campaign.options.length; ++i) {
+		if(campaign.options[i].value == "1")
+			campaign.options[i].selected=true;
+	}
+
+    <?php $i=0; foreach($fields as $field){ ?>
 		firstname = document.getElementById("jform_emundus_profile_firstname");
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
@@ -97,7 +106,7 @@ function check_field(){
 				field[0].onkeyup = function(){this.setStyles({backgroundColor: '#fff'});}
 			}
 		}
-	<?php }?>
+	<?php } ?>
 }
 check_field();
 

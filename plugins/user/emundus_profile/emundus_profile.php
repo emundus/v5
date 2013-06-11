@@ -82,19 +82,19 @@
          */
         function onContentPrepareForm($form, $data)
         {
-                // Load user_profile plugin language
-                //$lang = JFactory::getLanguage();
-                //$lang->load('plg_user_emundus_profile', JPATH_ADMINISTRATOR);
+          // Load user_profile plugin language
+          //$lang = JFactory::getLanguage();
+          //$lang->load('plg_user_emundus_profile', JPATH_ADMINISTRATOR);
 				
-                if (!($form instanceof JForm)) {
-                        $this->_subject->setError('JERROR_NOT_A_FORM');
-                        return false;
-                }
-                // Check we are manipulating a valid form.
-				$name = $form->getName();
-                if (!in_array($form->getName(), array('com_users.profile', 'com_users.registration','com_users.user','com_admin.profile'))) {
-                        return true;
-                }
+          if (!($form instanceof JForm)) {
+            $this->_subject->setError('JERROR_NOT_A_FORM');
+              return false;
+          }
+          // Check we are manipulating a valid form.
+          $name = $form->getName();
+          if (!in_array($form->getName(), array('com_users.profile', 'com_users.registration','com_users.user','com_admin.profile'))) {
+            return true;
+          }
 				
 				// Add the registration fields to the form.
 				JForm::addFormPath(dirname(__FILE__) . '/profiles');
@@ -108,7 +108,7 @@
           'newsletter'
 				);
 		
-                foreach ($fields as $field)
+        foreach ($fields as $field)
 				{	
 					// Case using the users manager in admin
 					if ($name == 'com_users.user')
@@ -122,7 +122,7 @@
 					}
 					// Case registration
 					elseif ($name == 'com_users.registration')
-					{
+					{ 
 						// Toggle whether the field is required.
 						if ($this->params->get('register-require_' . $field, 1) > 0)
 						{

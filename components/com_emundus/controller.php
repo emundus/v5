@@ -211,7 +211,7 @@ class EmundusController extends JController {
 				if (move_uploaded_file(	$files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
 					$can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
 					$can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
-					$query .= '('.mysql_real_escape_string($user->id).', '.mysql_real_escape_string($attachments[$i]).', \''.mysql_real_escape_string($paths).'\', \''.mysql_real_escape_string($descriptions[$i]).'\', '.mysql_real_escape_string($can_be_deleted).', '.mysql_real_escape_string($can_be_viewed).'),';
+					$query .= '('.mysql_real_escape_string($user->id).', '.mysql_real_escape_string($attachments[$i]).', \''.mysql_real_escape_string($paths).'\', \''.mysql_real_escape_string($descriptions[$i]).'\', '.mysql_real_escape_string($can_be_deleted).', '.mysql_real_escape_string($can_be_viewed).', '.$user->campaign_id.'),';
 					$nb++;
 				}
 				if ($labels[$i]=="_photo") {
@@ -251,10 +251,10 @@ class EmundusController extends JController {
 			}
 		}
 		if(!empty($query)) {
-			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed) VALUES '.substr($query,0,-1);
+			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) VALUES '.substr($query,0,-1);
 			$db->setQuery( $query );
 			$db->Query() or die($db->getErrorMsg());
-			JFactory::getApplication()->enqueueMessage($nb.($nb>1?JText::_(" files have"):JText::_(" file has")).JText::_(" been successfully uploaded\n"), 'message');
+			JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILE_BEEN_UPLOADED"):' '.JText::_("FILES_BEEN_UPLOADED")), 'message');
 		}
 	if (isset($layout))
 		$this->setRedirect('index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid);
