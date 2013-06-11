@@ -62,7 +62,7 @@ class EmundusModelUsers extends JModel
                 $filter_order     = $this->getState('filter_order');
                 $filter_order_Dir = $this->getState('filter_order_Dir');
 				
-                $can_be_ordering = array ('user', 'id', 'lastname', 'email', 'profile', 'block', 'lastvisitDate', 'registerDate');
+                $can_be_ordering = array ('user', 'id', 'lastname', 'email', 'profile', 'block', 'lastvisitDate', 'registerDate', 'newsletter');
                 /* Error handling is never a bad thing*/
                 if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
                         $orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
@@ -84,11 +84,13 @@ class EmundusModelUsers extends JModel
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
 		$query = 'SELECT u.id, u.name, u.email, u.username, u.registerDate, u.lastvisitDate, u.block, 
 					e.university_id, e.firstname, e.lastname, e.profile, e.schoolyear, 
-					epd.nationality, epd.gender, 
+					epd.nationality, epd.gender, up.profile_value as newsletter,
 					TO_DAYS(NOW()) - TO_DAYS(u.registerDate) as registred_for
 					FROM #__users AS u 
 					LEFT JOIN #__emundus_users AS e ON u.id = e.user_id 
-					LEFT JOIN #__emundus_personal_detail AS epd ON u.id = epd.user ';
+					LEFT JOIN #__emundus_personal_detail AS epd ON u.id = epd.user
+					LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key= "emundus_profile.newsletter")
+					';
 					
 		if(isset($final_grade) && !empty($final_grade)) {
 			$query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
@@ -129,6 +131,7 @@ class EmundusModelUsers extends JModel
 				$query.= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
 			}
 		}
+		// echo str_replace('#_','jos',$query);
 		return $query;
 	} 
 	
@@ -194,11 +197,46 @@ class EmundusModelUsers extends JModel
 		return $db->loadObjectList('id');
 	}
 	
+	function getCurrentCampaign()
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT cc.applicant_id, sc.start_date, sc.end_date, sc.label
+		FROM #__emundus_setup_campaigns AS sc 
+		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		WHERE sc.published=1 ';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+	
+	function getNewsletter()
+	{	
+		$db =& JFactory::getDBO();
+		$query = 'SELECT user_id, profile_value
+		FROM #__user_profiles
+		WHERE profile_key = "emundus_profile.newsletter"';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+	
+	function getGroupEvalWithId()
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esg.id, eu.user_id, eu.firstname, eu.lastname, u.email
+				FROM #__emundus_setup_groups as esg
+				LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
+				LEFT JOIN #__emundus_users as eu on eu.user_id=eg.user_id
+				LEFT JOIN #__users as u on u.id=eu.user_id
+				WHERE esg.published=1';
+		$db->setQuery( $query );
+		return $db->loadObjectList('user_id');
+	}
+	
 	function getGroupsEval()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT ege.id, ege.applicant_id, ege.user_id, ege.group_id  
-		FROM #__emundus_groups_eval ege';
+		$query = 'SELECT ege.id, ege.applicant_id, ege.user_id, ege.group_id, esg.label 
+		FROM #__emundus_groups_eval as ege
+		LEFT JOIN #__emundus_setup_groups as esg ON esg.id = ege.group_id ';
 		$db->setQuery( $query );
 		return $db->loadObjectList('applicant_id');
 	}

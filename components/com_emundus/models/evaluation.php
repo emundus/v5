@@ -500,10 +500,12 @@ class EmundusModelEvaluation extends JModel
 							$i++;
 						}
 						
-						if(in_array($val, array_keys($sub_val)) && $eval['sub_values'] != $eval['sub_labels'])
+						// var_dump($eval);
+						if(in_array($val, array_keys($sub_val)))
 							$eval_list[$eval->name] = $sub_val[$val];
 						else
 							$eval_list[$eval->name] = $val;
+						
 					} else
 						$eval_list[$eval->name] = $val;
 				}

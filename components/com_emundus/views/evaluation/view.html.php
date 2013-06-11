@@ -220,7 +220,6 @@ class EmundusViewEvaluation extends JView
 		$this->assignRef('email', $email);
 		
 		// Javascript
-        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement =& EmundusHelperJavascript::addElement();

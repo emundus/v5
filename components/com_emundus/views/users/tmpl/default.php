@@ -56,8 +56,8 @@ function submitenter(myfield, e) {
 </SCRIPT>
 
 <div class="emundusraw">
-<?php
-if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
+<?php 
+/*if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 	if ( isset($this->schoolyear) && $this->schoolyear!='' ) {
 		$url = JURI::getInstance()->toString();
 		echo '
@@ -80,7 +80,7 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
 				</dd>
 				</dl>';
 	}
-}
+}*/
 ?>
 </div>
 <input type="hidden" name="option" value="com_emundus"/>
@@ -105,6 +105,8 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
   echo JText::_('SPAM_SUSPECT'); 
   echo '<span>'; 
   ?></th>
+  <th width="57%" align="left"><?php echo JText::_('NEWSLETTER'); ?></th>
+  <th width="57%" align="left">&nbsp;</th>
   <th width="57%" align="left">&nbsp;</th>
   </tr>
     <tr>
@@ -161,10 +163,10 @@ if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
         ?>
       </select> 
       </td>
-   	  <td>
-      <input name="spam_suspect" type="checkbox" value="1" <?php echo $spam_suspect==1?'checked=checked':''; ?> /></td>
-   	  <td><input type="submit" name="search" onclick="document.pressed=this.name" value="<?php echo JText::_('SEARCH_BTN'); ?>"/>
-      <input type="submit" name="clear" onclick="document.pressed=this.name" value="<?php echo JText::_('CLEAR_BTN'); ?>"/></td>
+   	  <td><input name="spam_suspect" type="checkbox" value="1" <?php echo $spam_suspect==1?'checked=checked':''; ?> /></td>
+      <td><input name="newsletter" type="checkbox" value="1" /></td>
+   	  <td><input type="submit" name="search" onclick="document.pressed=this.name" value="<?php echo JText::_('SEARCH_BTN'); ?>"/></td>
+      <td><input type="submit" name="clear" onclick="document.pressed=this.name" value="<?php echo JText::_('CLEAR_BTN'); ?>"/></td>
     </tr>
 <tr>
 </table>
@@ -195,9 +197,11 @@ if(!empty($this->users)) {
             <th><?php echo JHTML::_('grid.sort', JText::_('USERNAME'), 'username', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th><?php echo JHTML::_('grid.sort', JText::_('EMAIL'), 'email', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th><?php echo JHTML::_('grid.sort', JText::_('PROFILE'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('SCHOOLYEAR'), 'schoolyear', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th><?php echo JHTML::_('grid.sort', JText::_('LAST_VISIT'), 'lastvisitDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th><?php echo JHTML::_('grid.sort', JText::_('REGISTRED_ON'), 'registerDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th><?php echo JText::_('GROUP_EVAL'); ?></th>
+			<th><?php echo JText::_('CAMPAIGN'); ?></th>
+			<th><?php echo JHTML::_('grid.sort', JText::_('NEWSLETTER'), 'newsletter', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th align="center" class="emundusraw"><?php echo JHTML::_('grid.sort', JText::_('ACTIVE'), 'block', $this->lists['order_Dir'], $this->lists['order']); ?></th>
             <th align="center"><div class="emundusraw"><?php echo JText::_('EDIT'); ?></div></th>  
         </tr>
@@ -242,7 +246,7 @@ foreach ($this->users as $user) { ?>
 		<td><?php echo $user->username; ?></td>
 		<td><?php echo $user->email; ?></td>
 		<td><div class="emundusprofile<?php echo $user->profile; ?>"><?php if(!empty($user->profile) && isset($this->profiles[$user->profile]->label)) echo $this->profiles[$user->profile]->label; else echo '<span class="hasTip" title="'.JText::_('USER_PROFILE_ALERT').'"><font color="red">'.JText::_('NO_PROFILE').'</font></span>'; ?></div></td>
-        <td><?php echo $user->schoolyear; ?></td>
+        <!--<td><?php //echo $user->schoolyear; ?></td>-->
         <td <?php echo strpos($user->lastvisitDate,"0000-00-00 00:00:00")===false?'':'class="red"'; ?>><?php echo $user->lastvisitDate; ?></td>
         <td <?php 
 		$today = date("Y-m-d H:i:s");
@@ -251,6 +255,44 @@ foreach ($this->users as $user) { ?>
 		$diff_jour = $diff/60/60/24;
 		if (strpos($user->lastvisitDate,"0000-00-00 00:00:00")===0 && $user->registred_for>7) $alert=1; else $alert=0;
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
+		<td align="center"><?php
+			if(gettype(@$this->groups_eval[$user->id])=="object"){
+				$group_eval = $this->groups_eval[$user->id];
+				echo '<a class="info-bulle" href="#">'.$group_eval->label.'<span><ul>';
+				foreach($this->groupEvalWithId as $eval){
+					if($eval->id==$group_eval->group_id){
+						echo '<li>'.strtoupper($eval->lastname).' '.strtolower($eval->firstname).'</li>';
+					}
+				}
+				echo '</ul></span></a>';
+			}
+		?>
+		</td>
+		<td align="center"><?php 
+			foreach($this->campaigns as $campaign){ 
+				if($campaign->applicant_id==$user->id){
+					echo '<a class="info-bulle" href="#">'.$campaign->label; 
+					echo '<span>'.JText::_('CAMPAIGN_START_DATE').' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'; 
+					echo JText::_('CAMPAIGN_END_DATE').' : '.date("Y-m-d", strtotime($campaign->end_date)).'</span></a><BR /><BR />';
+				} 
+			} 
+		?>
+		</td>
+		<td align="center"><?php  
+			foreach($this->newsletter as $newsletter){ 
+				if($newsletter->user_id==$user->id){
+					$newsletter_val=str_replace('"', "", $newsletter->profile_value);
+					if($newsletter_val==1){
+						echo JText::_('JYES');
+					}else{
+						echo JText::_('JNO');
+					}
+				}else{
+					echo JText::_('JNO');
+				}
+			} 
+		?>
+		</td>
 		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">
         	<div class="emundusraw">

@@ -59,8 +59,17 @@ class EmundusViewUsers extends JView
 		$groups =& $this->get('Groups');
 		$this->assignRef('groups', $groups);
 		
+		$campaigns =& $this->get('CurrentCampaign');
+		$this->assignRef('campaigns', $campaigns);
+		
+		$newsletter =& $this->get('Newsletter');
+		$this->assignRef('newsletter', $newsletter);
+		
 		$groups_eval =& $this->get('GroupsEval');
 		$this->assignRef('groups_eval', $groups_eval);
+		
+		$groupEvalWithId =& $this->get('GroupEvalWithId');
+		$this->assignRef('groupEvalWithId', $groupEvalWithId);
 		
 		$users =& $this->get('Users');
 		$this->assignRef('users', $users);
