@@ -85,7 +85,7 @@
           // Load user_profile plugin language
           //$lang = JFactory::getLanguage();
           //$lang->load('plg_user_emundus_profile', JPATH_ADMINISTRATOR);
-				
+          
           if (!($form instanceof JForm)) {
             $this->_subject->setError('JERROR_NOT_A_FORM');
               return false;

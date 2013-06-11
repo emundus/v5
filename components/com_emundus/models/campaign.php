@@ -93,7 +93,16 @@ class EmundusModelCampaign extends JModel
 	{
 		$query = 'SELECT esc.* 
 					FROM #__emundus_setup_campaigns AS esc 
-					WHERE esc.id='.$campaign_id;
+					WHERE esc.id='.$campaign_id.' ORDER BY esc.end_date DESC';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadAssoc();
+	}
+
+	function getCampaignsByCourse($course)
+	{
+		$query = 'SELECT esc.* 
+					FROM #__emundus_setup_campaigns AS esc 
+					WHERE esc.training like '.$this->_db->Quote($course).' ORDER BY esc.end_date DESC'; 
 		$this->_db->setQuery( $query );
 		return $this->_db->loadAssoc();
 	}

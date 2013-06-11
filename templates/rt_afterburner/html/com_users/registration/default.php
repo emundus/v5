@@ -16,7 +16,7 @@ JHtml::_('behavior.noframes');
 $template = JFactory::getApplication()->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
-$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
+$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 <style> #jform_name {border:solid 0px #FFF;} </style>
 
 <div class="registration<?php echo $this->pageclass_sfx?>">
@@ -26,7 +26,7 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
 <h1><?php echo JText::_("CONTACT_US_FOR_TECHNICAL_ISSUES"); ?></h1>
 	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register'); ?>" method="post" class="form-validate">
 <?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
-	<?php $fields = $this->form->getFieldset($fieldset->name);?>
+	<?php $fields = $this->form->getFieldset($fieldset->name);  ?>
 	<?php if (count($fields)):?>
 		<fieldset>
 		<?php if (isset($fieldset->label)):// If the fieldset has a label set, display it as the legend.
@@ -34,8 +34,8 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml");?>
 			<legend><?php echo JText::_($fieldset->label);?></legend>
 		<?php endif;?>
 			<dl>
-		<?php foreach($fields as $field):// Iterate through the fields in the set and display them.?>
-			<?php if ($field->hidden):// If the field is hidden, just display the input.?>
+		<?php foreach($fields as $field):?>
+			<?php if ($field->hidden):?>
 				<?php echo $field->input;?>
 			<?php else:?>
 				<dt>
@@ -75,18 +75,33 @@ elseif (eregi('Mozilla', $HTTP_USER_AGENT))
 else {
 	$browser=$HTTP_USER_AGENT;
 }
- 
+
+/*db =& JFactory::getDBO();
+$query = 'SELECT esc.id FROM #__emundus_setup_campaigns AS esc WHERE esc.id='.$campaign_id;
+$db->setQuery( $query );
+$db->loadAssoc();*/
+$course = JRequest::getVar('course', null, 'GET', null, 0);
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+$campaign = new EmundusModelCampaign;
+$campaigns = $campaign->getCampaignsByCourse($course);
+$campaign_id = $campaigns['id'];
 ?>
 
 <script>
 function check_field(){
-	//$('select option[value="2"]').attr("selected",true);
-	//$("#jform_emundus_profile_campaign").val("2");
-	//$('jform_emundus_profile_campaign').options[1].selected=true;
+	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
-	for (var i=0; i<campaign.options.length; ++i) {
-		if(campaign.options[i].value == "1")
-			campaign.options[i].selected=true;
+	if(campaign_id != "") {
+		for (var i=0; i<campaign.options.length; ++i) {
+			if(campaign.options[i].value == campaign_id)
+				campaign.options[i].selected=true;
+		}
+	} else {
+		var opt = document.createElement("option");  
+		campaign.options.add(opt);
+		opt.text = "<?php echo JText::_('PLEASE_SELECT'); ?>";
+		opt.value = "";
+		campaign.options[campaign.options.length-1].selected=true;
 	}
 
     <?php $i=0; foreach($fields as $field){ ?>
@@ -95,7 +110,7 @@ function check_field(){
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) {
 			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
-				field[0].setStyles({backgroundColor: '#FCC530'});
+				field[0].setStyles({backgroundColor: '#F7F2B2'});
 			field[0].onblur = function() {
 				if ("<?php echo $browser; ?>" != "IE")
 					this.setStyles({backgroundColor: '#fff'}); 
