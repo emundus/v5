@@ -105,6 +105,7 @@
 					'firstname',
 					'profile',
 					'campaign',
+          'newsletter'
 				);
 		
                 foreach ($fields as $field)

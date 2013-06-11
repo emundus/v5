@@ -149,8 +149,9 @@ class EmundusControllerEvaluation extends JController {
 		$pid = JRequest::getVar('pid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		$filter_order = JRequest::getVar('filter_order', null, 'GET', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);$itemid = JRequest::getVar('itemid', null, 'GET', null, 0);
-		
+		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
+
 		if(!empty($aid) && is_numeric($aid)) {
 			$db =& JFactory::getDBO();
 			$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.mysql_real_escape_string($aid);

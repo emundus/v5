@@ -175,9 +175,11 @@ class EmundusHelperFilters {
 		$db =& JFactory::getDBO();
 		$query = 'SELECT u.id, u.name
 		FROM #__users u
-		JOIN #__emundus_users_profiles eup ON u.id=eup.user_id
-		JOIN #__emundus_setup_profiles esp ON esp.id=eup.profile_id
-		WHERE esp.is_evaluator=1';
+		LEFT JOIN #__emundus_users eu ON u.id = eu.user_id
+		LEFT JOIN #__emundus_users_profiles eup ON u.id=eup.user_id
+		LEFT JOIN #__emundus_setup_profiles esp ON (esp.id=eup.profile_id OR esp.id=eu.profile)
+		WHERE esp.is_evaluator=1
+		ORDER BY u.name';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
@@ -238,7 +240,7 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
 				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 				WHERE tab.published = 1 
-				AND (tab.created_by_alias = "form")
+					AND (tab.created_by_alias = "form")
 					AND element.published=1 
 					AND element.hidden=0 
 					AND element.label!=" " 
@@ -246,6 +248,29 @@ class EmundusHelperFilters {
 				ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
+	}
+
+	// @params string List of Fabrik groups comma separated
+	function getElementsByGroups($groups){
+		$db =& JFactory::getDBO();
+		$query = 'SELECT element.name, element.label, element.plugin, element.id, groupe.id, groupe.label AS group_label, element.params,
+				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
+				FROM #__fabrik_elements element 
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
+				WHERE tab.published = 1
+					AND element.show_in_list_summary = 1
+					AND groupe.id IN ('.$groups.') 
+					AND element.published=1 
+					AND element.hidden=0 
+					AND element.label!=" " 
+					AND element.label!=""  
+				ORDER BY formgroup.ordering, groupe.id, element.ordering';
+	//die(str_replace("#_", "jos", $query));
+		$db->setQuery( $query );
+		return $db->loadObjectList();
 	}
 	
 	function getElementsOther($tables){
