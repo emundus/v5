@@ -123,6 +123,7 @@ class EmundusViewIncomplete extends JView
 		$this->assignRef('users', $users);
 		$this->assignRef('applicantsProfiles', $applicantsProfiles);
 		$this->assignRef('elements', $elements);
+		$pagination = $this->get('Pagination');
         $this->assignRef('pagination', $pagination);
 		
 		$options = array('complete');

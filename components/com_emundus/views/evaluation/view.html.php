@@ -160,13 +160,14 @@ class EmundusViewEvaluation extends JView
 		$this->assignRef('users', $users);
 
 		$elements = $this->get('Elements');
+		$pagination = $this->get('Pagination');
         $this->assignRef('pagination', $pagination);
 
 		//Evaluation
 		if($this->_user->profile==16)
 			$options = array('view');
 		else
-			$options = array('view', 'add', 'edit', 'delete');
+			$options = array('view', 'add', 'edit', 'delete', 'letter');
 		$evaluation = EmundusHelperList::createEvaluationBlock($users, $options);
 		$this->assignRef('evaluation', $evaluation);
 		unset($options);

@@ -152,6 +152,17 @@ class EmundusModelCampaign extends JModel
 		}
 	}
 
+	function setResultLetterSent($aid, $campaign_id)
+	{
+		$query = 'UPDATE #__emundus_final_grade SET result_sent=1, date_result_sent=NOW() WHERE student_id='.$aid.' AND campaign_id='.$campaign_id;
+		$this->_db->setQuery( $query );
+		try {
+			$this->_db->Query();
+		} catch (Exception $e) {
+			// catch any database errors.
+		}
+	}
+
 	function isOtherActiveCampaign($aid) {
 		$query='SELECT count(id) as cpt 
 				FROM #__emundus_setup_campaigns 

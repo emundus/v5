@@ -74,9 +74,10 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	echo '<ul class="em_attachments_list">';
 	$files_path = "";
 	foreach ($files as $file) {
-		$files_path .= str_replace('\\', '\\\\', $file['path']);
+		$files_path .= str_replace('\\', '\\\\', $file['path']).',';
 		echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
 	}
+	$files_path = rtrim($files_path, ",");
 	echo '</ul>';
 	echo '</fieldset>';
 

@@ -187,8 +187,8 @@ class EmundusControllerRenew_application extends JController
 	function deleteInformations(){
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$model = $this->getModel('renew_application');
-		$model->deleteEvaluations($user);
-		$model->deleteFinal_grade($user);
+		//$model->deleteEvaluations($user);
+		//$model->deleteFinal_grade($user);
 		$model->deleteDeclaration($user);
 		$model->deleteGroups_eval($user);
 		$model->deleteTraining($user);

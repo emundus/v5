@@ -110,6 +110,7 @@ class EmundusHelperEmails{
 			$mail_body = $editor->display( 'mail_body', '', '99%', '400', '20', '20', false, 'mail_body', null, null );
 
 			$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
+			$campaign_id = JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
 			$applicant = JFactory::getUser($student_id);
 	
 			$email.= '<fieldset>
@@ -123,6 +124,7 @@ class EmundusHelperEmails{
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
 				<p>
 					<input name="mail_to" type="hidden" class="inputbox" id="mail_to" value="'.$applicant->id.'" />
+					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="80" />
 				</div>
 				<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
 				</p>

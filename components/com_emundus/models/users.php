@@ -47,13 +47,13 @@ class EmundusModelUsers extends JModel
 		
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears' );
 		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns' );
-		$finalgrade				= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
+		$final_grade				= $mainframe->getUserStateFromRequest( $option.'final_grade', 'final_grade', @$filts_details['finalgrade'] );
 		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
 		$groups_eval			= $mainframe->getUserStateFromRequest( $option.'groups_eval', 'groups_eval');
-		$rowid				= $mainframe->getUserStateFromRequest( $option.'rowid', 'rowid', @$filts_details['profile'] );
-		$spam_suspect			= $mainframe->getUserStateFromRequest( $option.'spam_suspect', 'spam_suspect');
-		$newsletter 			= $mainframe->getUserStateFromRequest( $option.'newsletter', 'newsletter');
- 
+		$rowid					= $mainframe->getUserStateFromRequest( $option.'rowid', 'rowid', @$filts_details['profile'] );
+		$spam_suspect			= $mainframe->getUserStateFromRequest( $option.'spam_suspect', 'spam_suspect', 0);
+		$newsletter 			= $mainframe->getUserStateFromRequest( $option.'newsletter', 'newsletter', 0);
+
         $this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
@@ -61,7 +61,7 @@ class EmundusModelUsers extends JModel
 		
 		$this->setState('schoolyears', $schoolyears);
 		$this->setState('campaigns', $campaigns);
-		$this->setState('finalgrade', $finalgrade);
+		$this->setState('final_grade', $final_grade);
 		$this->setState('s', $s);
 		$this->setState('groups_eval', $groups_eval);
 		$this->setState('rowid', $rowid);
@@ -93,12 +93,12 @@ class EmundusModelUsers extends JModel
 	function _buildQuery()
 	{	
 		$final_grade	= $this->getState('final_grade');
-		$s	= $this->getState('s');
+		$s				= $this->getState('s');
 		$campaigns		= $this->getState('campaigns');
 		$schoolyears	= $this->getState('schoolyears');
-		$groupEval		= $this->getState('groupEval');
+		$groupEval		= $this->getState('group_eval');
 		$spam_suspect	= $this->getState('spam_suspect');
-		$pid			= $this->getState('pid');
+		$pid			= $this->getState('rowid');
 		$newsletter		= $this->getState('newsletter');
 		
 		if (!isset($pid))
@@ -107,7 +107,7 @@ class EmundusModelUsers extends JModel
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
 		
 		$list_user="";
-		if(!empty($schoolyears) && empty($campaigns)){
+		if(!empty($schoolyears) && empty($campaigns)){ 
 			$list_user="";
 			$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
 			$i=0;
@@ -158,7 +158,7 @@ class EmundusModelUsers extends JModel
 					FROM #__users AS u 
 					LEFT JOIN #__emundus_users AS e ON u.id = e.user_id 
 					LEFT JOIN #__emundus_personal_detail AS epd ON u.id = epd.user
-					LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key= "emundus_profile.newsletter")
+					LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key = "emundus_profile.newsletter")
 					';
 					
 		if(isset($final_grade) && !empty($final_grade)) {
@@ -181,7 +181,7 @@ class EmundusModelUsers extends JModel
 			if(isset($search) && !empty($search)) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
-				$query.= '(e.lastname LIKE "%'.mysql_real_escape_string($search).'%" 
+				$query .= '(e.lastname LIKE "%'.mysql_real_escape_string($search).'%" 
 							OR e.firstname LIKE "%'.mysql_real_escape_string($search).'%" 
 							OR u.email LIKE "%'.mysql_real_escape_string($search).'%" 
 							OR e.schoolyear LIKE "%'.mysql_real_escape_string($search).'%" 
@@ -193,11 +193,10 @@ class EmundusModelUsers extends JModel
 				else { $and = true; $query .='WHERE '; }
 				$query.= 'e.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
 			}*/
-			
-			if(isset($spam_suspect) &&  !empty($spam_suspect)) {
+			if(isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
-				$query.= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
+				$query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
 			}
 			
 			if($list_user!="") {
@@ -209,10 +208,10 @@ class EmundusModelUsers extends JModel
 			if(isset($newsletter) &&  !empty($newsletter)) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
-				$query.= 'up.profile_value like "%'.$newsletter.'%"';
+				$query .= 'profile_value like "%'.$newsletter.'%"';
 			}
 		}
-		// echo str_replace('#_','jos',$query);
+// echo str_replace('#_','jos',$query);
 		return $query;
 	} 
 	
@@ -221,7 +220,7 @@ class EmundusModelUsers extends JModel
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-		//echo str_replace ('#_', 'jos', $query);
+//echo str_replace ('#_', 'jos', $query);
 		return $this->_getList( $query ,$this->getState('limitstart'), $this->getState('limit'));
 	} 
 
@@ -293,12 +292,13 @@ class EmundusModelUsers extends JModel
 	
 	function getUserListWithSchoolyear($schoolyears)
 	{
+		$year = is_string($schoolyears)?$schoolyears:implode(",", $schoolyears);
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
-		WHERE sc.published=1 AND YEAR(sc.start_date) ='.$schoolyears;
-		// echo str_replace('#_','jos',$query);
+		WHERE sc.published=1 AND sc.year IN ('.$year.') ORDER BY sc.year DESC';
+//echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}

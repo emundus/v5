@@ -65,9 +65,9 @@ class EmundusViewUsers extends JView
 		$current_campaigns = $this->get('CurrentCampaigns');
 		$this->assignRef('current_campaigns', $current_campaigns);
 		
-		$newsletter = $this->get('Newsletter');
+	/*	$newsletter = $this->get('Newsletter');
 		$this->assignRef('newsletter', $newsletter);
-		
+	*/	
 		$groups_eval = $this->get('GroupsEval');
 		$this->assignRef('groups_eval', $groups_eval);
 		

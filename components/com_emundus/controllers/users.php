@@ -114,7 +114,7 @@ class EmundusControllerUsers extends JController {
 		
 		$mainframe->setUserState($options.'schoolyears', 0);
 		$mainframe->setUserState($options.'campaigns', 0);
-		$mainframe->setUserState($options.'finalgrade', 0);
+		$mainframe->setUserState($options.'final_grade', 0);
 		$mainframe->setUserState($options.'s', '');
 		$mainframe->setUserState($options.'groups_eval', 0);
 		$mainframe->setUserState($options.'rowid', 0);
@@ -242,14 +242,14 @@ class EmundusControllerUsers extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		if(empty($cid)){
+		/*if(empty($cid)){
 			$cid = $session->get('uid');
-		}
+		}*/
 		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
-		export_xls($cid,array()); 
+		export_xls($cid, array()); 
 	}
 	
 	function export_zip() {
@@ -258,7 +258,7 @@ class EmundusControllerUsers extends JController {
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		require_once('libraries/emundus/zip.php');
 		$db	= JFactory::getDBO();

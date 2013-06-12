@@ -22,40 +22,32 @@ $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 //$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $current_user = JFactory::getUser();
 
-$state = $this->get( 'state' );
-if(empty($schoolyears)){
-$schoolyears = $this->state_schoolyears;
-}
-if(empty($current_l)){
-$current_l = $this->state_current_l;
-}
-if(empty($current_campaigns)){
-$current_campaigns = $this->state_current_campaigns;
-}
-if(empty($current_groupEval)){
-$current_groupEval = $this->state_current_groupEval;
-}
-if(empty($spam_suspect)){
-$spam_suspect = $this->state_spam_suspect;
-}
-if(empty($newsletter)){
-$newsletter = $this->state_newsletter;
-}
-if(empty($current_p)){
-$current_p = $this->state_current_p;
-}
-if(empty($current_fg)){
-$current_fg = $this->state_current_fg;
-}
-
+/*$state = $this->get( 'state' );
+if(empty($schoolyears)) 
+	$schoolyears = $this->state_schoolyears;
+if(empty($current_l))
+	$current_l = $this->state_current_l;
+if(empty($current_campaigns))
+	$current_campaigns = $this->state_current_campaigns;
+if(empty($current_groupEval))
+	$current_groupEval = $this->state_current_groupEval;
+if(empty($spam_suspect))
+	$spam_suspect = $this->state_spam_suspect;
+if(empty($newsletter))
+	$newsletter = $this->state_newsletter;
+if(empty($current_p))
+	$current_p = $this->state_current_p;
+if(empty($current_fg))
+	$current_fg = $this->state_current_fg;
+*/
 if($edit!=1) {
 ?>
 <?php 
 $current_user = JFactory::getUser();
-if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $current_user->get('usertype') == "Publisher") {
+/*if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $current_user->get('usertype') == "Publisher") {
 	$document = JFactory::getDocument();
 	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
-}
+}*/
 ?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <?php
@@ -346,20 +338,7 @@ foreach ($this->users as $user) { ?>
 			} 
 		?>
 		</td>
-		<td align="center"><?php  
-			foreach($this->newsletter as $newsletter){ 
-				if($newsletter->user_id==$user->id){
-					$newsletter_val=str_replace('"', "", $newsletter->profile_value);
-					if($newsletter_val==1){
-						echo JText::_('JYES');
-					}else{
-						echo JText::_('JNO');
-					}
-				}else{
-					echo JText::_('JNO');
-				}
-			} 
-		?>
+		<td align="center"><?php  echo (json_decode($user->newsletter) == 1 ? JText::_('JYES') : JText::_('JNO')); ?>
 		</td>
 		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">

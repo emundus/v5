@@ -119,6 +119,7 @@ class EmundusViewCheck extends JView
 		$this->assignRef('users', $users);
 		$this->assignRef('applicantsProfiles', $applicantsProfiles);
 		$this->assignRef('elements', $elements);
+		$pagination = $this->get('Pagination');
         $this->assignRef('pagination', $pagination);
 		$this->assignRef('profiles', $profiles);
 		

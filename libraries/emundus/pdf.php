@@ -200,16 +200,17 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	// Print text using writeHTMLCell()
 	$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
+// @TODO	test if letter type has already been created for that user/campaign/attachment and delete before if true.
 
 		@chdir('tmp');
 		if($output){
 				//$output?'FI':'F'
 			$name = $attachment['lbl'].date('Y-m-d_H-i-s').'.pdf';
 			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
-			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed,campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 0'.$campaign_id.')';
+			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed,campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 0, '.$campaign_id.')';
 			$db->setQuery($query);
 			$db->query();
-			//die(str_replace("#_", "jos", $query));
+	//die(str_replace("#_", "jos", $query));
 		}else{
 			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
 		}

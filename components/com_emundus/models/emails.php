@@ -131,9 +131,6 @@ class EmundusModelEmails extends JModel
 						VALUES ('".$mail_from_id."', '".$mail_to_id."', ".$this->_db->quote($mail_subject).", ".$this->_db->quote($mail_body).", NOW())";
 			$this->_db->setQuery( $query );
 			$this->_db->query();
-
-			// @TODO set evaluation result var to done in jos_emundus_campaign_applicant
-			// @TODO Set body replacement
 		}
 		return true;
 	}
