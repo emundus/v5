@@ -22,6 +22,22 @@ jimport('joomla.application.component.controller');
  * @since      2.0.0
  */
 class EmundusControllerUsers extends JController {
+	var $_user = null;
+	var $_db = null;
+	
+	function __construct($config = array()){
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		
+		$this->_user = JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		
+		parent::__construct($config);
+	}
 	
 	function display() {
 		// Set a default view if none exists
@@ -132,46 +148,7 @@ class EmundusControllerUsers extends JController {
 		}
 		
 		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
-	}
-
-	////// Export selected application form to XLS ///////////////////
-	function export_selected_to_xls () {
-		
-		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		$this->export_to_xls ($cid);
-	}
-	
-	////// EXPORT XLS ///////////////////
-	function export_to_xls($reqids = null) {
-		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$itemid=JSite::getMenu()->getActive()->id;
-		$mainframe =& JFactory::getApplication();
-		require_once('libraries/emundus/excel.php');
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
-		$syear = JRequest::getVar('schoolyear', null, 'POST', null, 0);
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('Only Coordinator and Administrator can access this function.'), 'error');
-			return;
-		}
-		if ($reqids) {
-			current_campaign($reqids);
-		} else {
-		$query = 'SELECT count(id)
-				FROM #__emundus_users 
-				WHERE schoolyear like "%'.$syear.'%"';
-		$db->setQuery( $query );
-		$cpt = $db->loadResult();
-		
-			if($cpt == 0) {
-				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('NO_RESULT').'<br />'.sprintf(JText::_('NO_APPLICANT_FOR_THIS_CAMPAIGN'),$syear), 'notice');
-			} else {
-				current_campaign();
-				$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
-			}
-		}
-	}
-	
+	}	
 	
 	function savefilters(){
 		$constraints = JRequest::getVar('constraints', null, 'POST', 'none',0);
@@ -227,6 +204,57 @@ class EmundusControllerUsers extends JController {
 		}else{
 			echo JText::_('FILTER_DELETED');
 		}
+	}
+	
+	////// EXPORT SELECTED XLS ///////////////////
+	function export_selected_xls(){
+	     $cids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		 $page= JRequest::getVar('limitstart',0,'get');
+		 if(!empty($cids)){
+		 	$this->export_to_xls($cids);
+		}else {
+			$this->setRedirect("index.php?option=com_emundus&view=users&limitstart=".$page,JText::_("NO_ITEM_SELECTED"),'error');
+		}
+	}
+	
+   ////// EXPORT ALL XLS ///////////////////	
+	function export_to_xls($reqids=array(),$el=array()) {
+		//$allowed = array("Super Users", "Administrator", "Editor");
+		
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
+		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
+		export_xls($cid,array()); 
+	}
+	
+	function export_zip() {
+		//$allowed = array("Super Users", "Administrator", "Editor");
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+			die("You are not allowed to access to this page.");
+		}
+		require_once('libraries/emundus/zip.php');
+		$db	= &JFactory::getDBO();
+		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
+		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
+		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		JArrayHelper::toInteger( $cid, 0 );
+
+		if (count( $cid ) == 0) {
+			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
+			exit;
+		}
+		zip_file($cid);
+		exit;
 	}
 	
 } //END CLASS

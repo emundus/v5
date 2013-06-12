@@ -25,12 +25,12 @@ class EmundusViewUsers extends JView
 	var $_db = null;
 	
 	function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -59,8 +59,11 @@ class EmundusViewUsers extends JView
 		$groups =& $this->get('Groups');
 		$this->assignRef('groups', $groups);
 		
-		$campaigns =& $this->get('CurrentCampaign');
+		$campaigns =& $this->get('Campaigns');
 		$this->assignRef('campaigns', $campaigns);
+		
+		$current_campaigns =& $this->get('CurrentCampaigns');
+		$this->assignRef('current_campaigns', $current_campaigns);
 		
 		$newsletter =& $this->get('Newsletter');
 		$this->assignRef('newsletter', $newsletter);
@@ -70,6 +73,9 @@ class EmundusViewUsers extends JView
 		
 		$groupEvalWithId =& $this->get('GroupEvalWithId');
 		$this->assignRef('groupEvalWithId', $groupEvalWithId);
+		
+		$allGroupEval =& $this->get('AllGroupsEval');
+		$this->assignRef('allGroupEval', $allGroupEval);
 		
 		$users =& $this->get('Users');
 		$this->assignRef('users', $users);
@@ -85,6 +91,10 @@ class EmundusViewUsers extends JView
         
 		$pagination =& $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
+		
+		$options = array('xls');
+		$export_icones =& EmundusHelperExport::export_icones($options);
+		$this->assignRef('export_icones', $export_icones);
 
 		/* Call the state object */
 		$state =& $this->get( 'state' );

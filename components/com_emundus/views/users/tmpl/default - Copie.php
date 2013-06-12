@@ -381,38 +381,69 @@ foreach ($this->users as $user) { ?>
 <h2><?php echo JText::_('NO_RESULT'); ?></h2>
 <?php } } ?>
 </form>
-
-
 <div class="emundusraw">
-<form action="index.php?option=com_emundus&task=adduser" method="POST" name="adduser"/>
-<fieldset><legend><?php echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; echo JText::_('ADD_USER'); ?></legend>
+<form action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user&Itemid=<?php echo $itemid; ?>" method="POST" name="adduser"/>
+<fieldset><legend><?php echo $edit==1?JText::_('EDIT_USER'):JText::_('ADD_USER'); ?></legend>
+<input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
 <table>
-	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value=""/></td></tr>
-	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value=""/></td></tr>
-	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value=""/></td></tr>
-	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="" onChange="validateEmail(email);"/>
-	</td></tr>
+	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value="<?php if($edit==1) echo $this->users[0]->firstname; ?>"/></td></tr>
+	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value="<?php if($edit==1) echo $this->users[0]->lastname; ?>"/></td></tr>
+	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value="<?php if($edit==1) echo $this->users[0]->username; ?>"/></td></tr>
+	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input type="text" size="30" name="email" value="<?php if($edit==1) echo $this->users[0]->email; ?>"/></td></tr>
+    <tr><th><?php echo JText::_('SCHOOLYEAR'); ?></th><td><input type="text" size="30" name="schoolyear" value="<?php if($edit==1) echo $this->users[0]->schoolyear; ?>"/></td></tr>
 	
-	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
-			<?php foreach($this->profiles as $profile) { 
-					echo '<option id="'.$profile->acl_aro_groups.'" value="'.$profile->id;
+	<tr>
+		<th><?php echo JText::_('PROFILE_FORM'); ?></th>
+		<td>
+			<select name="profile">
+				<?php 
+				foreach($this->edit_profiles as $profile) { 
+					echo '<option value="'.$profile->id;
 					echo @$this->users[0]->profile==$profile->id?'" selected':'"';
 					echo '>'.$profile->label;'</option>'; 
 				} ?>
-				</select><?php echo'<input type="hidden" id="acl_aro_groups" name="acl_aro_groups" value="" />'; ?></td></tr>
-    
-	 <tr id="show_univ" style="visibility:hidden;"><th><?php echo JText::_('UNIVERSITY_FROM'); ?></th><td><select name="university_id">
-			<?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
-			foreach($this->universities as $university) { 
-				echo '<option value="'.$university->id;
-				echo @$this->users[0]->university_id==$university->id?'" selected':'"';
-				echo '>'.$university->title;'</option>'; 
-			} ?></select></td></tr>
-     <tr id="show_group" style="visibility:hidden;">
-       <th ><?php echo JText::_('GROUPS'); ?></th>
+			</select>
+		</td>
+	</tr>
+     <!-- <tr>
+       <th><?php /*echo JText::_('OTHER_PROFILES'); ?></th><td><hr />
+			<?php 
+			foreach($this->edit_profiles as $profile) { 
+					echo '<label><input type="checkbox" name="cb_profiles[]" value="'.$profile->id.'" ';
+					if($edit==1) {
+						foreach($this->user_profiles as $user_profiles) {
+							if($user_profiles->profile_id==$profile->id)
+								echo ' checked="checked"';
+						}
+					}
+					echo ' />'.$profile->label.'</label><br />';
+				}
+			*/ ?></td></tr>-->
+	 <tr>
+		<th><?php echo JText::_('UNIVERSITY_FROM'); ?></th>
+		<td>
+			<select name="university_id">
+				<?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
+				foreach($this->universities as $university) { 
+					echo '<option value="'.$university->id;
+					echo @$this->users[0]->university_id==$university->id?'" selected':'"';
+					echo '>'.$university->title;'</option>'; 
+				} ?>
+			</select>
+		</td>
+	</tr>
+     <tr>
+       <th><?php echo JText::_('GROUPS'); ?></th>
        <td>
 			<?php foreach($this->groups as $groups) { 
-					echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'"/>'.$groups->label.'</label><br />';
+					echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'" ';
+					if($edit==1) {
+						foreach($this->users_groups as $users_groups) {
+							if($users_groups->user_id==$this->users[0]->id && $users_groups->group_id==$groups->id)
+								echo ' checked="checked"';
+						}
+					}
+					echo ' />'.$groups->label.'</label><br />';
 				} 
 			?>
         </td>
@@ -424,8 +455,8 @@ foreach ($this->users as $user) { ?>
 	</tr>
 </table>
 </fieldset>
-<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 </form>
+</div>
 
 
 <script>
@@ -475,34 +506,7 @@ function clear_groupsEval_filter(current_select){
 	}
 	return;
 }
-
-function hidden_tr(div1,div2, profile)
-{
-	if (profile[profile.selectedIndex].id!=2)
-	{
-		document.getElementById(div1).style.visibility = "visible";
-		document.getElementById(div2).style.visibility = "visible";
-	}
-	else
-	{
-		document.getElementById(div1).style.visibility = "hidden";
-		document.getElementById(div2).style.visibility = "hidden";
-	}
-	document.getElementById('acl_aro_groups').value = profile[profile.selectedIndex].id;
-	// alert(document.getElementById('acl_aro_groups').value);
-}
-function validateEmail(email) { 
-	var reg = new RegExp('^[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*@[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*[\.]{1}[a-z]{2,6}$', 'i');
 	
-	if(reg.test(email.value)){
-		//document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_VALID'); ?>";
-		email.style.background="url(<?php echo $this->baseurl ?>/media/com_emundus/images/icones/button_ok.png) no-repeat left";
-	}else{
-		//document.getElementById('email_valid').innerHTML="* <?php echo JText::_('EMAIL_NOT_VALID'); ?>";
-		email.style.background="url(<?php echo $this->baseurl ?>/media/com_emundus/images/icones/button_cancel.png) no-repeat left";
-	}
-}
-
 function check_all() {
  var checked = document.getElementById('checkall').checked;
 <?php foreach ($this->users as $user) { ?>

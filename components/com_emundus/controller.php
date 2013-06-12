@@ -404,9 +404,8 @@ function updateprofile() {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
 		}
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
-		$layout = JRequest::getVar('layout', null, 'GET', 'none',0);
 		$firstname = JRequest::getVar('firstname', null, 'POST', 'none',0);
 		$lastname = JRequest::getVar('lastname', null, 'POST', 'none',0);
 		$username = JRequest::getVar('login', null, 'POST', 'none',0);
@@ -455,10 +454,7 @@ function updateprofile() {
 		
 		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
 		
-		if(!empty($layout))
-			$this->setRedirect('index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid);
-		else
-			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
+		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
 	}
 
 	function delusers($reqids = null) {

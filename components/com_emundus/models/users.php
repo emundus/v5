@@ -77,14 +77,64 @@ class EmundusModelUsers extends JModel
 		$pid = JRequest::getVar('rowid', null, 'POST', 'none', 0);
 		$final_grade = JRequest::getVar('final_grade', null, 'POST', 'none', 0);
 		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
+		$campaigns = JRequest::getVar('campaigns', null, 'POST', 'none',0);
+		$groupEval = JRequest::getVar('groups_eval', null, 'POST', 'none',0);
 		$spam_suspect = JRequest::getVar('spam_suspect', null, 'POST', 'none',0);
+		$newsletter = JRequest::getVar('newsletter', null, 'POST', 'none',0);
+		
 		if (!isset($pid))
 			$pid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
 		$edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		$query = 'SELECT u.id, u.name, u.email, u.username, u.registerDate, u.lastvisitDate, u.block, 
-					e.university_id, e.firstname, e.lastname, e.profile, e.schoolyear, 
-					epd.nationality, epd.gender, up.profile_value as newsletter,
+		
+		$list_user="";
+		if(!empty($schoolyears) && empty($campaigns)){
+			$list_user="";
+			$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
+			$i=0;
+			$nb_element = count($applicant_schoolyears);
+			foreach($applicant_schoolyears as $applicant){
+				if(++$i === $nb_element){
+					$list_user.=$applicant;
+				}else{
+					$list_user.=$applicant.", ";
+				}
+			}
+		}else if(!empty($campaigns)){
+			$list_user="";
+			$applicant_campaigns = $this->getUserListWithCampaign($campaigns);
+			$i=0;
+			$nb_element = count($applicant_campaigns);
+			foreach($applicant_campaigns as $applicant){
+				if(++$i === $nb_element){
+					$list_user.=$applicant;
+				}else{
+					$list_user.=$applicant.", ";
+				}
+			}
+		}
+		
+		if(!empty($groupEval)){
+			$list_user="";
+			$applicant_groupEval = $this->getUserListWithGroupsEval($groupEval);
+			$i=0;
+			$nb_element = count($applicant_groupEval);
+			if($nb_element==0){
+				$list_user.="NULL";
+			}else{
+				foreach($applicant_groupEval as $applicant){
+					if(++$i === $nb_element){
+						$list_user.=$applicant;
+					}else{
+						$list_user.=$applicant.", ";
+					}
+				}
+			}
+		}
+		
+		
+		$query = 'SELECT u.id, e.lastname, e.firstname, u.name, u.email, u.username, u.block,  e.profile, up.profile_value as newsletter, u.registerDate, u.lastvisitDate, 
+					epd.nationality, epd.gender, e.university_id,
 					TO_DAYS(NOW()) - TO_DAYS(u.registerDate) as registred_for
 					FROM #__users AS u 
 					LEFT JOIN #__emundus_users AS e ON u.id = e.user_id 
@@ -119,16 +169,28 @@ class EmundusModelUsers extends JModel
 							OR u.username LIKE "%'.mysql_real_escape_string($search).'%" 
 							OR u.id LIKE "%'.mysql_real_escape_string($search).'%")';
 			}
-			if(isset($schoolyears) &&  !empty($schoolyears)) {
+			/*if(isset($schoolyears) &&  !empty($schoolyears)) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
 				$query.= 'e.schoolyear="'.mysql_real_escape_string($schoolyears).'"';
-			}
+			}*/
 			
 			if(isset($spam_suspect) &&  !empty($spam_suspect)) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
 				$query.= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
+			}
+			
+			if($list_user!="") {
+				if($and) $query .= ' AND ';
+				else { $and = true; $query .='WHERE '; }
+				$query.= 'u.id IN ( '.$list_user.' )';
+			}
+			
+			if(isset($newsletter) &&  !empty($newsletter)) {
+				if($and) $query .= ' AND ';
+				else { $and = true; $query .='WHERE '; }
+				$query.= 'up.profile_value like "%'.$newsletter.'%"';
 			}
 		}
 		// echo str_replace('#_','jos',$query);
@@ -197,16 +259,58 @@ class EmundusModelUsers extends JModel
 		return $db->loadObjectList('id');
 	}
 	
-	function getCurrentCampaign()
+	function getCampaigns()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT cc.applicant_id, sc.start_date, sc.end_date, sc.label
+		$query = 'SELECT sc.id, cc.applicant_id, sc.start_date, sc.end_date, sc.label
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
-		WHERE sc.published=1 ';
+		WHERE sc.published=1';
+		
+		//echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
+	
+	function getUserListWithSchoolyear($schoolyears)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT cc.applicant_id
+		FROM #__emundus_setup_campaigns AS sc 
+		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		WHERE sc.published=1 AND YEAR(sc.start_date) ='.$schoolyears;
+		// echo str_replace('#_','jos',$query);
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
+	
+	function getUserListWithCampaign($campaign)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT cc.applicant_id
+		FROM #__emundus_setup_campaigns AS sc 
+		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		WHERE sc.published=1 AND sc.id ='.$campaign;
+		// echo str_replace('#_','jos',$query);
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
+	
+	function getCurrentCampaigns()
+	{
+		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
+		$db =& JFactory::getDBO();
+		$query = 'SELECT sc.id, sc.start_date, sc.end_date, sc.label
+		FROM #__emundus_setup_campaigns AS sc
+		WHERE sc.published=1';
+		if(!empty($schoolyears)){
+			$query.=' AND YEAR(sc.start_date)='.$schoolyears;
+		}
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+	
+	
 	
 	function getNewsletter()
 	{	
@@ -236,9 +340,31 @@ class EmundusModelUsers extends JModel
 		$db =& JFactory::getDBO();
 		$query = 'SELECT ege.id, ege.applicant_id, ege.user_id, ege.group_id, esg.label 
 		FROM #__emundus_groups_eval as ege
-		LEFT JOIN #__emundus_setup_groups as esg ON esg.id = ege.group_id ';
+		LEFT JOIN #__emundus_setup_groups as esg ON esg.id = ege.group_id 
+		WHERE esg.published=1';
 		$db->setQuery( $query );
 		return $db->loadObjectList('applicant_id');
+	}
+	
+	function getUserListWithGroupsEval($groups)
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT ege.applicant_id
+		FROM #__emundus_groups_eval as ege
+		LEFT JOIN #__emundus_setup_groups as esg ON esg.id = ege.group_id 
+		WHERE esg.published=1 AND esg.id='.$groups;
+		$db->setQuery( $query );
+		return $db->loadResultArray();
+	}
+	
+	function getAllGroupsEval()
+	{
+		$db =& JFactory::getDBO();
+		$query = 'SELECT esg.id, esg.label 
+		FROM #__emundus_setup_groups as esg
+		WHERE esg.published=1';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
 	}
 	
 	function getUsersGroups()
@@ -261,10 +387,9 @@ class EmundusModelUsers extends JModel
 	function getSchoolyears()
 	{
 		$db =& JFactory::getDBO();
-		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
-		FROM #__emundus_users 
-		WHERE schoolyear is not null AND schoolyear != "" 
-		ORDER BY schoolyear';
+		$query = 'SELECT YEAR(start_date)
+		FROM #__emundus_setup_campaigns
+		WHERE published=1 GROUP BY YEAR(start_date)';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
