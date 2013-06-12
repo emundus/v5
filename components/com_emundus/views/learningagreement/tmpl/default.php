@@ -13,8 +13,8 @@ if ($action == 'DONE') {
 	echo '</fieldset></p>';
 } 
 $student_id = JRequest::getVar('student_id', null, 'GET', 'none',0);
-$user =& JFactory::getUser();
-$student =& JFactory::getUser($student_id);
+$user = JFactory::getUser();
+$student = JFactory::getUser($student_id);
 $status = @$this->learning_agreement_status[$student_id]->status;
 echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 ?>
@@ -27,7 +27,7 @@ echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 		<td><?php echo '<span class="editlinktip hasTip" title="'.JText::_('TEACHING_UNITS_DETAILS').'::'.JText::_('<b>CODE</b>:'.$tu->code.'<br /><b>UNIVERSITY</b>:'.$tu->university.'<br /><b>SCHOOLYEAR</b>:'.$tu->schoolyear.'<br /><b>SEMESTER</b>:'.$tu->semester.'<br /><b>ECTS</b>:'.$tu->ects.'<br /><b>NOTE</b>:'.$tu->notes.'<br />').'">'.$tu->label.'</span>'; ?></td>
 		<td align="center">
 		<?php 
-        $db =& JFactory::getDBO();
+        $db = JFactory::getDBO();
         $query = 'SELECT count(id) FROM `#__emundus_learning_agreement` WHERE `user_id`='.$student_id.' AND `teaching_unity_id`='.$tu->id;
         $db->setQuery($query);
         $count = $db->loadResult();

@@ -20,16 +20,16 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 //$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$menu = &JSite::getMenu();
+$current_user = JFactory::getUser();
 $menuItem = $menu->getActive();
 $itemid = $menuItem->id;
 
 if($edit!=1) {
 ?>
 <?php 
-$current_user =& JFactory::getUser();
+$current_user = JFactory::getUser();
 if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $current_user->get('usertype') == "Publisher") {
-	$document =& JFactory::getDocument();
+	$document = JFactory::getDocument();
 	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 }
 ?>
@@ -112,7 +112,7 @@ function submitenter(myfield, e) {
 		</td>
 		<td align="left">  
 			<?php 
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 			$db->setQuery( $query );
 			$result = EmundusHelperFilters::insertValuesInQueryResult($db->loadAssocList(), array("sub_values", "sub_labels"));

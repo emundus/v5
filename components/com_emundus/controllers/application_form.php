@@ -30,7 +30,7 @@ class EmundusControllerApplication_form extends JController
 	 
 	function export_zip() {
 		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$cid = JRequest::getVar('cid', null, 'POST', 'array', 0);
 		JArrayHelper::toInteger( $cid, 0 );
 		if (count( $cid ) == 0) {
@@ -46,13 +46,13 @@ class EmundusControllerApplication_form extends JController
 	 * Delete an applicant attachment
 	 */
 	function delete_attachment() {
-		$mainframe =& JFactory::getApplication();
-		$user =& JFactory::getUser();
+		$mainframe = JFactory::getApplication();
+		$user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) die("You are not allowed to access to this action.");
 		
-		$mainframe =& JFactory::getApplication();
-		$db	= &JFactory::getDBO();
+		$mainframe = JFactory::getApplication();
+		$db	= JFactory::getDBO();
 		//$aid = JRequest::getVar( 'aid', array(), 'post', 'array' );
 		$aid = JRequest::getVar('aid', null, 'POST', 'array', 0);
 
@@ -88,8 +88,8 @@ class EmundusControllerApplication_form extends JController
 	}
 	
 	function set_comment(){
-		$user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
@@ -108,8 +108,8 @@ class EmundusControllerApplication_form extends JController
 	}
 	
 	function delete_comment(){
-		$user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
@@ -130,7 +130,7 @@ class EmundusControllerApplication_form extends JController
 	}
 	
 	function get_comment(){
-            $user =& JFactory::getUser();
+            $user = JFactory::getUser();
             $model = $this->getModel('application_form');
             $comments = $model->getComments();
             //$allowed = array("Super Users", "Administrator", "Editor");

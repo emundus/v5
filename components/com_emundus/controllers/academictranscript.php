@@ -28,7 +28,7 @@ class EmundusControllerAcademicTranscript extends JController {
 			$default = 'academicTranscript';
 			JRequest::setVar('view', $default );
 		}
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -39,14 +39,14 @@ class EmundusControllerAcademicTranscript extends JController {
 	////// UPDATE LEARNING AGREEMENT ///////////////////
 	function update() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		$grades = JRequest::getVar('grade', null, 'POST', 'array', 0);
 		$obtained = JRequest::getVar('obtained', null, 'POST', 'array', 0);
@@ -75,14 +75,14 @@ class EmundusControllerAcademicTranscript extends JController {
 /*	////// VALIDATE LEARNING AGREEMENT ///////////////////
 	function validate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		//UPDATE Selected units
@@ -105,13 +105,13 @@ class EmundusControllerAcademicTranscript extends JController {
 	////// UNVALIDATE LEARNING AGREEMENT ///////////////////
 	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		$query = 'DELETE FROM `#__emundus_learning_agreement_status` WHERE `user_id`='.$student_id.' AND `status`=1';
 		$db->setQuery($query);

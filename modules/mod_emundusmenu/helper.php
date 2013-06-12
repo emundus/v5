@@ -24,7 +24,7 @@ class modEmundusMenuHelper
 	 */
 	static function getList(&$params)
 	{
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$menu = $app->getMenu();
 

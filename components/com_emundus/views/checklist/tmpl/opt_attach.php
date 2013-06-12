@@ -1,7 +1,7 @@
 <?php 
 defined('_JEXEC') or die('Restricted access'); 
-$user =& JFactory::getUser();
-$_db =& JFactory::getDBO();
+$user = JFactory::getUser();
+$_db = JFactory::getDBO();
 
 $query='SELECT id, link
 	FROM #__menu

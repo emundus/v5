@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 
-$user	=& JFactory::getUser();
+$user	= JFactory::getUser();
 $list = array();
 if (isset($user->menutype))
 	$list	= modEmundusMenuHelper::getList($params);

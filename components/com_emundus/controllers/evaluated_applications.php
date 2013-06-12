@@ -27,14 +27,14 @@ class EmundusControllerEvaluated_applications extends JController
 	
 	function export_zip() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
 		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -51,7 +51,7 @@ class EmundusControllerEvaluated_applications extends JController
 	}
 	
 	function delete_eval() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -60,7 +60,7 @@ class EmundusControllerEvaluated_applications extends JController
 		}
 		
 		$sid = JRequest::getVar('sid', null, 'GET', 'int', 0);
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sid.' AND user='.$user->id;
 		$db->setQuery($query);
 		$db->query();

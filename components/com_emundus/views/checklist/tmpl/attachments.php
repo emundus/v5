@@ -8,13 +8,13 @@ JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
 JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
 JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
 
-$current_user =& JFactory::getUser();
+$current_user = JFactory::getUser();
 
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);		
 if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered') 
-	$user =& JFactory::getUser($student_id);
+	$user = JFactory::getUser($student_id);
 else
-	$user =& JFactory::getUser();
+	$user = JFactory::getUser();
 
 	$chemin = EMUNDUS_PATH_REL;
 ?>

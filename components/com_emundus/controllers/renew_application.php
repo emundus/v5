@@ -16,7 +16,7 @@ defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
 class EmundusControllerRenew_application extends JController
 {
 	//var $_model = null;
-	//$this->_model =& $this->getModel( 'renew_application' );
+	//$this->_model = $this->getModel( 'renew_application' );
 
 	function display() {
 		$user = JFactory::getUser();
@@ -44,7 +44,7 @@ class EmundusControllerRenew_application extends JController
 	 * Cancel renew. Come back to previous application
 	 */
 	function cancel_renew(){ 
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$current_user = JFactory::getUser();
 		$profile = $this->getModel('profile');
 		$campaign = $this->getModel('campaign');
@@ -76,7 +76,7 @@ class EmundusControllerRenew_application extends JController
 	 * Renew application. Define what to do/delete
 	 */
 	function edit_user(){ 
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$current_user = JFactory::getUser();
 		$model = $this->getModel('renew_application');
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);

@@ -24,7 +24,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		</div><?php
 		if($tmpl == 'component') {
 			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : '.$this->current_schoolyear.'</h3>';
-			$document =& JFactory::getDocument();
+			$document = JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
 			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : '.$this->current_schoolyear.'</legend>';

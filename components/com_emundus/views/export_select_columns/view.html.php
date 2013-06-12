@@ -42,17 +42,17 @@ class EmundusViewExport_select_columns extends JView
 	
     function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
 		
-		//$elements =& $this->get('Elements');
-		$elements =& EmundusHelperFilters::getElements();
+		//$elements = $this->get('Elements');
+		$elements = EmundusHelperFilters::getElements();
 		$this->assignRef('elements', $elements);
 		
 		parent::display($tpl);

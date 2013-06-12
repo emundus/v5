@@ -39,7 +39,7 @@ class EmundusViewCheck extends JView
 	
     function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
 		$menu = JSite::getMenu();
@@ -48,7 +48,7 @@ class EmundusViewCheck extends JView
 		$access = !empty($current_menu)?$current_menu->access:0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die(JText::_('ACCESS_DENIED'));
 
-		$users =& $this->get('Users');
+		$users = $this->get('Users');
 		
 		//Filters
 		$tables 		= explode(',', $menu_params->get('em_tables_id'));
@@ -89,24 +89,24 @@ class EmundusViewCheck extends JView
 		}
 		unset($filts_names); unset($filts_values); unset($filts_types);
 		
-		$filters =& EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
+		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
 		$this->assignRef('filters', $filters);
 		unset($filts_details); unset($filts_options);
 
 		//Export
 		$options = array('zip', 'xls');
 		if($this->_user->profile!=16) // devra être remplacé par un paramétrage au niveau du menu
-			$export_icones =& EmundusHelperExport::export_icones($options);
+			$export_icones = EmundusHelperExport::export_icones($options);
 		$this->assignRef('export_icones', $export_icones);
 		unset($options);
 		
-		$applicantsProfiles =& $this->get('ApplicantsProfiles');
-		$elements =& $this->get('Elements');
-        $pagination =& $this->get('Pagination');
-		$profiles =& $this->get('Profiles');
+		$applicantsProfiles = $this->get('ApplicantsProfiles');
+		$elements = $this->get('Elements');
+        $elements = $this->get('Elements');
+		$profiles = $this->get('Profiles');
 		
 		/* Call the state object */
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
@@ -131,23 +131,23 @@ class EmundusViewCheck extends JView
 		//die(print_r($users));
 		//List
 		//$options = array('checkbox', 'photo', 'gender', 'details', 'upload', 'attachments', 'forms');
-		$actions =& EmundusHelperList::createActionsBlock($users, $actions);
+		$actions = EmundusHelperList::createActionsBlock($users, $actions);
 		$this->assignRef('actions', $actions);
 		
 		//$options = array('jos_emundus_declaration.validated', 'jos_emundus_declaration.certified_copies_received', 'jos_emundus_declaration.languages_result_received'); 
-		$validate =& EmundusHelperList::createValidateBlock($users, $validate_id);
+		$validate = EmundusHelperList::createValidateBlock($users, $validate_id);
 		$this->assignRef('validate', $validate);
 		
 		$param= array('submitted'		=> 1,
 					  'year'			=> implode('","', $schoolyears));
-		$campaigns =& EmundusHelperList::createApplicantsCampaignsBlock($users, $param); 
+		$campaigns = EmundusHelperList::createApplicantsCampaignsBlock($users, $param); 
 		$this->assignRef('campaigns', $campaigns);
 
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {
 			if($this->_user->profile!=16){
 				$options = array('applicants');
-				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
+				$email_applicant = EmundusHelperEmails::createEmailBlock($options);
 				unset($options);
 			}
 		}
@@ -155,13 +155,13 @@ class EmundusViewCheck extends JView
 		$this->assignRef('email_applicant', $email_applicant);	
 		
 		// Javascript
-		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
+		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
-		$addElement =& EmundusHelperJavascript::addElement();
+		$addElement = EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
-		$addElementOther =& EmundusHelperJavascript::addElementOther($tables);
+		$addElementOther = EmundusHelperJavascript::addElementOther($tables);
 		$this->assignRef('addElementOther', $addElementOther);
-		$delayAct =& EmundusHelperJavascript::delayAct();
+		$delayAct = EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		
 		unset($options);

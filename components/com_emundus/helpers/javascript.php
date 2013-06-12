@@ -123,7 +123,7 @@ function OnSubmitForm() {
 			newdiv.innerHTML = "<select name=\"elements[]\" id=\"elements\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("PLEASE_SELECT").'</option>';
 		$groupe =""; $i=0; 
 		$length = 50; 
-		$all_elements =& EmundusHelperFilters::getElements();
+		$all_elements = EmundusHelperFilters::getElements();
 		foreach($all_elements as $elements) { 
 			$groupe_tmp = $elements->group_label; 
 			$dot_grp = strlen($groupe_tmp)>=$length?'...':''; 
@@ -153,7 +153,7 @@ function OnSubmitForm() {
 			newdiv.innerHTML = "<select name=\"elements_other[]\" id=\"elements_other\" onChange=\"javascript:submit();\"><option value=\"\">'.JText::_("PLEASE_SELECT").'</option>';
 		$groupe =""; $i=0; 
 		$length = 50;
-		$elements =& EmundusHelperFilters::getElementsOther($tables);
+		$elements = EmundusHelperFilters::getElementsOther($tables);
 		if(!empty($elements))
 			foreach($elements as $element) { 
 				$groupe_tmp = $element->group_label;  

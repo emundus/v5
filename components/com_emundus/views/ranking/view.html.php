@@ -39,7 +39,7 @@ class EmundusViewRanking extends JView
 	
 	function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		JHTML::_('behavior.modal');
 		JHTML::_('behavior.tooltip'); 
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
@@ -93,34 +93,34 @@ class EmundusViewRanking extends JView
 		}
 		unset($filts_names); unset($filts_values); unset($filts_types);
 
-		$filters =& EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
+		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
 		$this->assignRef('filters', $filters);
 		unset($filts_details); unset($filts_options);
 		
-		$users=& $this->get('Users');
+		$users= $this->get('Users');
 		$this->assignRef( 'users', $users );
 
-		$engaged =& EmundusHelperList::getEngaged($users);
+		$engaged = EmundusHelperList::getEngaged($users);
 		$this->assignRef( 'engaged', $engaged );
 		
 		//Call the state object 
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		// Get the values from the state object that were inserted in the model's construct function 
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
         $this->assignRef( 'lists', $lists );
 		
-        $pagination =& $this->get('Pagination');
+        $pagination = $this->get('Pagination');
         $this->assignRef('pagination', $pagination);
 		
-		$current_schoolyear =& implode(', ',$this->get('CurrentCampaign'));
+		$current_schoolyear = implode(', ',$this->get('CurrentCampaign'));
 		$this->assignRef( 'current_schoolyear', $current_schoolyear );
 		
 		// Columns
-		$appl_cols =& $this->get('ApplicantColumns');
-		$filter_cols =& $this->get('SelectList'); 
-		$eval_cols =& $this->get('EvalColumns');
-		$rank_cols =& $this->get('RankingColumns');
+		$appl_cols = $this->get('ApplicantColumns');
+		$filter_cols = $this->get('SelectList'); 
+		$eval_cols = $this->get('EvalColumns');
+		$rank_cols = $this->get('RankingColumns');
 			
 		$header_values = EmundusHelperList::aggregation($appl_cols, $filter_cols, $eval_cols, $rank_cols);
 		$this->assignRef( 'header_values', $header_values );
@@ -128,7 +128,7 @@ class EmundusViewRanking extends JView
 		//Export
 		$options = array('zip', 'xls');
 		if($this->_user->profile!=16)
-			$export_icones =& EmundusHelperExport::export_icones($options);
+			$export_icones = EmundusHelperExport::export_icones($options);
 		$this->assignRef('export_icones', $export_icones);
 		unset($options);
 		
@@ -136,7 +136,7 @@ class EmundusViewRanking extends JView
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {
 			if($this->_user->profile!=16){
 				$options = array('applicants');
-				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
+				$email_applicant = EmundusHelperEmails::createEmailBlock($options);
 				unset($options);
 			}
 		}
@@ -144,11 +144,11 @@ class EmundusViewRanking extends JView
 		$this->assignRef('email', $email_applicant);
 		
 		//List
-		$selection =& EmundusHelperList::createSelectionBlock($users);
+		$selection = EmundusHelperList::createSelectionBlock($users);
 		$this->assignRef('selection', $selection);
 		
 		$options = array('checkbox', 'gender', 'details', 'selection_outcome');
-		$actions =& EmundusHelperList::createActionsBlock($users, $options);
+		$actions = EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
 		unset($options);
 		
@@ -166,13 +166,13 @@ class EmundusViewRanking extends JView
 
 		// Javascript
        // JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
-		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
+		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
-		$addElement =& EmundusHelperJavascript::addElement();
+		$addElement = EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
-		$addElementOther =& EmundusHelperJavascript::addElementOther($tables);
+		$addElementOther = EmundusHelperJavascript::addElementOther($tables);
 		$this->assignRef('addElementOther', $addElementOther);
-		$delayAct =& EmundusHelperJavascript::delayAct();
+		$delayAct = EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		
 		parent::display($tpl);

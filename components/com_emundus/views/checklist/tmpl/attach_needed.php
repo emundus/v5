@@ -2,8 +2,8 @@
 defined('_JEXEC') or die('Restricted access'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 
-$user =& JFactory::getUser();
-$_db =& JFactory::getDBO();
+$user = JFactory::getUser();
+$_db = JFactory::getDBO();
 
 $query='SELECT id, link FROM #__menu WHERE alias="checklist"';
 $_db->setQuery( $query );

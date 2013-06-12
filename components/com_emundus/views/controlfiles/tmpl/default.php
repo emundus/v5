@@ -45,7 +45,7 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 $j=0;
 foreach ($this->files as $f) { 
  if( !file_exists($path.$f->user_id.DS.$f->filename) ) { 
-	$user =& JFactory::getUser($f->user_id);
+	$user = JFactory::getUser($f->user_id);
 
  ?>
 	<tr class="row<?php echo $j++%2; ?>">
@@ -106,14 +106,14 @@ if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->list
 <?php 
 $j=0;
 foreach ($this->listFiles as $f) { 
-	$db =& JFactory::getDBO();
+	$db = JFactory::getDBO();
 	$query = 'SELECT count(id)   
 			FROM #__emundus_uploads 
 			WHERE filename like "'.$f["file"].'"';
 	$db->setQuery( $query );
 	$is_in_db = $db->loadResult();
 
-	$user =& JFactory::getUser($f["id"]);
+	$user = JFactory::getUser($f["id"]);
 	 //if( $is_in_db == 0 || $user->name == "") { 
 	 if( $is_in_db == 0 || $user->name == "") { 
 	 ?>

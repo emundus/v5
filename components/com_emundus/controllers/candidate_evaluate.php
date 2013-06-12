@@ -26,14 +26,14 @@ class EmundusControllerCandidate_evaluate extends JController
 	
 	function export_zip() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
 		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -53,12 +53,12 @@ class EmundusControllerCandidate_evaluate extends JController
 	 * export applicants partner list to xls
 	 */
 	function export_to_xls() {
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		require_once('libraries/emundus/excel.php');
 
-		$current_user =& JFactory::getUser();
+		$current_user = JFactory::getUser();
 		
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$query = 'SELECT ege.applicant_id 
 					FROM `#__emundus_groups_eval` as ege 
 					WHERE ege.user_id='.$current_user->id.' OR 
@@ -75,17 +75,17 @@ class EmundusControllerCandidate_evaluate extends JController
 		////// EMAIL /////////////
 	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
 		
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
-		$db	= &JFactory::getDBO();
-		$current_user =& JFactory::getUser();
+		$db	= JFactory::getDBO();
+		$current_user = JFactory::getUser();
 
 		$cid		= JRequest::getVar( 'ud', array(), 'post', 'array' );
 		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
@@ -95,7 +95,7 @@ class EmundusControllerCandidate_evaluate extends JController
 		$elements_items = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$elements_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
 	 	// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$session->set('s_elements', $elements_items);
 		$session->set('s_elements_values', $elements_values);
 
@@ -156,7 +156,7 @@ class EmundusControllerCandidate_evaluate extends JController
 
 		$nUsers = count( $users );
 		for ($i = 0; $i < $nUsers; $i++) {
-			$user = &$users[$i];
+			$user = $users[$i];
 
 			// template replacements
 			$replacements = array ($user->id, $user->name, $user->email, JURI::base(), '<br />');

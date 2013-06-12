@@ -41,7 +41,7 @@ class EmundusViewProfile extends JView
 			die("You are not allowed to access to this page.");
 		}
 		$p = JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0);
-		$model = &$this->getModel();
+		$model = $this->getModel();
 		$profile = $model->getProfile($p);
 		if($p < 7 && $p > 9) {
 			die("This is not an applicant profile.");

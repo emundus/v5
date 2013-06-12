@@ -41,10 +41,10 @@ class EmundusViewLearningAgreementReferent extends JView
 	
     function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -53,20 +53,20 @@ class EmundusViewLearningAgreementReferent extends JView
 			//return false;
 		}
 		
-		$learning_agreement_status =& $this->get('LearningAgreementStatus');
-		$schoolyears =& $this->get('schoolyears');
-		$profiles_id =& $this->get('RegistredProfiles');
-		$profiles =& $this->get('EditorProfiles');
-		$evalUsers =& $this->get('EditorUsers');
-		$users =& $this->get('Users');
-		$elements =& $this->get('Elements');
-        $pagination =& $this->get('Pagination');
+		$learning_agreement_status = $this->get('LearningAgreementStatus');
+		$schoolyears = $this->get('schoolyears');
+		$profiles_id = $this->get('RegistredProfiles');
+		$profiles = $this->get('EditorProfiles');
+		$evalUsers = $this->get('EditorUsers');
+		$users = $this->get('Users');
+		$elements = $this->get('Elements');
+        $elements = $this->get('Elements');
 		/* Call the state object */
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		
-		$groups =& $this->get('Groups');
-		$groups_eval =& $this->get('GroupsEval');
-		$users_groups =& $this->get('UsersGroups');
+		$groups = $this->get('Groups');
+		$groups_eval = $this->get('GroupsEval');
+		$users_groups = $this->get('UsersGroups');
 		
 		$this->assignRef('learning_agreement_status', $learning_agreement_status);
 		$this->assignRef('schoolyears', $schoolyears);

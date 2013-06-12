@@ -27,7 +27,7 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 		
 		if($tmpl == 'component') {
 				echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</h3>';
-				$document =& JFactory::getDocument();
+				$document = JFactory::getDocument();
 				$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
 				echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.$menuname.'"/>'.$menuname.' : '.$this->current_schoolyear.'</legend>'; ?>

@@ -30,7 +30,7 @@ class  plgSystemJumiRouter extends JPlugin {
      * @access public
      */
     function onAfterInitialise() {
-        $mainframe = &JFactory::getApplication();
+        $mainframe = JFactory::getApplication();
 
         $uri    = JURI::getInstance();
         $router = $mainframe->getRouter();

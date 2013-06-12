@@ -52,7 +52,7 @@ class EmundusModelTrombi extends JModel
 
 	function getSchoolyears()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT schoolyear FROM #__emundus_users ORDER BY schoolyear';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -60,7 +60,7 @@ class EmundusModelTrombi extends JModel
 
 	function getProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT id, label FROM #__emundus_setup_profiles ORDER BY label';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');

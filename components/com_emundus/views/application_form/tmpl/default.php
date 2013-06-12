@@ -19,7 +19,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
  //die(print_r($this->comments));
 
-$document   =& JFactory::getDocument();
+$document   = JFactory::getDocument();
 
 $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
 $view = JRequest::getVar('view', null, 'GET', 'none',0);
@@ -43,7 +43,7 @@ function age($naiss) {
 }
 	//$dFormat	 = $this->params->get( 'dformat', '%c' );
 	
-	$db =& JFactory::getDBO();
+	$db = JFactory::getDBO();
 	$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 	$db->setQuery( $query );
 	$result = EmundusHelperFilters::insertValuesInQueryResult($db->loadAssocList(), array("sub_values","sub_labels"));

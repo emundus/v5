@@ -27,7 +27,7 @@ class EmundusModelLearningAgreement extends JModel
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db =& JFactory::getDBO();
+		$this->_db = JFactory::getDBO();
 	}
 	
 	function getTeachingUnity()
@@ -50,7 +50,7 @@ class EmundusModelLearningAgreement extends JModel
 	
 	function getPersonneInCharge()
 	{
-		$current_user =& JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$student_id = JRequest::getVar('student_id', null, 'GET', 'none',0);
 		$query = 'SELECT count(id) FROM #__emundus_confirmed_applicants WHERE user_id='.$student_id.' AND 	evaluator_id='.$current_user->id;
 		$this->_db->setQuery( $query );

@@ -27,7 +27,7 @@ if($controller = JRequest::getWord('controller')) {
 $classname    = 'EmundusController'.$controller;
 $controller   = new $classname( );
  
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 $name = JRequest::getWord('view');
 
 if ($user->guest && $name != 'emailalert') {

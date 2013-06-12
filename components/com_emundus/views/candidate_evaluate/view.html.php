@@ -41,22 +41,22 @@ class EmundusViewCandidate_evaluate extends JView
 	
     function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
 
-		$users =& $this->get('Users');
-		$applicantsProfiles =& $this->get('ApplicantsProfiles');
-		$elements =& $this->get('Elements');
-        $pagination =& $this->get('Pagination');
+		$users = $this->get('Users');
+		$applicantsProfiles = $this->get('ApplicantsProfiles');
+		$elements = $this->get('Elements');
+        $elements = $this->get('Elements');
 		
 		/* Call the state object */
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );

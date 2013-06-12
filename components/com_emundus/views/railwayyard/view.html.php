@@ -41,7 +41,7 @@ class EmundusViewRailwayyard extends JView
 	
     function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
 		$menu=JSite::getMenu()->getActive();
@@ -52,14 +52,14 @@ class EmundusViewRailwayyard extends JView
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'check.php');
 		$model=new EmundusModelCheck;
 		
-		$users =& $this->get('Users');
-        $pagination =& $this->get('Pagination');
+		$users = $this->get('Users');
+        $elements = $this->get('Elements');
 		/* Call the state object */
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		
-		$elements =& $this->get('Elements');
+		$elements = $this->get('Elements');
 		
-		$applicantsProfiles =& $model->getApplicantsProfiles();
+		$applicantsProfiles = $model->getApplicantsProfiles();
 
 		$this->assignRef('groups', $groups);
 		$this->assignRef('users_groups', $users_groups);
@@ -68,7 +68,7 @@ class EmundusViewRailwayyard extends JView
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
 		
-		$schoolyears =& $this->get('schoolyears');
+		$schoolyears = $this->get('schoolyears');
 		$this->assignRef('schoolyears', $schoolyears);
 		
         $this->assignRef( 'lists', $lists );

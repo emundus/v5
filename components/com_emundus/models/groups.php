@@ -31,7 +31,7 @@ class EmundusModelGroups extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         // Get pagination request variables
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
@@ -55,7 +55,7 @@ class EmundusModelGroups extends JModel
 	{
         global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
                 $orderby = '';
                 $filter_order     = $this->getState('filter_order');
@@ -72,7 +72,7 @@ class EmundusModelGroups extends JModel
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -82,7 +82,7 @@ class EmundusModelGroups extends JModel
 	
 	function getProfileAcces($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;
@@ -103,7 +103,7 @@ class EmundusModelGroups extends JModel
 		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
 		
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$s_elements = $session->get('s_elements');
 		$s_elements_values = $session->get('s_elements_values');
 		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
@@ -112,7 +112,7 @@ class EmundusModelGroups extends JModel
 			$search = $s_elements;
 			$search_values = $s_elements_values;
 		}
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$query = 'SELECT ed.user, ed.time_date, ed.validated, 
 					eu.firstname, eu.lastname, eu.profile, eu.schoolyear, 
 					u.id, u.name, u.email, u.username, u.usertype, u.registerDate, u.block, 
@@ -204,7 +204,7 @@ class EmundusModelGroups extends JModel
 
 	function getProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -215,7 +215,7 @@ class EmundusModelGroups extends JModel
 	
 	function getProfilesByIDs($ids)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -227,7 +227,7 @@ class EmundusModelGroups extends JModel
 	
 	function getAuthorProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.evaluation_start, esp.evaluation_end, caag.lft
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -238,7 +238,7 @@ class EmundusModelGroups extends JModel
 	
 	function getEvaluators()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT u.id, u.name
 		FROM #__users u, #__emundus_users_profiles eup , #__emundus_setup_profiles esp 
 		WHERE u.id=eup.user_id AND esp.id=eup.profile_id AND esp.is_evaluator=1';
@@ -248,7 +248,7 @@ class EmundusModelGroups extends JModel
 	
 	function getApplicantsProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp WHERE esp.published=1 ORDER BY esp.label';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
@@ -256,7 +256,7 @@ class EmundusModelGroups extends JModel
 	
 	function getApplicantsByProfile($profile)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id='.$profile;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -264,7 +264,7 @@ class EmundusModelGroups extends JModel
 	
 	function getGroups()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
 		WHERE esg.published=1 
@@ -275,7 +275,7 @@ class EmundusModelGroups extends JModel
 
 	function getGroupsByCourse($course)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
 		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
@@ -287,7 +287,7 @@ class EmundusModelGroups extends JModel
 
 	function getGroupsIdByCourse($course)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id  
 		FROM #__emundus_setup_groups esg
 		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
@@ -299,7 +299,7 @@ class EmundusModelGroups extends JModel
 	
 	function getGroupsEval()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ege.id, ege.applicant_id, ege.user_id, ege.group_id  
 		FROM #__emundus_groups_eval ege';
 		$db->setQuery( $query );
@@ -308,7 +308,7 @@ class EmundusModelGroups extends JModel
 	
 	function getUsersGroups()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eg.user_id, eg.group_id  
 		FROM #__emundus_groups eg';
 		$db->setQuery( $query );
@@ -317,7 +317,7 @@ class EmundusModelGroups extends JModel
 
 	function getUsersByGroup($gid)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eg.user_id, eg.group_id  
 		FROM #__emundus_groups eg 
 		WHERE eg.group_id='.$gid;
@@ -327,7 +327,7 @@ class EmundusModelGroups extends JModel
 
 	function getUsersByGroups($gids)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eg.user_id, eg.group_id  
 		FROM #__emundus_groups eg 
 		WHERE eg.group_id IN ('.implode(",", $gids).')';
@@ -336,7 +336,7 @@ class EmundusModelGroups extends JModel
 	}
 
 	function affectEvaluatorsGroups($groups, $aid) { 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		foreach ($groups as $group) {
 			$query = "INSERT INTO #__emundus_groups_eval (applicant_id, group_id) VALUES (".$aid.", ".$group.")";
 
@@ -352,7 +352,7 @@ class EmundusModelGroups extends JModel
 	
 	function getAuthorUsers()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT u.id, u.gid, u.name 
 		FROM #__users u 
 		WHERE u.gid=19';
@@ -362,7 +362,7 @@ class EmundusModelGroups extends JModel
 	
 	function getMobility()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esm.id, esm.label, esm.value
 		FROM #__emundus_setup_mobility esm 
 		ORDER BY ordering';
@@ -372,7 +372,7 @@ class EmundusModelGroups extends JModel
 	
 	function getElements()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
 				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
 				 tab.db_table_name AS table_name, tab.label AS table_label
@@ -410,7 +410,7 @@ class EmundusModelGroups extends JModel
   }
   function getSchoolyears()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
 		FROM #__emundus_users 
 		WHERE schoolyear is not null AND schoolyear != "" 

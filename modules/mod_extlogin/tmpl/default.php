@@ -1,7 +1,7 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_extlogin/style/' );
-$usersConfig = &JComponentHelper::getParams( 'com_users' );
+$usersConfig = JComponentHelper::getParams( 'com_users' );
 
 if($type == 'logout') : ?>
 <form action="index.php" method="post" name="login" id="form-login-nav">

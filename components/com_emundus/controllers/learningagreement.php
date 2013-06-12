@@ -28,7 +28,7 @@ class EmundusControllerLearningAgreement extends JController {
 			$default = 'learningAgreement';
 			JRequest::setVar('view', $default );
 		}
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -39,13 +39,13 @@ class EmundusControllerLearningAgreement extends JController {
 	////// UPDATE LEARNING AGREEMENT ///////////////////
 	function update() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		//die(print_r($ids));
@@ -63,13 +63,13 @@ class EmundusControllerLearningAgreement extends JController {
 	////// VALIDATE LEARNING AGREEMENT ///////////////////
 	function validate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		//UPDATE Selected units
@@ -92,13 +92,13 @@ class EmundusControllerLearningAgreement extends JController {
 	////// UNVALIDATE LEARNING AGREEMENT ///////////////////
 	function unvalidate() {
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$student_id = JRequest::getVar('student_id', null, 'POST', 'none', 0);
 		$query = 'DELETE FROM `#__emundus_learning_agreement_status` WHERE `user_id`='.$student_id.' AND `status`=1';
 		$db->setQuery($query);

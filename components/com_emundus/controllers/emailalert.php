@@ -21,7 +21,7 @@ class EmundusControllerEmailalert extends JController {
     }
 	
 	function generate(){		
-		$model =& $this->getModel('emailalert');
+		$model = $this->getModel('emailalert');
 		$key = $model->getKey();
 		if($key){
 			$model->getInsert();
@@ -30,10 +30,10 @@ class EmundusControllerEmailalert extends JController {
 	}
 	
 	function send(){
-		$app =& JFactory::getApplication();
-		$db	= &JFactory::getDBO();
+		$app = JFactory::getApplication();
+		$db	= JFactory::getDBO();
 
-		$model =& $this->getModel('emailalert');
+		$model = $this->getModel('emailalert');
 		$key = $model->getKey();
 
 		if($key){

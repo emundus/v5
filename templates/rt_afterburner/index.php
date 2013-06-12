@@ -135,7 +135,7 @@ require(YOURBASEPATH . DS . "rt_utils.php");
     	</div>
 	</div>
 </div>
-<?php $user =& JFactory::getUser(); ?>
+<?php $user = JFactory::getUser(); ?>
 <!--
 <script id="IntercomSettingsScriptTag">
   window.intercomSettings = {

@@ -58,7 +58,7 @@ class EmundusHelperAccess{
 
 	function check_group($user_id, $group, $inherited){
 		// 1:Public / 2:Registered / 3:Author / 4:Editor / 5:Publisher / 6:Manager / 7:Administrator / 8:Super Users / 9:Guest / 10:Nobody
-		$user =& JFactory::getUser($user_id);
+		$user = JFactory::getUser($user_id);
 
 		if($inherited){
 			//include inherited groups
@@ -66,7 +66,7 @@ class EmundusHelperAccess{
 			$groups = JAccess::getGroupsByUser($user_id);
 		} else {
 			//exclude inherited groups
-			$user =& JFactory::getUser($user_id);
+			$user = JFactory::getUser($user_id);
 			$groups = isset($user->groups) ? $user->groups : array();
 		}
 		return (in_array($group, $groups))?true:0;
@@ -104,7 +104,7 @@ class EmundusHelperAccess{
 	 * @since	4.0
 	*/
 	function getProfileAccess($user){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;

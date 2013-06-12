@@ -144,7 +144,7 @@ class EmundusHelperList{
 	
 	//get evaluators for each applicant
 	function getUsersGroups(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eg.user_id, eg.group_id FROM #__emundus_groups eg';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
@@ -152,7 +152,7 @@ class EmundusHelperList{
 	
 	// get usual user info
 	function getUserInfo($user_id){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT epd.id, eu.firstname, eu.lastname, epd.gender, u.email, eu.profile
 		FROM #__emundus_users eu
 		LEFT JOIN #__users as u ON u.id=eu.user_id
@@ -164,7 +164,7 @@ class EmundusHelperList{
 	
 	// get photo for applicant
 	function getAvatar($user_id){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT filename FROM #__emundus_uploads WHERE attachment_id = 10 AND user_id = '.$user_id;
 		$db->setQuery( $query );
 		return $db->loadResult();
@@ -172,7 +172,7 @@ class EmundusHelperList{
 	
 	// get profile id for an applicant (if selected applicant, get 'result for' profile)
 	function getProfile($user_id){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT profile FROM #__emundus_users WHERE user_id = '.$user_id;
 		$db->setQuery( $query );
 		$profile = $db->loadResult();
@@ -186,7 +186,7 @@ class EmundusHelperList{
 	
 	// get details for a profile id
 	function getProfileDetails($pid){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE id = '.$pid;
 		$db->setQuery( $query );
 		$profile = $db->loadAssocList();
@@ -195,7 +195,7 @@ class EmundusHelperList{
 	
 	// get upload list to create action block for each users
 	function getUploadList($user){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT attachments.id, uploads.filename, uploads.description, attachments.lbl, attachments.value
 					FROM #__emundus_uploads AS uploads
 					LEFT JOIN #__emundus_setup_attachments AS attachments ON uploads.attachment_id=attachments.id
@@ -217,7 +217,7 @@ class EmundusHelperList{
 	// @param	string	Year(s) of the campaigns comma separated, can be something like 2012-2013
 	// @return	array	Object of users ID and campaign info
 	function getApplicants($submitted, $year){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';
@@ -239,7 +239,7 @@ class EmundusHelperList{
 	// @param	string	Year(s) of the campaigns comma separated, can be something like 2012-2013
 	// @return	array	Object of users ID and campaign info
 	function getCampaignsByApplicantID($user, $submitted, $year){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esc.year, ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted, ecc.date_time, esc.training
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';
@@ -311,8 +311,8 @@ class EmundusHelperList{
 				$ids[] = $val;
 				//echo $val."*";
 				//print_r($user);
-				$user_info = & EmundusHelperList::getUserInfo($user['user_id']);
-				$avatar =& EmundusHelperList::getAvatar($user['user_id']);
+				$user_info = EmundusHelperList::getUserInfo($user['user_id']);
+				$avatar = EmundusHelperList::getAvatar($user['user_id']);
 				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_actions" id="em_actions_'.$user['user_id'].'">';
 				if(in_array('checkbox',$params)){
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'"/></div>';
@@ -357,7 +357,7 @@ class EmundusHelperList{
 				}
 				
 				if(in_array('attachments',$params)){
-					$uploads =& EmundusHelperList::getUploadList($user['user_id']);
+					$uploads = EmundusHelperList::getUploadList($user['user_id']);
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul>';
@@ -483,7 +483,7 @@ class EmundusHelperList{
 	function createEvaluationBlock($users, $params){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$eval = array();
-		$current_user = & JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$ids = array(); 
 		//print_r($users);
 		//echo '<hr>';
@@ -492,11 +492,11 @@ class EmundusHelperList{
 			
 			if( !in_array($val, $ids) ) {
 				$ids[] = $val;
-				$evaluation =& EmundusHelperList::getEvaluation($user['user_id'], $user['user']);
-				$isEvalByMe =& EmundusHelperList::isEvaluatedBy($user['user_id'], $current_user->id);
-				$myAffect =& EmundusHelperList::isAffectedToMe($user['user_id'], $current_user->id); 
-				$pid = & EmundusHelperList::getProfile($user['user_id']);
-				$profile =& EmundusHelperList::getProfileDetails($pid);
+				$evaluation = EmundusHelperList::getEvaluation($user['user_id'], $user['user']);
+				$isEvalByMe = EmundusHelperList::isEvaluatedBy($user['user_id'], $current_user->id);
+				$myAffect = EmundusHelperList::isAffectedToMe($user['user_id'], $current_user->id); 
+				$pid = EmundusHelperList::getProfile($user['user_id']);
+				$profile = EmundusHelperList::getProfileDetails($pid);
 				$form_eval = !empty($profile[0]['evaluation'])?$profile[0]['evaluation']:29;
 				
 				$add = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid='.$form_eval.'&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$user['user_id'].'&jos_emundus_evaluations___campaign_id[value]='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal"><img title="'.JText::_( 'ADD_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add.png" /></a>';
@@ -570,17 +570,17 @@ class EmundusHelperList{
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$evaluator =array();
 		$ids =array();
-		$current_user = & JFactory::getUser();
+		$current_user = JFactory::getUser();
 		foreach($users as $user) {
 			if(!in_array($user['user_id'],$ids)){
 				$ids[] = $user['user_id'];
-				$assessors =& EmundusHelperList::assessorsList($user['user_id']);
+				$assessors = EmundusHelperList::assessorsList($user['user_id']);
 				foreach($assessors as $ass) {
 					if(!empty($ass->group_id) && isset($ass->group_id)) {
 						$uList = '<ul>';
 						foreach($this->users_groups as $ug) {
 							if ($ug->group_id == $ass->group_id) {
-								$usr =& JUser::getInstance($ug->user_id);
+								$usr = JUser::getInstance($ug->user_id);
 								$uList .= '<li>'.$usr->name.'</li>';
 							}
 						}
@@ -592,7 +592,7 @@ class EmundusHelperList{
 							@$evaluator[$user['user_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('GROUP_MEMBERS').'::'.$uList.'">'.$this->groups[$ass->group_id]->label.'</span></br>';
 						unset($uList);
 					}elseif(!empty($ass->user_id) && isset($ass->user_id)) {
-						$usr =& JUser::getInstance($ass->user_id); 
+						$usr = JUser::getInstance($ass->user_id); 
 						if(in_array('delete',$params)){
 							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->evaluators[$ass->user_id]->name.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::Base().'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
 							@$evaluator[$user['user_id']] .= $this->evaluators[$ass->user_id]->name.' '.$img.'<br />';
@@ -617,7 +617,7 @@ class EmundusHelperList{
 			//if( !in_array($val, $ids) ){
 				//$ids[] = $val;
 
-				$com =& EmundusHelperList::getComment($user['user_id'], $user['user'], $user['campaign_id']);
+				$com = EmundusHelperList::getComment($user['user_id'], $user['user'], $user['campaign_id']);
 
 				if(!empty($com)) 
 					@$comment[$user['user_id']][$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_(' '.$com.' ').'"><a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.6,y:window.getHeight()*0.6}}" href="index.php?option=com_emundus&view=evaluation&layout=detail&tmpl=component&sid='.$user['user_id'].'&uid='.$user["user"].'&cid='.$user["campaign_id"].'&Itemid='.$itemid.'"><img height="25" width="25" align="bottom" src="'.$this->baseurl.'/media/com_emundus/images/icones/comments.png"/></a></span>';
@@ -681,7 +681,7 @@ class EmundusHelperList{
 	
 	//get profiles
 	function getProfiles(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -704,7 +704,7 @@ class EmundusHelperList{
 	}
 	
 	function getApplicationComments($user_id){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ec.applicant_id, ec.reason, ec.date as com_date, ec.comment, u.name as evaluator_name
 				FROM #__emundus_comments ec 
 				LEFT JOIN #__users u ON ec.user_id = u.id
@@ -738,7 +738,7 @@ class EmundusHelperList{
 	function createShowCommentBlock(){
 		$filter_comment = JRequest::getVar('comments', null, 'POST', 'none', 0);
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		if(empty($filter_comment) && $session->has( 'comments' )) $filter_comment = $session->get( 'comments' );
 		$comments = '<div id="show_comment"><label>'.JText::_('SHOW_COMMENT').'</label>';
 		$comments .= '<input name="comments" type="checkbox" onClick="javascript:submit()" value="1" ';
@@ -771,7 +771,7 @@ class EmundusHelperList{
 	** @return	array	Array of Fabrik element params.
 	*/
 	function getElementsDetails($elements) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, element.ordering, element.hidden, element.published,
 				element.params AS params, element.params, tab.group_by AS tab_group_by
 				FROM #__fabrik_elements element
@@ -790,7 +790,7 @@ class EmundusHelperList{
 	** @return	array	Array of Fabrik element params.
 	*/
 	function getElementsDetailsByID($elements) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
 				element.params AS params, element.params, tab.group_by AS tab_group_by
 				FROM #__fabrik_elements element
@@ -809,7 +809,7 @@ class EmundusHelperList{
 	** @return	array	Array of Fabrik element params.
 	*/
 	function getElementsDetailsByName($elements) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, element.ordering, element.hidden, element.published,
 				element.params AS params, element.params, tab.group_by AS tab_group_by
 				FROM #__fabrik_elements element

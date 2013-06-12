@@ -33,7 +33,7 @@ class EmundusViewLearningAgreement extends JView
 	
     function display($tpl = null)
     {
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -41,9 +41,9 @@ class EmundusViewLearningAgreement extends JView
 			die("You are not allowed to access to this page.");
 		}
 		
-		$teaching_unity =& $this->get('TeachingUnity');
-		$learning_agreement_status =& $this->get('LearningAgreementSatus');
-		$incharge = & $this->get('PersonneInCharge');
+		$teaching_unity = $this->get('TeachingUnity');
+		$learning_agreement_status = $this->get('LearningAgreementSatus');
+		$incharge =  $this->get('PersonneInCharge');
 
 		$this->assignRef('teaching_unity', $teaching_unity);
 		$this->assignRef('learning_agreement_status', $learning_agreement_status);

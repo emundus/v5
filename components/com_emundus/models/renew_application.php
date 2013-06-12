@@ -24,8 +24,8 @@ class EmundusModelRenew_application extends JModel {
 	 */
 	function __construct($model = 'renew_application'){
 		parent::__construct();
-		$this->_db =& JFactory::getDBO();
-		$this->_user =& JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		$this->_user = JFactory::getUser();
 	}
 	
 	function getSchoolyear($profile){
@@ -49,7 +49,7 @@ class EmundusModelRenew_application extends JModel {
 	}
 	
 	function isCompleteApplication($user){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$db->setQuery('SELECT * FROM #__emundus_declaration WHERE user='.$user);
 		$db->query();
 		if($db->getNumRows() == 1) return true;

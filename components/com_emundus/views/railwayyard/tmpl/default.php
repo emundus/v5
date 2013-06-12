@@ -6,7 +6,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 JHTML::_( 'behavior.mootools' );
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
-$eMConfig =& JComponentHelper::getParams('com_emundus');
+$eMConfig = JComponentHelper::getParams('com_emundus');
 
 /*$final_grade_values = $eMConfig->get('final_grade_values');
 $final_grade_labels = $eMConfig->get('final_grade_labels');
@@ -29,7 +29,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 // Gettig the orderid if there is one.
 $s_elements = $session->get('s_elements');
 $s_elements_values = $session->get('s_elements_values');
@@ -39,7 +39,7 @@ if (count($search)==0) {
 	$search_values = $s_elements_values;
 }
 
-$db =& JFactory::getDBO();
+$db = JFactory::getDBO();
 $query = 'SELECT sub_values, sub_labels FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 $db->setQuery( $query );
 $result = $db->loadRowList();
@@ -158,7 +158,7 @@ if (count($search)>0 && isset($search) && is_array($search)) {
 if(!empty($this->users)) {
 	if($tmpl == 'component') {
 			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('').'"/>'.JText::_('').'</h3>';
-			$document =& JFactory::getDocument();
+			$document = JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
 			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('').'"/>'.JText::_('').'</legend>';

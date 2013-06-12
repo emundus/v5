@@ -12,7 +12,7 @@ $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $v = JRequest::getVar('view', null, 'GET', 'none',0);
 
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 
 ?>
 <div id="em_campaigns">

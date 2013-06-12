@@ -32,9 +32,9 @@ class EmundusHelperFilters {
 	function clear() {
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
-		$menu = &JSite::getMenu();
+		$current_user = JFactory::getUser();
 		$current_menu  = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
 		
@@ -107,7 +107,7 @@ class EmundusHelperFilters {
 	}
 
 	function getCurrentCampaign(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT year as schoolyear 
 				FROM #__emundus_setup_campaigns 
 				WHERE published = 1 AND end_date > NOW()
@@ -117,7 +117,7 @@ class EmundusHelperFilters {
 	}
 
 	function getCurrentCampaignsID(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT id 
 				FROM #__emundus_setup_campaigns 
 				WHERE published = 1 AND end_date > NOW()
@@ -127,7 +127,7 @@ class EmundusHelperFilters {
 	}
 
 	function getCampaigns() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT id, label FROM #__emundus_setup_campaigns WHERE published=1 ORDER BY year DESC';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
@@ -135,7 +135,7 @@ class EmundusHelperFilters {
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -145,7 +145,7 @@ class EmundusHelperFilters {
 
 	function getCampaignByID($id)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_setup_campaigns WHERE id='.$id;
 		$db->setQuery( $query );
 
@@ -153,7 +153,7 @@ class EmundusHelperFilters {
 	}
 
 	function getApplicants(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label
 		FROM #__emundus_setup_profiles esp 
 		WHERE esp.published =1';
@@ -162,7 +162,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getProfiles(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -172,7 +172,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getEvaluators(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT u.id, u.name
 		FROM #__users u
 		LEFT JOIN #__emundus_users eu ON u.id = eu.user_id
@@ -185,7 +185,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getGroupsEval(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ege.group_id
 		FROM #__emundus_groups_eval ege
 		ORDER BY ege.group_id';
@@ -195,7 +195,7 @@ class EmundusHelperFilters {
 	}
 
 	function getGroups(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
 		WHERE esg.published=1 
@@ -205,7 +205,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getSchoolyears(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(year) as schoolyear
 			FROM #__emundus_setup_campaigns 
 			ORDER BY schoolyear DESC';
@@ -214,14 +214,14 @@ class EmundusHelperFilters {
 	}
 	
 	function getFinal_grade(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT name, params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
 		$db->setQuery( $query );
 		return EmundusHelperFilters::insertValuesInQueryResult($db->loadAssocList('name'), array("sub_values", "sub_labels"));
 	}
 	
 	function getMissing_doc(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(esap.attachment_id), esa.value
 				FROM #__emundus_setup_attachment_profiles esap
 				LEFT JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id';
@@ -230,7 +230,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getElements(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
 				FROM #__fabrik_elements element 
@@ -252,7 +252,7 @@ class EmundusHelperFilters {
 
 	// @params string List of Fabrik groups comma separated
 	function getElementsByGroups($groups){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.name, element.label, element.plugin, element.id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
 				FROM #__fabrik_elements element 
@@ -274,7 +274,7 @@ class EmundusHelperFilters {
 	}
 	
 	function getElementsOther($tables){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id as group_id, groupe.label AS group_label, element.params AS element_attribs,
 			INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label 
 				FROM #__fabrik_elements element
@@ -304,7 +304,7 @@ class EmundusHelperFilters {
 	
 	function getElementsValuesOther($element_id){
 		//jimport( 'joomla.registry.format.json' );
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT params FROM #__fabrik_elements element WHERE id='.$element_id;
 		$db->setQuery($query);
 		$res = $db->loadResult();
@@ -314,7 +314,7 @@ class EmundusHelperFilters {
 	}
 
 	function getElementsName($elements_id){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.name AS element_name, element.id, tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias
 				FROM #__fabrik_elements element
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
@@ -327,7 +327,7 @@ class EmundusHelperFilters {
 	
 	function buildOptions($element_name, $params){ 
 		if(!empty($params->join_key_column)) {
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			if($element_name == 'result_for')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
 			elseif($element_name == 'campaign_id')
@@ -413,7 +413,7 @@ class EmundusHelperFilters {
 				$current_filter .= '<input name="'.$elements_values.'[]" width="30" value="'.$search_value.'" />';
 		}
 		/*else if (!empty($selected)){
-			$elements_att =& EmundushelperFilters::getElementsValuesOther($selected->id);
+			$elements_att = EmundushelperFilters::getElementsValuesOther($selected->id);
 			$sub_values = $elements_att->sub_values;//explode('|', $elements_att[0]->sub_values);
 			$sub_labels = $elements_att->sub_labels;//explode('|', $elements_att[0]->sub_labels);
 			$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="javascript:submit()">
@@ -441,7 +441,7 @@ class EmundusHelperFilters {
 	function createFilterBlock($params, $types, $tables){
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
 		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', @$params['profile'] );
@@ -460,7 +460,7 @@ class EmundusHelperFilters {
 		
 		$option;
 		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
-		$research_filters =& EmundusHelperFilters::getEmundusFilters();
+		$research_filters = EmundusHelperFilters::getEmundusFilters();
 		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid;border-radius: 10px;">
 		<table style="border-spacing:10px;">
 			<tr>
@@ -569,7 +569,7 @@ class EmundusHelperFilters {
 		}
 		
 		if($params['schoolyear'] !== NULL){
-			$schoolyearList =& EmundusHelperFilters::getSchoolyears();
+			$schoolyearList = EmundusHelperFilters::getSchoolyears();
 			$schoolyear = '';
 			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
 																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
@@ -588,7 +588,7 @@ class EmundusHelperFilters {
 		}
 
 		if(@$params['campaign'] !== NULL){
-			$campaignList =& EmundusHelperFilters::getCampaigns();
+			$campaignList = EmundusHelperFilters::getCampaigns();
 			$campaign = '';
 			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
 																  <div class="em_label"><label>'.JText::_('CAMPAIGNS').'</label></div>
@@ -607,7 +607,7 @@ class EmundusHelperFilters {
 		}
 		
 		if(@$params['missing_doc'] !== NULL){
-			$missing_docList =& EmundusHelperFilters::getMissing_doc();
+			$missing_docList = EmundusHelperFilters::getMissing_doc();
 			$missing_doc = '';
 			if (@$types['missing_doc'] != 'hidden') $missing_doc .= '<div class="em_filters" id="missing_doc"><div class="em_label">
 																	<label>'.JText::_('MISSING_DOC').'</label></div>
@@ -661,7 +661,7 @@ class EmundusHelperFilters {
 		}
 		
 		//Advance filter builtin
-		$elements =& EmundusHelperFilters::getElements();
+		$elements = EmundusHelperFilters::getElements();
 		$adv_filter = '<div class="em_filters" id="em_adv_filters"><a href="javascript:addElement();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>';
         $adv_filter .= '<input type="hidden" value="0" id="theValue" />';
         $adv_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
@@ -709,7 +709,7 @@ class EmundusHelperFilters {
 
 		//Other filters builtin
 		if($params['other'] !== NULL && !empty($tables) && $tables[0] != ""){
-			$other_elements =& EmundusHelperFilters::getElementsOther($tables);
+			$other_elements = EmundusHelperFilters::getElementsOther($tables);
 			$other_filter = '<div class="em_filters" id="em_other_filters"><a href="javascript:addElementOther();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('OTHER_FILTERS').'</span>';
         	$other_filter .= '<input type="hidden" value="0" id="theValue_other" />';
         	$other_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
@@ -765,8 +765,8 @@ class EmundusHelperFilters {
 	
 		function getEmundusFilters(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND item_id='.$itemid;
 		$db->setQuery( $query );
 		return $db->loadObjectlist();

@@ -13,8 +13,8 @@ if ($action == 'DONE') {
 	echo '</fieldset></p>';
 } 
 $student_id = JRequest::getVar('student_id', null, 'GET', 'none',0);
-$user =& JFactory::getUser();
-$student =& JFactory::getUser($student_id);
+$user = JFactory::getUser();
+$student = JFactory::getUser($student_id);
 $status = @$this->learning_agreement_status[$student_id]->status;
 echo '<h1>'.$student->name.' #'.$student->id.'</h1>';
 ?>

@@ -3,7 +3,7 @@ JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 
 defined('_JEXEC') or die('Restricted access'); 
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 $chemin = EMUNDUS_PATH_REL;
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 

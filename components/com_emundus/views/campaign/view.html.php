@@ -54,10 +54,10 @@ class EmundusViewCampaign extends JView
 		$my_campaigns = $this->get('MyCampaign');
 		$this->assignRef('my_campaigns', $my_campaigns);
 		
-		$pagination =& $this->get('Pagination');
+		$pagination = $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
 		
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		$lists['filter_order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['filter_order']     = $state->get( 'filter_order' );
         

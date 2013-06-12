@@ -25,7 +25,7 @@ jimport('joomla.application.component.helper');
  */
 class EmundusHelperEmails{
 	function createEmailBlock($params){
-		$current_user =& JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$email = '<div class="em_email_block">';
 		if(in_array('default',$params)){
 			$email .= '<fieldset>
@@ -110,7 +110,7 @@ class EmundusHelperEmails{
 			$mail_body = $editor->display( 'mail_body', '', '99%', '400', '20', '20', false, 'mail_body', null, null );
 
 			$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
-			$applicant =& JFactory::getUser($student_id);
+			$applicant = JFactory::getUser($student_id);
 	
 			$email.= '<fieldset>
 				<legend> 
@@ -138,15 +138,15 @@ class EmundusHelperEmails{
 	}
 	
 	function sendDefaultEmail(){
-		$current_user =& JFactory::getUser();
+		$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($current_user->id,$access)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
-		$mainframe =& JFactory::getApplication();
-		$db =& JFactory::getDBO();
+		$mainframe = JFactory::getApplication();
+		$db = JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
@@ -228,7 +228,7 @@ class EmundusHelperEmails{
 		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[APPLICANTS_LIST\]/', '/\[SITE_URL\]/', '/\[EVAL_CRITERIAS\]/', '/\[EVAL_PERIOD\]/', '/\n/');
 		$error=0;
 		foreach ($users as $uid) {
-			$user =& JFactory::getUser($uid);
+			$user = JFactory::getUser($uid);
 			
 			$query = 'SELECT applicant_id
 						FROM #__emundus_groups_eval
@@ -238,7 +238,7 @@ class EmundusHelperEmails{
 			$applicants=$db->loadResultArray();
 			$list = '<ul>';
 			foreach($applicants as $ap) {
-				$app =& JFactory::getUser($ap);
+				$app = JFactory::getUser($ap);
 				$list .= '<li>'.$app->name.' ['.$app->id.']</li>';
 			}
 			$list .= '</ul>';
@@ -283,15 +283,15 @@ class EmundusHelperEmails{
 	
 	function sendCustomEmail(){
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ag_id = JRequest::getVar('mail_group', null, 'POST', 'none',0);
 		$ae_id = JRequest::getVar('mail_user', null, 'POST', 'none',0);
 		$subject = JRequest::getVar('mail_subject', null, 'POST', 'none',0);
@@ -368,7 +368,7 @@ class EmundusHelperEmails{
 
 		//send to selected people
 		foreach ($users as $uid) {
-			$user =& JFactory::getUser($uid);
+			$user = JFactory::getUser($uid);
 			
 			$query = 'SELECT applicant_id
 					  FROM #__emundus_groups_eval
@@ -379,7 +379,7 @@ class EmundusHelperEmails{
 			$list = '<ul>';
 			
 			foreach($applicants as $ap) {
-				$app =& JFactory::getUser($ap);
+				$app = JFactory::getUser($ap);
 				$list .= '<li>'.$app->name.' ['.$app->id.']</li>';
 			}
 			$list .= '</ul>';
@@ -413,17 +413,17 @@ class EmundusHelperEmails{
 	
 	function sendApplicantEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
 		
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
-		$db	= &JFactory::getDBO();
-		$current_user =& JFactory::getUser();
+		$db	= JFactory::getDBO();
+		$current_user = JFactory::getUser();
 
 		$cid		= JRequest::getVar( 'ud', array(), 'post', 'array' );
 		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );

@@ -45,7 +45,7 @@ class EmundusControllerUsers extends JController {
 			$default = 'users';
 			JRequest::setVar('view', $default );
 		}
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -54,7 +54,7 @@ class EmundusControllerUsers extends JController {
     }
 
 	function _blockuser($uid) {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
@@ -64,7 +64,7 @@ class EmundusControllerUsers extends JController {
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		if(!empty($uid) && is_numeric($uid)) {
 			if($uid == 62) JError::raiseError(500, JText::_('You cannot delete administrator'));
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$db->setQuery('UPDATE #__users SET block = 1 WHERE id = '.mysql_real_escape_string($uid));
 			$db->Query();
 			$db->setQuery('UPDATE #__emundus_users SET disabled = 1, disabled_date = NOW() WHERE user_id = '.mysql_real_escape_string($uid));
@@ -76,7 +76,7 @@ class EmundusControllerUsers extends JController {
 	function _unblockuser($uid) {
 		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$itemid=JSite::getMenu()->getActive()->id;
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
 			return;
@@ -86,7 +86,7 @@ class EmundusControllerUsers extends JController {
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		if(!empty($uid) && is_numeric($uid)) {
 			if($uid == 62) JError::raiseError(500, JText::_('You cannot delete administrator'));
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$db->setQuery('UPDATE #__users SET block = 0 WHERE id = '.mysql_real_escape_string($uid));
 			$db->Query();
 			$db->setQuery('UPDATE #__emundus_users SET disabled = 0 WHERE user_id = '.mysql_real_escape_string($uid));
@@ -106,7 +106,7 @@ class EmundusControllerUsers extends JController {
 		// $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', null, 0);
 		
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		$mainframe->setUserState($options.'filter_order', '');
         $mainframe->setUserState($options.'filter_order_Dir', '');
         $mainframe->setUserState($options.'limit', '');
@@ -127,11 +127,11 @@ class EmundusControllerUsers extends JController {
 	function setSchoolyear(){
 		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$itemid=JSite::getMenu()->getActive()->id;
-		$mainframe =& JFactory::getApplication();
-		$user =& JFactory::getUser();
+		$mainframe = JFactory::getApplication();
+		$user = JFactory::getUser();
 		if($user->profile <= 2) {
 			$url = JRequest::getVar('url', null, 'POST', 'none',0);
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$schoolyear = JRequest::getVar('schoolyear', null, 'POST', 'none',0);
 			$query = 'UPDATE #__emundus_setup_profiles 
 					SET schoolyear="'.$schoolyear.'" 
@@ -148,7 +148,7 @@ class EmundusControllerUsers extends JController {
 	function archive() {
 		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$itemid=JSite::getMenu()->getActive()->id;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
@@ -176,7 +176,7 @@ class EmundusControllerUsers extends JController {
 		if(empty($itemid)){
 			$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$time_date = (date('Y-m-d H:i:s'));
 		
 		$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('".$time_date."',".$user_id.",'".$name."',".$db->quote($constraints).",".$itemid.")";
@@ -191,7 +191,7 @@ class EmundusControllerUsers extends JController {
 	}
 	
 	function lastSavedFilter(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query="SELECT MAX(id) FROM #__emundus_filters";
 		$db->setQuery( $query );
 		$result=$db->loadResult();
@@ -200,7 +200,7 @@ class EmundusControllerUsers extends JController {
 	
 	function getConstraintsFilter(){
 		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query="SELECT constraints FROM #__emundus_filters WHERE id=".$filter_id;
 		// echo $query;
 		$db->setQuery( $query );
@@ -210,7 +210,7 @@ class EmundusControllerUsers extends JController {
 	
 	function deletefilters(){
 		$filter_id = JRequest::getVar('filter_id', null, 'POST', 'none',0);
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query="DELETE FROM #__emundus_filters WHERE id=".$filter_id;
 		// echo $query.'<BR />';
 		$db->setQuery( $query );
@@ -238,7 +238,7 @@ class EmundusControllerUsers extends JController {
 	function export_to_xls($reqids=array(),$el=array()) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -254,14 +254,14 @@ class EmundusControllerUsers extends JController {
 	
 	function export_zip() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
 		require_once('libraries/emundus/zip.php');
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);

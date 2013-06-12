@@ -41,7 +41,7 @@ class EmundusViewList extends JView
 	
 	function display($tpl = null)
     {
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
 		$menu = JSite::getMenu();
@@ -57,7 +57,7 @@ class EmundusViewList extends JView
 		
 		$filter_comment = JRequest::getVar('comments', null, 'POST', 'none', 0);
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		if(empty($filter_comment) && $session->has( 'comments' )) $filter_comment = $session->get( 'comments' );
 		
 		JHTML::_('behavior.modal');
@@ -103,7 +103,7 @@ class EmundusViewList extends JView
 		}
 		unset($filts_names); unset($filts_values); unset($filts_types);
 		
-		$filters =& EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
+		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, $tables);
 		$this->assignRef('filters', $filters);
 		unset($filts_details); unset($filts_options);
 		
@@ -112,14 +112,14 @@ class EmundusViewList extends JView
 		$this->assignRef('show_comments', $show_comments);
 		
 		//User list
-		if (($users =& $this->get('Users')) === false){
+		if (($users = $this->get('Users')) === false){
 			JController::setRedirect('index.php?');
 		exit();
 		}
 		$this->assignRef( 'users', $users );
 
 		//Call the state object 
-		if (($state =& $this->get( 'state' )) === false)
+		if (($state = $this->get( 'state' )) === false)
 			JController::setRedirect('index.php?');
 		// Get the values from the state object that were inserted in the model's construct function 
 		foreach ($state as $key => $value)
@@ -142,16 +142,16 @@ class EmundusViewList extends JView
 		*/
         $this->assignRef( 'lists', $lists );
 		
-        $pagination =& $this->get('Pagination');
+        $elements = $this->get('Elements');
         $this->assignRef('pagination', $pagination);
 		
-		$current_schoolyear =& implode(', ',$this->get('CurrentCampaign'));
+		$current_schoolyear = implode(', ',$this->get('CurrentCampaign'));
 		$this->assignRef( 'current_schoolyear', $current_schoolyear );
 		
 		//Export
 		$options = array('zip', 'xls');
 		if($this->_user->profile!=16) // devra être remplacé par un paramétrage au niveau du menu
-			$export_icones =& EmundusHelperExport::export_icones($options);
+			$export_icones = EmundusHelperExport::export_icones($options);
 		$this->assignRef('export_icones', $export_icones);
 		unset($options);
 		
@@ -166,7 +166,7 @@ class EmundusViewList extends JView
 		$groups = EmundusHelperFilters::getGroups();
 		$this->assignRef( 'groups', $groups );
 		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('evaluator', $blocks_list)) {
-			if($this->_user->profile!=16) $affectEval =& EmundusHelperList::affectEvaluators();
+			if($this->_user->profile!=16) $affectEval = EmundusHelperList::affectEvaluators();
 		}
 		else $affectEval = '';
 		$this->assignRef('affectEval', $affectEval);
@@ -189,7 +189,7 @@ class EmundusViewList extends JView
 		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('email_evaluator', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('default', 'custom');
-				$email_evaluator =& EmundusHelperEmails::createEmailBlock($options);
+				$email_evaluator = EmundusHelperEmails::createEmailBlock($options);
 			}
 		}
 		else $email_evaluator = '';
@@ -197,7 +197,7 @@ class EmundusViewList extends JView
 		if(EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access) && in_array('email_applicant', $blocks_list)){
 			if($this->_user->profile!=16){
 				$options = array('applicants','default');
-				$email_applicant =& EmundusHelperEmails::createEmailBlock($options);
+				$email_applicant = EmundusHelperEmails::createEmailBlock($options);
 				unset($options);
 			}
 		}
@@ -206,7 +206,7 @@ class EmundusViewList extends JView
 		
 		//List
 		//$options = array('checkbox', 'gender', 'details');
-		$actions =& EmundusHelperList::createActionsBlock($users, $actions);
+		$actions = EmundusHelperList::createActionsBlock($users, $actions);
 		$this->assignRef('actions', $actions);
 		unset($options); 
 		
@@ -221,8 +221,8 @@ class EmundusViewList extends JView
 			$this->assignRef('app_comments', $app_comments);
 		
 		// Columns
-		$appl_cols =& $this->get('ApplicantColumns');
-		$filter_cols =& $this->get('SelectList'); 
+		$appl_cols = $this->get('ApplicantColumns');
+		$filter_cols = $this->get('SelectList'); 
 		
 		if($filter_comment == 1)
 			$filter_cols[] = array('name' =>'application_comments', 'label'=>'APPLICATION_COMMENTS');
@@ -231,13 +231,13 @@ class EmundusViewList extends JView
 		$this->assignRef( 'header_values', $header_values );
 		
 		// Javascript
-		$onSubmitForm =& EmundusHelperJavascript::onSubmitForm();
+		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
-		$addElement =& EmundusHelperJavascript::addElement();
+		$addElement = EmundusHelperJavascript::addElement();
 		$this->assignRef('addElement', $addElement);
-		$addElementOther =& EmundusHelperJavascript::addElementOther($tables);
+		$addElementOther = EmundusHelperJavascript::addElementOther($tables);
 		$this->assignRef('addElementOther', $addElementOther);
-		$delayAct =& EmundusHelperJavascript::delayAct();
+		$delayAct = EmundusHelperJavascript::delayAct();
 		$this->assignRef('delayAct', $delayAct);
 		
 		parent::display($tpl);

@@ -31,10 +31,11 @@ class EmundusModelIncomplete extends JModel
 		parent::__construct();
 		global $option;
 		
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
 		// Get current menu parameters
-		$menu = &JSite::getMenu();
+		$current_user = JFactory::getUser();
+		$menu=JSite::getMenu();
 		$current_menu  = $menu->getActive();
 
 		/* 
@@ -113,7 +114,7 @@ class EmundusModelIncomplete extends JModel
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->elements_default = array();
-		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);	
+		$default_elements = EmundusHelperFilters::getElementsName($this->elements_id);	
 		if (!empty($default_elements))
 			foreach ($default_elements as $def_elmt) {
 				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
@@ -143,7 +144,7 @@ class EmundusModelIncomplete extends JModel
 	{
         global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         $orderby = '';
 		$filter_order     = $this->getState('filter_order');
@@ -160,7 +161,7 @@ class EmundusModelIncomplete extends JModel
 
 	function getCampaign()
 	{
-	/*	$db =& JFactory::getDBO();
+	/*	$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -179,7 +180,7 @@ class EmundusModelIncomplete extends JModel
 
 	function getProfileAcces($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;
@@ -240,7 +241,7 @@ class EmundusModelIncomplete extends JModel
 	}
 	
 	function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default){
-		$current_user 			= & JFactory::getUser();
+		$current_user 			= JFactory::getUser();
 		$search					= $this->getState('elements');
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
@@ -297,7 +298,7 @@ class EmundusModelIncomplete extends JModel
 	}
 	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
-		//$eMConfig =& JComponentHelper::getParams('com_emundus');
+		//$eMConfig = JComponentHelper::getParams('com_emundus');
 		$search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');
 		$search_other			= $this->getState('elements_other');
@@ -421,7 +422,7 @@ class EmundusModelIncomplete extends JModel
 
 	function getProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 					FROM #__emundus_setup_profiles esp 
 					INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -432,7 +433,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getProfilesByIDs($ids)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -444,7 +445,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getAuthorProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -455,7 +456,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getApplicantsProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp WHERE esp.published=1 ORDER BY esp.label';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
@@ -463,7 +464,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getApplicantsProfilesByID($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eup.profile_id FROM #__emundus_users_profiles eup WHERE eup.user_id='.$user;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -471,7 +472,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getApplicantsByProfile($profile)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id='.$profile;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -479,7 +480,7 @@ class EmundusModelIncomplete extends JModel
 	
 	function getAuthorUsers()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT u.id, u.gid, u.name FROM #__users u WHERE u.gid=19';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
@@ -487,14 +488,14 @@ class EmundusModelIncomplete extends JModel
 	
 	function getMobility()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esm.id, esm.label, esm.value FROM #__emundus_setup_mobility esm ORDER BY ordering';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
 	
 	function getElements(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
 				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
 				 tab.db_table_name AS table_name, tab.label AS table_label
@@ -531,7 +532,7 @@ class EmundusModelIncomplete extends JModel
 	}
 	
 	function getSchoolyears(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
 		FROM #__emundus_users 
 		WHERE schoolyear is not null AND schoolyear != "" 

@@ -42,10 +42,10 @@ class EmundusViewUser_registrations extends JView
     function display($tpl = null)
     {	
 	   
-		 $document =& JFactory::getDocument();
+		 $document = JFactory::getDocument();
 		 $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -55,10 +55,10 @@ class EmundusViewUser_registrations extends JView
 		$items = & $this->get('User');
 		
 		/* Call the state object */
-		$state =& $this->get( 'State' );
+		$state = $this->get( 'state' );
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' ); 
-		$pagination =& $this->get('Pagination');
+		$elements = $this->get('Elements');
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$this->assignRef('state', $state);
 		$this->assignRef( 'lists', $lists );

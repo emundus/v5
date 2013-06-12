@@ -6,7 +6,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media'.DS.'com_emundus'.DS.'css'.DS );
 
-$document   =& JFactory::getDocument();
+$document   = JFactory::getDocument();
 
 $current_user 		= JFactory::getUser();
 $current_p 			= JRequest::getVar('profile', null, 'POST', 'none',0);
@@ -26,7 +26,7 @@ $itemid 			= JRequest::getVar('Itemid', null, 'GET', 'none',0);
 //$schoolyears 		= JRequest::getVar('schoolyears', null, 'POST', 'none',0);
 
 // Starting a session.
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 $session->clear( 'uid' );
 $session->clear( 'profile' );
 $session->clear( 'quick_search' );
@@ -67,7 +67,7 @@ if(!empty($this->users)) { ?>
 <?php 
 	if($tmpl == 'component') {
 		echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</h3>';
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
 		echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('INCOMPLETED_APPLICANTS_LIST').'"/>'.JText::_('INCOMPLETED_APPLICANTS_LIST').'</legend>';

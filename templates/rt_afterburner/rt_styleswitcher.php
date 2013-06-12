@@ -6,7 +6,7 @@ $cookie_time = time()+31536000;
 $template_properties = array('tstyle');
 
 foreach ($template_properties as $tprop) {
-    $my_session = &JFactory::getSession();
+    $my_session = JFactory::getSession();
 	
 	if (isset($_REQUEST[$tprop])) {
 	    $$tprop = htmlentities(JRequest::getString($tprop, null, 'get'));

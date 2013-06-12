@@ -28,7 +28,7 @@ class EmundusControllerGroups extends JController {
 			$default = 'groups';
 			JRequest::setVar('view', $default );
 		}
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
@@ -49,13 +49,13 @@ class EmundusControllerGroups extends JController {
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
@@ -109,13 +109,13 @@ class EmundusControllerGroups extends JController {
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
@@ -150,7 +150,7 @@ class EmundusControllerGroups extends JController {
 	}
 	
 	function delassessor() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
 			return;
@@ -163,7 +163,7 @@ class EmundusControllerGroups extends JController {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
 		
 		if(!empty($aid) && is_numeric($aid)) {
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.mysql_real_escape_string($aid);
 			if(!empty($pid) && is_numeric($pid))
 				$query .= ' AND group_id='.mysql_real_escape_string($pid);
@@ -178,14 +178,14 @@ class EmundusControllerGroups extends JController {
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
 	function defaultEmail($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$mainframe =& JFactory::getApplication();
-		$db =& JFactory::getDBO();
+		$mainframe = JFactory::getApplication();
+		$db = JFactory::getDBO();
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
@@ -255,7 +255,7 @@ class EmundusControllerGroups extends JController {
 		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[APPLICANTS_LIST\]/', '/\[SITE_URL\]/', '/\[EVAL_CRITERIAS\]/', '/\[EVAL_PERIOD\]/', '/\n/');
 		$error=0;
 		foreach ($users as $uid) {
-			$user =& JFactory::getUser($uid);
+			$user = JFactory::getUser($uid);
 			
 			$query = 'SELECT applicant_id
 						FROM #__emundus_groups_eval
@@ -267,7 +267,7 @@ class EmundusControllerGroups extends JController {
 			if (count($applicants) > 0) {
 				$list = '<ul>';
 				foreach($applicants as $ap) {
-					$app =& JFactory::getUser($ap);
+					$app = JFactory::getUser($ap);
 					$list .= '<li>'.$app->name.' ['.$app->id.']</li>';
 				}
 				$list .= '</ul>';
@@ -308,14 +308,14 @@ class EmundusControllerGroups extends JController {
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
 	function customEmail() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("You are not allowed to access to this page.");
 		}
-		$mainframe =& JFactory::getApplication();
-		$db =& JFactory::getDBO();
+		$mainframe = JFactory::getApplication();
+		$db = JFactory::getDBO();
 		$ag_id = JRequest::getVar('mail_group', null, 'POST', 'none',0);
 		$ae_id = JRequest::getVar('mail_user', null, 'POST', 'none',0);
 		$subject = JRequest::getVar('mail_subject', null, 'POST', 'none',0);
@@ -390,7 +390,7 @@ class EmundusControllerGroups extends JController {
 		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[APPLICANTS_LIST\]/', '/\[SITE_URL\]/', '/\[EVAL_CRITERIAS\]/', '/\[EVAL_PERIOD\]/', '/\n/');
 
 		foreach ($users as $uid) {
-			$user =& JFactory::getUser($uid);
+			$user = JFactory::getUser($uid);
 			
 			$query = 'SELECT applicant_id
 					  FROM #__emundus_groups_eval
@@ -401,7 +401,7 @@ class EmundusControllerGroups extends JController {
 			$list = '<ul>';
 			
 			foreach($applicants as $ap) {
-				$app =& JFactory::getUser($ap);
+				$app = JFactory::getUser($ap);
 				$list .= '<li>'.$app->name.' ['.$app->id.']</li>';
 			}
 			$list .= '</ul>';

@@ -35,21 +35,21 @@ class EmundusViewControlfiles extends JView
 	
     function display($tpl = null)
     {
-		//$current_user =& JFactory::getUser();	
+		//$current_user = JFactory::getUser();	
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
 
-		$files =& $this->get('Files');
-		$listFiles =& $this->get('listFiles');
+		$files = $this->get('Files');
+		$listFiles = $this->get('listFiles');
 		
 		$this->assignRef('files', $files); 
 		$this->assignRef('listFiles', $listFiles); 
         
-		$total =& $this->get('Total'); 
+		$total = $this->get('Total'); 
 		
 		/* Call the state object */
-		$state =& $this->get( 'state' );
+		$state = $this->get( 'state' );
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );

@@ -35,7 +35,7 @@ class EmundusViewAcademicTranscript extends JView
 	
     function display($tpl = null)
     {
-		//$current_user =& JFactory::getUser();
+		//$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -43,7 +43,7 @@ class EmundusViewAcademicTranscript extends JView
 			die("You are not allowed to access to this page.");
 		}
 		
-		$learning_units =& $this->get('StudentLearningUnits');
+		$learning_units = $this->get('StudentLearningUnits');
 
 		$this->assignRef('learning_units', $learning_units);
 		

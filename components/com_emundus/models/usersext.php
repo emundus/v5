@@ -118,7 +118,7 @@ class TableUsersext extends JTable
 	 * belong to. 
 	 */
 	function getParent(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = "SELECT * FROM `#__users` WHERE id = {$this->id}";
 		$db->setQuery( $query );
 		return $db->loadObject();

@@ -29,9 +29,9 @@ class EmundusControllerRailwayyard extends JController {
 			JRequest::setVar('view', $default );
 		}
 		
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if ($user->usertype == "Registered") {
-			$checklist =& $this->getView( 'checklist', 'html' );
+			$checklist = $this->getView( 'checklist', 'html' );
 			$checklist->setModel( $this->getModel( 'checklist'), true );
 			$checklist->display();
 		} else {
@@ -41,7 +41,7 @@ class EmundusControllerRailwayyard extends JController {
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -50,12 +50,12 @@ class EmundusControllerRailwayyard extends JController {
 	}
 	
 	function set_profile(){
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		
 		$sid = JRequest::getVar('sid', null, 'GET', 'int',0);
 		$pid = JRequest::getVar('pid', null, 'GET', 'int',0);
@@ -78,15 +78,15 @@ class EmundusControllerRailwayyard extends JController {
 
 	////// Export complete application form with evaluation ///////////////////
 	function export_to_xls($reqids = null) {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		require_once('libraries/emundus/excel.php');
 
-		$db	= &JFactory::getDBO();
+		$db	= JFactory::getDBO();
 		$query = 'SELECT distinct(ee.student_id) 
 			 	  FROM #__emundus_evaluations AS ee
 				  INNER JOIN #__emundus_users AS eu ON eu.user_id=ee.student_id 
@@ -104,12 +104,12 @@ class EmundusControllerRailwayyard extends JController {
 	
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);

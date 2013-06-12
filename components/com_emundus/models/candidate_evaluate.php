@@ -24,7 +24,7 @@ class EmundusModelCandidate_evaluate extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         // Get pagination request variables
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
@@ -46,7 +46,7 @@ class EmundusModelCandidate_evaluate extends JModel
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -67,7 +67,7 @@ class EmundusModelCandidate_evaluate extends JModel
 		$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
 		$nationality = JRequest::getVar('nationality', null, 'POST', 'none', 0);
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$s_elements = $session->get('s_elements');
 		$s_elements_values = $session->get('s_elements_values');
 
@@ -75,8 +75,8 @@ class EmundusModelCandidate_evaluate extends JModel
 			$search = $s_elements;
 			$search_values = $s_elements_values;
 		}
-		$user =& JFactory::getUser();
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$user = JFactory::getUser();
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$cesaa = $eMConfig->get('can_evaluators_see_all_applicants', '0');
 		
 		$search_name=JRequest::getVar('lastname',null,'POST');
@@ -172,7 +172,7 @@ class EmundusModelCandidate_evaluate extends JModel
 	
 	function getElements()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
 				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
 				 tab.db_table_name AS table_name, tab.label AS table_label

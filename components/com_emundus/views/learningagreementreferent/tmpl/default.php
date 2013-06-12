@@ -4,7 +4,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 defined('_JEXEC') or die('Restricted access'); 
-$document   =& JFactory::getDocument();
+$document   = JFactory::getDocument();
 $current_user = JFactory::getUser();
 $current_p = JRequest::getVar('groups', null, 'POST', 'none',0);
 $current_pid = JRequest::getVar('pid', null, 'POST', 'none',0);
@@ -23,7 +23,7 @@ $filter_order = JRequest::getVar('filter_order', null, 'GET', 'none',0);
 $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 // Starting a session.
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 // Gettig the orderid if there is one.
 $s_elements = $session->get('s_elements');
 $s_elements_values = $session->get('s_elements_values');
@@ -185,7 +185,7 @@ if(!empty($this->users)) {
 <?php 
 	if($tmpl == 'component') {
 			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</h3>';
-			$document =& JFactory::getDocument();
+			$document = JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 	}else{
 			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('SELECTED_APPLICANTS_LIST').'"/>'.JText::_('SELECTED_APPLICANTS_LIST').'</legend>';
@@ -261,7 +261,7 @@ innerHeight}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=checkl
 		</td>
 		<td>
 		<?php 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eca.id, eca.user_id, eca.evaluator_id  
 					FROM #__emundus_confirmed_applicants as eca 
 					WHERE eca.user_id='.$user->id;

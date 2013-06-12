@@ -26,7 +26,7 @@ class EmundusModelProfile extends JModel
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db =& JFactory::getDBO();
+		$this->_db = JFactory::getDBO();
 	}
 
 	/**

@@ -36,10 +36,11 @@ class EmundusModelList extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
-		$menu = &JSite::getMenu();
+		$current_user = JFactory::getUser();
+		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 		/* 
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
@@ -114,7 +115,7 @@ class EmundusModelList extends JModel
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->elements_default = array();
-		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);
+		$default_elements = EmundusHelperFilters::getElementsName($this->elements_id);
 		if (!empty($default_elements))
 			foreach ($default_elements as $def_elmt) {
 				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
@@ -142,7 +143,7 @@ class EmundusModelList extends JModel
 	function _buildContentOrderBy(){
 		global $option;
 //echo '<pre>'; print_r($this->_applicants);
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
 		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
@@ -205,7 +206,7 @@ class EmundusModelList extends JModel
 		$search_other 			= JRequest::getVar('elements_other'			, NULL, 'POST', 'array', 0);
 		$search_values_other 	= JRequest::getVar('elements_values_other'	, NULL, 'POST', 'array', 0);
 		
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		
 		$query = 'SELECT DISTINCT(#__emundus_users.user_id), '.$tab.'.'.$elem.' AS '.$tab.'__'.$elem;
 		$query .= '	FROM #__emundus_users 
@@ -289,7 +290,7 @@ class EmundusModelList extends JModel
 	}
 	
 	function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default){
-		$current_user = & JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$search					= $this->getState('elements');//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$search_other			= $this->getState('elements_other');//$search_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
 		$schoolyears			= $this->getState('schoolyears');//$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array', 0);
@@ -344,7 +345,7 @@ class EmundusModelList extends JModel
 	}
 	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
-		//$eMConfig =& JComponentHelper::getParams('com_emundus');
+		//$eMConfig = JComponentHelper::getParams('com_emundus');
 		
 		$search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');

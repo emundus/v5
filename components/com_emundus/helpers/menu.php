@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusHelperMenu{
 
 	function buildMenuQuery($profile) {
-		$_db =& JFactory::getDBO();
+		$_db = JFactory::getDBO();
 		$query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbtables.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title 
 		FROM #__menu AS menu 
 		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.' 
@@ -30,7 +30,7 @@ class EmundusHelperMenu{
 	}
 
 	function buildMenuListQuery($profile) {
-		$_db =& JFactory::getDBO();
+		$_db = JFactory::getDBO();
 		$query = 'SELECT fbtables.db_table_name
 		FROM #__menu AS menu 
 		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.' 

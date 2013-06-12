@@ -27,10 +27,10 @@ class EmundusModelCampaign extends JModel
 		parent::__construct();
 		global $option;
 		
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
-		$this->_db =& JFactory::getDBO();
-		$this->_user =& JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		$this->_user = JFactory::getUser();
 		
 		// Get pagination request variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
@@ -63,7 +63,7 @@ class EmundusModelCampaign extends JModel
 	{ 
         global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         $orderby = '';
 		$filter_order     = $this->getState('filter_order');

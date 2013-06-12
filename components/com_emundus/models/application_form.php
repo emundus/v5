@@ -20,7 +20,7 @@ class EmundusModelApplication_form extends JModel
 	
 	function getUser(){
 		$user_id=JRequest::getVar('sid',null,'GET');
-		$db=& JFactory::getDBO();
+		$db= JFactory::getDBO();
 		if(empty($this->_user_data)){
 		$query='SELECT u.id AS user_id, a.filename AS avatar, c.lastname, c.firstname, c.profile, p.label AS cb_profile, c.profile, c.schoolyear AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, efg.Final_grade, ed.user, ed.time_date FROM #__users AS u 
 		LEFT JOIN #__emundus_users AS c ON c.user_id = u.id
@@ -37,8 +37,8 @@ class EmundusModelApplication_form extends JModel
 	}
 	
 	function getCanEvaluate(){
-		$db=& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db= JFactory::getDBO();
+		$user = JFactory::getUser();
 		$user_id=JRequest::getVar('sid',null,'GET');
 		
 	    $query='SELECT count(ege.applicant_id) FROM 
@@ -52,8 +52,8 @@ class EmundusModelApplication_form extends JModel
 	}
 	
 	function getAsBeenEvaluated(){
-		$db=& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db= JFactory::getDBO();
+		$user = JFactory::getUser();
 		$user_id=JRequest::getVar('sid',null,'GET');
 	    $query='SELECT count(ee.student_id) FROM 
 				#__emundus_evaluations AS ee 
@@ -64,8 +64,8 @@ class EmundusModelApplication_form extends JModel
 	}
 	
 	function getAsBeenEvaluatedByMe(){
-		$db=& JFactory::getDBO();
-		$current_user =& JFactory::getUser();
+		$db= JFactory::getDBO();
+		$current_user = JFactory::getUser();
 		$user_id=JRequest::getVar('sid',null,'GET');
 	    $query='SELECT ee.id FROM 
 				#__emundus_evaluations AS ee 
@@ -76,8 +76,8 @@ class EmundusModelApplication_form extends JModel
 	}
 	
 	function getComments(){ 
-		$user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
 		if(!EmundusHelperAccess::asEvaluatorAccessLevel($user->id)) {
 			JError::raiseWarning('403', JText::_('RESTRICT_ACCES_ON_COMMENTS')); 
 			return;

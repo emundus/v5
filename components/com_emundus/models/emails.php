@@ -26,8 +26,8 @@ class EmundusModelEmails extends JModel
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db =& JFactory::getDBO();
-		$this->_user =& JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		$this->_user = JFactory::getUser();
 	}
 
 	/**
@@ -115,7 +115,7 @@ class EmundusModelEmails extends JModel
 			$mail_from_name = $this->_user->name;
 			$mail_from = $this->_user->email;
 			$mail_to_id = JRequest::getVar('mail_to', null, 'POST', 'VARCHAR', 0);
-			$student =& JFactory::getUser($student_id);
+			$student = JFactory::getUser($student_id);
 			$mail_to_name = $student->name;
 			$mail_to = $student->email;
 			$mail_attachments = JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0); 

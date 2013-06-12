@@ -4,13 +4,13 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 
-$eMConfig =& JComponentHelper::getParams('com_emundus');
+$eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
 $view = JRequest::getVar('v', null, 'GET', 'none',0);
 $comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 // Starting a session.
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 $s_elements = $session->get('s_elements');
 $comments = $session->get('comments');
 

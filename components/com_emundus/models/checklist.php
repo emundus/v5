@@ -25,11 +25,11 @@ class EmundusModelChecklist extends JModel
 	{
 		parent::__construct();
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-		$this->_db =& JFactory::getDBO();
+		$this->_db = JFactory::getDBO();
 		$student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
 		
 		if ($student_id > 0 && JFactory::getUser()->usertype != 'Registered') {
-			$this->_user =& JFactory::getUser($student_id);
+			$this->_user = JFactory::getUser($student_id);
 			$this->_db->setQuery('SELECT user.profile, user.university_id, user.schoolyear, profile.menutype 
 				FROM #__emundus_users AS user 
 				LEFT JOIN #__emundus_setup_profiles AS profile ON profile.id = user.profile
@@ -37,7 +37,7 @@ class EmundusModelChecklist extends JModel
 			$res = $this->_db->loadObject();
 			$this->_user->profile = $res->profile;
 		} else {
-			$this->_user =& JFactory::getUser();
+			$this->_user = JFactory::getUser();
 		}
 		//echo $this->_user->usertype;
 	}

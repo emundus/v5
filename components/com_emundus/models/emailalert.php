@@ -13,8 +13,8 @@ class EmundusModelEmailalert extends JModel{
 	function __construct(){
 		parent::__construct();
 		
-		$this->_db =& JFactory::getDBO();
-		$this->_eMConfig =& JComponentHelper::getParams('com_emundus');
+		$this->_db = JFactory::getDBO();
+		$this->_eMConfig = JComponentHelper::getParams('com_emundus');
 	}
 	
 	function getDate($date_id){
@@ -106,7 +106,7 @@ class EmundusModelEmailalert extends JModel{
 	}
 	
 	function getInsert(){
-		$conf =& JFactory::getConfig();
+		$conf = JFactory::getConfig();
 		$cfromname = $conf->getValue('config.fromname');
 		$date = date('Y-m-d G:i:s'); 	
 

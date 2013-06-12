@@ -31,7 +31,7 @@ class EmundusModelRailwayyard extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         // Get pagination request variables
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
@@ -55,7 +55,7 @@ class EmundusModelRailwayyard extends JModel
 	{
         global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
                 $orderby = '';
                 $filter_order     = $this->getState('filter_order');
@@ -73,7 +73,7 @@ class EmundusModelRailwayyard extends JModel
 
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -83,7 +83,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getProfileAcces($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;
@@ -101,14 +101,14 @@ class EmundusModelRailwayyard extends JModel
 		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
 		$profile = JRequest::getVar('profile', null, 'POST', 'int', 0);
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$s_elements = $session->get('s_elements');
 		$s_elements_values = $session->get('s_elements_values');
 		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
 		
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$query = 'SELECT ed.user, u.email, u.name,  eu.firstname, eu.lastname, eu.profile, epd.gender, efg.final_grade, efg.result_for 
 					FROM #__emundus_declaration AS ed 
 					INNER JOIN #__users AS u ON u.id = ed.user 
@@ -190,7 +190,7 @@ class EmundusModelRailwayyard extends JModel
 
 	function getProfiles()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -201,7 +201,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getApplicantsProfilesByID($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eup.profile_id FROM #__emundus_users_profiles eup WHERE eup.user_id='.$user;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -209,7 +209,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getApplicantsByProfile($profile)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id='.$profile;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
@@ -217,7 +217,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getProfilesByIDs($ids)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
@@ -229,7 +229,7 @@ class EmundusModelRailwayyard extends JModel
 
 	function getGroups()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.id, esg.label  
 		FROM #__emundus_setup_groups esg
 		WHERE esg.published=1 
@@ -241,7 +241,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getUsersGroups()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT eg.user_id, eg.group_id  
 		FROM #__emundus_groups eg';
 		$db->setQuery( $query );
@@ -250,7 +250,7 @@ class EmundusModelRailwayyard extends JModel
 	
 	function getElements()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
 				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
 				 tab.db_table_name AS table_name, tab.label AS table_label
@@ -286,7 +286,7 @@ class EmundusModelRailwayyard extends JModel
 	}
 	
 	function getSchoolyears(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
 		FROM #__emundus_users 
 		WHERE schoolyear is not null AND schoolyear != "" 

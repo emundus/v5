@@ -39,10 +39,10 @@ class EmundusViewApplication_form extends JView{
 	}
     function display($tpl = null){	
 	
-        $document =& JFactory::getDocument();
+        $document = JFactory::getDocument();
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
-        //$current_user =& JFactory::getUser();
+        //$current_user = JFactory::getUser();
         //$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -50,13 +50,13 @@ class EmundusViewApplication_form extends JView{
 		
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 
-        $user =& $this->get('User');
-        $canEvaluate =& $this->get('canEvaluate');
-        //$isEvaluated =& $this->get('asBeenEvaluated');
-		$isEvaluated =& $this->get('asBeenEvaluatedByMe');
-        $comments =& $this->get('Comments');
+        $user = $this->get('User');
+        $canEvaluate = $this->get('canEvaluate');
+        //$isEvaluated = $this->get('asBeenEvaluated');
+		$isEvaluated = $this->get('asBeenEvaluatedByMe');
+        $comments = $this->get('Comments');
         /* Call the state object */
-        $state =& $this->get( 'State' );
+        $state = $this->get( 'state' );
 
         /* Get the values from the state object that were inserted in the model's construct function */
         $this->assignRef('state', $state);

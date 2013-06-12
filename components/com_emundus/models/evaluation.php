@@ -35,10 +35,10 @@ class EmundusModelEvaluation extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
-		$this->_db =& JFactory::getDBO();
-		$this->_user = & JFactory::getUser();
+		$this->_db = JFactory::getDBO();
+		$this->_user = JFactory::getUser();
 	
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
@@ -89,7 +89,7 @@ class EmundusModelEvaluation extends JModel
 	function _buildContentOrderBy(){
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
 		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
@@ -105,7 +105,7 @@ class EmundusModelEvaluation extends JModel
 		if(!empty($select_list))
 			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
 		
-		$this->_applicants =& EmundusHelperList::multi_array_sort($this->_applicants, 'overall', SORT_DESC);
+		$this->_applicants = EmundusHelperList::multi_array_sort($this->_applicants, 'overall', SORT_DESC);
 		$rank=1;
 		for($i=0 ; $i<count($this->_applicants) ; $i++) {
 			$this->_applicants[$i]['ranking']=$rank;
@@ -113,7 +113,7 @@ class EmundusModelEvaluation extends JModel
 		}
 		
 		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
-			$this->_applicants =& EmundusHelperList::multi_array_sort($this->_applicants, $filter_order, $sort);
+			$this->_applicants = EmundusHelperList::multi_array_sort($this->_applicants, $filter_order, $sort);
 		} 
 		$t = count($this->_applicants);
 		$ls = $this->getState('limitstart');
@@ -138,7 +138,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function union($myGroup,$myAffect){
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$s_elements = $session->get('s_elements');
 		
@@ -195,12 +195,12 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildSelect(){
-	/*	$session =& JFactory::getSession();
+	/*	$session = JFactory::getSession();
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$s_elements = $session->get('s_elements');
 		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);*/
 
-		$current_user 			= & JFactory::getUser();
+		$current_user 			= JFactory::getUser();
 		$search					= $this->getState('elements');
 		$s_elements				= $this->getState('s_elements');
 		$search_other			= $this->getState('elements_other');
@@ -300,7 +300,7 @@ class EmundusModelEvaluation extends JModel
 		$validate_application	= $this->getState('validate');
 
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		
 		if(empty($profile) && $session->has( 'profile' )) $profile = $session->get( 'profile' );
 		if(empty($finalgrade) && $session->has( 'finalgrade' )) $finalgrade = $session->get( 'finalgrade' );
@@ -413,14 +413,14 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildQuery(){	
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$eval_access = $eMConfig->get('can_evaluators_see_all_applicants', '0');
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
 		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
 		
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		if(empty($gid) && $session->has( 'groups' )) $gid = $session->get( 'groups' );
 		if(empty($uid) && $session->has( 'evaluator' )) $uid = $session->get( 'evaluator' );
 		$s_elements = $session->get('s_elements');
@@ -510,7 +510,7 @@ class EmundusModelEvaluation extends JModel
 						$eval_list[$eval->name] = $val;
 				}
 				if (!empty($applicant->user)) {
-					$evaluator =& JFactory::getUser($applicant->user);
+					$evaluator = JFactory::getUser($applicant->user);
 					$eval_list['user'] = $evaluator->id;
 					$eval_list['user_name'] = $evaluator->name;
 				} else {
@@ -541,7 +541,7 @@ class EmundusModelEvaluation extends JModel
 		
 		$col = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$elements = $session->get('s_elements');
 		if (count($col)==0) $col = $elements;
 		$lists = '';
@@ -678,7 +678,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function getProfiles(){
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 

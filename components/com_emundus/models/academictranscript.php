@@ -27,12 +27,12 @@ class EmundusModelAcademicTranscript extends JModel
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db =& JFactory::getDBO();
+		$this->_db = JFactory::getDBO();
 	}
 	
 	function getStudentLearningUnits()
 	{
-		$current_user =& JFactory::getUser();
+		$current_user = JFactory::getUser();
 		$student_id = JRequest::getVar('student_id', null, 'GET', 'none', 0);
 
 		if($current_user->profile == 4 || $current_user->profile == 5)

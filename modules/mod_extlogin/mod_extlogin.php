@@ -23,10 +23,10 @@ $params->def('logout', 1);
 
 // die('<pre>'.print_r($params,true).'</pre>');
 
-$type 	= modExtLoginHelper::getType();
-$return	= modExtLoginHelper::getReturnURL($params, $type);
+$type 	= @modExtLoginHelper::getType();
+$return	= @modExtLoginHelper::getReturnURL($params, $type);
 
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 			
 require(JModuleHelper::getLayoutPath('mod_extlogin'));
 

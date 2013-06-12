@@ -34,7 +34,7 @@ class modExtLoginHelper
 
 	function getType()
 	{
-		$user = & JFactory::getUser();
+		$user = JFactory::getUser();
 	    return (!$user->get('guest')) ? 'logout' : 'login';
 	}
 	/**

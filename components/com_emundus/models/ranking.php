@@ -33,10 +33,11 @@ class EmundusModelRanking extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
         // Get current menu parameters
-		$menu = &JSite::getMenu();
+		$current_user = JFactory::getUser();
+		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 
 		/* 
@@ -112,7 +113,7 @@ class EmundusModelRanking extends JModel
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->elements_default = array();
-		$default_elements =& EmundusHelperFilters::getElementsName($this->elements_id);	
+		$default_elements = EmundusHelperFilters::getElementsName($this->elements_id);	
 		if (!empty($default_elements))
 			foreach ($default_elements as $def_elmt) {
 				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
@@ -140,7 +141,7 @@ class EmundusModelRanking extends JModel
 	function _buildContentOrderBy(){
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 
 		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
@@ -165,7 +166,6 @@ class EmundusModelRanking extends JModel
 			$this->_applicants[$i]['ranking']=$rank;
 			$rank++;
 		}
-
 		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
 			$this->_applicants = $this->multi_array_sort($this->_applicants, $filter_order, $sort);
 		} 
@@ -225,7 +225,7 @@ class EmundusModelRanking extends JModel
 
 		function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -243,7 +243,7 @@ class EmundusModelRanking extends JModel
 	
 	function getProfileAcces($user)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id='.$user;
@@ -259,7 +259,7 @@ class EmundusModelRanking extends JModel
 		$search_other 			= JRequest::getVar('elements_other'			, NULL, 'POST', 'array', 0);
 		$search_values_other 	= JRequest::getVar('elements_values_other'	, NULL, 'POST', 'array', 0);
 		
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		
 		$query = 'SELECT DISTINCT(#__emundus_users.user_id), '.$tab.'.'.$elem.' AS '.$tab.'__'.$elem;
 		$query .= '	FROM #__emundus_campaign_candidature
@@ -404,7 +404,7 @@ class EmundusModelRanking extends JModel
 		return $query;
 	}
 /*	function _buildSelect(){
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		$current_user 			= & JFactory::getUser();
 		//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		//$search_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
@@ -498,7 +498,7 @@ class EmundusModelRanking extends JModel
 	}*/
 	
 	function _buildFilters($tables_list, $tables_list_other, $tables_list_default){
-		//$eMConfig =& JComponentHelper::getParams('com_emundus');
+		//$eMConfig = JComponentHelper::getParams('com_emundus');
 		$search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');
 		$search_other			= $this->getState('elements_other');
@@ -602,7 +602,7 @@ class EmundusModelRanking extends JModel
 		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
 		
 		// Starting a session.
-		$session =& JFactory::getSession();
+		$session = JFactory::getSession();
 		
 		if(empty($profile) && $session->has( 'profile' )) $profile = $session->get( 'profile' );
 		if(empty($finalgrade) && $session->has( 'finalgrade' )) $finalgrade = $session->get( 'finalgrade' );
@@ -615,7 +615,7 @@ class EmundusModelRanking extends JModel
 		$s_elements_other = $session->get('s_elements_other');
 		$s_elements_values_other = $session->get('s_elements_values_other');
 		
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		
 		if (count($search)==0) {
 			$search = $s_elements;

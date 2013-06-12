@@ -23,7 +23,7 @@ class EmundusModelControlfiles extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
 		
 		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
         $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
@@ -38,7 +38,7 @@ class EmundusModelControlfiles extends JModel
 	{
         global $option;
 
-		$mainframe =& JFactory::getApplication();
+		$mainframe = JFactory::getApplication();
  
                 $orderby = '';
                 $filter_order     = $this->getState('filter_order');
@@ -119,7 +119,7 @@ class EmundusModelControlfiles extends JModel
 	
 	function getCampaign()
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
 		$db->setQuery( $query );
 		$syear = $db->loadRow();
@@ -128,7 +128,7 @@ class EmundusModelControlfiles extends JModel
 	}
 	
 	function _getFirstUserId () {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT min(user_id) FROM #__emundus_users WHERE schoolyear = "'.$this->getCampaign().'"';
 		$db->setQuery( $query );
 		$firstid = $db->loadRow();
