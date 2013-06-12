@@ -73,7 +73,7 @@ if($type == 'logout') : ?>
                 <a href="<?php echo JRoute::_( 'index.php?option=com_users&view=remind' ); ?>" title="<?php echo JText::_('FORGOT_USERNAME'); ?>"></a>
             </span><?php 
 		} 
-		$usersConfig = &JComponentHelper::getParams( 'com_users' );
+		$usersConfig = JComponentHelper::getParams( 'com_users' );
 		if ($usersConfig->get('allowUserRegistration') && $usersConfig->get('registration')) { ?>
             <span class="registration">
                 <a href="<?php echo JRoute::_( 'index.php?option=com_users&view=registration' ); ?>" title="<?php echo JText::_('REGISTER'); ?>"></a>

@@ -11,8 +11,8 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 <table>
 	<tr><th><?php echo JText::_('PUBLISHED_FOR_APP'); ?></th><td><?php echo $this->profile->published>0?JText::_('Yes'):JText::_('No'); ?></td></tr>
 	<tr><th><?php echo JText::_('DESCRIPTION'); ?></th><td><?php echo $this->profile->description; ?></td></tr>
-	<tr><th><?php echo JText::_('SCHOOLYEAR'); ?></th><td><?php echo $this->profile->schoolyear; ?></td></tr>
-	<tr><th><?php echo JText::_('CANDIDATURE_PERIOD'); ?></th><td><?php echo JText::printf('CANDIDATURE_PERIOD_TEXT',$this->profile->candidature_start,$this->profile->candidature_end); ?></td></tr>
+	<!--<tr><th><?php //echo JText::_('SCHOOLYEAR'); ?></th><td><?php //echo $this->profile->schoolyear; ?></td></tr>
+	<tr><th><?php //echo JText::_('CANDIDATURE_PERIOD'); ?></th><td><?php //echo JText::printf('CANDIDATURE_PERIOD_TEXT',$this->profile->candidature_start,$this->profile->candidature_end); ?></td></tr>-->
 </table>
 <form action="index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0); ?>&Itemid=<?php echo $Itemid; ?>" method="POST"/>
 <input type="hidden" name="pid" value="<?php echo $this->profile->id; ?>" />

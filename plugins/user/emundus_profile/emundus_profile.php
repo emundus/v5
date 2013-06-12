@@ -48,7 +48,7 @@
                 $userId = isset($data->id) ? $data->id : 0;
  
                 // Load the profile data from the database.
-                $db = &JFactory::getDbo();
+                $db = JFactory::getDbo();
                 $db->setQuery(
                         'SELECT profile_key, profile_value FROM #__user_profiles' .
                         ' WHERE user_id = '.(int) $userId .

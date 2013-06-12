@@ -64,13 +64,13 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 <?php
 $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 //Detection du browser
-if(eregi('Safari', $HTTP_USER_AGENT) && !eregi('Konqueror', $HTTP_USER_AGENT))
+if(preg_match('/Safari/', $HTTP_USER_AGENT) && !preg_match('Konqueror', $HTTP_USER_AGENT))
 	$browser='Safari';
-elseif (eregi('msie', $HTTP_USER_AGENT) && !eregi('opera', $HTTP_USER_AGENT))
+elseif (preg_match('/msie/', $HTTP_USER_AGENT) && !preg_match('opera', $HTTP_USER_AGENT))
 	$browser='IE';
-elseif (eregi('opera', $HTTP_USER_AGENT))
+elseif (preg_match('/opera/', $HTTP_USER_AGENT))
 	$browser='Opera';
-elseif (eregi('Mozilla', $HTTP_USER_AGENT))
+elseif (preg_match('/Mozilla/', $HTTP_USER_AGENT))
 	$browser='FireFox';
 else {
 	$browser=$HTTP_USER_AGENT;
