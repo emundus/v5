@@ -106,7 +106,7 @@ function return_bytes($val) {
 			$session =& JFactory::getSession();
 			if($uids != ''){
 				foreach($users as $key=>$value){
-					if(in_array($value['user'],$uids)){
+					if(in_array($value->id,$uids)){
 						$us[] = $users[$key];
 					}
 				}

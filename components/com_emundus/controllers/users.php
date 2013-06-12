@@ -96,14 +96,31 @@ class EmundusControllerUsers extends JController {
 	}
 	
 	function clear() {
+		global $option;
 		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$itemid=JSite::getMenu()->getActive()->id;
 		unset($_SESSION['s_elements']);
 		unset($_SESSION['s_elements_values']);
-		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
-		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
+		// $limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
+		// $filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
+		// $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', null, 0);
+		
+		$mainframe =& JFactory::getApplication();
+		$mainframe->setUserState($options.'filter_order', '');
+        $mainframe->setUserState($options.'filter_order_Dir', '');
+        $mainframe->setUserState($options.'limit', '');
+        $mainframe->setUserState($options.'limitstart', 0);
+		
+		$mainframe->setUserState($options.'schoolyears', 0);
+		$mainframe->setUserState($options.'campaigns', 0);
+		$mainframe->setUserState($options.'finalgrade', 0);
+		$mainframe->setUserState($options.'s', '');
+		$mainframe->setUserState($options.'groups_eval', 0);
+		$mainframe->setUserState($options.'rowid', 0);
+		$mainframe->setUserState($options.'spam_suspect', 0);
+		$mainframe->setUserState($options.'newsletter', 0);
+		
 		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
@@ -228,6 +245,9 @@ class EmundusControllerUsers extends JController {
 			die("You are not allowed to access to this page.");
 		}
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		if(empty($cid)){
+			$cid = $session->get('uid');
+		}
 		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
 		export_xls($cid,array()); 
 	}

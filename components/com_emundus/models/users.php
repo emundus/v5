@@ -42,13 +42,31 @@ class EmundusModelUsers extends JModel
         // In case limit has been changed, adjust it
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		
- 		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+ 		$filter_order           = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
+        $filter_order_Dir       = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+		
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears' );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns' );
+		$finalgrade				= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
+		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
+		$groups_eval			= $mainframe->getUserStateFromRequest( $option.'groups_eval', 'groups_eval');
+		$rowid				= $mainframe->getUserStateFromRequest( $option.'rowid', 'rowid', @$filts_details['profile'] );
+		$spam_suspect			= $mainframe->getUserStateFromRequest( $option.'spam_suspect', 'spam_suspect');
+		$newsletter 			= $mainframe->getUserStateFromRequest( $option.'newsletter', 'newsletter');
  
         $this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
+		
+		$this->setState('schoolyears', $schoolyears);
+		$this->setState('campaigns', $campaigns);
+		$this->setState('finalgrade', $finalgrade);
+		$this->setState('s', $s);
+		$this->setState('groups_eval', $groups_eval);
+		$this->setState('rowid', $rowid);
+		$this->setState('spam_suspect', $spam_suspect);
+		$this->setState('newsletter', $newsletter);
 
 	}
 	
@@ -73,14 +91,15 @@ class EmundusModelUsers extends JModel
 	}
 	
 	function _buildQuery()
-	{
-		$pid = JRequest::getVar('rowid', null, 'POST', 'none', 0);
-		$final_grade = JRequest::getVar('final_grade', null, 'POST', 'none', 0);
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		$campaigns = JRequest::getVar('campaigns', null, 'POST', 'none',0);
-		$groupEval = JRequest::getVar('groups_eval', null, 'POST', 'none',0);
-		$spam_suspect = JRequest::getVar('spam_suspect', null, 'POST', 'none',0);
-		$newsletter = JRequest::getVar('newsletter', null, 'POST', 'none',0);
+	{	
+		$final_grade	= $this->getState('final_grade');
+		$s	= $this->getState('s');
+		$campaigns		= $this->getState('campaigns');
+		$schoolyears	= $this->getState('schoolyears');
+		$groupEval		= $this->getState('groupEval');
+		$spam_suspect	= $this->getState('spam_suspect');
+		$pid			= $this->getState('pid');
+		$newsletter		= $this->getState('newsletter');
 		
 		if (!isset($pid))
 			$pid = JRequest::getVar('rowid', null, 'GET', 'none', 0);

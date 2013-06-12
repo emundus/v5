@@ -11,7 +11,6 @@ $current_p = JRequest::getVar('rowid', null, 'POST', 'none',0);
 $current_fg = JRequest::getVar('final_grade', null, 'POST', 'none',0);
 $current_l = JRequest::getVar('s', null, 'POST', 'none',0);
 $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none',0);
-
 $current_campaigns = JRequest::getVar('campaigns', null, 'POST', 'none',0);
 $current_groupEval = JRequest::getVar('groups_eval', null, 'POST', 'none',0);
 
@@ -23,6 +22,32 @@ $filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', 'none',0);
 $menu = &JSite::getMenu();
 $menuItem = $menu->getActive();
 $itemid = $menuItem->id;
+
+$state =& $this->get( 'state' );
+if(empty($schoolyears)){
+$schoolyears = $this->state_schoolyears;
+}
+if(empty($current_l)){
+$current_l = $this->state_current_l;
+}
+if(empty($current_campaigns)){
+$current_campaigns = $this->state_current_campaigns;
+}
+if(empty($current_groupEval)){
+$current_groupEval = $this->state_current_groupEval;
+}
+if(empty($spam_suspect)){
+$spam_suspect = $this->state_spam_suspect;
+}
+if(empty($newsletter)){
+$newsletter = $this->state_newsletter;
+}
+if(empty($current_p)){
+$current_p = $this->state_current_p;
+}
+if(empty($current_fg)){
+$current_fg = $this->state_current_fg;
+}
 
 if($edit!=1) {
 ?>
@@ -428,7 +453,7 @@ foreach ($this->users as $user) { ?>
 </form>
 
 
-<script>
+<script type="text/javascript">
 function makeArray(items)
 {
 	try {
@@ -508,6 +533,15 @@ function check_all() {
 <?php foreach ($this->users as $user) { ?>
   document.getElementById('cb<?php echo $user->id; ?>').checked = checked;
 <?php } ?>
+}
+
+function is_check() {
+	var cpt = 0;
+	<?php foreach ($this->users as $user) { ?>
+  		if(document.getElementById('cb<?php echo $user->id; ?>').checked == true) cpt++;
+	<?php } ?>
+	if(cpt > 0) return true;
+	else return false;
 }
 
 function tableOrdering( order, dir, task ) {

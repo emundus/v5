@@ -778,7 +778,6 @@ function updateprofile() {
 	
 	function transfert_view($reqids=array()){
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$view = JRequest::getVar('v', null, 'GET');
 		
 		$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
@@ -795,6 +794,7 @@ function updateprofile() {
 		$comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
 		$complete = JRequest::getVar('complete', null, 'POST', 'none',0);
 		$validate = JRequest::getVar('validate', null, 'POST', 'none',0);
+		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		
 		// Starting a session.
 		$session =& JFactory::getSession();

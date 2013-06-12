@@ -103,6 +103,16 @@ class EmundusViewUsers extends JView
 		$lists['order']     = $state->get( 'filter_order' );
 		$this->assignRef( 'lists', $lists );
 		
+		$this->assignRef('state_schoolyears', $state->get('schoolyears'));
+		$this->assignRef('state_current_l', $state->get('s'));
+		$this->assignRef('state_current_campaigns', $state->get('campaigns'));
+		$this->assignRef('state_current_groupEval', $state->get('groups_eval'));
+		$this->assignRef('state_spam_suspect', $state->get('spam_suspect'));
+		$this->assignRef('state_newsletter', $state->get('newsletter'));
+		$this->assignRef('state_current_p', $state->get('rowid'));
+		$this->assignRef('state_current_fg', $state->get('finalgrade'));
+		
+		
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		$form		= $this->get('Form');
 		$this->assignRef('form', $form);

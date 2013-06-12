@@ -95,13 +95,23 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
  ?>
     
 </form>
-<script>
+<script type="text/javascript">
 function check_all() {
  var checked = document.getElementById('checkall').checked;
 <?php foreach ($this->users as $user) { ?>
   document.getElementById('cb<?php echo $user['user_id']; ?>').checked = checked;
 <?php } ?>
 }
+
+function is_check() {
+	var cpt = 0;
+	<?php foreach ($this->users as $user) { ?>
+  		if(document.getElementById('cb<?php echo $user['user_id']; ?>').checked == true) cpt++;
+	<?php } ?>
+	if(cpt > 0) return true;
+	else return false;
+}
+
 <?php 
 	echo $this->addElement;
 	echo $this->onSubmitForm; 
