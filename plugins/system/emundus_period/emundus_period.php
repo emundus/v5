@@ -44,7 +44,7 @@ class  plgSystemEmundus_period extends JPlugin
 
 	function onAfterInitialise() {	
 		$app 		=  JFactory::getApplication();
-		$user 		=& JFactory::getUser();
+		$user 		=  JFactory::getUser();
 
 		if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) ) {
 			// Global variables
@@ -52,14 +52,14 @@ class  plgSystemEmundus_period extends JPlugin
 			define('EMUNDUS_PATH_REL', 'images/emundus/files/');
 			define('EMUNDUS_PHOTO_AID', 10);
 			
-			$eMConfig 		=& JComponentHelper::getParams('com_emundus');
+			$eMConfig 		= JComponentHelper::getParams('com_emundus');
 			$id_applicants 	= $eMConfig->get('id_applicants', '0');
 			$applicants 	= explode(',',$id_applicants);
-			$r 				=& JRequest::getVar('r', null, 'GET', 'none',0);
+			$r 				= JRequest::getVar('r', null, 'GET', 'none',0);
 			
 			$baseurl = JURI::base();
-			$db = & JFactory::getDBO();
-			$app =& JFactory::getApplication();
+			$db =  JFactory::getDBO();
+			$app = JFactory::getApplication();
 			
 			$id = JRequest::getVar('id', null, 'GET', 'none',0);
 			$option = JRequest::getVar('option', null, 'GET', 'none',0);
