@@ -16,7 +16,7 @@ class plgSystemMarcosinterceptor extends JPlugin{
 	}
 
 	function onAfterInitialise(){
-		$app =& JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$p_dbprefix = $app->getCfg('dbprefix');
 		$p_raiseError = $this->params->get('raiseerror', 1);
 		$p_errorCode = intval($this->params->get('errorcode', 500));
@@ -35,7 +35,7 @@ class plgSystemMarcosinterceptor extends JPlugin{
 		$remoteIP = ip2long($_SERVER['REMOTE_ADDR']);
 		
 		if($p_ipBlock){
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$sql = "DELETE FROM `#__mi_iptable` WHERE DATE_ADD(`lasthacktime`, INTERVAL {$p_ipBlockTime} SECOND) < NOW() AND `autodelete`=1;";
 			$db->setQuery( $sql );
 			
@@ -83,16 +83,16 @@ class plgSystemMarcosinterceptor extends JPlugin{
 		foreach(explode(',', $p_nameSpaces) as $nsp){
 			switch ($nsp){
 				case 'GET':
-					$nameSpace =& $_GET;
+					$nameSpace = $_GET;
 					break;
 				case 'POST':
-					$nameSpace =& $_POST;
+					$nameSpace = $_POST;
 					break;
 				case 'COOKIE':
-					$nameSpace =& $_COOKIE;
+					$nameSpace = $_COOKIE;
 					break;
 				case 'REQUEST':
-					$nameSpace =& $_REQUEST;
+					$nameSpace = $_REQUEST;
 					break;
 			}
 			foreach($nameSpace as $k => &$v){
@@ -144,7 +144,7 @@ class plgSystemMarcosinterceptor extends JPlugin{
 
 		
 		if(($p_ipBlock) AND ($wr)){
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$sql = "INSERT INTO `#__mi_iptable` (`ip`, `firsthacktime`, `lasthacktime` ) VALUES ({$remoteIP}, NOW(), NOW()) ON DUPLICATE KEY UPDATE `lasthacktime` = NOW(), `hackcount` = `hackcount` + 1;";
 			$db->setQuery( $sql );
 			$db->query( $sql );
@@ -158,7 +158,7 @@ class plgSystemMarcosinterceptor extends JPlugin{
 
 	}
 	function sendNotification($warnings){
-		$app =& JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$p_sendTo = $this->params->get('sendto','');
 		if(!$p_sendTo) $p_sendTo = $app->getCfg('mailfrom');
 		
