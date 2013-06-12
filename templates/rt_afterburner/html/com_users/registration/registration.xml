@@ -8,7 +8,7 @@
 				label="COM_USERS_REGISTER_REQUIRED"
 		/>
 		
-		<field name="name" type="text" readonly="true"
+		<field name="name" type="hidden" readonly="true"
 			filter="string"
 			default=""
 			required="true"

@@ -226,14 +226,12 @@ class EmundusControllerEvaluation extends JController {
 
 		$db =& JFactory::getDBO();
 		
-		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id))//{
+		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id)) {
 			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
-		//}else{
-		//	$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];
-		//}
-
-		$db->setQuery($query);
-		$db->query();
+			$db->setQuery($query);
+			$db->query();
+		}
+		
 		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
