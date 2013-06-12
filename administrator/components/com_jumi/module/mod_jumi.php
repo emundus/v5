@@ -7,7 +7,9 @@
 */
 
 defined('_JEXEC') or die('Restricted access');
-
+if(!defined('DS')){
+	define('DS',DIRECTORY_SEPARATOR);
+}
 // Include the functions only once
 require_once(dirname(__FILE__).DS.'helper.php');
 

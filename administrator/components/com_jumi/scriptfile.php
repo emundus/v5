@@ -21,21 +21,21 @@ class com_jumiInstallerScript {
 
         // installing module
         $module_installer = new JInstaller;
-        if(@$module_installer->install(dirname(__FILE__).DS.'admin'.DS.'module'))
+        if(@$module_installer->install(dirname(__FILE__).DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'module'))
             echo 'Module install success', '<br />';
         else
             echo 'Module install failed', '<br />';
 
         // installing plugin
         $plugin_installer = new JInstaller;
-        if($plugin_installer->install(dirname(__FILE__).DS.'admin'.DS.'plugin'))
+        if($plugin_installer->install(dirname(__FILE__).DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'plugin'))
             echo 'Plugin install success', '<br />';
         else
             echo 'Plugin install failed', '<br />';
 
         // installing router
         $plugin_installer = new JInstaller;
-        if($plugin_installer->install(dirname(__FILE__).DS.'admin'.DS.'router'))
+        if($plugin_installer->install(dirname(__FILE__).DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'router'))
             echo 'Router install success', '<br />';
         else
             echo 'Router install failed', '<br />';

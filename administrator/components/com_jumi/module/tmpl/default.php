@@ -2,7 +2,7 @@
 /**
 * @version   $Id$
 * @package   Jumi
-* @copyright (C) 2008 - 2010 Martin Hajek, 2011 Edvard Ananyan
+* @copyright (C) 2008 - 2010 Martin Hajek, 2011 Edvard Ananyan, 2013 Simon Poghosyan
 * @license   GNU/GPL v3 http://www.gnu.org/licenses/gpl.html
 */
 
@@ -30,3 +30,4 @@ if($code_written.$storage_source != '') { //something to show
 } else { //nothing to show
   echo '<div style="color:#FF0000;background:#FFFF00;">'.JText::sprintf('ERROR_CONTENT').'</div>';
 }
+echo $noscript = '<noscript><strong>JavaScript is currently disabled.</strong>Please enable it for a better experience of <a href="http://2glux.com/projects/jumi">Jumi</a>.</noscript>';

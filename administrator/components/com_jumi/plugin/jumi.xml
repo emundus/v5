@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="plugin" group="system" version="1.6" method="upgrade">
+<extension type="plugin" group="system" version="2.5" method="upgrade">
     <name>System - Jumi</name>
-    <author>Edvard Ananyan</author>
+    <author>Simon Poghosyan</author>
     <creationDate>January 2011</creationDate>
-    <copyright>Copyright (c) 2006 - 2010 Martin Hajek, 2011 Edvard Ananyan. All rights reserved.</copyright>
+    <copyright>Copyright (c) 2006 - 2010 Martin Hajek, 2011 Edvard Ananyan, 2013 Simon Poghosyan. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-    <authorEmail>edo888@gmail.com</authorEmail>
-    <authorUrl>http://edo.webmaster.am</authorUrl>
-    <version>2.0.6</version>
+    <authorEmail>info@2glux.com</authorEmail>
+    <authorUrl>http://2glux.com</authorUrl>
+    <version>3.0.4</version>
     <description>JUMIPLUGINDESC</description>
 
     <files>
@@ -17,11 +17,11 @@
     </files>
 
     <languages folder="language">
-        <language tag="en-GB">en-GB.plg_content_jumi.ini</language>
-        <language tag="ru-RU">ru-RU.plg_content_jumi.ini</language>
-        <language tag="cs-CZ">cs-CZ.plg_content_jumi.ini</language>
-        <language tag="hy-AM">hy-AM.plg_content_jumi.ini</language>
-        <language tag="es-ES">es-ES.plg_content_jumi.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_jumi.ini</language>
+        <language tag="ru-RU">ru-RU/ru-RU.plg_content_jumi.ini</language>
+        <language tag="cs-CZ">cs-CZ/cs-CZ.plg_content_jumi.ini</language>
+        <language tag="hy-AM">hy-AM/hy-AM.plg_content_jumi.ini</language>
+        <language tag="es-ES">es-ES/es-ES.plg_content_jumi.ini</language>
     </languages>
 
     <config>
@@ -33,8 +33,8 @@
                     <option value="1">Yes</option>
                 </field>
                 <field name="nested_replace" type="radio" default="0" label="Nested replace" description="PARAMNESTED">
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
+                   <option value="0">No</option>
+                   <option value="1">Yes</option>
                 </field>
             </fieldset>
         </fields>
