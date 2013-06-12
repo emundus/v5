@@ -49,32 +49,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		$email_lb = "candidature_rejected";
 
 	$email = $emails->getEmail($email_lb);
-	/*print_r($_GET);
 
-	echo "<pre>";
-	print_r($evaluation_details);
-	echo "</pre>";
-	*/
-
-	// generate evaluation result HTML
-	//$result = $user->name.', <br>';
-	/*$result = "";
-	foreach ($evaluation_details as $ed) {
-		if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
-			$result .= '<br>'.$ed->element_label.' : ';
-			if($ed->element_name=="reason") {
-				$result .= '<ul>';
-				foreach ($evaluation as $e) {
-					$result .= '<li>'.@$reason[$e[@$ed->element_name]]->text.'</li>';
-				}
-				$result .= '</ul>';
-			} elseif($ed->element_name=="result") {
-					$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
-			}else
-				$result .= $evaluation[0][$ed->element_name];
-		}
-	}
-	*/
 	?>
 	<!--
 	<div class="em_email_block_nav">
@@ -129,4 +104,3 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	</script>
 <?php } ?>
-<script type="text/javascript"> window.parent.document.getElementById( 'sbox-window' ).close(); </script>
