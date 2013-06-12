@@ -17,7 +17,7 @@ jimport( 'joomla.plugin.plugin' );
 class  plgSystemJumiRouter extends JPlugin {
     function __construct(& $subject, $config) {
         // check to see if we are on frontend to execute plugin
-        $mainframe = &JFactory::getApplication();
+        $mainframe =JFactory::getApplication();
         if($mainframe->isAdmin())
             return;
 
@@ -32,8 +32,8 @@ class  plgSystemJumiRouter extends JPlugin {
     function onAfterInitialise() {
         $mainframe = &JFactory::getApplication();
 
-        $uri    =& JURI::getInstance();
-        $router =& $mainframe->getRouter();
+        $uri    = JURI::getInstance();
+        $router = $mainframe->getRouter();
 
         $router->attachParseRule('parseJumiRouter');
 
@@ -52,7 +52,7 @@ function parseJumiRouter(& $router, & $uri) {
     if($router->getMode() == JROUTER_MODE_RAW)
         return array();
 
-    $db =& JFactory::getDBO();
+    $db = JFactory::getDBO();
     $db->setQuery('select id, title, alias from #__jumi where published = 1');
     $apps = $db->loadRowList();
     $alias = array();
