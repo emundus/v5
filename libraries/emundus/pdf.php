@@ -230,7 +230,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 // @params Code of the programme
 // @params Type of output
 
-function letter_pdf_template ($user_id, $eligibility, $training) {
+function letter_pdf_template ($user_id, $letter_id) {
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
 	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
@@ -242,11 +242,11 @@ function letter_pdf_template ($user_id, $eligibility, $training) {
 
 	$files = array();
 
-	$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$db->Quote($training);
+	$query = "SELECT * FROM #__emundus_setup_letters WHERE id=".$letter_id;
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($training). "AND date_start > NOW() ORDER BY date_start ASC";
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($letters['training']). " ORDER BY date_start DESC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	

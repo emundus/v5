@@ -17,14 +17,13 @@ if(EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 
 	$student_id = 62; 
 	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
-	$training = JRequest::getVar('training', null, 'GET', 'none',0); 
-	$result = JRequest::getVar('result', null, 'GET', 'INT',0); 
+	$letter_id = JRequest::getVar('rowid', null, 'GET', 'INT',0); 
 
 	$user = JFactory::getUser($student_id);
 
-	if (!empty($result)) { 
+	if (!empty($letter_id)) { 
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-		$files = letter_pdf_template($user->id, $result, $training);
+		$files = letter_pdf_template($user->id, $letter_id);
 	}
  } 
  ?>
