@@ -46,7 +46,7 @@ class EmundusModelUsers extends JModel
         $filter_order_Dir       = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );		
 		
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
-		$campaign				= $mainframe->getUserStateFromRequest( $option.'campaign', 'campaign', $this->getCurrentCampaignsID() );
+		$campaign				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
 		$final_grade			= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
 		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
 		$evaluator_group			= $mainframe->getUserStateFromRequest( $option.'evaluator_group', 'evaluator_group', @$filts_details['evaluator_group'] );
@@ -106,18 +106,26 @@ class EmundusModelUsers extends JModel
 			$pid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
 		$edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		
 		$list_user="";
+		
+		if($campaigns[0]==0){
+			$campaigns=array();
+		}
+		
 		if(!empty($schoolyears) && empty($campaigns)){
-			$list_user="";
-			$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
-			$i=0;
-			$nb_element = count($applicant_schoolyears);
-			foreach($applicant_schoolyears as $applicant){
-				if(++$i === $nb_element){
-					$list_user.=$applicant;
-				}else{
-					$list_user.=$applicant.", ";
+			if($schoolyears[0]=="0"){
+				$list_user="0";
+			}else{
+				$list_user="";
+				$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
+				$i=0;
+				$nb_element = count($applicant_schoolyears);
+				foreach($applicant_schoolyears as $applicant){
+					if(++$i === $nb_element){
+						$list_user.=$applicant;
+					}else{
+						$list_user.=$applicant.", ";
+					}
 				}
 			}
 		}else if(!empty($campaigns)){
@@ -200,7 +208,7 @@ class EmundusModelUsers extends JModel
 				$query .= 'u.lastvisitDate="0000-00-00 00:00:00" AND TO_DAYS(NOW()) - TO_DAYS(u.registerDate) > 7';
 			}
 			
-			if($list_user!="") {
+			if($list_user!="" && $list_user!=0) {
 				if($and) $query .= ' AND ';
 				else { $and = true; $query .='WHERE '; }
 				$query.= 'u.id IN ( '.$list_user.' )';
@@ -212,7 +220,7 @@ class EmundusModelUsers extends JModel
 				$query .= 'profile_value like "%'.$newsletter.'%"';
 			}
 		}
-// echo str_replace('#_','jos',$query);
+		// echo str_replace('#_','jos',$query);
 		return $query;
 	} 
 	

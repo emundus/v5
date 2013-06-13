@@ -415,7 +415,7 @@ function OnSubmitForm() {
 		break;
 		case 'clear_button': 
 			document.adminForm.task.value = "clear_button";
-			document.adminForm.action ="index.php?option=com_emundus&controller=users&task=clear";
+			document.adminForm.action ="index.php?option=com_emundus&controller=users&view=users&task=clear";
 		break;
 		default: return false;
 	}

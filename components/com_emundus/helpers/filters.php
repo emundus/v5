@@ -218,6 +218,7 @@ class EmundusHelperFilters {
 		$query = 'SELECT DISTINCT(year) as schoolyear
 			FROM #__emundus_setup_campaigns 
 			ORDER BY schoolyear DESC';
+		//echo str_replace("#_", "jos", $query);
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
@@ -481,8 +482,10 @@ class EmundusHelperFilters {
 				<td>
 				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this); }else{ document.getElementById(\'search_button\').click(); }; ">
 				<option value="0">'.JText::_('ALL').'</option>';
-				foreach($research_filters as $filter){
-					$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+				if(!empty($research_filters)){
+					foreach($research_filters as $filter){
+						$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+					}
 				}
 			$filters .='
 				</select>
@@ -606,7 +609,9 @@ class EmundusHelperFilters {
 																  <div class="em_filtersElement">';
 			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
-			//$schoolyear .= '<option value="">'.JText::_('ALL').'</option>';
+			$schoolyear .= '<option value="0" ';
+			if($current_schoolyear[0]==0) $schoolyear .= ' selected';
+			$schoolyear .= '>'.JText::_('NOT_SELECTED').'</option>';
 			foreach($schoolyearList as $s) { 
 				$schoolyear .= '<option value="'.$s.'"';
 				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
@@ -625,7 +630,10 @@ class EmundusHelperFilters {
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
-			//$campaign .= '<option value="">'.JText::_('ALL').'</option>';
+			$campaign .= '<option value="0" ';
+			if($current_campaign[0]==0) $campaign .= ' selected';
+			$campaign .= '>'.JText::_('NOT_SELECTED').'</option>';
+			
 			foreach($campaignList as $c) { 
 				$campaign .= '<option value="'.$c->id.'"';
 				if(!empty($current_campaign) && in_array($c->id, $current_campaign)) $campaign .= ' selected';
