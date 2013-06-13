@@ -66,7 +66,7 @@ class EmundusHelperFilters {
 		$mainframe->setUserState( $option."filter_order", "" );
 		$mainframe->setUserState( $option."filter_order_Dir", "" );
 		$mainframe->setUserState( $option."schoolyears", EmundusHelperFilters::getSchoolyears() );
-		$mainframe->setUserState( $option."campaign", EmundusHelperFilters::getCurrentCampaign() );
+		$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaign() );
 		$mainframe->setUserState( $option."elements", array() );
 		$mainframe->setUserState( $option."elements_values", array() );
 		$mainframe->setUserState( $option."elements_other", array() );
@@ -462,7 +462,7 @@ class EmundusHelperFilters {
 		$current_schoolyear		= $mainframe->getUserStateFromRequest(  $option.'schoolyears', 'schoolyears', EmundusHelperFilters::getSchoolyears() );
 		$newsletter				= $mainframe->getUserStateFromRequest(  $option.'newsletter', 'newsletter', @$params['newsletter'] );
 		$spam_suspect			= $mainframe->getUserStateFromRequest(  $option.'spam_suspect', 'spam_suspect', @$params['spam_suspect'] );
-		$current_campaign		= $mainframe->getUserStateFromRequest(  $option.'campaign', 'campaign', EmundusHelperFilters::getCurrentCampaign() );
+		$current_campaign		= $mainframe->getUserStateFromRequest(  $option.'campaigns', 'campaigns', EmundusHelperFilters::getCurrentCampaign() );
 		$search					= $mainframe->getUserStateFromRequest(  $option.'elements', 'elements' );
 		$search_values			= $mainframe->getUserStateFromRequest(  $option.'elements_values', 'elements_values' );
 		$search_other		 	= $mainframe->getUserStateFromRequest(  $option.'elements_other', 'elements_other' );
@@ -621,7 +621,7 @@ class EmundusHelperFilters {
 			$campaignList = EmundusHelperFilters::getCampaigns();
 			$campaign = '';
 			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
-																  <div class="em_label"><label>'.JText::_('campaign').'</label></div>
+																  <div class="em_label"><label>'.JText::_('CAMPAIGN').'</label></div>
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';

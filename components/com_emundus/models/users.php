@@ -46,7 +46,7 @@ class EmundusModelUsers extends JModel
         $filter_order_Dir       = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );		
 		
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
-		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
+		$campaign				= $mainframe->getUserStateFromRequest( $option.'campaign', 'campaign', $this->getCurrentCampaignsID() );
 		$final_grade			= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
 		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
 		$evaluator_group			= $mainframe->getUserStateFromRequest( $option.'evaluator_group', 'evaluator_group', @$filts_details['evaluator_group'] );
@@ -61,7 +61,7 @@ class EmundusModelUsers extends JModel
         $this->setState('limitstart', $limitstart);
 		
 		$this->setState('schoolyears', $schoolyears);
-		$this->setState('campaigns', $campaigns);
+		$this->setState('campaign', $campaign);
 		$this->setState('final_grade', $final_grade);
 		$this->setState('s', $s);
 		$this->setState('evaluator_group', $evaluator_group);
@@ -95,7 +95,7 @@ class EmundusModelUsers extends JModel
 	{	
 		$final_grade	= $this->getState('finalgrade');
 		$s				= $this->getState('s');
-		$campaigns		= $this->getState('campaigns');
+		$campaigns		= $this->getState('campaign');
 		$schoolyears	= $this->getState('schoolyears');
 		$groupEval		= $this->getState('evaluator_group');
 		$spam_suspect	= $this->getState('spam_suspect');
