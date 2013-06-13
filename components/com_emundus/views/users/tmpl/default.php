@@ -331,9 +331,10 @@ foreach ($this->users as $user) { ?>
 		<td align="center"><?php 
 			foreach($this->campaigns as $campaign){ 
 				if($campaign->applicant_id==$user->id){
+					$campaign_date = JText::_('CAMPAIG_DATE');
 					$campaign_end_date = JText::_('CAMPAIGN_END_DATE');
 					$campaign_start_date = JText::_('CAMPAIGN_START_DATE');
-					echo '<span class="editlinktip hasTip" title="'.$campaign_start_date.' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'.$campaign_end_date.' : '.date("Y-m-d", strtotime($campaign->end_date)).'" >
+					echo '<span class="editlinktip hasTip" title="'.$campaign_date.' :: '.$campaign_start_date.' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'.$campaign_end_date.' : '.date("Y-m-d", strtotime($campaign->end_date)).'" >
 					<a href="#">'.$campaign->label.'</a></span>';
 				} 
 			} 
@@ -390,11 +391,13 @@ foreach ($this->users as $user) { ?>
 <div class="emundusraw">
 <form action="index.php?option=com_emundus&task=adduser" method="POST" name="adduser"/>
 <fieldset><legend><?php echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; echo JText::_('ADD_USER'); ?></legend>
+<input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
+<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 <table>
-	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value=""/></td></tr>
-	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value=""/></td></tr>
-	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value=""/></td></tr>
-	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="" onChange="validateEmail(email);"/>
+	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value="<?php if($edit==1) echo $this->users[0]->firstname; ?>" /></td></tr>
+	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value="<?php if($edit==1) echo $this->users[0]->lastname; ?>" /></td></tr>
+	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value="<?php if($edit==1) echo $this->users[0]->username; ?>"/></td></tr>
+	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="<?php if($edit==1) echo $this->users[0]->email; ?>" onChange="validateEmail(email);"/>
 	</td></tr>
 	
 	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
