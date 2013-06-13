@@ -383,31 +383,3 @@ input.btnhov {
 
 #em_comments{display:inline; float:left; margin-left: 15px;}
 #em_comments_action{display:inline;/*float:right;*/ padding:8px}
-
-a.info-bulle{
-position:relative;
-z-index:24;
-color:#666666;
-text-decoration:none
-}
- 
-a.info-bulle:hover{
-z-index:25;
-background-color:#FFF
-}
- 
-a.info-bulle span{
-display: none
-}
- 
-a.info-bulle:hover span{
-display:block;
-position:absolute;
-top:2em; left:2em; width:15em;
-border:1px solid #000;
-background-color:#FFF;
-color:#000;
-text-align: justify;
-font-weight:none;
-padding:5px;
-}

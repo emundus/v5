@@ -331,9 +331,10 @@ foreach ($this->users as $user) { ?>
 		<td align="center"><?php 
 			foreach($this->campaigns as $campaign){ 
 				if($campaign->applicant_id==$user->id){
-					echo '<a class="info-bulle" href="#">'.$campaign->label; 
-					echo '<span>'.JText::_('CAMPAIGN_START_DATE').' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'; 
-					echo JText::_('CAMPAIGN_END_DATE').' : '.date("Y-m-d", strtotime($campaign->end_date)).'</span></a><BR /><BR />';
+					$campaign_end_date = JText::_('CAMPAIGN_END_DATE');
+					$campaign_start_date = JText::_('CAMPAIGN_START_DATE');
+					echo '<span class="editlinktip hasTip" title="'.$campaign_start_date.' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'.$campaign_end_date.' : '.date("Y-m-d", strtotime($campaign->end_date)).'" >
+					<a href="#">'.$campaign->label.'</a></span>';
 				} 
 			} 
 		?>
