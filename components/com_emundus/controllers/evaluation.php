@@ -47,9 +47,9 @@ class EmundusControllerEvaluation extends JController {
 		$limitstart = JRequest::getCmd( 'limitstart' );
 		$filter_order = JRequest::getCmd( 'filter_order' );
 		$filter_order_Dir = JRequest::getCmd( 'filter_order_Dir' );
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		if ($user->usertype == "Registered") {
-			$checklist = $this->getView( 'checklist', 'html' );
+			$checklist =& $this->getView( 'checklist', 'html' );
 			$checklist->setModel( $this->getModel( 'checklist'), true );
 			$checklist->display();
 		} else {
@@ -78,14 +78,14 @@ class EmundusControllerEvaluation extends JController {
 	////// AFFECT ASSESSOR ///////////////////
 	function setAssessor($reqids = null) {
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
 		//$itemid=JSite::getMenu()->getActive()->id;
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("ACCESS_DENIED");
 		}
-		$db = JFactory::getDBO();
+		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
@@ -137,7 +137,7 @@ class EmundusControllerEvaluation extends JController {
 	}
 	/**/
 	function delassessor() {
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -149,11 +149,10 @@ class EmundusControllerEvaluation extends JController {
 		$pid = JRequest::getVar('pid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
 		$filter_order = JRequest::getVar('filter_order', null, 'GET', null, 0);
-		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
-		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
-
+		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);$itemid = JRequest::getVar('itemid', null, 'GET', null, 0);
+		
 		if(!empty($aid) && is_numeric($aid)) {
-			$db = JFactory::getDBO();
+			$db =& JFactory::getDBO();
 			$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.mysql_real_escape_string($aid);
 			if(!empty($pid) && is_numeric($pid))
 				$query .= ' AND group_id='.mysql_real_escape_string($pid);
@@ -167,14 +166,14 @@ class EmundusControllerEvaluation extends JController {
 	
 	////// UNAFFECT ASSESSOR ///////////////////
 	function unsetAssessor($reqids = null) {
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
 			die("ACCESS_DENIED");
 		}
-		$db = JFactory::getDBO();
+		$db =& JFactory::getDBO();
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		$ag_id = JRequest::getVar('assessor_group', null, 'POST', 'none',0);
 		$au_id = JRequest::getVar('assessor_user', null, 'POST', 'none',0);
@@ -209,7 +208,7 @@ class EmundusControllerEvaluation extends JController {
 	}
 	
 	function delete_eval(){
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
@@ -224,14 +223,16 @@ class EmundusControllerEvaluation extends JController {
 		$sid = JRequest::getVar('sid', null, 'GET', null, 0);
 		$sids = explode('-',$sid);
 
-		$db = JFactory::getDBO();
+		$db =& JFactory::getDBO();
 		
-		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id)) {
+		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id))//{
 			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
-			$db->setQuery($query);
-			$db->query();
-		}
-		
+		//}else{
+		//	$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND user='.$sids[1];
+		//}
+
+		$db->setQuery($query);
+		$db->query();
 		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	

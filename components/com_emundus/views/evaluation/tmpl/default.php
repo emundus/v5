@@ -24,7 +24,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		</div><?php
 		if($tmpl == 'component') {
 			echo '<div><h3><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : '.$this->current_schoolyear.'</h3>';
-			$document = JFactory::getDocument();
+			$document =& JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
 			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : '.$this->current_schoolyear.'</legend>';
@@ -69,10 +69,8 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 									echo '<td>'.$value.'</td>';
 								}
                             } //end foreach($evalu)
-                            if ( EmundusHelperAccess::isAdministrator($this->_user->id) ||  EmundusHelperAccess::isCoordinator($this->_user->id)  
-								)
-                           		echo '<td>'.$this->evaluator[$evalu['user_id']].'</td>'; 
-						?> 
+                            echo '<td>'.$this->evaluator[$evalu['user_id']].'</td>'; 
+							?> 
                         </tr>
 					<?php } //end foreach($this->users)?>
                 </tbody>
@@ -95,23 +93,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
  ?>
     
 </form>
-<script type="text/javascript">
-function check_all() {
- var checked = document.getElementById('checkall').checked;
-<?php foreach ($this->users as $user) { ?>
-  document.getElementById('cb<?php echo $user['user_id']; ?>').checked = checked;
-<?php } ?>
-}
-
-function is_check() {
-	var cpt = 0;
-	<?php foreach ($this->users as $user) { ?>
-  		if(document.getElementById('cb<?php echo $user['user_id']; ?>').checked == true) cpt++;
-	<?php } ?>
-	if(cpt > 0) return true;
-	else return false;
-}
-
+<script>
 <?php 
 	echo $this->addElement;
 	echo $this->onSubmitForm; 

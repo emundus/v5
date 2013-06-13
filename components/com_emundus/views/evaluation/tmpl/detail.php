@@ -7,14 +7,14 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 $student_id = JRequest::getVar('sid', null, 'GET', 'none',0);
 $eval_id = JRequest::getVar('uid', null, 'GET', 'none',0);
 $campaign_id = JRequest::getVar('cid', null, 'GET', 'none',0);
-$current_user = JFactory::getUser($student_id);
+$current_user =& JFactory::getUser($student_id);
 //$index = JRequest::getVar('index', null, 'GET', 'none',0);
 
 ?>
 <fieldset>
 <legend><?php echo JText::sprintf('COMMENT',$current_user->name); ?></legend>
 <?php 
-	$comment = EmundusHelperList::getComment($student_id, $eval_id, $campaign_id);
+	$comment =& EmundusHelperList::getComment($student_id, $eval_id, $campaign_id);
 	if(!empty($comment)) echo str_replace('-','<br />- ',$comment); 
 ?>
 </fieldset>

@@ -107,7 +107,6 @@ class EmundusModelUsers extends JModel
 		$edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
 		
-		var_dump($schoolyears);
 		$list_user="";
 		if(!empty($schoolyears) && empty($campaigns)){
 			$list_user="";
@@ -311,9 +310,9 @@ class EmundusModelUsers extends JModel
 		$nb_element = count($campaign);
 		foreach($campaign as $c){
 			if(++$i === $nb_element){
-				$list_campaign.= $c->year;
+				$list_campaign .= $c;
 			}else{
-				$list_campaign.= $c->year.", ";
+				$list_campaign .= $c.", ";
 			}
 		}
 			

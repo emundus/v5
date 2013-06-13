@@ -24,7 +24,6 @@ class EmundusModelEvaluation extends JModel
 	var $_total = null;
 	var $_pagination = null;
 	var $_applicants = array();
-	var $_eval_elements = null;
 	
 	/**
 	 * Constructor
@@ -35,10 +34,10 @@ class EmundusModelEvaluation extends JModel
 		parent::__construct();
 		global $option;
 
-		$mainframe = JFactory::getApplication();
+		$mainframe =& JFactory::getApplication();
 		
-		$this->_db = JFactory::getDBO();
-		$this->_user = JFactory::getUser();
+		$this->_db =& JFactory::getDBO();
+		$this->_user = & JFactory::getUser();
 	
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
@@ -89,7 +88,7 @@ class EmundusModelEvaluation extends JModel
 	function _buildContentOrderBy(){
 		global $option;
 
-		$mainframe = JFactory::getApplication();
+		$mainframe =& JFactory::getApplication();
 
 		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
@@ -105,7 +104,7 @@ class EmundusModelEvaluation extends JModel
 		if(!empty($select_list))
 			foreach($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
 		
-		$this->_applicants = EmundusHelperList::multi_array_sort($this->_applicants, 'overall', SORT_DESC);
+		$this->_applicants =& EmundusHelperList::multi_array_sort($this->_applicants, 'overall', SORT_DESC);
 		$rank=1;
 		for($i=0 ; $i<count($this->_applicants) ; $i++) {
 			$this->_applicants[$i]['ranking']=$rank;
@@ -113,7 +112,7 @@ class EmundusModelEvaluation extends JModel
 		}
 		
 		if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
-			$this->_applicants = EmundusHelperList::multi_array_sort($this->_applicants, $filter_order, $sort);
+			$this->_applicants =& EmundusHelperList::multi_array_sort($this->_applicants, $filter_order, $sort);
 		} 
 		$t = count($this->_applicants);
 		$ls = $this->getState('limitstart');
@@ -138,7 +137,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function union($myGroup,$myAffect){
-		$session = JFactory::getSession();
+		$session =& JFactory::getSession();
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$s_elements = $session->get('s_elements');
 		
@@ -195,7 +194,12 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildSelect(){
-		$current_user 			= JFactory::getUser();
+	/*	$session =& JFactory::getSession();
+		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		$s_elements = $session->get('s_elements');
+		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);*/
+
+		$current_user 			= & JFactory::getUser();
 		$search					= $this->getState('elements');
 		$s_elements				= $this->getState('s_elements');
 		$search_other			= $this->getState('elements_other');
@@ -204,12 +208,6 @@ class EmundusModelEvaluation extends JModel
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
-
-		$this->_eval_elements = $this->getElementsByGroups(41);
-		
-		foreach ($this->_eval_elements as $eval) {
-			$eval_columns[] = 'ee.'.$eval->name;
-		}
 
 		if (count($search)==0) $search = $s_elements;
 
@@ -233,11 +231,8 @@ class EmundusModelEvaluation extends JModel
 				$cols = implode(', ',$cols);
 		}
 		
-		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent ';
-		if(!empty($cols)) 
-			$query .= ', '.$cols;
-		if(!empty($eval_columns)) 
-			$query .= ', '.implode(",", $eval_columns);
+		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id ';
+		if(!empty($cols)) $query .= ', '.$cols;
 		$query .= '	FROM #__emundus_campaign_candidature ecc
 			LEFT JOIN  #__emundus_users eu ON eu.user_id = ecc.applicant_id 
 			LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=ecc.campaign_id
@@ -267,7 +262,17 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildFilters(){
+		//$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
+		//$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
+		//$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
+		//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		//$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
+		//$finalgrade = JRequest::getVar('finalgrade', null, 'POST', 'none', 0);
 		$view_calc = JRequest::getVar('view_calc', null, 'POST', 'none', 0);
+		//$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
+		//$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
+		//$campaigns = JRequest::getVar('campaigns', null, 'POST', 'none', 0);
+		//$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
 
 		$search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');
@@ -285,7 +290,7 @@ class EmundusModelEvaluation extends JModel
 		$validate_application	= $this->getState('validate');
 
 		// Starting a session.
-		$session = JFactory::getSession();
+		$session =& JFactory::getSession();
 		
 		if(empty($profile) && $session->has( 'profile' )) $profile = $session->get( 'profile' );
 		if(empty($finalgrade) && $session->has( 'finalgrade' )) $finalgrade = $session->get( 'finalgrade' );
@@ -398,25 +403,25 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildQuery(){	
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$eMConfig =& JComponentHelper::getParams('com_emundus');
 		$eval_access = $eMConfig->get('can_evaluators_see_all_applicants', '0');
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
 		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
 		
 		// Starting a session.
-		$session = JFactory::getSession();
+		$session =& JFactory::getSession();
 		if(empty($gid) && $session->has( 'groups' )) $gid = $session->get( 'groups' );
 		if(empty($uid) && $session->has( 'evaluator' )) $uid = $session->get( 'evaluator' );
 		$s_elements = $session->get('s_elements');
 		if (count($search)==0) $search = $s_elements;
 		
-		if( EmundusHelperAccess::isEvaluator($this->_user->id) ){ 
+		if(EmundusHelperAccess::isEvaluator($this->_user->id)){
 			if($eval_access>0)
 				$applicants = $this->union($this->_buildQuery_myGroup(),$this->_buildQuery_myAffect());
 			else
 				$applicants = $this->_buildQuery_myAffect();		
-		}elseif ( EmundusHelperAccess::isPartner($this->_user->id) ){
+		}elseif (EmundusHelperAccess::isPartner($this->_user->id)){
 			$applicants = $this->_buildQuery_myGroup();
 		}else{
 			$query = $this->_buildSelect();
@@ -430,6 +435,8 @@ class EmundusModelEvaluation extends JModel
 		}
 		if(!empty($applicants)) {
 			///** Ajout des colonnes de moyennes /
+			//$all_applis = $this->getAllUsers();
+			$evals = $this->getEvalColumns();
 			$head_values = $this->getApplicantColumns();
 			foreach($head_values as $head) $head_val[] = $head['name'];
 			
@@ -441,55 +448,40 @@ class EmundusModelEvaluation extends JModel
 				$eval_list['campaign']=$applicant->campaign;
 				$eval_list['campaign_id']=$applicant->campaign_id;
 				$eval_list['evaluation_id'] = $applicant->evaluation_id;
-				$eval_list['date_result_sent'] = !empty($applicant->date_result_sent) ? date(JText::_('DATE_FORMAT_LC'), strtotime($applicant->date_result_sent)) : JText::_('NOT_SENT');
-				
+					
 				if(!empty($search)){
 					foreach($search as $c){
 						if(!empty($c)){
-							$name = explode('.', $c);
-							if(!in_array(@$name[1], $head_val) && !empty($name[1])){
+							$name = explode('.',$c);
+							if(!in_array(@$name[1],$head_val) && !empty($name[1])){
 								$eval_list[$name[1]] = $applicant->$name[1];
 							}
 						}
 					}
-				} 
+				}
 				// evaluation list
-				foreach($this->_eval_elements as $eval){ 
-					$val = $applicant->{$eval->name};
-
-					$params = json_decode($eval->params);
+				foreach($evals as $eval){
+					//replace values b labels
+					$sub_values = explode('|',$eval['sub_values']);
+					$sub_labels = explode('|',$eval['sub_labels']);
+					$i = 0;
+					foreach($sub_values as $sub_value){
+						$sub_val[$sub_value] = $sub_labels[$i];
+						$i++;
+					}
+					//$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND user = '.$applicant->user;
+			//print_r($applicant);
+					$query = 'SELECT '.$eval['name'].' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND campaign_id='.$eval_list['campaign_id'];
+					$this->_db->setQuery( $query );
+					$val = $this->_db->loadResult();
 					
-					if($eval->plugin=='databasejoin') {		
-						$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-						$from = $params->join_db_name;
-						$where = $params->join_key_column.'='.$this->_db->Quote($val);
-						$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-						$query = preg_replace('#{thistable}#', $from, $query);
-						$query = preg_replace('#{my->id}#', $applicant->user_id, $query); 
-						$this->_db->setQuery( $query );
-						$elt = $this->_db->loadResult();
-						$eval_list[$eval->name] = $elt;
-					} elseif($eval->plugin == 'radiobutton' || $eval->plugin == 'dropdown') {
-						//var_dump($params->sub_options->sub_values); }
-						$sub_values = $params->sub_options->sub_values; 
-						$sub_labels = $params->sub_options->sub_labels; 
-						$i = 0;
-						foreach($sub_values as $sub_value){
-							$sub_val[$sub_value] = $sub_labels[$i];
-							$i++;
-						}
-						
-						// var_dump($eval);
-						if(in_array($val, array_keys($sub_val)))
-							$eval_list[$eval->name] = $sub_val[$val];
-						else
-							$eval_list[$eval->name] = $val;
-						
-					} else
-						$eval_list[$eval->name] = $val;
+					if(in_array($val,array_keys($sub_val)) && $eval['sub_values'] != $eval['sub_labels'])
+						$eval_list[$eval['name']] = $sub_val[$val];
+					else
+						$eval_list[$eval['name']] = $val;
 				}
 				if (!empty($applicant->user)) {
-					$evaluator = JFactory::getUser($applicant->user);
+					$evaluator =& JFactory::getUser($applicant->user);
 					$eval_list['user'] = $evaluator->id;
 					$eval_list['user_name'] = $evaluator->name;
 				} else {
@@ -503,6 +495,8 @@ class EmundusModelEvaluation extends JModel
 						$eval_list['General ranking'] = $all['General ranking'];*/
 						//$eval_list['global_mean'] = $all['global_mean'];
 				$eval_lists[]=$eval_list;
+				
+				
 			}
 			if(!empty($eval_lists))
 				$this->_applicants=$eval_lists;	
@@ -520,7 +514,7 @@ class EmundusModelEvaluation extends JModel
 		
 		$col = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		// Starting a session.
-		$session = JFactory::getSession();
+		$session =& JFactory::getSession();
 		$elements = $session->get('s_elements');
 		if (count($col)==0) $col = $elements;
 		$lists = '';
@@ -559,7 +553,7 @@ class EmundusModelEvaluation extends JModel
 
 	// get evaluation columns
 	function getEvalColumns(){
-		$query = 'SELECT name, label, plugin, params, ordering 
+		$query = 'SELECT name, label, params, ordering 
 				FROM #__fabrik_elements 
 				WHERE group_id=41
 				AND hidden != 1
@@ -567,12 +561,6 @@ class EmundusModelEvaluation extends JModel
 				ORDER BY ordering';
 		$this->_db->setQuery( $query );
 		return EmundusHelperFilters::insertValuesInQueryResult($this->_db->loadAssocList('name'), array("sub_values", "sub_labels"));
-	}
-
-	// get elements by groups
-	// @params string List of Fabrik groups comma separated
-	function getElementsByGroups($groups){
-		return EmundusHelperFilters::getElementsByGroups($groups);
 	}
 	
 	// get applicant columns
@@ -582,7 +570,6 @@ class EmundusModelEvaluation extends JModel
 		$cols[] = array('name' =>'name', 'label'=>'NAME'); 
 		//$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
 		$cols[] = array('name' =>'campaign', 'label'=>'CAMPAIGN'); 
-		$cols[] = array('name' =>'date_result_sent', 'label'=>'DATE_RESULT_SENT_ON'); 
 		
 		return $cols;
 	}
@@ -658,7 +645,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function getProfiles(){
-		$db = JFactory::getDBO();
+		$db =& JFactory::getDBO();
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft 
 		FROM #__emundus_setup_profiles esp 
 		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id 
