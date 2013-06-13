@@ -38,7 +38,7 @@ class EmundusController extends JController {
 		parent::__construct($config);
 	}
 
-	function display() {
+	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
 		if ( ! JRequest::getCmd( 'view' ) ) {
 			if ($this->user->usertype == "Registered" && JRequest::getVar('view', null, 'GET' ) != 'renew_application') {

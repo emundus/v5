@@ -23,7 +23,7 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusHelperAccess{
+class EmundusHelperAccess {
 	
 	function isAllowed($usertype, $allowed){
 		return in_array($usertype, $allowed);
@@ -56,7 +56,7 @@ class EmundusHelperAccess{
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
 	}
 
-	function check_group($user_id, $group, $inherited){
+	private function check_group($user_id, $group, $inherited){
 		// 1:Public / 2:Registered / 3:Author / 4:Editor / 5:Publisher / 6:Manager / 7:Administrator / 8:Super Users / 9:Guest / 10:Nobody
 		$user = JFactory::getUser($user_id);
 

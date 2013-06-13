@@ -23,6 +23,13 @@ function age($naiss) {
 // @params Type of output
 
 function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true) {
+	set_time_limit(0);
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
+	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+	include_once(JPATH_BASE.'/components/com_emundus/models/evaluation.php');
+	include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
+
 	$current_user = & JFactory::getUser();
 	$user = & JFactory::getUser($user_id);
 	$db = &JFactory::getDBO();
@@ -40,23 +47,15 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$courses_list = '<ul>';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
-		$ds = strftime("%d/%m/%Y", strtotime($c['date_start']));
-		$de = strftime("%d/%m/%Y", strtotime($c['date_end']));
+		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
 		$courses_fee  .= $c['price'].' &euro; <br>';
 	}
 	$courses_list .= '</ul>';
 
-	$query = "SELECT * FROM #__emundus_setup_campaigns WHERE id=".$campaign_id;
-	$db->setQuery($query);
-	$campaign = $db->loadAssoc();
-
-	set_time_limit(0);
-	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
-	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
-	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
-	
-	$emails = new EmundusModelEmails;
+	$campaigns = new EmundusModelCampaign;
+	$campaign = $campaigns->getCampaignByID($campaign_id);
 
 	// Extend the TCPDF class to create custom Header and Footer
 	class MYPDF extends TCPDF {
@@ -92,6 +91,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			
 		}
 	}
+	$emails = new EmundusModelEmails;
+	$evaluations = new EmundusModelEvaluation;
 
 	foreach ($letters as $letter) {
 		$htmldata = "";
@@ -138,12 +139,9 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 		//$dimensions = $pdf->getPageDimensions();
 
-//
-// Evaluation result
-//
-		include_once(JPATH_BASE.'/components/com_emundus/models/evaluation.php');
-
-		$evaluations = new EmundusModelEvaluation;
+		//
+		// Evaluation result
+		//
 		$evaluation = $evaluations->getEvaluationByID($evaluation_id);
 		$reason = $evaluations->getEvaluationReasons();
 		unset($evaluation[0]["id"]);
@@ -223,6 +221,151 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	}
 //die(print_r($files));
 	return $files;
+}	
+
+
+// @description Generate the letter template result
+// @params Applicant user ID
+// @params Eligibility ID of the evaluation
+// @params Code of the programme
+// @params Type of output
+
+function letter_pdf_template ($user_id, $eligibility, $training) {
+	set_time_limit(0);
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
+	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
+	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+
+	$current_user = & JFactory::getUser();
+	$user = & JFactory::getUser($user_id);
+	$db = &JFactory::getDBO();
+
+	$files = array();
+
+	$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$db->Quote($training);
+	$db->setQuery($query);
+	$letters = $db->loadAssocList();
+
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($training). "AND date_start > NOW() ORDER BY date_start ASC";
+	$db->setQuery($query);
+	$courses = $db->loadAssocList();
+	
+	$courses_list = '<ul>';
+	$courses_fee = ' ';
+	foreach ($courses as $c) {
+		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
+		$courses_fee  .= $c['price'].' &euro; <br>';
+	}
+	$courses_list .= '</ul>';
+
+	// Extend the TCPDF class to create custom Header and Footer
+	class MYPDF extends TCPDF {
+
+		var $logo = "";
+		var $logo_footer = "";
+		var $footer = "";
+
+		//Page header
+		public function Header() {
+			// Logo
+			if (is_file($this->logo))
+				$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			// Set font
+			$this->SetFont('helvetica', 'B', 20);
+			// Title
+			$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+		}
+
+		// Page footer
+		public function Footer() {
+			// Position at 15 mm from bottom
+			$this->SetY(-15);
+			// Set font
+			$this->SetFont('helvetica', 'I', 8);
+			// Page number
+			$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+			// footer
+			$this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+			//logo
+			if (is_file($this->logo_footer))
+				$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+			
+		}
+	}
+
+	$emails = new EmundusModelEmails;
+	foreach ($letters as $letter) {
+		$htmldata = "";
+		$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$letter['attachment_id'];
+		$db->setQuery($query);
+		$attachment = $db->loadAssoc();
+
+		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor($current_user->name);
+		$pdf->SetTitle($letter['title']);
+
+		// set margins
+		$pdf->SetMargins(5, 40, 5);
+		//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		$pdf->footer = $letter["footer"];
+
+		//get logo
+		preg_match('#src="(.*?)"#i', $letter['header'], $tab);
+		$pdf->logo = JPATH_BASE.DS.$tab[1];
+		
+		preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
+		$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
+
+		
+
+		//get title
+	/*	$config =& JFactory::getConfig(); 
+		$title = $config->getValue('config.sitename');
+		$title = "";
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);*/
+		unset($logo);
+		unset($logo_footer);
+		
+		//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+		$pdf->SetFont('helvetica', '', 9);
+
+		//$dimensions = $pdf->getPageDimensions();
+
+		//
+		// Replacement
+		//
+		$post = array(  'TRAINING_CODE' => @$training, 
+						'TRAINING_PROGRAMME' => @$campaign['label'],
+						'REASON' => @$result, 
+						'TRAINING_FEE' => @$courses_fee, 
+						'TRAINING_PERIODE' => @$courses_list );
+
+		$tags = $emails->setTags($user_id, $post);
+
+		//$htmldata .= $letter["header"];
+		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], $letter["body"]); 
+		//$htmldata .= $letter["footer"];
+//die($htmldata);
+		$pdf->AddPage();
+
+		// Print text using writeHTMLCell()
+		$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+		@chdir('tmp');
+		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'I');
+	}
+//die(print_r($files));
+	exit();
 }	
 
 
