@@ -97,14 +97,13 @@ class EmundusControllerUsers extends JController {
 	
 	function clear() {
 		EmundusHelperFilters::clear();
-		
 		//$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		$itemid=JSite::getMenu()->getActive()->id;
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
 	function setSchoolyear(){

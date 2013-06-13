@@ -189,13 +189,14 @@ foreach ($this->users as $user) { ?>
 		<td align="center"><?php
 			if(gettype(@$this->groups_eval[$user->id])=="object"){
 				$group_eval = $this->groups_eval[$user->id];
-				echo '<a class="info-bulle" href="#">'.$group_eval->label.'<span><ul>';
+				$title_group = JText::_('MEMBERS_GROUP_EVAL');
+				echo '<span class="editlinktip hasTip" title="'.$title_group.'::<ul>';
 				foreach($this->groupEvalWithId as $eval){
 					if($eval->id==$group_eval->group_id){
 						echo '<li>'.strtoupper($eval->lastname).' '.strtolower($eval->firstname).'</li>';
 					}
 				}
-				echo '</ul></span></a>';
+				echo '</ul>"><a href="#">'.$group_eval->label.'</a></span>';
 			}
 		?>
 		</td>
