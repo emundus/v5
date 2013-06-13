@@ -143,6 +143,7 @@ class EmundusViewList extends JView
         $this->assignRef( 'lists', $lists );
 		
         $elements = $this->get('Elements');
+        $pagination = $this->get('Pagination');
         $this->assignRef('pagination', $pagination);
 		
 		$current_schoolyear = implode(', ',$this->get('CurrentCampaign'));
