@@ -195,11 +195,6 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildSelect(){
-	/*	$session = JFactory::getSession();
-		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$s_elements = $session->get('s_elements');
-		$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);*/
-
 		$current_user 			= JFactory::getUser();
 		$search					= $this->getState('elements');
 		$s_elements				= $this->getState('s_elements');
@@ -238,7 +233,7 @@ class EmundusModelEvaluation extends JModel
 				$cols = implode(', ',$cols);
 		}
 		
-		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id ';
+		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent ';
 		if(!empty($cols)) 
 			$query .= ', '.$cols;
 		if(!empty($eval_columns)) 
@@ -272,17 +267,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildFilters(){
-		//$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
-		//$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		//$quick_search = JRequest::getVar('s', null, 'POST', 'none', 0);
-		//$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		//$search_values = JRequest::getVar('elements_values', null, 'POST', 'array', 0);
-		//$finalgrade = JRequest::getVar('finalgrade', null, 'POST', 'none', 0);
 		$view_calc = JRequest::getVar('view_calc', null, 'POST', 'none', 0);
-		//$profile = JRequest::getVar('profile', null, 'POST', 'none', 0);
-		//$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		//$campaigns = JRequest::getVar('campaigns', null, 'POST', 'none', 0);
-		//$miss_doc = JRequest::getVar('missing_doc', null, 'POST', 'none',0);
 
 		$search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');
@@ -445,9 +430,6 @@ class EmundusModelEvaluation extends JModel
 		}
 		if(!empty($applicants)) {
 			///** Ajout des colonnes de moyennes /
-			//$all_applis = $this->getAllUsers();
-			//$evals = $this->getEvalColumns();
-			//$evals = $this->getElementsByGroups(41);
 			$head_values = $this->getApplicantColumns();
 			foreach($head_values as $head) $head_val[] = $head['name'];
 			
@@ -459,12 +441,13 @@ class EmundusModelEvaluation extends JModel
 				$eval_list['campaign']=$applicant->campaign;
 				$eval_list['campaign_id']=$applicant->campaign_id;
 				$eval_list['evaluation_id'] = $applicant->evaluation_id;
+				$eval_list['date_result_sent'] = !empty($applicant->date_result_sent) ? date(JText::_('DATE_FORMAT_LC'), strtotime($applicant->date_result_sent)) : JText::_('NOT_SENT');
 				
 				if(!empty($search)){
 					foreach($search as $c){
 						if(!empty($c)){
-							$name = explode('.',$c);
-							if(!in_array(@$name[1],$head_val) && !empty($name[1])){
+							$name = explode('.', $c);
+							if(!in_array(@$name[1], $head_val) && !empty($name[1])){
 								$eval_list[$name[1]] = $applicant->$name[1];
 							}
 						}
@@ -473,14 +456,10 @@ class EmundusModelEvaluation extends JModel
 				// evaluation list
 				foreach($this->_eval_elements as $eval){ 
 					$val = $applicant->{$eval->name};
-					/*$query = 'SELECT '.$eval->name.' FROM #__emundus_evaluations WHERE student_id = '.$applicant->user_id.' AND campaign_id='.$eval_list['campaign_id'];
-					$this->_db->setQuery( $query );
-					$val = $this->_db->loadResult();
-*/
+
 					$params = json_decode($eval->params);
 					
-					if($eval->plugin=='databasejoin') {
-						
+					if($eval->plugin=='databasejoin') {		
 						$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 						$from = $params->join_db_name;
 						$where = $params->join_key_column.'='.$this->_db->Quote($val);
@@ -603,6 +582,7 @@ class EmundusModelEvaluation extends JModel
 		$cols[] = array('name' =>'name', 'label'=>'NAME'); 
 		//$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
 		$cols[] = array('name' =>'campaign', 'label'=>'CAMPAIGN'); 
+		$cols[] = array('name' =>'date_result_sent', 'label'=>'DATE_RESULT_SENT_ON'); 
 		
 		return $cols;
 	}
