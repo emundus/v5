@@ -26,7 +26,7 @@ class EmundusViewUsers extends JView
 	
 	function __construct($config = array()){
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
@@ -47,9 +47,6 @@ class EmundusViewUsers extends JView
 		$edit_profiles = $this->get('EditProfiles');
 		$this->assignRef('edit_profiles',$edit_profiles);
 		
-		$schoolyear = $this->get('Schoolyear');
-		$this->assignRef('schoolyear', $schoolyear);
-		
 		$schoolyears = $this->get('Schoolyears');
 		$this->assignRef('schoolyears', $schoolyears);
 		
@@ -62,9 +59,6 @@ class EmundusViewUsers extends JView
 		$campaigns = $this->get('Campaigns');
 		$this->assignRef('campaigns', $campaigns);
 		
-		$current_campaigns = $this->get('CurrentCampaigns');
-		$this->assignRef('current_campaigns', $current_campaigns);
-		
 	/*	$newsletter = $this->get('Newsletter');
 		$this->assignRef('newsletter', $newsletter);
 	*/	
@@ -73,9 +67,6 @@ class EmundusViewUsers extends JView
 		
 		$groupEvalWithId = $this->get('GroupEvalWithId');
 		$this->assignRef('groupEvalWithId', $groupEvalWithId);
-		
-		$allGroupEval = $this->get('AllGroupsEval');
-		$this->assignRef('allGroupEval', $allGroupEval);
 		
 		$users = $this->get('Users');
 		$this->assignRef('users', $users);
@@ -103,15 +94,30 @@ class EmundusViewUsers extends JView
 		$lists['order']     = $state->get( 'filter_order' );
 		$this->assignRef( 'lists', $lists );
 		
-		@$this->assignRef('state_schoolyears', $state->get('schoolyears'));
-		@$this->assignRef('state_current_l', $state->get('s'));
-		@$this->assignRef('state_current_campaigns', $state->get('campaigns'));
-		@$this->assignRef('state_current_groupEval', $state->get('groups_eval'));
-		@$this->assignRef('state_spam_suspect', $state->get('spam_suspect'));
-		@$this->assignRef('state_newsletter', $state->get('newsletter'));
-		@$this->assignRef('state_current_p', $state->get('rowid'));
-		@$this->assignRef('state_current_fg', $state->get('finalgrade'));
-		
+		$menu = JSite::getMenu()->getActive();
+		$access =! empty($menu)?$menu->access : 0;
+		$state			= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
+		$filts_details	= array('profile_users'			=> $state,
+								'evaluator_group'	=> $state,
+								'schoolyear'		=> $state,
+								'campaigns'			=> $state,
+								'finalgrade'		=> $state,
+								'newsletter'		=> $state,
+								'spam_suspect'		=> $state,
+								'not_adv_filter'	=> $state,
+								);
+		$filts_options 	= array('profile_users'		=> NULL,
+							  	'evaluator_group'	=> NULL,
+							  	'schoolyear'		=> NULL,
+							  	'campaigns'			=> NULL,
+							  	'finalgrade'		=> NULL,
+							  	'newsletter'		=> NULL,
+							  	'spam_suspect'		=> NULL,
+							  	'not_adv_filter'	=> NULL,
+								);
+		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, array());
+		$this->assignRef('filters', $filters);
+		unset($options);
 		
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		$form		= $this->get('Form');

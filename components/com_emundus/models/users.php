@@ -43,17 +43,18 @@ class EmundusModelUsers extends JModel
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		
  		$filter_order           = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', 'lastname', 'cmd' );
-        $filter_order_Dir       = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+        $filter_order_Dir       = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );		
 		
-		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears' );
-		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns' );
-		$final_grade				= $mainframe->getUserStateFromRequest( $option.'final_grade', 'final_grade', @$filts_details['finalgrade'] );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
+		$final_grade			= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
 		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
-		$groups_eval			= $mainframe->getUserStateFromRequest( $option.'groups_eval', 'groups_eval');
-		$rowid					= $mainframe->getUserStateFromRequest( $option.'rowid', 'rowid', @$filts_details['profile'] );
-		$spam_suspect			= $mainframe->getUserStateFromRequest( $option.'spam_suspect', 'spam_suspect', 0);
-		$newsletter 			= $mainframe->getUserStateFromRequest( $option.'newsletter', 'newsletter', 0);
-
+		$evaluator_group			= $mainframe->getUserStateFromRequest( $option.'evaluator_group', 'evaluator_group', @$filts_details['evaluator_group'] );
+		$profile_users					= $mainframe->getUserStateFromRequest( $option.'profile_users', 'profile_users', @$filts_details['profile_users'] );
+		$spam_suspect			= $mainframe->getUserStateFromRequest( $option.'spam_suspect', 'spam_suspect');
+		$newsletter				= $mainframe->getUserStateFromRequest( $option.'newsletter', 'newsletter');
+		
+		
         $this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
@@ -63,8 +64,8 @@ class EmundusModelUsers extends JModel
 		$this->setState('campaigns', $campaigns);
 		$this->setState('final_grade', $final_grade);
 		$this->setState('s', $s);
-		$this->setState('groups_eval', $groups_eval);
-		$this->setState('rowid', $rowid);
+		$this->setState('evaluator_group', $evaluator_group);
+		$this->setState('profile_users', $profile_users);
 		$this->setState('spam_suspect', $spam_suspect);
 		$this->setState('newsletter', $newsletter);
 
@@ -92,13 +93,13 @@ class EmundusModelUsers extends JModel
 	
 	function _buildQuery()
 	{	
-		$final_grade	= $this->getState('final_grade');
+		$final_grade	= $this->getState('finalgrade');
 		$s				= $this->getState('s');
 		$campaigns		= $this->getState('campaigns');
 		$schoolyears	= $this->getState('schoolyears');
-		$groupEval		= $this->getState('group_eval');
+		$groupEval		= $this->getState('evaluator_group');
 		$spam_suspect	= $this->getState('spam_suspect');
-		$pid			= $this->getState('rowid');
+		$pid			= $this->getState('profile_users');
 		$newsletter		= $this->getState('newsletter');
 		
 		if (!isset($pid))
@@ -106,8 +107,9 @@ class EmundusModelUsers extends JModel
 		$edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
 		
+		var_dump($schoolyears);
 		$list_user="";
-		if(!empty($schoolyears) && empty($campaigns)){ 
+		if(!empty($schoolyears) && empty($campaigns)){
 			$list_user="";
 			$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
 			$i=0;
@@ -284,7 +286,6 @@ class EmundusModelUsers extends JModel
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
 		WHERE sc.published=1';
-		
 		//echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadObjectList();
@@ -305,30 +306,45 @@ class EmundusModelUsers extends JModel
 	
 	function getUserListWithCampaign($campaign)
 	{
+		$list_campaign ="";
+		$i=0;
+		$nb_element = count($campaign);
+		foreach($campaign as $c){
+			if(++$i === $nb_element){
+				$list_campaign.= $c->year;
+			}else{
+				$list_campaign.= $c->year.", ";
+			}
+		}
+			
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
-		WHERE sc.published=1 AND sc.id ='.$campaign;
+		WHERE sc.published=1 AND sc.id IN ('.$list_campaign.')';
 		// echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
 	
-	function getCurrentCampaigns()
-	{
-		$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'none', 0);
-		$db = JFactory::getDBO();
-		$query = 'SELECT sc.id, sc.start_date, sc.end_date, sc.label
-		FROM #__emundus_setup_campaigns AS sc
-		WHERE sc.published=1';
-		if(!empty($schoolyears)){
-			$query.=' AND YEAR(sc.start_date)='.$schoolyears;
-		}
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+	function getCurrentCampaign(){
+		return EmundusHelperFilters::getCurrentCampaign();
+	}
+
+	function getCurrentCampaignsID(){
+		return EmundusHelperFilters::getCurrentCampaignsID();
 	}
 	
+	function getCurrentCampaigns()
+	{
+		$db = JFactory::getDBO();
+		$query = 'SELECT sc.id, sc;label
+		FROM #__emundus_setup_campaigns AS sc
+		WHERE sc.published=1 AND end_date > NOW()';
+		$db->setQuery( $query );
+		// echo str_replace('#_','jos',$query);
+		return $db->loadResultArray();
+	}
 	
 	
 	function getNewsletter()
@@ -376,16 +392,6 @@ class EmundusModelUsers extends JModel
 		return $db->loadResultArray();
 	}
 	
-	function getAllGroupsEval()
-	{
-		$db = JFactory::getDBO();
-		$query = 'SELECT esg.id, esg.label 
-		FROM #__emundus_setup_groups as esg
-		WHERE esg.published=1';
-		$db->setQuery( $query );
-		return $db->loadObjectList();
-	}
-	
 	function getUsersGroups()
 	{
 		$db = JFactory::getDBO();
@@ -395,20 +401,10 @@ class EmundusModelUsers extends JModel
 		return $db->loadObjectList();
 	}
 
-	function getSchoolyear()
-	{
-		$db = JFactory::getDBO();
-		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
-		$db->setQuery( $query );
-		return $db->loadResult();
-	}
-	
 	function getSchoolyears()
 	{
 		$db = JFactory::getDBO();
-		$query = 'SELECT YEAR(start_date)
-		FROM #__emundus_setup_campaigns
-		WHERE published=1 GROUP BY YEAR(start_date)';
+		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1 GROUP BY schoolyear';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
