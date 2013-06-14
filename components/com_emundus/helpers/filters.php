@@ -799,14 +799,14 @@ class EmundusHelperFilters {
 		
 		if(@$params['newsletter'] !== NULL){
 			$filters.= '<div class="em_filters" id="newsletter"><div class="em_label"><label>'.JText::_('NEWSLETTER').'</label></div>
-			<div class="em_filtersElement"><input name="newsletter" type="checkbox" value="1" '.($newsletter==1?'checked=checked':'').' /></div>
+			<div class="em_filtersElement"><input id="check_newsletter" name="newsletter" type="checkbox" value="1" '.($newsletter==1?'checked=checked':'').' /></div>
 			</div>';
 		}
 		
 		if(@$params['spam_suspect'] !== NULL){
 			$filters.= '
 			<div class="em_filters" id="spam_suspect"><div class="em_label"><label>'.JText::_('SPAM_SUSPECT').'</label></div>
-			<div class="em_filtersElement"><input name="spam_suspect" type="checkbox" value="1" '.($spam_suspect==1?'checked=checked':'').' /></div>
+			<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" type="checkbox" value="1" '.($spam_suspect==1?'checked=checked':'').' /></div>
 			</div>';
 		}
 		

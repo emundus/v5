@@ -268,7 +268,7 @@ function OnSubmitForm() {
 
 		function getJsonInput(name){
 			var selects_object = document.getElementById(\'filters\').getElementsByTagName(\'select\');
-			var inputs_object = document.getElementById(\'quick\').getElementsByTagName(\'input\');
+			var inputs_object = document.getElementById(\'filters\').getElementsByTagName(\'input\');
 			var inputs = makeArray(inputs_object);
 			var selects = makeArray(selects_object);
 			var jsonObj = [];
@@ -295,7 +295,7 @@ function OnSubmitForm() {
 				var input = inputs[i];
 				var name_i = input.id;
 				var value_i = input.value;
-				// alert(name_i+" "+value_i);
+				alert(name_i+" "+value_i);
 				jsonObj.push({\'id\': name_i, \'value\': value_i});
 			}
 			// alert(jsonObj[1][\'id\']+" "+jsonObj[1][\'value\']);
@@ -397,6 +397,8 @@ function OnSubmitForm() {
 						}
 					}
 				}else if(define_type[0]==\'text\'){
+					field.value = constraintsObj[i].value;
+				}else if(define_type[0]==\'check\'){
 					field.value = constraintsObj[i].value;
 				}
 				
