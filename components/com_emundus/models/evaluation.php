@@ -43,8 +43,8 @@ class EmundusModelEvaluation extends JModel
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
-		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -83,7 +83,7 @@ class EmundusModelEvaluation extends JModel
         $this->setState('limitstart', $limitstart);
 		
 		$col_elt	= $this->getState('elements');
-		$col_other	= $this->getState('elements_other');
+		$col_other	= $this->getState('elements_other'); 
 	}
 	
 	function _buildContentOrderBy(){
@@ -305,15 +305,20 @@ class EmundusModelEvaluation extends JModel
 		}
 		$query = '';
 		$and = true;
-		if(empty($schoolyears)) 
-			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		if($schoolyears[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+		elseif(!empty($schoolyears))
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
 		else
-			$query.= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
 
-		if(empty($campaigns)) 
-			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$this->getCurrentCampaignsID()).'")';
-		else
-			$query.= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$campaigns).'") ';
+
+		if($campaigns[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+		elseif(!empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
+		else	
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
 		
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
@@ -606,7 +611,12 @@ class EmundusModelEvaluation extends JModel
 	}
 
 	function getCurrentCampaignsID(){
-		return EmundusHelperFilters::getCurrentCampaignsID();
+		$query = 'SELECT id 
+				FROM #__emundus_setup_campaigns 
+				WHERE published = 1 AND end_date > NOW()
+				ORDER BY year DESC';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadResultArray();
 	}
 
 	function getPublished(){

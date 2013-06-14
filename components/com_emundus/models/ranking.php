@@ -232,13 +232,13 @@ class EmundusModelRanking extends JModel
 		
 		return $syear[0];
 	}
+	
 	function getCurrentCampaign(){
-		$query = 'SELECT DISTINCT year as schoolyear 
-				FROM #__emundus_setup_campaigns 
-				WHERE published=1 
-				ORDER BY schoolyear DESC';
-		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		return EmundusHelperFilters::getCurrentCampaign();
+	}
+
+	function getCurrentCampaignsID(){
+		return EmundusHelperFilters::getCurrentCampaignsID();
 	}
 	
 	function getProfileAcces($user)
@@ -526,11 +526,21 @@ class EmundusModelRanking extends JModel
 		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
 		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 
-		if(isset($schoolyears) &&  !empty($schoolyears)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
-		}
+		if($schoolyears[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+		elseif(!empty($schoolyears))
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
+		else
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
+
+
+		if($campaigns[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+		elseif(!empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
+		else	
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
+
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }

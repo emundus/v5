@@ -24,7 +24,12 @@ foreach($s_elements as $s){
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
 	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
-	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/><?php
+	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
+	<input type="hidden" name="option" value="com_emundus"/>
+    <input type="hidden" name="view" value="<?php echo $v; ?>"/>
+    <input type="hidden" name="task" value=""/>
+    <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
+	<?php
 		echo JText::_('SELECT_ALL');
 		echo '<input type="checkbox" id="emundus_checkall" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /><div id="emundus_elements">';
 		$tbl_tmp='';

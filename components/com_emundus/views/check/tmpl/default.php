@@ -60,6 +60,7 @@ $db = JFactory::getDBO();
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" />
 <input type="hidden" name="option" value="com_emundus"/>
 <input type="hidden" name="view" value="check"/>
+<input type="hidden" name="task" value=""/>
 <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 <input type="hidden" name="limitstart" value="<?php echo $limitstart; ?>"/>
 <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />

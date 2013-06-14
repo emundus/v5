@@ -405,15 +405,20 @@ class EmundusModelCheck extends JModel
 		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
 		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 
-		if(isset($schoolyears) &&  !empty($schoolyears)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= '#__emundus_setup_campaigns.year IN ("'.implode('","',$schoolyears).'") ';
-		}
-		if(empty($campaigns)) 
-			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$this->getCurrentCampaignsID()).'")';
+		if($schoolyears[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+		elseif(!empty($schoolyears))
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
 		else
-			$query.= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","',$campaigns).'") ';
+			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
+
+
+		if($campaigns[0] == "%")
+			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+		elseif(!empty($campaigns)) 
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
+		else	
+			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
 
 		if(isset($quick_search) && !empty($quick_search)) {
 			if($and) $query .= ' AND ';

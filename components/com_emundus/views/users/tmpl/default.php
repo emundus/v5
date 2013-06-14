@@ -24,13 +24,6 @@ $current_user = JFactory::getUser();
 
 if($edit!=1) {
 ?>
-<?php 
-$current_user = JFactory::getUser();
-/*if($tmpl == 'component' || $current_user->get('usertype') == "Manager" || $current_user->get('usertype') == "Publisher") {
-	$document = JFactory::getDocument();
-	$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
-}*/
-?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <?php
 echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid.'" rel="{handler:\'iframe\',size:{x:window.innerWidth*0.4,y:window.innerHeight*0.8}}" 
@@ -102,11 +95,10 @@ echo $this->filters;
 
 <div class="emundusraw">
 
-<?php echo $this->export_icones; ?>
 
 <?php
 if(!empty($this->users)) {
-	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_selected_to_xls" onclick="document.pressed=this.name"></span>'; 
+	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_account_to_xls" onclick="document.pressed=this.name"></span>'; 
 	//echo '<span class="editlinktip hasTip" title="'.sprintf(JText::_('EXPORT_CURRENT_CAMPAIGN'), $this->schoolyear).'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_xls" onclick="document.pressed=this.name" /></span>';
 	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
 ?>
@@ -214,7 +206,7 @@ foreach ($this->users as $user) { ?>
 		</td>
 		<td align="center"><?php  echo (json_decode($user->newsletter) == 1 ? JText::_('JYES') : JText::_('JNO')); ?>
 		</td>
-		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
+		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&view=users&controller=users&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
 		<td align="center">
         	<div class="emundusraw">
 <?php 
@@ -359,66 +351,7 @@ function tableOrdering( order, dir, task ) {
   form.filter_order_Dir.value = dir;
   document.adminForm.submit( task );
 }
-
-function OnSubmitForm() {
-	// alert(document.pressed);
-	switch(document.pressed) {
-		case 'export_zip': 
-			if (is_checked()){
-				document.adminForm.task.value = "export_zip";
-				document.adminForm.action ="index.php?option=com_emundus&view=users&controller=users&Itemid=592&task=export_zip";
-			}else alert("<?php echo JText::_('PLEASE_SELECT_APPLICANT'); ?>");
-		break;
-		case 'export_to_xls': 
-			document.adminForm.task.value = "export_to_xls";
-			document.adminForm.action ="index.php?option=com_emundus&controller=users&task=export_to_xls&Itemid=592";
-		break;
-		case 'setSchoolyear': 
-			document.adminForm.task.value = "setSchoolyear";
-			document.adminForm.action ="index.php?option=com_emundus&controller=users&task=setSchoolyear";
-		break;
-		case 'archive': 
-			document.adminForm.task.value = "archive";
-			document.adminForm.action ="index.php?option=com_emundus&controller=users&task=archive";
-		break;
-		case 'delusers': 
-			document.adminForm.task.value = "delusers";
-			if (confirm("<?php echo JText::_("CONFIRM_DELETE"); ?>")) {
-        		document.adminForm.action ="index.php?option=com_emundus&task=delusers";
-		 	} else 
-		 		return false;
-		break;
-		case 'delrefused': 
-			document.adminForm.task.value = "delrefused";
-			if (confirm("<?php echo JText::_("CONFIRM_DELETE"); ?>")) {
-        		document.adminForm.action ="index.php?option=com_emundus&task=delrefused";
-		 	} else 
-		 		return false;
-		break;
-		case 'delincomplete': 
-			document.adminForm.task.value = "delincomplete";
-			if (confirm("<?php echo JText::_("CONFIRM_INCOMPLETE"); ?>")) {
-        		document.adminForm.action ="index.php?option=com_emundus&task=delincomplete";
-		 	} else 
-		 		return false;
-		break;
-		case 'delnonevaluated': 
-			document.adminForm.task.value = "delnonevaluated";
-			if (confirm("<?php echo JText::_("CONFIRM_NON_EVALUATED"); ?>")) {
-        		document.adminForm.action ="index.php?option=com_emundus&task=delnonevaluated";
-		 	} else 
-		 		return false;
-		break;
-		case 'search_button': 
-			document.adminForm.task.value = "";
-			document.adminForm.action ="index.php?option=com_emundus&view=users&Itemid=<?php echo $itemid; ?>";
-		break;
-		case 'clear_button': 
-			document.adminForm.task.value = "clear_button";
-			document.adminForm.action ="index.php?option=com_emundus&controller=users&view=users&task=clear";
-		break;
-		default: return false;
-	}
-	return true;
-}
+<?php 
+	echo $this->onSubmitForm; 
+	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>
 </script>

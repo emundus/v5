@@ -52,7 +52,7 @@ class EmundusHelperFilters {
 							   'validate'			=> NULL,
 							   'spam_suspect'		=> NULL,
 							   'newsletter'			=> NULL,
-							   'profile_users'			=> NULL,
+							   'profile_users'		=> NULL,
 							   'not_adv_filter'		=> NULL,
 							   'other'				=> NULL);
 		$i = 0;
@@ -62,11 +62,11 @@ class EmundusHelperFilters {
 			else
 				$filts_details[$filt_name] = '';
 		unset($filts_names); unset($filts_values);
-		
+
 		$mainframe->setUserState( $option."filter_order", "" );
 		$mainframe->setUserState( $option."filter_order_Dir", "" );
 		$mainframe->setUserState( $option."schoolyears", EmundusHelperFilters::getSchoolyears() );
-		$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaign() );
+		$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
 		$mainframe->setUserState( $option."elements", array() );
 		$mainframe->setUserState( $option."elements_values", array() );
 		$mainframe->setUserState( $option."elements_other", array() );
@@ -125,13 +125,13 @@ class EmundusHelperFilters {
 		return $db->loadResultArray();
 	}
 
-	function getCurrentCampaignsID(){
+	function getCurrentCampaignsID(){ 
 		$db =& JFactory::getDBO();
 		$query = 'SELECT id 
 				FROM #__emundus_setup_campaigns 
 				WHERE published = 1 AND end_date > NOW()
 				ORDER BY year DESC';
-		$db->setQuery( $query ); 
+		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
 
@@ -452,7 +452,7 @@ class EmundusHelperFilters {
 		global $option;
 
 		$mainframe = JFactory::getApplication();
-		
+
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
 		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', @$params['profile'] );
 		$current_profile_users	= $mainframe->getUserStateFromRequest(  $option.'profile_users', 'profile_users', @$params['profile_users'] );
@@ -609,9 +609,9 @@ class EmundusHelperFilters {
 																  <div class="em_filtersElement">';
 			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
-			$schoolyear .= '<option value="0" ';
-			if($current_schoolyear[0]==0) $schoolyear .= ' selected';
-			$schoolyear .= '>'.JText::_('NOT_SELECTED').'</option>';
+			$schoolyear .= '<option value="%" ';
+			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
+			$schoolyear .= '>'.JText::_('ALL').'</option>';
 			foreach($schoolyearList as $s) { 
 				$schoolyear .= '<option value="'.$s.'"';
 				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
@@ -630,9 +630,9 @@ class EmundusHelperFilters {
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
-			$campaign .= '<option value="0" ';
-			if($current_campaign[0]==0) $campaign .= ' selected';
-			$campaign .= '>'.JText::_('NOT_SELECTED').'</option>';
+			$campaign .= '<option value="%" ';
+			if($current_campaign[0] == "%") $campaign .= ' selected';
+			$campaign .= '>'.JText::_('ALL').'</option>';
 			
 			foreach($campaignList as $c) { 
 				$campaign .= '<option value="'.$c->id.'"';
@@ -818,7 +818,7 @@ class EmundusHelperFilters {
 		return $filters;
 	}
 	
-		function getEmundusFilters(){
+	function getEmundusFilters(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$user = JFactory::getUser();
 		$db = JFactory::getDBO();

@@ -300,7 +300,7 @@ class EmundusModelUsers extends JModel
 	
 	function getUserListWithSchoolyear($schoolyears)
 	{
-		$year = is_string($schoolyears)?$schoolyears:implode(",", $schoolyears);
+		$year = is_string($schoolyears)?$schoolyears:"'".implode("','", $schoolyears)."'";
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
 		FROM #__emundus_setup_campaigns AS sc 
@@ -313,7 +313,7 @@ class EmundusModelUsers extends JModel
 	
 	function getUserListWithCampaign($campaign)
 	{
-		$list_campaign ="";
+		/*$list_campaign ="";
 		$i=0;
 		$nb_element = count($campaign);
 		foreach($campaign as $c){
@@ -322,14 +322,14 @@ class EmundusModelUsers extends JModel
 			}else{
 				$list_campaign .= $c.", ";
 			}
-		}
+		}*/
 			
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
-		WHERE sc.published=1 AND sc.id IN ('.$list_campaign.')';
-		// echo str_replace('#_','jos',$query);
+		WHERE sc.published=1 AND sc.id IN ('.implode(",", $campaign).')';
+// echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}

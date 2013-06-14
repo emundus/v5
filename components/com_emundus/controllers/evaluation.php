@@ -30,7 +30,7 @@ class EmundusControllerEvaluation extends JController {
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -47,14 +47,11 @@ class EmundusControllerEvaluation extends JController {
 		$limitstart = JRequest::getCmd( 'limitstart' );
 		$filter_order = JRequest::getCmd( 'filter_order' );
 		$filter_order_Dir = JRequest::getCmd( 'filter_order_Dir' );
-		$user = JFactory::getUser();
-		if ($user->usertype == "Registered") {
-			$checklist = $this->getView( 'checklist', 'html' );
-			$checklist->setModel( $this->getModel( 'checklist'), true );
-			$checklist->display();
-		} else {
+
+		if (EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id))
 			parent::display();
-		}
+		else 
+			echo JText::_('ACCESS_DENIED');
     }
 	
 	function clear() {
@@ -70,9 +67,16 @@ class EmundusControllerEvaluation extends JController {
 	}
 	
 	function export_zip() {
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-		require_once('libraries/emundus/zip.php');
-		EmundusHelperExport::export_zip();
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+			die(JText::_('ACCESS_DENIED'));
+		}
+
+		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		JArrayHelper::toInteger( $cid, 0 );
+
+		EmundusHelperExport::export_zip($cid);
+
+		exit;
 	}
 	
 	////// AFFECT ASSESSOR ///////////////////

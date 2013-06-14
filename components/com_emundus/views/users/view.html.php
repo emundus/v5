@@ -118,10 +118,14 @@ class EmundusViewUsers extends JView
 		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, array());
 		$this->assignRef('filters', $filters);
 		unset($options);
-		
+		/*
 		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
 		$form		= $this->get('Form');
 		$this->assignRef('form', $form);
+*/
+		// Javascript
+		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
+		$this->assignRef('onSubmitForm', $onSubmitForm);
 		
 		parent::display($tpl);
     }

@@ -252,10 +252,7 @@ class EmundusControllerCheck extends JController {
 	
 
 	function export_zip() {
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user = JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 

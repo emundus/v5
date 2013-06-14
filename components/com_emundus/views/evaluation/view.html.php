@@ -91,7 +91,7 @@ class EmundusViewEvaluation extends JView
 			'evaluator_group'	=> NULL,
 			'schoolyear'	=> NULL,
 			'campaign'	=> NULL,
-		//'missing_doc' => NULL,
+			'missing_doc' => NULL,
 			'complete'	=> NULL,
 			'finalgrade'	=> NULL,
 			'validate'	=> NULL,
