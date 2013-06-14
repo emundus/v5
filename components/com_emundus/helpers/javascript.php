@@ -295,7 +295,7 @@ function OnSubmitForm() {
 				var input = inputs[i];
 				var name_i = input.id;
 				var value_i = input.value;
-				alert(name_i+" "+value_i);
+				// alert(name_i+" "+value_i);
 				jsonObj.push({\'id\': name_i, \'value\': value_i});
 			}
 			// alert(jsonObj[1][\'id\']+" "+jsonObj[1][\'value\']);
@@ -408,7 +408,7 @@ function OnSubmitForm() {
 
 		function clear_filter(){
 			var selects_object = document.getElementById(\'filters\').getElementsByTagName(\'select\');
-			var inputs_object = document.getElementById(\'quick\').getElementsByTagName(\'input\');
+			var inputs_object = document.getElementById(\'filters\').getElementsByTagName(\'input\');
 			var inputs = makeArray(inputs_object);
 			var selects = makeArray(selects_object);
 			
@@ -427,8 +427,15 @@ function OnSubmitForm() {
 				}
 			}
 			for(var i=0;i<inputs.length;i++){
-				var input = inputs[i];
-				input.value  = "";
+				var define_type = inputs[i].id.split(\'_\');
+				if(define_type[0]=="text"){
+					var input = inputs[i];
+					input.value  = "";
+				}else if(define_type[0]=="check"){
+					// alert(inputs[i].value);
+					var input = inputs[i];
+					input.value  = "0";
+				}
 			}
 			return;
 		}
@@ -485,6 +492,7 @@ function OnSubmitForm() {
 		}
 		
 		window.onload=function() {
+			// alert(getCookie(\'selected_id\'));
 			$(\'select_filter\').value=getCookie(\'selected_id\');
 		}
 
