@@ -107,7 +107,6 @@ class EmundusViewIncomplete extends JView
 
 		$applicantsProfiles = $this->get('ApplicantsProfiles');
 		$elements = $this->get('Elements');
-        $elements = $this->get('Elements');
 		
 		/* Call the state object */
 		$state = $this->get( 'state' );
@@ -138,8 +137,8 @@ class EmundusViewIncomplete extends JView
 		
 		$param= array('submitted'		=> 0,
 					  'year'			=> implode('","', $schoolyears));
-		$campaigns = EmundusHelperList::createApplicantsCampaignsBlock($users, $param); 
-		$this->assignRef('campaigns', $campaigns);
+		$campaigns_by_applicant = EmundusHelperList::createApplicantsCampaignsBlock($users, $param);  
+		$this->assignRef('campaigns_by_applicant', $campaigns_by_applicant);
 		
 		//Email
 		if(EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id)) {

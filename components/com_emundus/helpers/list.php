@@ -238,7 +238,7 @@ class EmundusHelperList{
 	// @param	int  	1 for submitted application, 0 for incomplete, 2 for all applicants
 	// @param	string	Year(s) of the campaigns comma separated, can be something like 2012-2013
 	// @return	array	Object of users ID and campaign info
-	function getCampaignsByApplicantID($user, $submitted, $year){
+	function getCampaignsByApplicantID($user, $submitted, $year){ 
 		$db = JFactory::getDBO();
 		$query = 'SELECT esc.year, ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted, ecc.date_time, esc.training
 					FROM #__emundus_campaign_candidature AS ecc
@@ -249,7 +249,11 @@ class EmundusHelperList{
 		if ($submitted == 1)
 			$query .= ' AND ecc.submitted = '.$submitted;
 		$query .= '  AND ecc.applicant_id = '.$user;
-		$query .= '  AND esc.year IN ("'.$year.'") ';
+
+		if($year == "%")
+			$query .= ' AND esc.year like "%" ';
+		else
+			$query .= '  AND esc.year IN ("'.$year.'") ';
 		//$query .= ' ORDER BY ecc.submitted, esc.label';
 		$db->setQuery( $query );
 //echo str_replace('#_', 'jos', $query);		

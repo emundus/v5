@@ -130,7 +130,7 @@ foreach ($this->users as $user) { ?>
 			?>
 		</td>
       <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
-      <td><?php echo $this->campaigns[$user->user][$user->user][$user->campaign_id]; ?></td>
+      <td><?php echo $this->campaigns_by_applicant[$user->user][$user->user][$user->campaign_id]; ?></td>
 	</tr>
 <?php } ?>
 </table>
