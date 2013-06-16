@@ -6,7 +6,8 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css' );
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
-$view = JRequest::getVar('v', null, 'GET', 'none',0);
+$view = JRequest::getVar('v', null, 'GET', 'none',0); 
+//$view = JRequest::getVar('view', null, 'GET', 'none',0); 
 $comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 // Starting a session.
@@ -26,7 +27,7 @@ foreach($s_elements as $s){
 	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
 	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
 	<input type="hidden" name="option" value="com_emundus"/>
-    <input type="hidden" name="view" value="<?php echo $v; ?>"/>
+    <input type="hidden" name="view" value="<?php echo $view; ?>"/>
     <input type="hidden" name="task" value=""/>
     <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 	<?php
@@ -151,6 +152,7 @@ function OnSubmitForm() {
 //alert(button_name[0]);
 	switch(button_name[0]) {
 		case 'send_incomplete_elements': 
+			document.adminForm.task.value = "send_elements";
 			document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";	
 		break;
 		default: return false;

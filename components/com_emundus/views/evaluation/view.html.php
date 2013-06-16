@@ -39,10 +39,8 @@ class EmundusViewEvaluation extends JView
 	}
 
 	function display($tpl = null){
-//if (!EmundusHelperAccess::isAllowed($this->_user->usertype,array("Super Users", "Administrator", "Publisher", "Editor", "Author", "Observator")))
-// die("You are not allowed to access to this page.");
-		if(!EmundusHelperAccess::isAdministrator($this->_user->id) && !EmundusHelperAccess::isPartner($this->_user->id) && !EmundusHelperAccess::isCoordinator($this->_user->id)) {
-			die("You are not allowed to access to this page.");
+		if(!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+			die("ACCESS_DENIED");
 		}
 
 		JHTML::_('behavior.modal');
@@ -57,11 +55,8 @@ class EmundusViewEvaluation extends JView
 		$multi_eval = $eMConfig->get('multi_eval', '0');
 		$this->assignRef( 'multi_eval', $multi_eval );
 
-//$allowed = array("Super Users", "Administrator", "Editor");
-//$isallowed = EmundusHelperAccess::isAllowed($this->_user->usertype,$allowed);
-//$this->assignRef( 'isallowed', $isallowed );
-
-//Filters
+		//
+		//Filters
 		$evaluators = EmundusHelperFilters::getEvaluators();
 		$this->assignRef( 'evaluators', $evaluators );
 

@@ -32,6 +32,7 @@ class EmundusHelperJavascript{
 		$script = '
 function OnSubmitForm() { 
 	if(typeof document.pressed !== "undefined") { 
+		document.adminForm.task.value = "";
 		var button_name=document.pressed.split("|"); 
 		switch(button_name[0]) {
 		   case \'affect\': 

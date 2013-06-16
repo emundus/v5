@@ -245,8 +245,8 @@ function letter_pdf_template ($user_id, $letter_id) {
 	$query = "SELECT * FROM #__emundus_setup_letters WHERE id=".$letter_id;
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
-
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($letters['training']). " ORDER BY date_start DESC";
+//print_r($letters);
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($letters[0]['training']). " ORDER BY date_start DESC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	
@@ -362,7 +362,7 @@ function letter_pdf_template ($user_id, $letter_id) {
 		$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
 		@chdir('tmp');
-		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'I');
+		$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS."demo", 'I');
 	}
 //die(print_r($files));
 	exit();

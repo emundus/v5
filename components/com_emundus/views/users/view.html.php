@@ -42,7 +42,7 @@ class EmundusViewUsers extends JView
 		//$menu=JSite::getMenu()->getActive();
 		//$access=!empty($menu)?$menu->access : 0;
 		if(!EmundusHelperAccess::isAdministrator($this->_user->id) && !EmundusHelperAccess::isPartner($this->_user->id) && !EmundusHelperAccess::isCoordinator($this->_user->id)) {
-			die("You are not allowed to access to this page.");
+			die("ACCESS_DENIED");
 		}
 		$edit_profiles = $this->get('EditProfiles');
 		$this->assignRef('edit_profiles',$edit_profiles);

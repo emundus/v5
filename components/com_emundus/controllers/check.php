@@ -61,11 +61,7 @@ class EmundusControllerCheck extends JController {
 	}
 
 	function unvalidate() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user = JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
@@ -89,11 +85,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	function validate() {
-		//$allowed = array("Super Users", "Administrator", "Editor");		
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user = JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
@@ -116,11 +108,7 @@ class EmundusControllerCheck extends JController {
 	}
 	
 	function administrative_check($reqids = null) { 
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user = JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$db = JFactory::getDBO();
@@ -154,11 +142,7 @@ class EmundusControllerCheck extends JController {
 
 	
 	function push_false() {
-		$user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();
@@ -172,7 +156,7 @@ class EmundusControllerCheck extends JController {
 		foreach ($ids as $id) {
 			if(!empty($comment)) {
 				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
-						VALUES('.$id.','.$user->id.',"Consider application form as incomplete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
+						VALUES('.$id.','.$this->_user->id.',"Consider application form as incomplete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
 				$db->setQuery( $query );
 				$db->query();
 			}
@@ -194,11 +178,7 @@ class EmundusControllerCheck extends JController {
 	 * export selected to xls
 	 */
 	function export_complete() {
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		$user = JFactory::getUser();
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		require_once('libraries/emundus/excel.php');
@@ -218,11 +198,7 @@ class EmundusControllerCheck extends JController {
 	
 	////// Export complete application form ///////////////////
 	function export_complete_to_xls ($reqids = null) {
-		$user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$mainframe = JFactory::getApplication();
@@ -237,7 +213,7 @@ class EmundusControllerCheck extends JController {
 		$no_filter = array("Super Users", "Administrator");
 		if (!in_array($user->usertype, $no_filter)) {
 			$model = $this->getModel('check');
-			$query .= ' AND ed.user IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$model->getProfileAcces($user->id)).')) ';
+			$query .= ' AND ed.user IN (select user_id from #__emundus_users_profiles where profile_id in ('.implode(',',$model->getProfileAcces($this->_user->id)).')) ';
 		}
 		$db->setQuery( $query );
 		$cid = $db->loadResultArray();
@@ -252,7 +228,7 @@ class EmundusControllerCheck extends JController {
 	
 
 	function export_zip() {
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
 

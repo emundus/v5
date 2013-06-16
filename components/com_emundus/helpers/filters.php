@@ -481,7 +481,7 @@ class EmundusHelperFilters {
 			</tr><tr>
 				<td>
 				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this); }else{ document.getElementById(\'search_button\').click(); }; ">
-				<option value="0">'.JText::_('ALL').'</option>';
+				<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 				if(!empty($research_filters)){
 					foreach($research_filters as $filter){
 						$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
