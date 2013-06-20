@@ -30,7 +30,8 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         }
     } 
     ?>
-<?php //} ?>
+<?php //} 
+if(!$this->sent) { ?>
 <p>
 <div id="instructions">
 	<h3><?php echo $this->instructions->title; ?></h3>
@@ -38,6 +39,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 </div>
 </p>
 <?php
+}
 if (count($this->attachments) > 0) {
 ?>
 <form id="checklistForm" name="checklistForm" onSubmit="return OnSubmitForm();"  method="post" enctype="multipart/form-data">
@@ -143,3 +145,4 @@ function OnSubmitForm() {
 	return true;
 }
 </script>
+<p></p>
