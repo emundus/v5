@@ -16,7 +16,8 @@ $baseurl = JURI::base();
 
 $student = & JUser::getInstance($_REQUEST['jos_emundus_final_grade___student_id']);
 $fg = $_REQUEST['jos_emundus_final_grade___final_grade'][0];
-$result_for = $_REQUEST['jos_emundus_final_grade___result_for'];
+$result_for = $_REQUEST['jos_emundus_final_grade___result_for'][0];
+
 
 if ($fg == 4)
 	$profil = 8; // 8 = Selected
@@ -31,6 +32,6 @@ $query = 'UPDATE #__emundus_users
 $db->setQuery( $query );
 //die($fg);
 if (!$db->query())
-	die(JText::_('ERROR_TRY_AGAIN'));
+	die(JText::_('DB_ERROR'));
 
 ?>

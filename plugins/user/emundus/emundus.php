@@ -282,38 +282,28 @@ class plgUserEmundus extends JPlugin
 			
 			include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 			
-			$profile = new EmundusModelProfile;
-			$p = $profile->isProfileUserSet($current_user->id);
+			$profiles = new EmundusModelProfile;
+			$p = $profiles->isProfileUserSet($current_user->id);
+			$campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id); 
+			
 			if( $p['cpt'] == 0 || empty($p['profile']) )
 				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
 				//$mainframe->redirect("index.php?option=com_emundus&view=campaign");
-			else {// @TODO Get data with active campaign for applicant
-				$query = '	SELECT count(ed.id) as candidature_posted, ed.time_date as candidature_posted_date, eu.firstname, eu.lastname, eu.profile, eu.university_id, 
-								esp.label AS profile_label, esp.menutype, esp.published, 
-								ecc.campaign_id, esc.year as schoolyear, esc.start_date as candidature_start, esc.end_date as candidature_end
-							FROM #__emundus_users AS eu 
-							LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
-							LEFT JOIN #__emundus_declaration AS ed ON ed.user = eu.user_id
-							LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.applicant_id = eu.user_id 
-							LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id 
-							WHERE eu.user_id = '.$current_user->id.' 
-							GROUP BY eu.user_id
-							ORDER BY ecc.id DESC';
-				$db->setQuery($query);
-				$res = $db->loadObject(); 
+			else {
+				$profile = $profiles->getProfileByApplicant($current_user->id);
 				
-				$current_user->firstname 			= @$res->firstname;
-				$current_user->lastname	 			= @$res->lastname;
-				$current_user->profile	 			= @$res->profile;
-				$current_user->profile_label 		= @$res->profile_label;
-				$current_user->menutype	 			= @$res->menutype;
-				$current_user->university_id		= @$res->university_id;
-				$current_user->applicant			= @$res->published;
-				$current_user->candidature_start	= @$res->candidature_start;
-				$current_user->candidature_end		= @$res->candidature_end;
-				$current_user->candidature_posted 	= (@$res->candidature_posted_date== "0000-00-00 00:00:00" || @$res->candidature_posted==0)?0:1;
-				$current_user->schoolyear			= @$res->schoolyear;
-				$current_user->campaign_id			= @$res->campaign_id;
+				$current_user->firstname 			= $profile["firstname"];
+				$current_user->lastname	 			= strtoupper($profile["lastname"]);
+				$current_user->profile	 			= $profile["profile"];
+				$current_user->profile_label 		= $profile["profile_label"];
+				$current_user->menutype	 			= $profile["menutype"];
+				$current_user->university_id		= $profile["university_id"];
+				$current_user->applicant			= $profile["published"];
+				$current_user->candidature_start	= $campaign["start_date"];
+				$current_user->candidature_end		= $campaign["end_date"];
+				$current_user->candidature_posted 	= ($campaign["date_submitted"] == "0000-00-00 00:00:00" || $campaign["date_submitted"] ==0  ||$campaign["date_submitted"] == NULL)?0:1;
+				$current_user->schoolyear			= $campaign["year"];
+				$current_user->campaign_id			= $campaign["id"];
 //die(print_r($current_user));
 				$mainframe->redirect("index.php");
 			}

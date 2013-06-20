@@ -39,6 +39,17 @@ class EmundusModelProfile extends JModel
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
+
+	function getProfileByApplicant($aid)
+	{
+		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id, 
+							esp.label AS profile_label, esp.menutype, esp.published
+						FROM #__emundus_users AS eu 
+						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile 
+						WHERE eu.user_id = '.$aid;
+		$this->_db->setQuery( $query );
+		return $this->_db->loadAssoc();
+	}
 	
 	function getAttachments($p)
 	{
@@ -78,6 +89,17 @@ class EmundusModelProfile extends JModel
 		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id = '.$uid. ' ORDER BY date_time DESC';
 		$this->_db->setQuery( $query );
 		$res = $this->_db->loadResult();
+
+		return $res;
+	}
+
+	function getCurrentCampaignInfoByApplicant($uid) {
+		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted 
+					FROM #__emundus_campaign_candidature AS ecc 
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
+					WHERE ecc.applicant_id = '.$uid. ' ORDER BY ecc.date_time DESC';
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadAssoc();
 
 		return $res;
 	}

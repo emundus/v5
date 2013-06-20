@@ -31,11 +31,12 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
     } 
     ?>
 <?php //} ?>
+<p>
 <div id="instructions">
 	<h3><?php echo $this->instructions->title; ?></h3>
 	<?php echo $this->instructions->text; ?>
 </div>
-
+</p>
 <?php
 if (count($this->attachments) > 0) {
 ?>

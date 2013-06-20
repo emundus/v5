@@ -339,7 +339,7 @@ if ($sent == 0) {
 			echo $itemt->label;
 			echo '</h3>';
 			// liste des groupes pour le formulaire d'une table
-			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":1") as repeated
+			$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated
 						FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 						WHERE ff.group_id = fg.id AND
 							  ff.form_id = "'.$itemt->form_id.'" 
@@ -413,6 +413,16 @@ if ($sent == 0) {
 								if ($elements[$j - 2]->plugin=='date') {
 									$date_params = json_decode($elements[$j - 2]->params);
 									$elt = strftime($date_params->date_form_format, strtotime($r_elt));
+								} elseif($elements[$j - 2]->plugin=='databasejoin') {
+										$params = json_decode($elements[$j-2]->params);
+										$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+										$from = $params->join_db_name;
+										$where = $params->join_key_column.'='.$db->Quote($r_elt);
+										$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+										$query = preg_replace('#{thistable}#', $from, $query);
+										$query = preg_replace('#{my->id}#', $item->user_id, $query);
+										$db->setQuery( $query );
+										$elt = $db->loadResult();
 								} else $elt = $r_elt;
 								echo '<td>'.$elt.'</td>';
 							}

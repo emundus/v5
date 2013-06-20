@@ -59,22 +59,23 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
                                         <td> <?php 
                                         echo $i+$limitstart; $i++; 
                                         echo $this->actions[$value][@$evalu['user']][@$evalu['campaign_id']];
-                                        //echo "#".$value;  
+                                       // echo $this->selection[$value][@$evalu['campaign_id']];
+                                        //die(var_dump($this->actions[$value][@$evalu['user']][@$evalu['campaign_id']]));
                                         ?> 
                                         </td><?php 	
-                                    }elseif($key == 'profile'){ 
+                                    }/*elseif($key == 'profile'){ 
                                         echo '<td>';
-                                        echo $this->profile[$evalu['user_id']];
+                                        echo $this->profile[$evalu['user_id']][$evalu['campaign_id']];
                                         echo '</td>';
                                     }elseif($key == 'result_for'){
                                         echo '<td>';
-                                        echo $this->result_for[$evalu['user_id']]; 
+                                        echo $this->result_for[$evalu['user_id']][$evalu['campaign_id']]; 
                                         echo '</td>';
-                                    }elseif($key == 'engaged'){
+                                    }*/elseif($key == 'engaged'){
                                         echo '<td>';
-                                        echo $this->engaged[$evalu['user_id']];
+                                        echo $this->engaged[$evalu['user_id']][$evalu['campaign_id']];
                                         echo '</td>';
-									}elseif($key == 'Final_grade'){
+									}elseif($key == 'final_grade'){
 										if ($value == 4) $color = "green";
 										else if ($value == 2) $color = "red";
 										else $color = "";
@@ -82,7 +83,7 @@ $v = JRequest::getVar('view', null, 'GET', 'none',0);
 										if(array_key_exists($value, $this->fg))
                                         	echo $this->fg[$value];
                                         echo '</td>';
-                                    }elseif($key != 'row_id' && $key != 'final_grade'){
+                                    }elseif($key != 'row_id' && $key != 'final_grade' && $key != 'profile' && $key != 'campaign_id'){
                                         echo '<td>'.$value.'</td>';
                                     }
                                 } ?>

@@ -69,7 +69,8 @@ class EmundusModelRanking extends JModel
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -90,6 +91,7 @@ class EmundusModelRanking extends JModel
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
+		$this->setState('campaigns', $campaigns);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -223,7 +225,7 @@ class EmundusModelRanking extends JModel
 		return $this->_applicants;
 	}*/
 
-		function getCampaign()
+	function getCampaign()
 	{
 		$db = JFactory::getDBO();
 		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
@@ -361,7 +363,7 @@ class EmundusModelRanking extends JModel
 		
 		$joined = array('jos_emundus_users', 'jos_users', 'jos_emundus_setup_profiles', 'jos_emundus_final_grade', 'jos_emundus_declaration');
 		
-		$query = 'SELECT #__emundus_users.user_id, CONCAT_WS(" ", UPPER(#__emundus_users.lastname), #__emundus_users.firstname) as name, #__emundus_setup_profiles.id as profile, #__emundus_final_grade.id, #__emundus_final_grade.Final_grade, #__emundus_final_grade.engaged, #__emundus_final_grade.result_for, #__emundus_final_grade.scholarship, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_declaration.validated, #__emundus_campaign_candidature.campaign_id';
+		$query = 'SELECT #__emundus_users.user_id, CONCAT_WS(" ", UPPER(#__emundus_users.lastname), #__emundus_users.firstname) as name, #__emundus_setup_profiles.id as profile, #__emundus_final_grade.id as final_grade_id, #__emundus_final_grade.final_grade, #__emundus_final_grade.engaged, #__emundus_final_grade.result_for, #__emundus_final_grade.scholarship, #__emundus_users.user_id as id, #__emundus_users.user_id as user, #__emundus_users.lastname, #__emundus_users.firstname, #__emundus_users.schoolyear as schoolyear, #__users.name, #__users.registerDate, #__users.email, #__emundus_declaration.validated, #__emundus_campaign_candidature.campaign_id, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.year as year';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		if(!empty($cols_default)) $query .= ', '.$cols_default;
@@ -371,7 +373,7 @@ class EmundusModelRanking extends JModel
 					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
 					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id
 					LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
-					LEFT JOIN #__emundus_final_grade ON #__emundus_final_grade.student_id=#__emundus_users.user_id';
+					LEFT JOIN #__emundus_final_grade ON (#__emundus_final_grade.student_id=#__emundus_users.user_id AND #__emundus_final_grade.campaign_id=#__emundus_campaign_candidature.campaign_id)';
 		
 		$this->setJoins($search, $query, $joined);
 		$this->setJoins($search_other, $query, $joined);
@@ -460,7 +462,7 @@ class EmundusModelRanking extends JModel
 		}
 		
 		$query = 'SELECT DISTINCT(eu.user_id), CONCAT_WS(" ", UPPER(eu.lastname), eu.firstname) as name, esp.id as profile,
-				efg.id, efg.Final_grade, efg.engaged, efg.result_for, efg.scholarship';
+				efg.id, efg.final_grade, efg.engaged, efg.result_for, efg.scholarship';
 		if(!empty($cols)) $query .= ', '.$cols;
 		if(!empty($cols_other)) $query .= ', '.$cols_other;
 		$query .= '	FROM #__emundus_declaration AS ed 
@@ -506,6 +508,7 @@ class EmundusModelRanking extends JModel
 		$finalgrade				= $this->getState('finalgrade');
 		$quick_search			= $this->getState('s');
 		$schoolyears			= $this->getState('schoolyears');
+		$campaigns				= $this->getState('campaigns');
 		$gid					= $this->getState('groups');
 		$uid					= $this->getState('user');
 		$profile				= $this->getState('profile');
@@ -519,7 +522,7 @@ class EmundusModelRanking extends JModel
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			$query.= '#__emundus_final_grade.Final_grade like "%'.$finalgrade.'%"';
+			$query.= '#__emundus_final_grade.final_grade like "%'.$finalgrade.'%"';
 		}
 		
 		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
@@ -638,7 +641,7 @@ class EmundusModelRanking extends JModel
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .='WHERE '; }
-			$query.= 'efg.Final_grade like "%'.$finalgrade.'%"';
+			$query.= 'efg.final_grade like "%'.$finalgrade.'%"';
 		}
 		
 		//adv_filter
@@ -764,11 +767,17 @@ class EmundusModelRanking extends JModel
 				$eval_list=array();
 				foreach($head_values as $head){
 					$head_val[] = $head['name'];
-					$eval_list[$head['name']] = $applicant->$head['name'];
+					if ($head['name'] == 'campaign')
+						$eval_list[$head['name']] = $applicant->$head['name'].' ('.$applicant->year.')';
+					else
+						$eval_list[$head['name']] = $applicant->$head['name'];
 					//$eval_list['user'] = $applicant->user_id;
 					//$eval_list['schoolyear'] = $applicant->schoolyear;
 					//$eval_list['registerDate'] = $applicant->registerDate;
 				}
+				$eval_list['row_id']=$applicant->final_grade_id;
+				$eval_list['profile']=$applicant->profile; 
+				$eval_list['campaign_id']=$applicant->campaign_id; 
 				// add an advance filter columns only if not already exist 
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);
 				$this->setEvalList($search_other, $eval_list, $head_val, $applicant);
@@ -839,7 +848,7 @@ str_replace("#_", "jos", $query);
 					//if($all['user_id'] == $applicant->user_id) $eval_list['ranking_all'] = $all['ranking_all'];
 				 
 				$eval_list['engaged'] = $applicant->engaged;
-				$eval_list['final_grade']=$applicant->Final_grade;
+				$eval_list['final_grade']=$applicant->final_grade;
 				$eval_list['row_id']=$applicant->id;
 				$eval_lists[]=$eval_list;
 			}
@@ -922,10 +931,11 @@ str_replace("#_", "jos", $query);
 		$cols = array();
 		$cols[] = array('name' =>'user_id', 'label'=>'USER_ID');
 		$cols[] = array('name' =>'name', 'label'=>'NAME'); 
-		$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
-		$cols[] = array('name' =>'result_for', 'label'=>'RESULT_FOR'); 
+		//$cols[] = array('name' =>'profile', 'label'=>'PROFILE'); 
+		$cols[] = array('name' =>'campaign', 'label'=>'CAMPAIGN'); 
+		//$cols[] = array('name' =>'result_for', 'label'=>'RESULT_FOR'); 
 		$cols[] = array('name' =>'engaged', 'label'=>'ENGAGED'); 
-		$cols[] = array('name' =>'Final_grade', 'label'=>'FINAL_GRADE');
+		$cols[] = array('name' =>'final_grade', 'label'=>'FINAL_GRADE');
 		$cols[] = array('name' =>'scholarship', 'label'=>'SCHOLARSHIP');
 		return $cols;
 	}

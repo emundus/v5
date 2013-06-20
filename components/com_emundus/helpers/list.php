@@ -405,7 +405,7 @@ class EmundusHelperList{
 				}
 				if(in_array('selection_outcome',$params)){
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_selection_outcome" id="em_selection_outcome_'.$user['user_id'].'_'.$user['campaign_id'].'">';
-					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= $this->selection[$user['user_id']];
+					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= $this->selection[$user['user_id']][@$user['campaign_id']];
 					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</div>';
 				}
 			@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
@@ -452,7 +452,7 @@ class EmundusHelperList{
 	// @description	Create icones for selection outcome
 	// @param 	array Array of user id
 	// @return 	array Array of HTML to display in page
-	function createSelectionBlock($users){
+	function createSelectionBlock($users){ 
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$selection = array();
 		//final grade
@@ -461,31 +461,31 @@ class EmundusHelperList{
 		$sub_values = explode('|', $final_grade['final_grade']['sub_values']);
 		foreach($sub_values as $sv) $p_grade[]="/".$sv."/";
 		
-		$ids = array();
+		$ids = array(); 
 		foreach($users as $user) { 
 			if( !in_array($user['user_id'].",".@$user['campaign_id'], $ids) ){
 				$ids[] = $user['user_id'].",".@$user['campaign_id'];
 
-				@$selection[$user['user_id']] .= '<div class="emundusraw">';
+				@$selection[$user['user_id']][$user['campaign_id']] .= '<div class="emundusraw">';
 				if (isset($user['final_grade'])) {
 					$fg_txt = preg_replace($p_grade, $grade, $user['final_grade']);
-					@$selection[$user['user_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=39&random=0&rowid='.$user['row_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal">'; 
+					@$selection[$user['user_id']][$user['campaign_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid=39&random=0&rowid='.$user['row_id'].'&usekey=id&student_id='. $user['user_id'].'&jos_emundus_final_grade___campaign_id[value]='. $user['campaign_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal">'; 
 					if ($user['final_grade']!= -1 && $user['final_grade'] != '') {
 						if ($user['final_grade'] == 2)
-							$final_grade = '<img src="'.$this->baseurl.'/media/com_emundus/images/icones/fileclose.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
+							$final_grade = '<img src="'.$this->baseurl.'/images/M_images/edit.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
 						elseif ($user['final_grade'] == 3 || $user['final_grade'] == 1) 
-							$final_grade = '<img src="'.$this->baseurl.'/media/com_emundus/images/icones/kalarm_16x16.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
+							$final_grade = '<img src="'.$this->baseurl.'/images/M_images/edit.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
 						elseif ($user['final_grade'] == 4) 
-							$final_grade = '<img src="'.$this->baseurl.'/media/com_emundus/images/icones/button_ok.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
-						@$selection[$user['user_id']] .= $final_grade;
+							$final_grade = '<img src="'.$this->baseurl.'/images/M_images/edit.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /> ';
+						@$selection[$user['user_id']][$user['campaign_id']] .= $final_grade;
 					} 
-					@$selection[$user['user_id']] .= '</a>';
-					@$selection[$user['user_id']] .= ' <input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/cancel_selection.png" name="delete_eval" width="16" height="16" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'\'" alt="'.JText::_('DELETE_SELECTION_OUTCOME').'" title="'.JText::_('DELETE_SELECTION_OUTCOME').'"  align="absbottom" />';
+					@$selection[$user['user_id']][$user['campaign_id']] .= '</a>';
+					@$selection[$user['user_id']][$user['campaign_id']] .= ' <input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/cancel_selection.png" name="delete_eval" width="16" height="16" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['campaign_id'].'\'" alt="'.JText::_('DELETE_SELECTION_OUTCOME').'" title="'.JText::_('DELETE_SELECTION_OUTCOME').'"  align="absbottom" />';
 				} else 
-					@$selection[$user['user_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=39&tableid=41&rowid='.$user['row_id'].'&jos_emundus_final_grade___student_id[value]='.$user['user_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/add.png" alt="'.JText::_($fg_txt).'" title="'.JText::_($fg_txt).'" width="16" height="16" align="absbottom" /></a>'; 
-				@$selection[$user['user_id']] .= '</div>';
+					@$selection[$user['user_id']][$user['campaign_id']] .= '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid=39&tableid=41&rowid='.$user['row_id'].'&jos_emundus_final_grade___student_id[value]='.$user['user_id'].'&jos_emundus_final_grade___campaign_id[value]='.$user['campaign_id'].'&jos_emundus_final_grade___result_for[value]='.$user['profile'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/add.png" alt="'.JText::_("DEFINE_SELECTION_OUTCOME").'" title="'.JText::_("DEFINE_SELECTION_OUTCOME").'" width="16" height="16" align="absbottom" /></a>'; 
+				@$selection[$user['user_id']][$user['campaign_id']] .= '</div>';
 			}
-		}
+		} 
 		return $selection;
 	}
 	
@@ -668,27 +668,26 @@ class EmundusHelperList{
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
 		$engaged = array();
 		foreach($users as $user){
-			//print_r($user);
-			@$engaged[$user['user_id']] .= '';
-			if ($user['profile'] == 8) {
+			@$engaged[$user['user_id']][$user['campaign_id']] .= '';
+			if ($user['final_grade'] == 4) {
 				$state = $user['profile']==7?'disabled="disabled"':'';
-				$engaged[$user['user_id']] .= '<input name="checkbox" type="checkbox" '.$state.' id="engaged-'.$user['user_id'].'" ';
+				$engaged[$user['user_id']][$user['campaign_id']] .= '<input name="checkbox" type="checkbox" '.$state.' id="engaged-'.$user['user_id'].'" ';
 				if ($user['engaged']==1){
-					$engaged[$user['user_id']] .= 'checked="checked"';
+					$engaged[$user['user_id']][$user['campaign_id']] .= 'checked="checked"';
 					$set=0;
 				} else $set=1;
-				$engaged[$user['user_id']] .= ' />';
-				$engaged[$user['user_id']] .= '<div id="e-'.$user['user_id'].'"></div>';
+				$engaged[$user['user_id']][$user['campaign_id']] .= ' />';
+				$engaged[$user['user_id']][$user['campaign_id']] .= '<div id="e-'.$user['user_id'].'"></div>';
 				$url = 'index.php?option=com_emundus&controller='.$view.'&format=raw&task=set_engaged&sid='.$user['user_id'].'&set='.$set.'&Itemid='.$itemid;
 				
-				$engaged[$user['user_id']] .= '<script>window.addEvent( \'domready\', function() {$(\'engaged-'.$user['user_id'].'\').addEvent( \'click\', function() {
+				$engaged[$user['user_id']][$user['campaign_id']] .= '<script>window.addEvent( \'domready\', function() {$(\'engaged-'.$user['user_id'].'\').addEvent( \'click\', function() {
 				$(\'e-'.$user['user_id'].'\').empty().addClass(\'ajax-loading\');
 				var a = new Ajax( \''.$url.'\', {
 				method: \'get\',
 				update: $(\'e-'.$user['user_id'].'\')
 				}).request();
 				}); });</script>';
-			} else @$engaged[$user['user_id']] .= '';
+			} else @$engaged[$user['user_id']][$user['campaign_id']] .= '';
 		}
 		return $engaged;
 	}
@@ -704,14 +703,15 @@ class EmundusHelperList{
 		return $db->loadObjectList('id');
 	}
 	
-	function createProfileBlock($users,$key){
+	function createProfileBlock($users, $key){
 		$profile = array();
 		$ids = array();
-		$profiles_label = EmundusHelperList::getProfiles();
+		$profiles_label = EmundusHelperList::getProfiles(); 
 		foreach($users as $user){
-			if(!in_array($user['user_id'],$ids)){
-				$ids[] = $user['user_id'];
-				@$profile[$user['user_id']] .= '<div class="emundusprofile'.$user[$key].'">'.$profiles_label[$user[$key]]->label.'</div>';
+			$str = $user['user_id'].','.$user['campaign_id'];
+			if(!in_array($str, $ids)){
+				$ids[] = $str;
+				@$profile[$user['user_id']][$user['campaign_id']] .= '<div class="emundusprofile'.$user[$key].'">'.$profiles_label[$user[$key]]->label.'</div>';
 			}
 		}
 		return $profile;

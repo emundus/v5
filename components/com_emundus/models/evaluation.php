@@ -323,7 +323,7 @@ class EmundusModelEvaluation extends JModel
 		if(isset($finalgrade) && !empty($finalgrade)) {
 			if($and) $query .= ' AND ';
 			else { $and = true; $query .=' WHERE '; }
-			$query.= 'efg.Final_grade like "%'.$finalgrade.'%"';
+			$query.= 'efg.final_grade like "%'.$finalgrade.'%"';
 		}
 		if(!empty($search_values)) {
 			$i = 0;

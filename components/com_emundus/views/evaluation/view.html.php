@@ -80,7 +80,8 @@ class EmundusViewEvaluation extends JView
 			'complete'	=> NULL,
 			'finalgrade'	=> $state,
 			'validate'	=> NULL,
-			'other'	=> $state);
+			'other'	=> $state,
+			'adv_filter'		=> '');
 		$filts_options = array(//'profile' => NULL,
 			'evaluator'	=> NULL,
 			'evaluator_group'	=> NULL,
@@ -90,7 +91,8 @@ class EmundusViewEvaluation extends JView
 			'complete'	=> NULL,
 			'finalgrade'	=> NULL,
 			'validate'	=> NULL,
-			'other'	=> NULL);
+			'other'	=> NULL,
+			'adv_filter'		=> '');
 		/*$filts_details = array('profile' => NULL,
 		'evaluator' => NULL,
 		'evaluator_group' => NULL,

@@ -67,7 +67,8 @@ class EmundusViewRanking extends JView
 								'complete'			=> NULL,
 								'finalgrade'		=> '',
 								'validate'			=> NULL,
-								'other'				=> '');
+								'other'				=> '',
+								'adv_filter'		=> '');
 		$filts_options 	= array('profile'			=> NULL,
 							  	'evaluator'			=> NULL,
 							  	'evaluator_group'	=> NULL,
@@ -76,7 +77,8 @@ class EmundusViewRanking extends JView
 							  	'complete'			=> NULL,
 							  	'finalgrade'		=> NULL,
 							  	'validate'			=> NULL,
-							  	'other'				=> NULL);
+							  	'other'				=> NULL,
+							  	'adv_filter'		=> NULL);
 		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
 		$actions  		= explode(',', $menu_params->get('em_actions'));
 		$i = 0;
@@ -154,9 +156,9 @@ class EmundusViewRanking extends JView
 		
 		
 		//Profile
-		$profile = EmundusHelperList::createProfileBlock($users,'profile');
+		$profile = EmundusHelperList::createProfileBlock($users, 'profile');
 		$this->assignRef('profile', $profile);
-		$result_for = EmundusHelperList::createProfileBlock($users,'result_for');
+		$result_for = EmundusHelperList::createProfileBlock($users, 'result_for');
 		$this->assignRef('result_for', $result_for);
 		$final_grade = EmundusHelperFilters::getFinal_grade();
 		$sub_labels = explode('|', $final_grade['final_grade']['sub_labels']);

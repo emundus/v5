@@ -66,7 +66,8 @@ class EmundusViewIncomplete extends JView
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
 							   'validate'			=> NULL,
-							   'other'				=> NULL);
+							   'other'				=> NULL,
+								'adv_filter'		=> '');
 		$filts_options 	= array('profile'			=> NULL,
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
@@ -76,7 +77,8 @@ class EmundusViewIncomplete extends JView
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
 							   'validate'			=> NULL,
-							   'other'				=> NULL);
+							   'other'				=> NULL,
+								'adv_filter'		=> NULL);
 		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
 		$actions  		= explode(',', $menu_params->get('em_actions'));
 		

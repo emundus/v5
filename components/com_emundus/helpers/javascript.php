@@ -110,9 +110,10 @@ function OnSubmitForm() {
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
 			break;
 			case \'delete_eval\': 
-			if(confirm("'.JText::_("CONFIRM_DELETE_EVAL").'"))
+			if(confirm("'.JText::_("CONFIRM_DELETE_EVAL").'")) {
+				document.adminForm.task.value = "delete_eval";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete_eval&sid="+button_name[1];
-			else return false;
+			} else return false;
 			break;
 			case \'export_account_to_xls\': 
 				document.adminForm.task.value = "export_account_to_xls"; 

@@ -214,7 +214,6 @@ class EmundusControllerEvaluation extends JController {
 	
 	function delete_eval(){
 		$user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Editor", "Author");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
@@ -230,13 +229,13 @@ class EmundusControllerEvaluation extends JController {
 
 		$db = JFactory::getDBO();
 		
-		if(EmundusHelperAccess::isEvaluator($user->id) || EmundusHelperAccess::isCoordinator($user->id)) {
+		if( EmundusHelperAccess::asEvaluatorAccessLevel($user->id) ) {
 			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
 			$db->setQuery($query);
 			$db->query();
 		}
 		
-		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'#cb'.$sids[0]);
 	}
 	
 	

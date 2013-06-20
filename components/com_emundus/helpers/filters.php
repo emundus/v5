@@ -608,7 +608,7 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
 																  <div class="em_filtersElement">';
 			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
+			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
 			$schoolyear .= '<option value="%" ';
 			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
 			$schoolyear .= '>'.JText::_('ALL').'</option>';
@@ -629,7 +629,7 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('CAMPAIGN').'</label></div>
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="3">';
+			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
 			$campaign .= '<option value="%" ';
 			if($current_campaign[0] == "%") $campaign .= ' selected';
 			$campaign .= '>'.JText::_('ALL').'</option>';
@@ -699,52 +699,53 @@ class EmundusHelperFilters {
 		}
 		
 		//Advance filter builtin
-		$elements = EmundusHelperFilters::getElements();
-		$adv_filter = '<div class="em_filters" id="em_adv_filters"><a href="javascript:addElement();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>';
-        $adv_filter .= '<input type="hidden" value="0" id="theValue" />';
-        $adv_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
-		$adv_filter .= '<div id="myDiv">';
-		//var_dump($search);
-		if (count($search)>0 && isset($search) && is_array($search)) {
-			$i=0;
-			$selected_adv = "";
-			foreach($search as $sf) {
-				$adv_filter .= '<div id="filter'.$i.'">';
-				$adv_filter .= '<select id="select_elements" name="elements[]" onChange="javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';  
-					$groupe ="";
-					$length = 50;
-					foreach($elements as $element) { 
-						$groupe_tmp = $element->group_label;
-						$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
-						$dot_elm = strlen($element->element_label)>=$length?'...':'';
-						
-						if ($groupe != $groupe_tmp) {
-							$adv_filter .= '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
-							$groupe = $groupe_tmp;
+		if(@$params['adv_filter'] !== NULL){
+			$elements = EmundusHelperFilters::getElements();
+			$adv_filter = '<div class="em_filters" id="em_adv_filters"><a href="javascript:addElement();"><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</span>';
+	        $adv_filter .= '<input type="hidden" value="0" id="theValue" />';
+	        $adv_filter .= '<img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag+_16x16.png" alt="'.JText::_('ADD_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+			$adv_filter .= '<div id="myDiv">';
+			//var_dump($search);
+			if (count($search)>0 && isset($search) && is_array($search)) {
+				$i=0;
+				$selected_adv = "";
+				foreach($search as $sf) {
+					$adv_filter .= '<div id="filter'.$i.'">';
+					$adv_filter .= '<select id="select_elements" name="elements[]" onChange="javascript:submit()">
+					<option value="">'.JText::_('PLEASE_SELECT').'</option>';  
+						$groupe ="";
+						$length = 50;
+						foreach($elements as $element) { 
+							$groupe_tmp = $element->group_label;
+							$dot_grp = strlen($groupe_tmp)>=$length?'...':'';
+							$dot_elm = strlen($element->element_label)>=$length?'...':'';
+							
+							if ($groupe != $groupe_tmp) {
+								$adv_filter .= '<option class="emundus_search_grp" disabled="disabled" value="">'.substr(strtoupper($groupe_tmp), 0, $length).$dot_grp.'</option>';
+								$groupe = $groupe_tmp;
+							}
+							$adv_filter .= '<option class="emundus_search_elm" value="'.$element->table_name.'.'.$element->element_name.'"';
+							if($element->table_name.'.'.$element->element_name == $sf) {
+								$adv_filter .= ' selected';
+								$selected_adv = $element;
+							}
+							$adv_filter .= '>'.substr($element->element_label, 0, $length).$dot_elm.'</option>'; 
 						}
-						$adv_filter .= '<option class="emundus_search_elm" value="'.$element->table_name.'.'.$element->element_name.'"';
-						if($element->table_name.'.'.$element->element_name == $sf) {
-							$adv_filter .= ' selected';
-							$selected_adv = $element;
-						}
-						$adv_filter .= '>'.substr($element->element_label, 0, $length).$dot_elm.'</option>'; 
-					}
-				$adv_filter .= '</select>';
+					$adv_filter .= '</select>';
 
-				if(!isset($search_values[$i])) $search_values[$i] = "";
-				if($selected_adv != "")
-					$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
-				$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
-				$i++; 
-				$adv_filter .= '</div>';
-			} 
-		}//else{
-		//echo 'ici';
-		//}
-        $adv_filter .= '</div></div>';
+					if(!isset($search_values[$i])) $search_values[$i] = "";
+					if($selected_adv != "")
+						$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
+					$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
+					$i++; 
+					$adv_filter .= '</div>';
+				} 
+			}//else{
+			//echo 'ici';
+			//}
+	        $adv_filter .= '</div></div>';
 		
-		if(@$params['not_adv_filter'] != NULL){
+		
 			$filters .= $adv_filter;
 		}
 

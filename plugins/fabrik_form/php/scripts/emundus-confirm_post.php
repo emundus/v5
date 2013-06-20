@@ -37,7 +37,7 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($student->
 $tags = $emails->setTags($student->id, $post);
 $email = $emails->getEmail("confirm_post");
 
-//cannot delete this attachments now
+// Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id;
 $db->setQuery( $query );
 try {
@@ -89,6 +89,8 @@ try {
 	// catch any database errors.
 }
 
+unset($recipient);
+
 // get current applicant course
 $campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
@@ -104,7 +106,7 @@ $groups->affectEvaluatorsGroups($group_list, $student->id);
 // get evaluator list
 $evaluators = $groups->getUsersByGroups($group_list);
 
-$email = $emails->getEmail("assessors_set");
+$email = $emails->getEmail("new_applicant");
 foreach ($evaluators as $evaluator) {
 	$eval_user = & JFactory::getUser($evaluator);
 	// Mail 

@@ -182,7 +182,7 @@ class EmundusControllerRanking extends JController {
 				$user = JFactory::getUser($id);
 				
 				// Get Final Grade
-				$query = 'SELECT Final_grade 
+				$query = 'SELECT final_grade 
 				FROM #__emundus_final_grade 
 				WHERE student_id='.$id;
 				$db->setQuery( $query );
@@ -347,24 +347,26 @@ class EmundusControllerRanking extends JController {
 	
 	function delete_eval() {
 		$user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
-			die("You are not allowed to access to this page.");
+			die(JText::_("ACCESS_DENIED"));
 		}
 		
-		$sid = JRequest::getVar('sid', null, 'GET', 'int', 0);
+		$sid = JRequest::getVar('sid', null, 'GET', null, 0); 
+		$sids = explode('-',$sid);
 		$db	= JFactory::getDBO();
 		
-		$query = 'UPDATE #__emundus_users SET profile = (SELECT result_for FROM #__emundus_final_grade WHERE student_id='.$sid.' AND user='.$user->id.') WHERE user_id='.$sid;
-		$db->setQuery($query);
-		if($db->query()){
-			$query = 'DELETE FROM #__emundus_final_grade WHERE student_id='.$sid.' AND user='.$user->id;
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$query = 'UPDATE #__emundus_users SET profile = (SELECT result_for FROM #__emundus_final_grade WHERE student_id='.$sids[0].' AND campaign_id='.$sids[1].' AND user='.$user->id.' ) WHERE user_id='.$sids[0];
 			$db->setQuery($query);
-			$db->query();
+			if($db->query()){
+				$query = 'DELETE FROM #__emundus_final_grade WHERE student_id='.$sids[0].' AND campaign_id='.$sids[1];
+				$db->setQuery($query);
+				$db->query();
+			}
 		}
-		
+
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 	}
 		

@@ -15,7 +15,8 @@ defined( '_JEXEC' ) or die();
 
 $user =& JFactory::getUser();
 
-$aid = & JUser::getInstance($_REQUEST['jos_emundus_evaluations___student_id']);
+$student_id = !empty($_REQUEST['jos_emundus_evaluations___student_id']) ? $_REQUEST['jos_emundus_evaluations___student_id'] : $_REQUEST['jos_emundus_evaluations___student_id'][0];
+$aid = & JUser::getInstance($student_id);
 $result = $_REQUEST['jos_emundus_evaluations___result'][0];
 $campaign_id = $_REQUEST['jos_emundus_evaluations___campaign_id'][0];
 
@@ -34,10 +35,8 @@ if(!empty($result)) {
 	}
 	$db->setQuery( $query ); //die($query);
 	try {
-		// Execute the query in Joomla 2.5.
 		$result = $db->query();
 	} catch (Exception $e) {
-		// catch any database errors.
 		die();
 	}
 }
