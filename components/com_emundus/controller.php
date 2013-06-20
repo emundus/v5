@@ -814,12 +814,16 @@ function updateprofile() {
 		$validate = JRequest::getVar('validate', null, 'GET', 'INT');
 		$cible = JRequest::getVar('cible', null, 'GET', 'CMD'); 
 		$data = explode('.', $cible);
-		
+		if(count($data)>3)	$and = ' AND `campaign_id`='.$data[3];
+		else $and = '';
+		if($data[0] == "jos_emundus_final_grade") $column = "student_id";
+		else $column = 'user';
+
 //		print_r($data);
 		if(!empty($uid) && is_numeric($uid)) {
 			$value = abs((int)$validate-1);
 			$db = JFactory::getDBO();
-			$query = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `user` = '.$db->Quote((int)$uid); 
+			$query = 'UPDATE `'.$data[0].'` SET `'.$data[1].'`='.$db->Quote($value).' WHERE `'.$column.'` = '.$db->Quote((int)$uid). $and; 
 			$db->setQuery($query);
 			$db->Query();
 			if ($value > 0){

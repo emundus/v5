@@ -239,11 +239,11 @@ function OnSubmitForm() {
 		$script = '
 		function save_filter()
 		{
-			var name=prompt("Name of your filter :","");
+			var name=prompt("'.JText::_('FILTER_NAME').'","");
 			while (name=="")
 			{
-				alert("The name of the filter is empty, please try again");
-				name=prompt("Name of your filter :","name");
+				alert("'.JText::_('ALERT_EMPTY_FILTER').'");
+				name=prompt("'.JText::_('FILTER_NAME').'","name");
 			}
 			if(name){
 				getJsonInput(name);

@@ -241,12 +241,12 @@ class EmundusModelEvaluation extends JModel
 		$query .= '	FROM #__emundus_campaign_candidature ecc
 			LEFT JOIN  #__emundus_users eu ON eu.user_id = ecc.applicant_id 
 			LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=ecc.campaign_id
-			LEFT JOIN #__users u ON u.id = eu.user_id
-			LEFT JOIN #__emundus_evaluations ee ON (ee.student_id = eu.user_id AND ee.campaign_id=ecc.campaign_id)
+			LEFT JOIN #__users u ON u.id = ecc.applicant_id
+			LEFT JOIN #__emundus_evaluations ee ON (ee.student_id = ecc.applicant_id AND ee.campaign_id=ecc.campaign_id)
 			LEFT JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
-			LEFT JOIN #__emundus_personal_detail epd ON epd.user = eu.user_id
-			LEFT JOIN #__emundus_declaration ed ON ed.user = u.id
-			LEFT JOIN #__emundus_final_grade AS efg ON (efg.student_id=ed.user AND ee.campaign_id=ecc.campaign_id)';
+			LEFT JOIN #__emundus_personal_detail epd ON epd.user = ecc.applicant_id
+			LEFT JOIN #__emundus_declaration ed ON ed.user = ecc.applicant_id
+			LEFT JOIN #__emundus_final_grade AS efg ON (efg.student_id=ecc.applicant_id AND efg.campaign_id=ecc.campaign_id)';
 		
 		if(!empty($miss_doc))
 			$query .= ' LEFT JOIN #__emundus_uploads AS eup ON eup.user_id=u.id';

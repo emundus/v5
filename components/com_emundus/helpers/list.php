@@ -662,7 +662,7 @@ class EmundusHelperList{
 	return ($arr);
 	}	
 	
-	//get the engagaed column
+/*	//get the engagaed column
 	function getEngaged($users){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
@@ -688,6 +688,36 @@ class EmundusHelperList{
 				}).request();
 				}); });</script>';
 			} else @$engaged[$user['user_id']][$user['campaign_id']] .= '';
+		}
+		return $engaged;
+	}
+*/
+
+	//get the Confirm by applicant column
+	function getEngaged($users){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$engaged = array();
+		foreach($users as $user){
+			@$engaged[$user['user_id']][$user['campaign_id']] .= '';
+			if ($user['final_grade'] == 4) {
+				if ($user['engaged']==1){
+					$img = 'tick.png';
+					$btn = 'set_engaged|'.$user['user_id'];
+					$alt = JText::_('ENGAGED').'::'.JText::_('ENGAGED_NOTE');
+					$label = JText::_('JYES');
+				} else {
+					$img = 'publish_x.png';
+					$btn = 'set_engaged|'.$user['user_id'];
+					$alt = JText::_('UNENGAGED').'::'.JText::_('UNENGAGED_NOTE');
+					$label = JText::_('JNO');
+				}
+				$id =  "jos_emundus_final_grade.engaged.".$user['user_id'].".".$user['campaign_id'];
+				$engaged[$user['user_id']][$user['campaign_id']] = '<span class="hasTip" title="'.$alt.'">
+					<div class="em_validation" id="'.$id.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user['engaged'].'\', \''.$id.'\');" > '.$label.'</div></span> '; 
+			} else {
+				@$engaged[$user['user_id']][$user['campaign_id']] .= '';
+			}
 		}
 		return $engaged;
 	}
