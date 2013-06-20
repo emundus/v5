@@ -246,7 +246,7 @@ class EmundusModelEvaluation extends JModel
 			LEFT JOIN #__emundus_setup_profiles esp ON esp.id = eu.profile
 			LEFT JOIN #__emundus_personal_detail epd ON epd.user = eu.user_id
 			LEFT JOIN #__emundus_declaration ed ON ed.user = u.id
-			LEFT JOIN #__emundus_final_grade AS efg ON efg.student_id=ed.user';
+			LEFT JOIN #__emundus_final_grade AS efg ON (efg.student_id=ed.user AND ee.campaign_id=ecc.campaign_id)';
 		
 		if(!empty($miss_doc))
 			$query .= ' LEFT JOIN #__emundus_uploads AS eup ON eup.user_id=u.id';

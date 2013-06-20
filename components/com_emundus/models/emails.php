@@ -110,7 +110,6 @@ class EmundusModelEmails extends JModel
 			$mode = 1; // HTML
 			$mail_cc = null;
 			$mail_subject = JRequest::getVar('mail_subject', null, 'POST', 'VARCHAR', 0);
-			$mail_body = JRequest::getVar('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML);
 			$mail_from_id = $this->_user->id;
 			$mail_from_name = $this->_user->name;
 			$mail_from = $this->_user->email;
@@ -118,6 +117,7 @@ class EmundusModelEmails extends JModel
 			$student = JFactory::getUser($mail_to_id);
 			$mail_to_name = $student->name;
 			$mail_to = $student->email;
+			$mail_body = $this->setBody($student, JRequest::getVar('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), $passwd='');
 			$mail_attachments = JRequest::getVar('mail_attachments', null, 'POST', 'VARCHAR', 0); 
 			
 			if (!empty($mail_attachments)) $mail_attachments = explode(',', $mail_attachments);
