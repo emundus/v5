@@ -833,7 +833,7 @@ function updateprofile() {
 			} else {
 				$img = 'publish_x.png';
 				$btn = 'validate|'.$uid;
-				$alt = JText::_('UNVALIDATED').'::'.JText::_('VALIDATED_NOTE');
+				$alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
 			}
 			echo '<span class="hasTip" title="'.$alt.'">
 					<input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';

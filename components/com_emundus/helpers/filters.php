@@ -601,49 +601,6 @@ class EmundusHelperFilters {
 			$filters .= $final_grade;
 		}
 		
-		if($params['schoolyear'] !== NULL){
-			$schoolyearList = EmundusHelperFilters::getSchoolyears();
-			$schoolyear = '';
-			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
-																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
-																  <div class="em_filtersElement">';
-			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
-			$schoolyear .= '<option value="%" ';
-			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
-			$schoolyear .= '>'.JText::_('ALL').'</option>';
-			foreach($schoolyearList as $s) { 
-				$schoolyear .= '<option value="'.$s.'"';
-				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
-				$schoolyear .= '>'.$s.'</option>'; 
-			}
-			$schoolyear .= '</select>';
-			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
-			$filters .= $schoolyear;
-		}
-
-		if(@$params['campaign'] !== NULL){
-			$campaignList = EmundusHelperFilters::getCampaigns();
-			$campaign = '';
-			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
-																  <div class="em_label"><label>'.JText::_('CAMPAIGN').'</label></div>
-																  <div class="em_filtersElement">';
-			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
-			$campaign .= '<option value="%" ';
-			if($current_campaign[0] == "%") $campaign .= ' selected';
-			$campaign .= '>'.JText::_('ALL').'</option>';
-			
-			foreach($campaignList as $c) { 
-				$campaign .= '<option value="'.$c->id.'"';
-				if(!empty($current_campaign) && in_array($c->id, $current_campaign)) $campaign .= ' selected';
-				$campaign .= '>'.$c->label.'</option>'; 
-			}
-			$campaign .= '</select>';
-			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
-			$filters .= $campaign;
-		}
-		
 		if(@$params['missing_doc'] !== NULL){
 			$missing_docList = EmundusHelperFilters::getMissing_doc();
 			$missing_doc = '';
@@ -696,6 +653,49 @@ class EmundusHelperFilters {
 			$validate .= '</select>';
 			if ($types['validate'] != 'hidden') $validate .= '</div></div>';
 			$filters .= $validate;
+		}
+
+		if($params['schoolyear'] !== NULL){
+			$schoolyearList = EmundusHelperFilters::getSchoolyears();
+			$schoolyear = '';
+			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
+																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
+																  <div class="em_filtersElement">';
+			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$schoolyear .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
+			$schoolyear .= '<option value="%" ';
+			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
+			$schoolyear .= '>'.JText::_('ALL').'</option>';
+			foreach($schoolyearList as $s) { 
+				$schoolyear .= '<option value="'.$s.'"';
+				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
+				$schoolyear .= '>'.$s.'</option>'; 
+			}
+			$schoolyear .= '</select>';
+			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
+			$filters .= $schoolyear;
+		}
+
+		if(@$params['campaign'] !== NULL){
+			$campaignList = EmundusHelperFilters::getCampaigns();
+			$campaign = '';
+			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
+																  <div class="em_label"><label>'.JText::_('CAMPAIGN').'</label></div>
+																  <div class="em_filtersElement">';
+			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$campaign .= 'onChange="javascript:submit()" multiple="multiple" size="6">';
+			$campaign .= '<option value="%" ';
+			if($current_campaign[0] == "%") $campaign .= ' selected';
+			$campaign .= '>'.JText::_('ALL').'</option>';
+			
+			foreach($campaignList as $c) { 
+				$campaign .= '<option value="'.$c->id.'"';
+				if(!empty($current_campaign) && in_array($c->id, $current_campaign)) $campaign .= ' selected';
+				$campaign .= '>'.$c->label.'</option>'; 
+			}
+			$campaign .= '</select>';
+			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
+			$filters .= $campaign;
 		}
 		
 		//Advance filter builtin
