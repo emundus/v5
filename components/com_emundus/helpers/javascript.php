@@ -296,8 +296,13 @@ function OnSubmitForm() {
 			for(var i=0;i<inputs.length;i++){
 				var input = inputs[i];
 				var name_i = input.id;
-				var value_i = input.value;
-				// alert(name_i+" "+value_i);
+				var define_type = name_i.split(\'_\');
+				if(define_type[0]==\'check\'){
+					var value_i = input.checked;
+				}else{
+					var value_i = input.value;
+				}
+				// alert(name_i+" "+value_i+" "+input.checked);
 				jsonObj.push({\'id\': name_i, \'value\': value_i});
 			}
 			// alert(jsonObj[1][\'id\']+" "+jsonObj[1][\'value\']);
@@ -401,7 +406,8 @@ function OnSubmitForm() {
 				}else if(define_type[0]==\'text\'){
 					field.value = constraintsObj[i].value;
 				}else if(define_type[0]==\'check\'){
-					field.value = constraintsObj[i].value;
+					field.checked = constraintsObj[i].value;
+					// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
 				}
 				
 			}
@@ -434,9 +440,8 @@ function OnSubmitForm() {
 					var input = inputs[i];
 					input.value  = "";
 				}else if(define_type[0]=="check"){
-					// alert(inputs[i].value);
 					var input = inputs[i];
-					input.value  = "0";
+					input.checked = false;
 				}
 			}
 			return;
