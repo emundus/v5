@@ -79,6 +79,8 @@ function return_bytes($val) {
 			
 			$campaigns = $mod->getCampaigns();
 			
+			$university = $mod->getUniversities();
+			
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
@@ -253,6 +255,16 @@ function return_bytes($val) {
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$newsletter);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
+								
+							}elseif($key=='university_id'){
+								if($value!='0'){
+									$university_label = $university[$value]->institution_name;
+								}else{
+									$university_label = '';
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$university_label);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
 							}elseif($key!='nationality' && $key!='gender' && $key!='registred_for'  && $key != 'block' && $key != 'usertype'){
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
@@ -298,6 +310,15 @@ function return_bytes($val) {
 									$newsletter=JText::_('JNO');
 								}
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$newsletter);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key=='university_id'){
+								if($value!='0'){
+									$university_label = $university[$value]->title;
+								}else{
+									$university_label = '';
+								}
+								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$university_label);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
 							}elseif($key!='nationality' && $key!='name' && $key!='username' && $key!='username' && $key!='gender' && $key!='registred_for'  && $key != 'block' && $key != 'usertype'){

@@ -576,7 +576,7 @@ class EmundusHelperFilters {
 			$filters .= $group_eval;
 		}
 		
-		if($params['finalgrade'] !== NULL){
+		if(@$params['finalgrade'] !== NULL){
 			$finalgrade = EmundusHelperFilters::getFinal_grade();
 			$final_gradeList = explode('|', $finalgrade['final_grade']['sub_labels']);
 			$sub_values = explode('|', $finalgrade['final_grade']['sub_values']);

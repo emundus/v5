@@ -15,6 +15,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
  
 jimport( 'joomla.application.component.model' );
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
  
 class EmundusModelUsers extends JModel
 {
@@ -391,10 +392,10 @@ class EmundusModelUsers extends JModel
 	function getUserListWithGroupsEval($groups)
 	{
 		$db = JFactory::getDBO();
-		$query = 'SELECT ege.applicant_id
-		FROM #__emundus_groups_eval as ege
-		LEFT JOIN #__emundus_setup_groups as esg ON esg.id = ege.group_id 
-		WHERE esg.published=1 AND esg.id='.$groups;
+		$query = 'SELECT eg.user_id
+		FROM #__emundus_groups as eg
+		LEFT JOIN #__emundus_setup_groups as esg ON esg.id=eg.group_id
+		WHERE esg.published=1 AND eg.group_id='.$groups;
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
