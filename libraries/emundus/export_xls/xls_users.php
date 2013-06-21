@@ -81,6 +81,8 @@ function return_bytes($val) {
 			
 			$university = $mod->getUniversities();
 			
+			$schoolyears = $mod->getSchoolyears();
+			
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
@@ -345,11 +347,13 @@ function return_bytes($val) {
 					$campaign_list="";
 					foreach($campaigns as $campaign){
 						if($campaign->applicant_id == $user->id){
-							$campaign_list .= $campaign->label.' ';
+							$lfcr = chr(10);
+							$campaign_list .= JText::_('CAMPAIGN').' : '.$campaign->label.' - '.JText::_('SCHOOLYEARS').' : '.$campaign->year.' '.$lfcr.' ';
 						}
 					}
 					
 					if(!empty($campaign_list)){
+						// $objPHPExcel->getActiveSheet()->getStyle($colonne.$i)->getAlignment()->setWrapText(true);
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $campaign_list);
 						$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 						$cell='"'.$colonne_by_id[$colonne].$i.'"';

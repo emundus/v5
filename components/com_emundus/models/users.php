@@ -290,7 +290,7 @@ class EmundusModelUsers extends JModel
 	function getCampaigns()
 	{
 		$db = JFactory::getDBO();
-		$query = 'SELECT sc.id, cc.applicant_id, sc.start_date, sc.end_date, sc.label
+		$query = 'SELECT sc.id, cc.applicant_id, sc.start_date, sc.end_date, sc.label, sc.year
 		FROM #__emundus_setup_campaigns AS sc 
 		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
 		WHERE sc.published=1';
