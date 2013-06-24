@@ -127,7 +127,7 @@ function OnSubmitForm() {
 			case \'delusers\': 
 				document.adminForm.task.value = "delusers";
 				if (confirm("'.JText::_("CONFIRM_DELETE").'")) {
-	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delusers&Itemid='.$itemid.'";
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=delusers&v='.$view.'";
 			 	} else 
 			 		return false;
 			break;
