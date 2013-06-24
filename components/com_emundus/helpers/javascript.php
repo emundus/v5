@@ -432,12 +432,14 @@ function OnSubmitForm() {
 		function clear_filter(){
 		
 			// delete advance filter
-			var selects_object = document.getElementById(\'myDiv\').getElementsByTagName(\'select\');
-			var selects = makeArray(selects_object);
-			var d = document.getElementById(\'myDiv\');
-			for(var i=0; i<selects.length/2; i++){
-				var olddiv = document.getElementById(\'filter\'+i);
-				d.removeChild(olddiv);
+			if(document.getElementById(\'myDiv\')){
+				var selects_object = document.getElementById(\'myDiv\').getElementsByTagName(\'select\');
+				var selects = makeArray(selects_object);
+				var d = document.getElementById(\'myDiv\');
+				for(var i=0; i<selects.length/2; i++){
+					var olddiv = document.getElementById(\'filter\'+i);
+					d.removeChild(olddiv);
+				}
 			}
 
 			var view="'.JRequest::getVar('view', null, 'GET', 'none', 0).'";
