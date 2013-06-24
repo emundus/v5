@@ -103,8 +103,7 @@ class EmundusModelUsers extends JModel
 		$pid			= $this->getState('profile_users');
 		$newsletter		= $this->getState('newsletter');
 		
-		if (!isset($pid))
-			$pid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
+		$uid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
 		$edit = JRequest::getVar('edit', 0, 'GET', 'none', 0);
 		$search = JRequest::getVar('s', null, 'POST', 'none', 0);
 		$list_user="";
@@ -175,7 +174,7 @@ class EmundusModelUsers extends JModel
 			$query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
 		}
 		
-		if($edit==1) $query.= 'WHERE u.id='.mysql_real_escape_string($pid);
+		if($edit==1) $query.= 'WHERE u.id='.mysql_real_escape_string($uid);
 		else {
 			$and = false;
 			if(isset($pid) && !empty($pid) && is_numeric($pid)) {
