@@ -799,16 +799,35 @@ class EmundusHelperFilters {
 		}
 		
 		if(@$params['newsletter'] !== NULL){
-			$filters.= '<div class="em_filters" id="newsletter"><div class="em_label"><label>'.JText::_('NEWSLETTER').'</label></div>
-			<div class="em_filtersElement"><input id="check_newsletter" name="newsletter" type="checkbox" value="1" '.($newsletter==1?'checked=checked':'').' /></div>
+			$filters.= '<div class="em_filters" id="newsletter"><div class="em_label"><label>'.JText::_('NEWSLETTER').'</label></div>';
+			$filters .= '<div class="em_filtersElement">
+				<select id="select_newsletter" name="newsletter" '.($types['newsletter'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+					<option value="0"';
+					if($newsletter == 0) $filters .= ' selected';
+					$filters.='>'.JText::_("JNO").'</option>
+					<option value="1"';
+					if($newsletter == 1) $filters .= ' selected';
+					$filters.='>'.JText::_("JYES").'</option>
+				</select>
 			</div>';
+			//$filters.='<div class="em_filtersElement"><input id="check_newsletter" name="newsletter" onMouseUp="if(this.checked==true){this.value=0;}else{this.value=1;}" type="checkbox" value="0" '.($newsletter==1?'checked=checked':'').' /></div>';
+			$filters.='</div>';
 		}
 		
 		if(@$params['spam_suspect'] !== NULL){
-			$filters.= '
-			<div class="em_filters" id="spam_suspect"><div class="em_label"><label>'.JText::_('SPAM_SUSPECT').'</label></div>
-			<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" type="checkbox" value="1" '.($spam_suspect==1?'checked=checked':'').' /></div>
+			$filters.= '<div class="em_filters" id="spam_suspect"><div class="em_label"><label>'.JText::_('SPAM_SUSPECT').'</label></div>';
+			$filters .= '<div class="em_filtersElement">
+				<select id="select_spam-suspect" name="spam_suspect" '.($types['spam_suspect'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="javascript:submit()">
+					<option value="0"';
+					if($spam_suspect == 0) $filters .= ' selected';
+					$filters.='>'.JText::_("JNO").'</option>
+					<option value="1"';
+					if($spam_suspect == 1) $filters .= ' selected';
+					$filters.='>'.JText::_("JYES").'</option>
+				</select>
 			</div>';
+			// $filters.= '<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" onMouseUp="if(this.checked==true){this.value=1;}else{this.value=0;}" type="checkbox" value="0" '.($spam_suspect==1?'checked=checked':'').' /></div>';
+			$filters.= '</div>';
 		}
 		
 
