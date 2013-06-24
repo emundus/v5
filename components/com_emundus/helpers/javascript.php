@@ -379,6 +379,7 @@ function OnSubmitForm() {
 					constraints = xhr.responseText; //getConstraintsFilter
 					if(constraints!=""){
 						setFilters(select, constraints);
+						
 						submitFilters();
 					}
 				}
@@ -390,7 +391,7 @@ function OnSubmitForm() {
 
 		function setFilters(select, constraints) {
 			var constraintsObj = JSON.parse(constraints);
-			
+			var k =0;
 			for (var i = 0; i < constraintsObj.length; i++) {
 				// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
 				var field = $(constraintsObj[i].id);
@@ -408,43 +409,49 @@ function OnSubmitForm() {
 				}else if(define_type[0]==\'check\'){
 					field.checked = constraintsObj[i].value;
 					// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
+				}else{
+					if(constraintsObj[i].id==\'elements\' || constraintsObj[i].id==\'elements_values\'){
+						if(constraintsObj[i].id==\'elements\'){
+							constraintsObj[i].value = constraintsObj[i].value;
+							var ni = document.getElementById("em_adv_filters");
+							var newdiv = document.createElement("div");
+							var divIdName = "post_advance-filter"+k;
+							newdiv.setAttribute("id",divIdName);
+							var valueS=constraintsObj[i].value.split(".");
+							var input ="<input type=\'hidden\' id=\'elements\' name=\'elements[]\' value=\'"+constraintsObj[i].value+"\' />";
+							k++; 
+						}else if(constraintsObj[i].id==\'elements_values\'){
+							newdiv.innerHTML = input+"<input type=\'hidden\' id=\'elements_values\' name=\'elements_values[]\' value=\'"+constraintsObj[i].value+"\' />";
+							ni.appendChild(newdiv);
+						}
+					}
 				}
-				
 			}
-			
 		}
 
 		function clear_filter(){
-			var selects_object = document.getElementById(\'filters\').getElementsByTagName(\'select\');
-			var inputs_object = document.getElementById(\'filters\').getElementsByTagName(\'input\');
-			var inputs = makeArray(inputs_object);
+		
+			// delete advance filter
+			var selects_object = document.getElementById(\'myDiv\').getElementsByTagName(\'select\');
 			var selects = makeArray(selects_object);
-			
-			for(var i=0;i<selects.length;i++){
-				var select = selects[i];
-				var name_s = select.id;
-				var research = name_s.split(\'_\');
-				if(research[0]==\'select-multiple\'){
-					for(j=0;j<select.length;j++) {
-						if(select[j].selected){
-							select[j].selected = false;
-						}
-					}
-				}else{
-					select.value = 0;
-				}
+			var d = document.getElementById(\'myDiv\');
+			for(var i=0; i<selects.length/2; i++){
+				var olddiv = document.getElementById(\'filter\'+i);
+				d.removeChild(olddiv);
 			}
-			for(var i=0;i<inputs.length;i++){
-				var define_type = inputs[i].id.split(\'_\');
-				if(define_type[0]=="text"){
-					var input = inputs[i];
-					input.value  = "";
-				}else if(define_type[0]=="check"){
-					var input = inputs[i];
-					input.checked = false;
+
+			var view="'.JRequest::getVar('view', null, 'GET', 'none', 0).'";
+			var xhr2 = getXMLHttpRequest();
+			xhr2.onreadystatechange = function()
+			{
+				if (xhr2.readyState == 4 && (xhr2.status == 200 || xhr2.status == 0))
+				{
+					return true;
 				}
-			}
-			return;
+			};
+			xhr2.open("POST", "index.php?option=com_emundus&controller="+view+"&format=raw&task=clear", true); // document.location.href
+			xhr2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr2.send();
 		}
 
 		function delete_filters(){

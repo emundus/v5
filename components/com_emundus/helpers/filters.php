@@ -474,13 +474,13 @@ class EmundusHelperFilters {
 		$option;
 		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
 		$research_filters = EmundusHelperFilters::getEmundusFilters();
-		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid;border-radius: 10px;">
+		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid; border-radius: 10px; padding:0px 10px 10px 10px;">
 		<table style="border-spacing:10px;">
 			<tr>
 				<td  colspan="2">'.JText::_('SELECT_FILTER').'</td>
 			</tr><tr>
 				<td>
-				<select id="select_filter" name="select_filter" onchange="document.getElementById(\'clear_button\').click(); if(this.value!=0) { getConstraints(this); }else{ document.getElementById(\'search_button\').click(); }; ">
+				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this)}; ">
 				<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 				if(!empty($research_filters)){
 					foreach($research_filters as $filter){
@@ -711,7 +711,7 @@ class EmundusHelperFilters {
 				$selected_adv = "";
 				foreach($search as $sf) {
 					$adv_filter .= '<div id="filter'.$i.'">';
-					$adv_filter .= '<select id="select_elements" name="elements[]" onChange="javascript:submit()">
+					$adv_filter .= '<select id="elements" name="elements[]" onChange="javascript:submit()">
 					<option value="">'.JText::_('PLEASE_SELECT').'</option>';  
 						$groupe ="";
 						$length = 50;
@@ -762,7 +762,7 @@ class EmundusHelperFilters {
 				$selected_other = "";
 				foreach($search_other as $sf) {
 					$other_filter .= '<div id="filter_other'.$i.'">';
-					$other_filter .= '<select id="select_elements-others" name="elements_other[]" id="elements_other" onChange="javascript:submit()">
+					$other_filter .= '<select id="elements-others" name="elements_other[]" id="elements_other" onChange="javascript:submit()">
 					<option value="">'.JText::_('PLEASE_SELECT').'</option>';
 					$groupe = "";
 					$length = 50;
