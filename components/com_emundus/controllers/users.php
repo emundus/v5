@@ -51,22 +51,22 @@ class EmundusControllerUsers extends JController {
     }
 
 
-	function blockuser() {
+	function blockuser($id) {
 		$user = JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id;
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
-		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
-		$rowid = JRequest::getVar('rowid', null, 'GET', null, 0);
+		// $uid = JRequest::getVar('uid', null, 'GET', null, 0);
+		// $rowid = JRequest::getVar('rowid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
-		if(!empty($uid) && is_numeric($uid)) {
-			if($uid == 62) JError::raiseError(500, JText::_('You cannot delete administrator'));
+		if(!empty($id) && is_numeric($id)) {
+			if($id == 62) JError::raiseError(500, JText::_('You cannot delete administrator'));
 			
-			$this->_db->setQuery('UPDATE #__users SET block = 1 WHERE id = '.mysql_real_escape_string($uid));
+			$this->_db->setQuery('UPDATE #__users SET block = 1 WHERE id = '.mysql_real_escape_string($id));
 			$this->_db->Query();
-			$this->_db->setQuery('UPDATE #__emundus_users SET disabled = 1, disabled_date = NOW() WHERE user_id = '.mysql_real_escape_string($uid));
+			$this->_db->setQuery('UPDATE #__emundus_users SET disabled  = 1, disabled_date = NOW() WHERE user_id = '.mysql_real_escape_string($id));
 			$this->_db->Query();
 		}
 		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$rowid.'&limitstart='.$limitstart.'&Itemid='.$Itemid, JText::_('User successfully blocked'), 'message');
@@ -148,7 +148,6 @@ class EmundusControllerUsers extends JController {
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		
 		if(!empty($ids)) {
 			foreach ($ids as $id) {				
 				$query = 'UPDATE #__emundus_users SET profile=999 WHERE user_id='.$id;
