@@ -88,7 +88,7 @@ if(!empty($this->users)) { ?>
 		if($current_user->profile!=16) { ?>
         <input type="checkbox" id="checkall" class="emundusraw" onClick="javascript:check_all()"/>
 		<?php } ?>
-        <?php echo JHTML::_('grid.sort', JText::_('#'), 'id', $this->lists['order_Dir'], $this->lists['order']); ?>
+        <?php echo JHTML::_('grid.sort', JText::_('#'), 'user_id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>

@@ -410,7 +410,7 @@ function application_form_pdf($user_id, $output = true) {
 	$registered = $db->loadResult();
 
 	// Users informations
-	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.year AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ed.time_date
+	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.year AS cb_schoolyear, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
 				FROM #__users AS u
 				LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
 				LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.'
@@ -418,6 +418,7 @@ function application_form_pdf($user_id, $output = true) {
 				LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = c.profile AND esc.published = 1 
 				LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id
 				LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id
+				LEFT JOIN #__emundus_campaign_candidature AS ecc ON (ecc.applicant_id = u.id AND ecc.campaign_id = '.$campaign_id.')
 				WHERE u.id='.$user_id. '
 				ORDER BY esc.id DESC';
 	$db->setQuery($query);
@@ -479,7 +480,7 @@ $htmldata .= '
   <div class="nationality">'.JText::_('NATIONALTY').' : '.$item->nationality.'</div>
   <div class="birthday">'.JText::_('BIRTH_DATE').' : '.strftime("%d/%m/%Y", strtotime($item->birth_date)).' ('.age($item->birth_date).')</div>
   <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.strftime("%d/%m/%Y 	%H:%M", strtotime($item->time_date)).'</div>
+  <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.strftime("%d/%m/%Y 	%H:%M", strtotime($item->date_submitted)).'</div>
   <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y 	%H:%M", time()).'</div>
 </td>
 </tr>
@@ -507,7 +508,8 @@ $htmldata .= '
 	$tableusers = implode(',', $db->loadResultArray());
 
 	//get profile or result for 
-	$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;
+	//$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;
+	$query = 'SELECT profile_id FROM #__emundus_setup_campaigns WHERE id = '.$campaign_id;
 	$db->setQuery( $query );
 	$db->query();
 	$num_rows = $db->getNumRows();
@@ -637,7 +639,7 @@ $htmldata .= '
 						ORDER BY ff.ordering';
 			$db->setQuery( $query );
 			$groups = $db->loadObjectList();
-
+//echo str_replace('#_','jos',$query); die();
 			/*-- Liste des groupes -- */
 			foreach($groups as $keyg => $itemg) {
 				// liste des items par groupe

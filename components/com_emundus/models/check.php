@@ -176,7 +176,7 @@ class EmundusModelCheck extends JModel
 		return $tmp;
 	}
 	
-	function multi_array_sort($multi_array=array(), $sort_key, $sort=SORT_ASC) {  echo "-->".$sort_key;
+	function multi_array_sort($multi_array=array(), $sort_key, $sort=SORT_ASC) {  
         if(is_array($multi_array)){  
             foreach ($multi_array as $key=>$row_array){  
                 if(is_array($row_array)){  
