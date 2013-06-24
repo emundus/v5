@@ -804,7 +804,7 @@ class EmundusHelperFilters {
 				<select id="select_newsletter" name="newsletter" '.($types['newsletter'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 					<option value="0"';
 					if($newsletter == 0) $filters .= ' selected';
-					$filters.='>'.JText::_("JNO").'</option>
+					$filters.='>'.JText::_("ALL").'</option>
 					<option value="1"';
 					if($newsletter == 1) $filters .= ' selected';
 					$filters.='>'.JText::_("JYES").'</option>
@@ -820,7 +820,7 @@ class EmundusHelperFilters {
 				<select id="select_spam-suspect" name="spam_suspect" '.($types['spam_suspect'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 					<option value="0"';
 					if($spam_suspect == 0) $filters .= ' selected';
-					$filters.='>'.JText::_("JNO").'</option>
+					$filters.='>'.JText::_("ALL").'</option>
 					<option value="1"';
 					if($spam_suspect == 1) $filters .= ' selected';
 					$filters.='>'.JText::_("JYES").'</option>
