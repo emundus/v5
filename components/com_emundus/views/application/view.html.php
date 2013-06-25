@@ -68,6 +68,12 @@ class EmundusViewApplication extends JView{
 		$userCampaigns = $application->getUserCampaigns($user_id);
 		$this->assignRef('userCampaigns', $userCampaigns);
 		
+		$userAttachements = $application->getUserAttachements($user_id);
+		$this->assignRef('userAttachements', $userAttachements);
+		
+		$userComments = $application->getUsersComments($user_id);
+		$this->assignRef('userComments', $userComments);
+		
         parent::display($tpl);
     }
 }

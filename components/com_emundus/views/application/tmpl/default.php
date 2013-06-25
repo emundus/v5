@@ -31,6 +31,11 @@
 			margin :0;
 			padding:0;
 		}
+		#center .content li:first-child {
+			background-color:#F4CBF0;
+			border:1px solid #F4CBF0;
+			text-align:center;
+		}
 	/* LEFT */
 		#left {
 			width:30%;
@@ -74,12 +79,29 @@
 	background: #6B7B95;
 	color:#fff;
     cursor: pointer;
-    font: 12px Helvetica, Arial, sans-serif;
+    font: 14px Helvetica, Arial, sans-serif;
     margin: 0 0 4px 0;
     padding: 3px 5px 1px;
 }
 #accordion .content {
 	background-color: #D3E9F8;
+}
+#accordion #attachement_name {
+	color:#fff;
+	background-color:#9DADC6;
+	border:1px solid #8E98A4;
+	border-bottom:0;
+	width:100%;
+}
+#accordion #hiddenMoreInfoAttachement{
+	visibility:hidden;
+	display:none;
+}
+#accordion li {
+	list-style-type: none;
+	margin :0;
+	padding:0;
+	padding-left:5px;
 }
 </style>
 <?php  
@@ -189,7 +211,7 @@ JHTML::_('behavior.modal');
 			<?php
 			foreach($this->userCampaigns as $campaign){
 				echo'<ul>';
-					echo'<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$campaign->label.'</li>';
+					echo'<li><div id="title">'.$campaign->label.'</div></li>';
 					echo'<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					echo'<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
@@ -211,10 +233,46 @@ JHTML::_('behavior.modal');
 
 <div id="accordion">
 	<h2><?php echo JText::_('ATTACHEMENTS'); ?></h2>
-	<div id="em_application_attachements" class="content">aaaa</div>
+	<div id="em_application_attachements" class="content">
+		<?php 
+		$i=0;
+		foreach($this->userAttachements as $attachement){
+			echo'<div id="attachement_name-'.$i.'">';
+				echo'<div id="attachement_name">';
+					echo'<input type="image" src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_16x16.png" onClick="showHide(this);"/>';
+					echo'<input type="checkbox" name="aid[]" value="'.$attachement->aid.'" />';
+					echo'<div id="title">'.JText::_('ATTACHEMENT_NAME').'</div> : '.$attachement->value;
+				echo'</div>';
+				echo'<div id="hiddenMoreInfoAttachement-'.$i.'">';
+					echo'<ul>';
+						echo'<li><div id="title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
+						if(!empty($attachement->description)){
+							echo'<li><div id="title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
+						}
+						echo'<li><div id="title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
+						echo'<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
+						echo'<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
+					echo'</ul>';
+				echo'</div>';
+			echo'</div>';
+			$i++;
+		}
+		?>
+	</div>
 	
 	<h2><?php echo JText::_('COMMENTS'); ?></h2>
-	<div id="em_application_comments" class="content">bbb</div>
+	<div id="em_application_comments" class="content">
+		<?php
+		foreach($this->userComments as $comment){
+			echo'<ul>';
+				echo'<li><div id="title">'.JText::_('COMMENT').'</div> : '.$comment->comment.'</li>';
+				echo'<li><div id="title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
+				echo'<li><div id="title">'.JText::_('COMMENT_DATE').'</div> : '.date('Y-m-d',strtotime($comment->date)).'</li>';
+				echo'<li><div id="title">'.JText::_('COMMENT_BY').'</div> : '.$comment->name.'</li>';
+			echo'</ul>';
+		}
+		?>
+	</div>
 	
 	<h2><?php echo JText::_('APPLICATION_FORM'); ?></h2>
 	<div id="em_application_forms" class="content">cccc</div>
@@ -225,19 +283,29 @@ window.addEvent('domready', function(){
 });
 
 window.onload = function(){
-var column = document.getElementById('center');
-if (document.all) // ok I.E
-{
-H = column.currentStyle.height;
-}
-else // ok firefox.0.9.2 , pas mozilla.1.0 ni netscape.7.02
-{
-H = document.defaultView.getComputedStyle(column, null).height;
-}
-var left = document.getElementById('left');
-var right = document.getElementById('right');
-left.style.height=H;
-right.style.height=H;
+	var column = document.getElementById('center');
+	if (document.all){ // ok I.E
+		H = column.currentStyle.height;
+	}else {// ok firefox.0.9.2 , pas mozilla.1.0 ni netscape.7.02
+		H = document.defaultView.getComputedStyle(column, null).height;
+	}
+	var left = document.getElementById('left');
+	var right = document.getElementById('right');
+	left.style.height=H;
+	right.style.height=H;
 }
 
+function showHide(divPrincipal) {
+	var div = (divPrincipal.parentNode).parentNode;
+	var change = div.id.split('-');
+	var i = change[1];
+	var name = 'hiddenMoreInfoAttachement-'+i;
+	if(div.getElementById(name).style.display=='none') { 
+		div.getElementById(name).style.display='block'; 
+		div.getElementById(name).style.visibility='visible'; 
+	} else if(div.getElementById(name).style.display=='block') {
+		div.getElementById(name).style.display='none';
+		div.getElementById(name).style.visibility='hidden'; 
+	}
+}
 </script>

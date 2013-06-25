@@ -83,5 +83,28 @@ class EmundusModelApplication extends JModel
 			return $db->loadObjectList();
 	}
 	
+	function getUserAttachements($id){
+		$db = JFactory::getDBO();
+		$query = 'SELECT upload.id AS aid, attachment.id, upload.filename, upload.description, attachment.value, upload.timedate, campaign.label as campaign_label, campaign.year  
+            FROM #__emundus_uploads AS upload
+            LEFT JOIN #__emundus_setup_attachments AS attachment ON  upload.attachment_id=attachment.id
+			LEFT JOIN #__emundus_setup_campaigns AS campaign ON campaign.id=upload.campaign_id
+            WHERE upload.user_id = '.$id;'
+            ORDER BY attachment.ordering';
+        $db->setQuery( $query );
+        return $db->loadObjectList();
+	}
+	
+	function getUsersComments($id){ 
+		$db = JFactory::getDBO();
+		$query = 'SELECT ec.id, ec.comment, ec.reason, ec.date, u.name
+				FROM #__emundus_comments ec 
+				LEFT JOIN #__users u ON u.id = ec.user_id 
+				WHERE ec.applicant_id ='.$id.'
+				ORDER BY ec.date DESC';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+	
 }
 ?>
