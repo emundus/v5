@@ -1,41 +1,60 @@
 ﻿<style type="text/css">
 /* identity_card */
-#identity_card {
-	margin-bottom : 80px;
-}
-#identity_card .column {
-	position: relative;
-	float: left;
-	margin-right: 5px;
-}
-#center {
-	width:30%;
-}
-#center .content {
-	background-color: #F2E5F8;
-}
-#left {
-	width:30%;
-}
-#left .content {
-	background-color: #E5F5F8;
-}
-#right {
-	width:30%;
-}
-#right .content {
-	background-color: #F4C9C9;
-}
-.column #title {
-    margin:0;
-    padding:5px;
-    font: 12px Helvetica, Arial, sans-serif;
-	color:#fff;
-    background-color:#9DADC6;
-    border:1px solid #8E98A4;
-    border-bottom:0;
-	text-align:center;
-}
+	#identity_card .column {
+		position: relative;
+		float: left;
+		margin-bottom : 10px;
+	}
+	
+	.column .title {
+		margin:0;
+		padding:5px;
+		font: 14px Helvetica, Arial, sans-serif;
+		color:#fff;
+		background-color:#9DADC6;
+		border:1px solid #8E98A4;
+		border-bottom:0;
+		text-align:center;
+	}
+	/* CENTER */
+		#center {
+			width:30%;
+		}
+		#center .content {
+			background-color: #F2E5F8;
+			min-height :140px;
+			padding-left : 5px;
+		}
+	/* LEFT */
+		#left {
+			width:30%;
+		}
+		#left .content {
+			background-color: #E5F5F8;
+			min-height :140px;
+		}
+		#left .content #photo {
+			float : left;
+			width:30%;
+		}
+		#left .content #informations {
+			float : right;
+			width:68%;
+		}
+		#left .content #informations li {
+			list-style-type: none;
+			margin :0;
+			padding:0;
+		}
+	/* RIGHT */
+		#right {
+			width:30%;
+		}
+		#right .content {
+			background-color: #F4C9C9;
+			min-height :140px;
+			padding-left : 5px;
+		}
 
 /* accordion */
 #accordion  {
@@ -59,7 +78,7 @@
 <?php  
 defined('_JEXEC') or die('Restricted access'); 
 $current_user = & JFactory::getUser();
-if(!EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id)) die("ACCESS_DENIED");
+// if(!EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id)) die("ACCESS_DENIED");
 	 
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
@@ -68,15 +87,71 @@ JHTML::_('behavior.modal');
 
 <div id="identity_card">
 	<div id="left" class="column">
-		<div id="title">title1</div>
-		<div class="content">eeee</div>
+		<div class="title"><?php echo JText::_('APPLICANT'); ?></div>
+		<div class="content">
+			<div id="photo">
+				<?php 
+				if(in_array ('photo',$this->informations)){
+					if(!empty($this->userInformations[0]->filename)){
+						echo'<img src="'.JURI::Base().'images/emundus/files/'.$this->user_id.'/'.$this->userInformations[0]->filename.'" width="100">'; 
+					}else if(!empty($this->userInformations[0]->gender)){
+						echo'<img src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations[0]->gender).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
+					}
+				}
+				?>
+			</div>
+			<div id="informations">
+				<ul>
+					<li>
+					<?php
+						if(in_array ('lastname',$this->informations)){
+							echo JText::_('LASTNAME').' : '.$this->userInformations[0]->lastname;
+						}
+					?>
+					</li>
+					<li>
+					<?php
+						if(in_array ('firstname',$this->informations)){
+							echo JText::_('FIRSTNAME').' : '.$this->userInformations[0]->firstname;
+						}
+					?>
+					</li>
+					<li>
+					<?php
+						if(in_array ('email',$this->informations)){
+							$email=$this->userInformations[0]->email;
+							echo'<a href="mailto:'.$email.'">'.$email.'</a>';
+						}
+					?>
+					</li>
+					<li>
+					<?php
+						if(in_array ('nationality',$this->informations)){
+							echo JText::_('NATIONALITY').' : '.$this->userInformations[0]->nationality;
+						}
+					?>
+					</li>
+					<li>
+					<?php
+						if(in_array ('birthdate',$this->informations)){
+							$birthdate = new DateTime($this->userInformations[0]->birthdate);
+							// $birthdate_explode = explode("/", $birthdate);
+							$today = new DateTime();
+							$age = $today->diff($birthdate);
+							echo JText::_('AGE').' : '.$age->format('%y');
+						}
+					?>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 	<div id="center" class="column">
-		<div id="title">title2</div>
+		<div class="title"><?php echo JText::_('CAMPAIGN'); ?></div>
 		<div class="content">ffff</div>
 	</div>
 	<div id="right" class="column">
-		<div id="title">title3</div>
+		<div class="title"><?php echo JText::_('ACTIONS'); ?></div>
 		<div class="content">gggg</div>
 	</div>
 </div>
@@ -88,13 +163,9 @@ JHTML::_('behavior.modal');
 	<h2><?php echo JText::_('COMMENTS'); ?></h2>
 	<div id="em_application_comments" class="content">bbb</div>
 	
-	<h2><?php echo JText::_('FORMS'); ?></h2>
+	<h2><?php echo JText::_('APPLICATION_FORM'); ?></h2>
 	<div id="em_application_forms" class="content">cccc</div>
-	
-	<h2><?php echo JText::_('ACTIONS'); ?></h2>
-	<div id="em_application_actions" class="content">dddd</div>
 </div>
-
 <script>
 window.addEvent('domready', function(){
   new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');

@@ -46,25 +46,24 @@ class EmundusViewApplication extends JView{
         //$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die("ACCESS_DENIED");
+		// if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die("ACCESS_DENIED");
+				
+		$informations = array('lastname',
+							'firstname',
+							'gender',
+							'email',
+							'nationality',
+							'birthdate',
+							'profile',
+							'photo'
+							);
+		$this->assignRef('informations', $informations);
+		$user_id = "1526";
+		$this->assignRef('user_id', $user_id);
+		$application = $this->getModel('application');
+		$userInformations = $application->getUserInformations($user_id,$informations);
+		$this->assignRef('userInformations', $userInformations);
 		
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-
-        $user = $this->get('User');
-        $canEvaluate = $this->get('canEvaluate');
-        //$isEvaluated = $this->get('asBeenEvaluated');
-		$isEvaluated = $this->get('asBeenEvaluatedByMe');
-        $comments = $this->get('Comments');
-        /* Call the state object */
-        $state = $this->get( 'state' );
-
-        /* Get the values from the state object that were inserted in the model's construct function */
-        $this->assignRef('state', $state);
-        $this->assignRef('user', $user);
-        $this->assignRef('can_evaluate', $canEvaluate);
-        $this->assignRef('is_evaluated', $isEvaluated);
-        $this->assignRef('comments', $comments);
-
         parent::display($tpl);
     }
 }
