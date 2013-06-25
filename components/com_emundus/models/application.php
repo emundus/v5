@@ -74,10 +74,11 @@ class EmundusModelApplication extends JModel
 		$db = JFactory::getDBO();
 		$query = 'SELECT esc.label, esc.year, ecc.date_submitted, efg.result_sent, efg.date_result_sent 
 			FROM #__emundus_users eu
-			LEFT JOIN #__emundus_final_grade efg ON efg.student_id=eu.user_id
-			LEFT JOIN #__emundus_campaign_candidature ecc On ecc.applicant_id=eu.user_id
+			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
 			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
-			WHERE eu.user_id="'.$id.'" GROUP BY esc.id';
+			LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
+			WHERE eu.user_id="'.$id.'"';
+			// echo str_replace ('#_', 'jos', $query);
 			$db->setQuery( $query );
 			return $db->loadObjectList();
 	}

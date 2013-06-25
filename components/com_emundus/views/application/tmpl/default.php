@@ -191,10 +191,10 @@ JHTML::_('behavior.modal');
 				echo'<ul>';
 					echo'<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$campaign->label.'</li>';
 					echo'<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
-					echo'<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.$campaign->date_submitted.'</li>';
+					echo'<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
 						echo'<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
-						echo'<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.$campaign->date_result_sent.'</li>';
+						echo'<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
 					}else{
 						echo'<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
 					}
