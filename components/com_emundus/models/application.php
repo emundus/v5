@@ -43,6 +43,7 @@ class EmundusModelApplication extends JModel
 							'birthdate'		=> 'epd.birth_date as birthdate',
 							'profile'		=> 'esp.label as profile',
 							'photo'		=> 'eup.filename',
+							'registerDate'		=> 'eu.registerDate'
 							);
 		$last = end($params);
 		foreach($params as $param){
@@ -56,8 +57,10 @@ class EmundusModelApplication extends JModel
 				}
 			}
 		}
+		
 		$db = JFactory::getDBO();
-		$query = 'SELECT '.$select.' FROM #__users u 
+		$query = 'SELECT '.$select.' 
+		FROM #__users u 
 		LEFT JOIN #__emundus_users eu ON u.id=eu.user_id 
 		LEFT JOIN #__emundus_personal_detail epd ON epd.user=u.id
 		LEFT JOIN #__emundus_setup_profiles esp ON esp.id=eu.profile
@@ -65,6 +68,18 @@ class EmundusModelApplication extends JModel
 		WHERE u.id="'.$id.'"';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
+	}
+	
+	function getUserCampaigns($id){
+		$db = JFactory::getDBO();
+		$query = 'SELECT esc.label, esc.year, ecc.date_submitted, efg.result_sent, efg.date_result_sent 
+			FROM #__emundus_users eu
+			LEFT JOIN #__emundus_final_grade efg ON efg.student_id=eu.user_id
+			LEFT JOIN #__emundus_campaign_candidature ecc On ecc.applicant_id=eu.user_id
+			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
+			WHERE eu.user_id="'.$id.'" GROUP BY esc.id';
+			$db->setQuery( $query );
+			return $db->loadObjectList();
 	}
 	
 }

@@ -16,22 +16,25 @@
 		border-bottom:0;
 		text-align:center;
 	}
+	
+	#title {
+		display : inline;
+		font-weight:bold;
+	}
 	/* CENTER */
 		#center {
 			width:30%;
-		}
-		#center .content {
 			background-color: #F2E5F8;
-			min-height :140px;
-			padding-left : 5px;
+		}
+		#center .content li {
+			list-style-type: none;
+			margin :0;
+			padding:0;
 		}
 	/* LEFT */
 		#left {
 			width:30%;
-		}
-		#left .content {
 			background-color: #E5F5F8;
-			min-height :140px;
 		}
 		#left .content #photo {
 			float : left;
@@ -46,14 +49,18 @@
 			margin :0;
 			padding:0;
 		}
+		#left .content #photo #ID {
+			font: 14px Helvetica, Arial, sans-serif;
+			font-weight:bold;
+			text-align:center;
+			margin-top:4px;
+			border:2px solid #8E98A4;
+			border-radius: 10px 10px 10px 10px;
+		}
 	/* RIGHT */
 		#right {
+			background-color: #FBF6DC;
 			width:30%;
-		}
-		#right .content {
-			background-color: #F4C9C9;
-			min-height :140px;
-			padding-left : 5px;
 		}
 
 /* accordion */
@@ -98,57 +105,103 @@ JHTML::_('behavior.modal');
 						echo'<img src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations[0]->gender).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
 					}
 				}
+				echo '<div id="ID">'.$this->user_id.'</div>';
 				?>
 			</div>
 			<div id="informations">
 				<ul>
-					<li>
 					<?php
-						if(in_array ('lastname',$this->informations)){
-							echo JText::_('LASTNAME').' : '.$this->userInformations[0]->lastname;
-						}
+					if(in_array ('lastname',$this->informations)){
+						?>
+						<li>
+						<?php
+								echo '<div id="title">'.JText::_('LASTNAME').'</div> : '.$this->userInformations[0]->lastname;
+						?>
+						</li>
+						<?php 
+					}
+					if(in_array ('firstname',$this->informations)){
 					?>
-					</li>
-					<li>
-					<?php
-						if(in_array ('firstname',$this->informations)){
-							echo JText::_('FIRSTNAME').' : '.$this->userInformations[0]->firstname;
-						}
+						<li>
+						<?php
+							echo '<div id="title">'.JText::_('FIRSTNAME').'</div> : '.$this->userInformations[0]->firstname;
+						?>
+						</li>
+					<?php 
+					} 
+					if(in_array ('email',$this->informations)){
 					?>
-					</li>
-					<li>
-					<?php
-						if(in_array ('email',$this->informations)){
+						<li>
+						<?php
 							$email=$this->userInformations[0]->email;
 							echo'<a href="mailto:'.$email.'">'.$email.'</a>';
-						}
+						?>
+						</li>
+					<?php 
+					} 
+					if(in_array ('nationality',$this->informations)){
 					?>
-					</li>
-					<li>
-					<?php
-						if(in_array ('nationality',$this->informations)){
-							echo JText::_('NATIONALITY').' : '.$this->userInformations[0]->nationality;
-						}
+						<li>
+						<?php
+							echo '<div id="title">'.JText::_('NATIONALITY').'</div> : '.$this->userInformations[0]->nationality;
+						?>
+						</li>
+					<?php 
+					} 
+					if(in_array ('birthdate',$this->informations)){
 					?>
-					</li>
-					<li>
-					<?php
-						if(in_array ('birthdate',$this->informations)){
+						<li>
+						<?php
 							$birthdate = new DateTime($this->userInformations[0]->birthdate);
 							// $birthdate_explode = explode("/", $birthdate);
 							$today = new DateTime();
 							$age = $today->diff($birthdate);
-							echo JText::_('AGE').' : '.$age->format('%y');
-						}
-					?>
-					</li>
+							echo '<div id="title">'.JText::_('AGE').'</div> : '.$age->format('%y');
+						?>
+						</li>
+						<?php 
+					} 
+					if(in_array ('registerDate',$this->informations)){
+						?>
+						<li>
+						<?php
+							echo  '<div id="title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->userInformations[0]->registerDate));
+						?>
+						</li>
+						<?php 
+					}
+					if(in_array ('profile',$this->informations)){
+						?>
+						<li>
+						<?php
+							echo  '<div id="title">'.JText::_('PROFILE').'</div> : '.$this->userInformations[0]->profile;
+						?>
+						</li>
+						<?php 
+					} ?>
 				</ul>
 			</div>
 		</div>
 	</div>
 	<div id="center" class="column">
 		<div class="title"><?php echo JText::_('CAMPAIGN'); ?></div>
-		<div class="content">ffff</div>
+		<div class="content">
+			<?php
+			foreach($this->userCampaigns as $campaign){
+				echo'<ul>';
+					echo'<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$campaign->label.'</li>';
+					echo'<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
+					echo'<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.$campaign->date_submitted.'</li>';
+					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
+						echo'<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
+						echo'<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.$campaign->date_result_sent.'</li>';
+					}else{
+						echo'<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
+					}
+				echo'</ul>';
+			}
+			?>
+		</div>
 	</div>
 	<div id="right" class="column">
 		<div class="title"><?php echo JText::_('ACTIONS'); ?></div>
@@ -170,4 +223,21 @@ JHTML::_('behavior.modal');
 window.addEvent('domready', function(){
   new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
 });
+
+window.onload = function(){
+var column = document.getElementById('center');
+if (document.all) // ok I.E
+{
+H = column.currentStyle.height;
+}
+else // ok firefox.0.9.2 , pas mozilla.1.0 ni netscape.7.02
+{
+H = document.defaultView.getComputedStyle(column, null).height;
+}
+var left = document.getElementById('left');
+var right = document.getElementById('right');
+left.style.height=H;
+right.style.height=H;
+}
+
 </script>

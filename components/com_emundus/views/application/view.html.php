@@ -55,6 +55,7 @@ class EmundusViewApplication extends JView{
 							'nationality',
 							'birthdate',
 							'profile',
+							'registerDate',
 							'photo'
 							);
 		$this->assignRef('informations', $informations);
@@ -63,6 +64,9 @@ class EmundusViewApplication extends JView{
 		$application = $this->getModel('application');
 		$userInformations = $application->getUserInformations($user_id,$informations);
 		$this->assignRef('userInformations', $userInformations);
+		
+		$userCampaigns = $application->getUserCampaigns($user_id);
+		$this->assignRef('userCampaigns', $userCampaigns);
 		
         parent::display($tpl);
     }
