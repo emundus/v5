@@ -31,7 +31,7 @@ class EmundusControllerApplication extends JController
 	function export_zip() {
 		require_once('libraries/emundus/zip.php');
 		$db	= JFactory::getDBO();
-		$cid = JRequest::getVar('cid', null, 'POST', 'array', 0);
+		$cid = JRequest::getVar('uid', null, 'POST', 'array', 0);
 		JArrayHelper::toInteger( $cid, 0 );
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
@@ -45,18 +45,19 @@ class EmundusControllerApplication extends JController
 	/**
 	 * Delete an applicant attachment
 	 */
-	function delete_attachment() {
+	function delete_attachements() {
 		$mainframe = JFactory::getApplication();
 		$user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) die("You are not allowed to access to this action.");
+		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) die("You are not allowed to access to this action.");
 		
 		$mainframe = JFactory::getApplication();
 		$db	= JFactory::getDBO();
 		$aid = JRequest::getVar('aid', null, 'POST', 'array', 0);
 		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
+		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
 
-		$url = !empty($tmpl)?'index.php?option=com_emundus&view=application&aid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view=application&aid='.$user_id.'#attachments';
+		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'#attachments';
 		
 		JArrayHelper::toInteger( $aid, 0 );
 		if (count( $aid ) == 0) {
@@ -71,17 +72,18 @@ class EmundusControllerApplication extends JController
 			
 			$file = EMUNDUS_PATH_ABS.$user_id.DS.$filename;
 			if(!@unlink($file) && file_exists($file)) {
-				JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
-				$mainframe->redirect($url);
-				exit;
+				// JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
+				$this->setRedirect($url, JText::_('FILE_NOT_FOUND'), 'error');
+				return;
 			}
 
 			$query = 'DELETE FROM #__emundus_uploads WHERE id='.$id;
 			$db->setQuery( $query );
 			$db->query();
 		}
-		$mainframe->redirect($url);
-		exit;
+		
+		$this->setRedirect($url, JText::_('ATTACHEMENTS_DELETED'), 'message');
+		return;
 	}
 	
 	/*function set_comment(){
@@ -104,25 +106,29 @@ class EmundusControllerApplication extends JController
 		}
 	}*/
 	
-	function delete_comment(){
+	function delete_comments(){
 		$user = JFactory::getUser();
 		$db = JFactory::getDBO();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
+			$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid, JText::_('Only Coordinator can access this function.'), 'error');
 			return;
 		}
 		
-		$comment = JRequest::getVar('cid', null, 'POST', 'none',0);
+		$comments = JRequest::getVar('cid', null, 'POST', 'array',0);
 		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
-		if($user->id == $user_id){
+		$itemid = JRequest::getVar('itemid', null, 'POST', 'none', 0);
+		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
+		
+		foreach($comments as $comment){
 			$query = 'DELETE FROM #__emundus_comments 
-					WHERE id = '.$comment;
+					WHERE id = "'.$comment.'"';
 			$db->setQuery($query);
+			// die($query);
 			$db->Query() or die($db->getErrorMsg());
-                        echo JText::_('DELETE_COM_OK');
-		}else{
-			echo JText::_('DELETE_NOT_ALLOWED');
 		}
+		
+		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid, JText::_('DELETE_COM_OK'), 'message');
+		return;
 	}
 }

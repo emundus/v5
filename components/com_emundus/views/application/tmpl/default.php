@@ -182,7 +182,7 @@ JHTML::_('behavior.modal');
 		<div id="applicant">
 			<div class="title"><?php echo JText::_('APPLICANT'); ?></div>
 			<div class="content">
-				<input id="cb1526" type="checkbox" checked="" value="<?php echo $this->user_id; ?>" name="cid[]" style="display: none;">
+				<input id="cb1526" type="checkbox" checked="" value="<?php echo $this->user_id; ?>" name="uid[]" style="display: none;">
 				<div id="photo">
 					<?php 
 					if(in_array ('photo',$this->informations)){
