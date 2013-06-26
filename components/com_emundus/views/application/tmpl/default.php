@@ -18,7 +18,7 @@
 		text-align:center;
 	}
 	
-	#title {
+	.sub_title {
 		display : inline;
 		font-weight:bold;
 	}
@@ -31,7 +31,7 @@
 			margin :0;
 			padding:0;
 		}
-		#center .content #title-campaign {
+		#center .content .title-campaign {
 			border-bottom:1px solid #9DADC6;
 			font-weight: bold;
 			margin-bottom:2px;
@@ -119,7 +119,7 @@
 		margin: 0 0 4px 0;
 		padding: 3px 5px 1px;
 	}
-	#accordion #attachement_name {
+	#accordion .attachement_name {
 		color:#fff;
 		border-bottom:1px solid #8E98A4;
 		width:100%;
@@ -141,14 +141,29 @@
 		color:#555562;
 	}
 
-	#comment a{
+	.comment a{
 		text-decoration:none;
 		font: 14px Helvetica, Arial, sans-serif;
 		color:#555562;
 	}
-	#comment {
-		border-bottom:1px solid #8E98A4;
+	.comment {
+		-moz-border-radius:7px;
+		-webkit-border-radius:7px;
+		border-radius:7px;
+		background:#EEF0FB;
 	}
+	
+	.comment_content {
+		background:#E9ECFF;
+		border-bottom:1px solid #8E98A4;
+		padding-left:5px;
+		padding-bottom:5px;
+		font-size:16px;
+	}
+	.comment_details li{
+		display:inline;
+	}
+	
 /* tooltip */
 div#tooltip{
 	background-color: #EAF4F8;
@@ -202,7 +217,7 @@ JHTML::_('behavior.modal');
 							?>
 							<li>
 							<?php
-									echo '<div id="title">'.JText::_('LASTNAME').'</div> : '.$this->userInformations[0]->lastname;
+									echo '<div class="sub_title">'.JText::_('LASTNAME').'</div> : '.$this->userInformations[0]->lastname;
 							?>
 							</li>
 							<?php 
@@ -211,7 +226,7 @@ JHTML::_('behavior.modal');
 						?>
 							<li>
 							<?php
-								echo '<div id="title">'.JText::_('FIRSTNAME').'</div> : '.$this->userInformations[0]->firstname;
+								echo '<div class="sub_title">'.JText::_('FIRSTNAME').'</div> : '.$this->userInformations[0]->firstname;
 							?>
 							</li>
 						<?php 
@@ -230,7 +245,7 @@ JHTML::_('behavior.modal');
 						?>
 							<li>
 							<?php
-								echo '<div id="title">'.JText::_('NATIONALITY').'</div> : '.$this->userInformations[0]->nationality;
+								echo '<div class="sub_title">'.JText::_('NATIONALITY').'</div> : '.$this->userInformations[0]->nationality;
 							?>
 							</li>
 						<?php 
@@ -243,7 +258,7 @@ JHTML::_('behavior.modal');
 								// $birthdate_explode = explode("/", $birthdate);
 								$today = new DateTime();
 								$age = $today->diff($birthdate);
-								echo '<div id="title">'.JText::_('AGE').'</div> : '.$age->format('%y');
+								echo '<div class="sub_title">'.JText::_('AGE').'</div> : '.$age->format('%y');
 							?>
 							</li>
 							<?php 
@@ -252,7 +267,7 @@ JHTML::_('behavior.modal');
 							?>
 							<li>
 							<?php
-								echo  '<div id="title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->userInformations[0]->registerDate));
+								echo  '<div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->userInformations[0]->registerDate));
 							?>
 							</li>
 							<?php 
@@ -261,7 +276,7 @@ JHTML::_('behavior.modal');
 							?>
 							<li>
 							<?php
-								echo  '<div id="title">'.JText::_('PROFILE').'</div> : '.$this->userInformations[0]->profile;
+								echo  '<div class="sub_title">'.JText::_('PROFILE').'</div> : '.$this->userInformations[0]->profile;
 							?>
 							</li>
 							<?php 
@@ -329,24 +344,24 @@ JHTML::_('behavior.modal');
 			<?php
 			foreach($this->userCampaigns as $campaign){
 				$info= '<ul>';
-					$info.= '<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
+					$info.= '<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					if($campaign->submitted==1){
-						$info.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
-						$info.= '<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
 					}else{
-						$info.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
 					}
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
-						$info.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
-						$info.= '<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
 					}else{
-						$info.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
 					}
 				$info.= '</ul>';
 				?>
 				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
 				<?php
-					echo'<div id="title-campaign">'.$campaign->label.'</div>
+					echo'<div class="title-campaign">'.$campaign->label.'</div>
 				</a>';
 			}
 			?>
@@ -360,50 +375,47 @@ JHTML::_('behavior.modal');
 		<?php 
 		$i=0;
 		foreach($this->userAttachements as $attachement){
-			echo'<div id="attachement_name-'.$i.'">';
-				$info='<div id="hiddenMoreInfoAttachement-'.$i.'">';
-					$info.='<ul>';
-						$info.='<li><div id="title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
-						if(!empty($attachement->description)){
-							$info.='<li><div id="title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
-						}
-						$info.='<li><div id="title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
-						$info.='<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
-						$info.='<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
-					$info.='</ul>';
-				$info.='</div>';
-				
-				echo'<div id="attachement_name">';
-					echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachement->aid.'" />';
-					?>
-					<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
-					<?php
-						echo '<label for="aid_'.$i.'">'.$attachement->value.'</label>';
-					echo'</a>';
-				echo'</div>';
+			$info='<div id="hiddenMoreInfoAttachement-'.$i.'">';
+				$info.='<ul>';
+					$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
+					if(!empty($attachement->description)){
+						$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
+					}
+					$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
+					$info.='<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
+					$info.='<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
+				$info.='</ul>';
+			$info.='</div>';
+			
+			echo'<div class="attachement_name">';
+				echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachement->aid.'" />';
+				?>
+				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
+				<?php
+					echo '<label for="aid_'.$i.'">'.$attachement->value.'</label>';
+				echo'</a>';
 			echo'</div>';
 			$i++;
 		}
 		?>
 	</div>
-	<h2><input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/><?php echo JText::_('COMMENTS'); ?></h2>
+	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?></h2>
 	<div id="em_application_comments" class="content">
 		<?php
 		$i=0;
 		foreach($this->userComments as $comment){
-			$info='<ul>';
-				$info.='<li><div id="title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
-				$info.='<li><div id="title">'.JText::_('COMMENT_DATE').'</div> : '.date('Y-m-d',strtotime($comment->date)).'</li>';
-				$info.='<li><div id="title">'.JText::_('COMMENT_BY').'</div> : '.$comment->name.'</li>';
-			$info.='</ul>';
-			echo'<div id="comment">';
-				echo'<input type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
-				?>
-				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
-				<?php
-					echo '<label for="cid_'.$i.'">'.$comment->comment.'</label>';
-				echo'</a>
-			</div>';
+			
+			echo'<div class="comment">';
+				echo'<input style="display:none;" type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
+				echo '<div class="comment_content">'.$comment->comment.'</div>';
+				echo'<div class="comment_details">';
+				echo '<ul>';
+					echo '<li><div class="sub_title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
+					echo '<li><div class="sub_title"> - '.JText::_('COMMENT_DATE').'</div> '.date('Y-m-d',strtotime($comment->date)).'</li>';
+					echo '<li><div class="sub_title">'.JText::_('COMMENT_BY').'</div> '.$comment->name.'</li>';
+				echo '</ul>';
+				echo'</div>';
+			echo'</div>';
 			$i++;
 		}
 		?>
@@ -421,7 +433,6 @@ JHTML::_('behavior.modal');
 window.addEvent('domready', function(){
   new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
 });
-
 
 function tooltip(element, text){
 	var is_ie = ((navigator.userAgent.toLowerCase().indexOf("msie") != -1) && (navigator.userAgent.toLowerCase().indexOf("opera") == -1));
