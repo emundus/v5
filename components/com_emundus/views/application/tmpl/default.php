@@ -173,7 +173,7 @@ jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
 ?>
-
+<form action="" name="applicant_form" method="POST" onsubmit="return OnSubmitForm();" >
 <div id="identity_card">
 	<div id="left" class="column">
 		<div id="applicant">
@@ -408,6 +408,9 @@ JHTML::_('behavior.modal');
 	<h2><?php echo JText::_('APPLICATION_FORM'); ?></h2>
 	<div id="em_application_forms" class="content">cccc</div>
 </div>
+<input type="hidden" name="user_id" value="<?php echo $this->user_id; ?>" />
+<input type="hidden" value="" name="task">
+</form>
 <script>
 window.addEvent('domready', function(){
   new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
@@ -501,4 +504,61 @@ function check_all(id) {
 		}
 	}
 }
+function OnSubmitForm() { 
+	if(typeof document.pressed !== "undefined") { 
+		document.applicant_form.task.value = "";
+		var button_name=document.pressed.split('|');
+		switch(button_name[0]) {
+			case "export_zip": 
+				if (is_checked()) {
+					document.applicant_form.task.value = "export_zip";
+					document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				}
+				else alert("<?php echo JText::_("PLEASE_SELECT_APPLICANT"); ?>");
+			break;
+			case "export_to_xls": 
+				document.applicant_form.task.value = "transfert_view";
+				document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=transfert_view&v='.$view.'";
+			break;
+			case "custom_email": 
+				document.applicant_form.task.value = "customEmail";
+				document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=customEmail";
+			break;
+			case "applicant_email": 
+				document.applicant_form.task.value = "applicantEmail";
+				document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+			break;
+			case "default_email": 
+				if (confirm("<?php echo JText::_("CONFIRM_DEFAULT_EMAIL"); ?>")) {
+					document.applicant_form.task.value = "defaultEmail";
+					document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=defaultEmail";
+				} else 
+					return false;
+			break;
+			case "delete_attachements": 
+				document.applicant_form.task.value = "delete_attachements";
+				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS"); ?>")) {
+	        		document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case "delete_comments": 
+				document.applicant_form.task.value = "delete_comments";
+				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_COMMENTS"); ?>")) {
+	        		document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case "add_comment": 
+				document.applicant_form.task.value = "add_comment";
+				if (confirm("<?php echo JText::_("CONFIRM_ADD_COMMENT"); ?>")) {
+	        		document.applicant_form.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			default: return false;
+		}
+		return true;
+	}
+} 
 </script>
