@@ -159,6 +159,20 @@ function OnSubmitForm() {
 			 	} else 
 			 		return false;
 			break;
+			case \'delete_comments\': 
+				document.adminForm.task.value = "delete_comments";
+				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_COMMENTS").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'add_comment\': 
+				document.adminForm.task.value = "add_comment";
+				if (confirm("'.JText::_("ADD_COMMENT").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
 			default: return false;
 		}
 		return true;
