@@ -18,9 +18,8 @@ jimport( 'joomla.application.component.model' );
  
 class EmundusModelApplication extends JModel
 {
-	var $_total = null;
-	var $_pagination = null;
-	protected $data;
+	var $_user = null;
+	var $_db = null;
 
 	/**
 	 * Constructor
@@ -30,44 +29,51 @@ class EmundusModelApplication extends JModel
 	function __construct()
 	{
 		parent::__construct();
+		global $option;
 		
+		$mainframe = JFactory::getApplication();
+		
+		$this->_db = JFactory::getDBO();
+		$this->_user = JFactory::getUser();		
 	}
 	
-	function getUserInformations($id, $params){
-		$select='';
-		$informations = array('lastname'		=> 'eu.lastname',
-							'firstname'		=> 'eu.firstname',
-							'gender'		=> 'epd.gender',
-							'email'			=> 'u.email',
-							'nationality'	=> 'epd.nationality',
-							'birthdate'		=> 'epd.birth_date as birthdate',
-							'profile'		=> 'esp.label as profile',
-							'photo'		=> 'eup.filename',
-							'registerDate'		=> 'eu.registerDate'
-							);
-		$last = end($params);
-		foreach($params as $param){
-			foreach($informations as $nameI=>$valueI){
-				if($param==$nameI){
-					if($param==$last){
-						$select.= $valueI;
-					}else{
-						$select.= $valueI.', ';
-					}
-				}
-			}
+	function getApplicantInfos($aid, $param){
+		$query = 'SELECT '.implode(",", $param).' 
+				FROM #__users
+				LEFT JOIN #__emundus_users ON #__emundus_users.user_id=#__users.id
+				LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=#__users.id
+				LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+				LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=#__users.id AND #__emundus_uploads.attachment_id=10)
+				WHERE #__users.id='.$aid;
+		$this->_db->setQuery( $query );
+		$infos =  $this->_db->loadAssoc();
+//echo str_replace("#_", "jos", $query);
+//var_dump($infos);
+		return $infos;
+	}
+
+	function getApplicantDetails($aid, $ids){
+		$details = EmundusHelperList::getElementsDetailsByID($ids);
+
+		foreach ($details as $detail) {
+			$select[] = $detail->tab_name.'.'.$detail->element_name.' AS "'.$detail->element_id.'"';
 		}
-		
-		$db = JFactory::getDBO();
-		$query = 'SELECT '.$select.' 
-		FROM #__users u 
-		LEFT JOIN #__emundus_users eu ON u.id=eu.user_id 
-		LEFT JOIN #__emundus_personal_detail epd ON epd.user=u.id
-		LEFT JOIN #__emundus_setup_profiles esp ON esp.id=eu.profile
-		LEFT JOIN #__emundus_uploads eup ON eup.user_id=u.id AND eup.filename like "%_photo%"
-		WHERE u.id="'.$id.'"';
-		$db->setQuery( $query );
-		return $db->loadObjectList();
+
+		$query = 'SELECT '.implode(",", $select).' 
+				FROM #__users u 
+				LEFT JOIN #__emundus_users ON #__emundus_users.user_id=u.id
+				LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.user=u.id
+				LEFT JOIN #__emundus_setup_profiles ON #__emundus_setup_profiles.id=#__emundus_users.profile
+				LEFT JOIN #__emundus_uploads ON (#__emundus_uploads.user_id=u.id AND #__emundus_uploads.attachment_id=10)
+				WHERE u.id='.$aid;
+		$this->_db->setQuery( $query );
+		$values =  $this->_db->loadAssoc();
+
+		foreach ($details as $detail) {
+			$detail->element_value = $values[$detail->element_id];
+		}
+//var_dump($details);
+		return $details;
 	}
 	
 	function getUserCampaigns($id){
@@ -104,6 +110,12 @@ class EmundusModelApplication extends JModel
 				ORDER BY ec.date DESC';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
+	}
+
+	function deleteComment($id){ 
+		$query = 'DELETE #__emundus_comments WHERE id = '.$id;
+		$this->_db->setQuery($query);
+		$this->_db->Query() or die($this->_db->getErrorMsg());
 	}
 	
 }

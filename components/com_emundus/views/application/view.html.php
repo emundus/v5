@@ -26,8 +26,8 @@ class EmundusViewApplication extends JView{
 	
 	function __construct($config = array()){
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
@@ -42,36 +42,36 @@ class EmundusViewApplication extends JView{
         $document = JFactory::getDocument();
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 
-        //$current_user = JFactory::getUser();
-        //$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		// if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)) die("ACCESS_DENIED");
-				
-		$informations = array('lastname',
-							'firstname',
-							'gender',
-							'email',
-							'nationality',
-							'birthdate',
-							'profile',
-							'registerDate',
-							'photo'
-							);
-		$this->assignRef('informations', $informations);
-		$user_id = "1526";
-		$this->assignRef('user_id', $user_id);
+		
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
+		
+		$aid = JRequest::getVar('aid', null, 'GET', 'none', 0);
+		$student = JFactory::getUser($aid);
+
+		$this->assignRef('student', $student);
+
+		$profile = JUserHelper::getProfile($aid);
+		$this->assignRef('profile', $profile->emundus_profile);
+
 		$application = $this->getModel('application');
-		$userInformations = $application->getUserInformations($user_id,$informations);
+
+		$details_id = "82, 87, 89"; // list of Fabrik elements ID
+		$userDetails = $application->getApplicantDetails($aid, $details_id);
+		$this->assignRef('userDetails', $userDetails);
+
+		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender');
+		$userInformations = $application->getApplicantInfos($aid, $infos);
 		$this->assignRef('userInformations', $userInformations);
 		
-		$userCampaigns = $application->getUserCampaigns($user_id);
+		$userCampaigns = $application->getUserCampaigns($aid);
 		$this->assignRef('userCampaigns', $userCampaigns);
 		
-		$userAttachements = $application->getUserAttachements($user_id);
+		$userAttachements = $application->getUserAttachements($aid);
 		$this->assignRef('userAttachements', $userAttachements);
 		
-		$userComments = $application->getUsersComments($user_id);
+		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
 		
         parent::display($tpl);

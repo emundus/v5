@@ -200,7 +200,7 @@ span.attention {display:block;margin:15px 0;padding:8px 10px 8px 10px;background
 .m_esa {background-color:#FFF;}
 .module-title {font-size:110%;font-weight:bold;margin:0;padding:7px 15px 5px;}
 .module-body {text-align:right;}
-.color1 .module-title {/*background:url(../images/light2.png*/) 0 -204px repeat-x;border-bottom:1px solid #ddd;color:#fff; background-color:#0070B8;}
+.color1 .module-title {/*background:url(../images/light2.png) 0 -204px repeat-x;*/border-bottom:1px solid #ddd;color:#fff; background-color:#0070B8;}
 .color1 .module-body {border-top:1px solid #fff;}
 .color2 .module-title {background:url(../images/light2.png) 0 -136px repeat-x;border-bottom:1px solid #c3d9e1;color:#50646d;}
 .color2 .module-body {border-top:1px solid #dfeaef;}

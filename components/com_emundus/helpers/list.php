@@ -823,7 +823,7 @@ class EmundusHelperList{
 		$query .= ' WHERE concat_ws(".", tab.db_table_name, element.name) IN ('.$elements.')';
 		$db->setQuery($query);
 //echo str_replace("#_", "jos", $query);
-		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
+		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
 	}
 	
 	/*
@@ -842,7 +842,7 @@ class EmundusHelperList{
 				WHERE element.id IN ('.$elements.')';
 		$db->setQuery($query);
 //echo str_replace("#_", "jos", $query);
-		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels"));
+		return EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
 	}
 
 	/*
