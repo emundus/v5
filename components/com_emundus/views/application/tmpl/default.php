@@ -282,9 +282,10 @@ JHTML::_('behavior.modal');
 				$bulle= '<ul>';
 					$bulle.= '<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					if($campaign->submitted==1){
+						$bulle.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
 						$bulle.= '<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
 					}else{
-						$bulle.= '<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.JText::_('NOT_SUBMITTED').'</li>';
+						$bulle.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
 					}
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
 						$bulle.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
@@ -305,7 +306,7 @@ JHTML::_('behavior.modal');
 </div>
 
 <div id="accordion">
-	<h2><?php echo JText::_('ATTACHEMENTS'); ?></h2>
+	<h2><input type="checkbox" name="attachements" id="checkall1" onClick="check_all(this.id)"/><?php echo JText::_('ATTACHEMENTS'); ?></h2>
 	<div id="em_application_attachements" class="content">
 		<?php 
 		$i=0;
@@ -336,8 +337,7 @@ JHTML::_('behavior.modal');
 		}
 		?>
 	</div>
-	
-	<h2><?php echo JText::_('COMMENTS'); ?></h2>
+	<h2><input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/><?php echo JText::_('COMMENTS'); ?></h2>
 	<div id="em_application_comments" class="content">
 		<?php
 		foreach($this->userComments as $comment){
@@ -435,6 +435,23 @@ function infobulle(element, text){
 				document.body.removeChild(infobulle); //Suppression de la div provisoire
 				document.onmousemove = '';
 			}
+	}
+}
+
+function check_all(id) {
+	var checked = document.getElementById(id).checked;
+	var name = document.getElementById(id).name;
+	if(name=="attachements"){
+		var checkbox = document.getElementsByName('aid[]');
+		for (i=0;i< checkbox.length;i++){
+			checkbox[i].checked=checked;
+		}
+	}
+	if(name=="comments"){
+		var checkbox = document.getElementsByName('cid[]');
+		for (i=0;i< checkbox.length;i++){
+			checkbox[i].checked=checked;
+		}
 	}
 }
 </script>
