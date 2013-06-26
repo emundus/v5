@@ -111,7 +111,7 @@
 		width:100%;
 		/*max-width: 400px;*/
 	}
-	#accordion H2 {
+	#accordion h2 {
 		background: #6B7B95;
 		color:#fff;
 		cursor: pointer;
@@ -119,12 +119,12 @@
 		margin: 0 0 4px 0;
 		padding: 3px 5px 1px;
 	}
-	#accordion .attachement_name {
+	#accordion .attachment_name {
 		color:#fff;
 		border-bottom:1px solid #8E98A4;
 		width:100%;
 	}
-	#accordion #hiddenMoreInfoAttachement{
+	#accordion #hiddenMoreInfoAttachment{
 		visibility:hidden;
 		display:none;
 	}
@@ -135,7 +135,7 @@
 		padding-left:5px;
 	}
 
-	#em_application_attachements a{
+	#em_application_Attachments a{
 		text-decoration:none;
 		font: 14px Helvetica, Arial, sans-serif;
 		color:#555562;
@@ -197,90 +197,35 @@ JHTML::_('behavior.modal');
 		<div id="applicant">
 			<div class="title"><?php echo JText::_('APPLICANT'); ?></div>
 			<div class="content">
-				<input id="cb1526" type="checkbox" checked="" value="<?php echo $this->user_id; ?>" name="uid[]" style="display: none;">
+				<input id="cb<?php echo $this->student->id; ?>" type="checkbox" checked="" value="<?php echo $this->student->id; ?>" name="uid[]" style="display: none;">
 				<div id="photo">
 					<?php 
-					if(in_array ('photo',$this->informations)){
-						if(!empty($this->userInformations[0]->filename)){
-							echo'<img id="image" src="'.JURI::Base().'images/emundus/files/'.$this->user_id.'/'.$this->userInformations[0]->filename.'" width="50%">'; 
-						}else if(!empty($this->userInformations[0]->gender)){
-							echo'<img id="image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations[0]->gender).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
+						if(!empty($this->userInformations["filename"])) {
+							echo'<img id="image" src="'.JURI::Base().'images/emundus/files/'.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">'; 
+						}else if(!empty($this->userInformations["gender"])){
+							echo'<img id="image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
 						}
-					}
-					echo '<div id="ID">'.$this->user_id.'</div>';
+					echo '<div id="ID">'.$this->student->id.'</div>';
 					?>
 				</div>
 				<div id="informations">
 					<ul>
-						<?php
-						if(in_array ('lastname',$this->informations)){
-							?>
-							<li>
-							<?php
-									echo '<div class="sub_title">'.JText::_('LASTNAME').'</div> : '.$this->userInformations[0]->lastname;
-							?>
-							</li>
-							<?php 
+					<?php
+						foreach ($this->profile as $key => $value) {
+							echo '<li><div id="'.$key.'" class="sub_title">'.JText::_(strtoupper($key)).'</div> : '.$value.'</li>';
 						}
-						if(in_array ('firstname',$this->informations)){
-						?>
-							<li>
-							<?php
-								echo '<div class="sub_title">'.JText::_('FIRSTNAME').'</div> : '.$this->userInformations[0]->firstname;
-							?>
-							</li>
-						<?php 
-						} 
-						if(in_array ('email',$this->informations)){
-						?>
-							<li>
-							<?php
-								$email=$this->userInformations[0]->email;
-								echo'<a href="mailto:'.$email.'">'.$email.'</a>';
-							?>
-							</li>
-						<?php 
-						} 
-						if(in_array ('nationality',$this->informations)){
-						?>
-							<li>
-							<?php
-								echo '<div class="sub_title">'.JText::_('NATIONALITY').'</div> : '.$this->userInformations[0]->nationality;
-							?>
-							</li>
-						<?php 
-						} 
-						if(in_array ('birthdate',$this->informations)){
-						?>
-							<li>
-							<?php
-								$birthdate = new DateTime($this->userInformations[0]->birthdate);
-								// $birthdate_explode = explode("/", $birthdate);
-								$today = new DateTime();
-								$age = $today->diff($birthdate);
-								echo '<div class="sub_title">'.JText::_('AGE').'</div> : '.$age->format('%y');
-							?>
-							</li>
-							<?php 
-						} 
-						if(in_array ('registerDate',$this->informations)){
-							?>
-							<li>
-							<?php
-								echo  '<div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->userInformations[0]->registerDate));
-							?>
-							</li>
-							<?php 
+						foreach ($this->userDetails as $details) {
+							echo '<li><div id="'.$details->element_name.'" class="sub_title">'.$details->element_label.'</div> : '.$details->element_value.'</li>';
 						}
-						if(in_array ('profile',$this->informations)){
-							?>
-							<li>
-							<?php
-								echo  '<div class="sub_title">'.JText::_('PROFILE').'</div> : '.$this->userInformations[0]->profile;
-							?>
-							</li>
-							<?php 
-						} ?>
+							echo '<li><a href="mailto:'.$this->student->email.'">'.$this->student->email.'</a></li>';
+							$birthdate = new DateTime($this->userInformations['birthdate']);
+							$today = new DateTime();
+							$age = $today->diff($birthdate);
+							echo '<li><div class="sub_title">'.JText::_('AGE').'</div> : '.$age->format('%y').'</li>';
+							echo '<li><div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->student->registerDate)).'</li>';
+							echo '<li><div class="sub_title">'.JText::_('LAST_VISIT').'</div> : '.date('Y-m-d',strtotime($this->student->lastVisitDate)).'</li>';
+							echo '<li><div class="sub_title">'.JText::_('PROFILE').'</div> : '.$this->userInformations['profile'].'</li>';
+					?>
 					</ul>
 				</div>
 			</div>
@@ -295,7 +240,7 @@ JHTML::_('behavior.modal');
 					?>
 					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 					<?php
-					echo'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user_id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user_id.'&student_id='. $this->user_id.'&tmpl=component">
+					echo'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
 					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'"  width="5%" />
 					</a>
 				</li>';
@@ -313,7 +258,7 @@ JHTML::_('behavior.modal');
 					?>
 					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
 					<?php
-					echo'href="index.php?option=com_emundus&task=pdf&user='.$this->user_id.'" class="appsent" target="_blank">
+					echo'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank">
 						<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" width="5%"/>
 					</a>
 				</li>'; 
@@ -330,7 +275,7 @@ JHTML::_('behavior.modal');
 				echo'</li>';
 				echo'<li>';
 					?>
-					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHEMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachements" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachements.png" width="5%"/>
+					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="5%"/>
 					<?php
 				echo'</li>';
 				echo'</ul>';
@@ -370,61 +315,66 @@ JHTML::_('behavior.modal');
 </div>
 
 <div id="accordion">
-	<h2><input type="checkbox" name="attachements" id="checkall1" onClick="check_all(this.id)"/><?php echo JText::_('ATTACHEMENTS'); ?></h2>
-	<div id="em_application_attachements" class="content">
-		<?php 
-		$i=0;
-		foreach($this->userAttachements as $attachement){
-			$info='<div id="hiddenMoreInfoAttachement-'.$i.'">';
-				$info.='<ul>';
-					$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
-					if(!empty($attachement->description)){
-						$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
-					}
-					$info.='<li><div class="sub_title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
-					$info.='<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
-					$info.='<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
-				$info.='</ul>';
-			$info.='</div>';
-			
-			echo'<div class="attachement_name">';
-				echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachement->aid.'" />';
-				?>
-				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
-				<?php
-					echo '<label for="aid_'.$i.'">'.$attachement->value.'</label>';
-				echo'</a>';
-			echo'</div>';
-			$i++;
-		}
+	<h2><input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><?php echo JText::_('ATTACHMENTS'); ?></h2>
+	<div id="em_application_attachments" class="content">
+		<?php
+		if(count($this->userAttachments) > 0) { 
+			$i=0;
+			foreach($this->userAttachments as $attachment){
+				$info='<div id="hiddenMoreInfoAttachment-'.$i.'">';
+					$info.='<ul>';
+						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_FILENAME').'</div> : '.$attachment->filename.'</li>';
+						if(!empty($attachment->description)){
+							$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DESCRIPTION').'</div> : '.$attachment->description.'</li>';
+						}
+						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachment->timedate)).'</li>';
+						$info.='<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachment->campaign_label.'</li>';
+						$info.='<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachment->year.'</li>';
+					$info.='</ul>';
+				$info.='</div>';
+				
+				echo'<div class="attachment_name">';
+					echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachment->aid.'" />';
+					?>
+					<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
+					<?php
+						echo '<label for="aid_'.$i.'">'.$attachment->value.'</label>';
+					echo'</a> ';
+					//echo '<input type="image" onMouseOver="tooltip(this, \'<div>'.JText::_('DELETE_ATTACHMENT').'</div>\');" onClick="document.pressed=this.name" name="delete_attachments" src="'.JURI::Base().'/media/com_emundus/images/icones/delete_attachments.png" width="5%" />';
+				echo'</div>';
+				$i++;
+			}
+		} else echo JText::_('NO_ATTACHMENT');
 		?>
 	</div>
 	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?></h2>
 	<div id="em_application_comments" class="content">
 		<?php
-		$i=0;
-		foreach($this->userComments as $comment){
-			
-			echo'<div class="comment">';
-				echo'<input style="display:none;" type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
-				echo '<div class="comment_content">'.$comment->comment.'</div>';
-				echo'<div class="comment_details">';
-				echo '<ul>';
-					echo '<li><div class="sub_title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
-					echo '<li><div class="sub_title"> - '.JText::_('COMMENT_DATE').'</div> '.date('Y-m-d',strtotime($comment->date)).'</li>';
-					echo '<li><div class="sub_title">'.JText::_('COMMENT_BY').'</div> '.$comment->name.'</li>';
-				echo '</ul>';
+		if(count($this->userComments) > 0) { 
+			$i=0;
+			foreach($this->userComments as $comment){
+				
+				echo'<div class="comment">';
+					echo'<input style="display:none;" type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
+					echo '<div class="comment_content">'.$comment->comment.'</div>';
+					echo'<div class="comment_details">';
+					echo '<ul>';
+						echo '<li><div class="sub_title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
+						echo '<li><div class="sub_title"> - '.JText::_('COMMENT_DATE').'</div> '.date('Y-m-d',strtotime($comment->date)).'</li>';
+						echo '<li><div class="sub_title">'.JText::_('COMMENT_BY').'</div> '.$comment->name.'</li>';
+					echo '</ul>';
+					echo'</div>';
 				echo'</div>';
-			echo'</div>';
-			$i++;
-		}
+				$i++;
+			}
+		} else echo JText::_('NO_COMMENT');
 		?>
 	</div>
 	
 	<h2><?php echo JText::_('APPLICATION_FORM'); ?></h2>
 	<div id="em_application_forms" class="content">cccc</div>
 </div>
-<input type="hidden" name="user_id" value="<?php echo $this->user_id; ?>" />
+<input type="hidden" name="user_id" value="<?php echo $this->student->id; ?>" />
 <input type="hidden" value="" name="task">
 <input type="hidden" value="<?php echo $itemid; ?>" name="itemid">
 <input type="hidden" value="<?php echo $view; ?>" name="view">
@@ -508,7 +458,7 @@ function tooltip(element, text){
 function check_all(id) {
 	var checked = document.getElementById(id).checked;
 	var name = document.getElementById(id).name;
-	if(name=="attachements"){
+	if(name=="attachments"){
 		var checkbox = document.getElementsByName('aid[]');
 		for (i=0;i< checkbox.length;i++){
 			checkbox[i].checked=checked;
@@ -549,10 +499,10 @@ function OnSubmitForm() {
 				} else 
 					return false;
 			break;
-			case "delete_attachements": 
-				document.applicant_form.task.value = "delete_attachements";
-				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS"); ?>")) {
-	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_attachements&Itemid=<?php echo $itemid; ?>";
+			case "delete_attachments": 
+				document.applicant_form.task.value = "delete_attachments";
+				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_ATTACHMENTS"); ?>")) {
+	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_attachments&Itemid=<?php echo $itemid; ?>";
 			 	} else 
 			 		return false;
 			break;

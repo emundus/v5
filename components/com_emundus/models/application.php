@@ -89,7 +89,7 @@ class EmundusModelApplication extends JModel
 			return $db->loadObjectList();
 	}
 	
-	function getUserAttachements($id){
+	function getUserAttachments($id){
 		$db = JFactory::getDBO();
 		$query = 'SELECT upload.id AS aid, attachment.id, upload.filename, upload.description, attachment.value, upload.timedate, campaign.label as campaign_label, campaign.year  
             FROM #__emundus_uploads AS upload

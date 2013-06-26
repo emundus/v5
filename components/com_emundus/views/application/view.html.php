@@ -47,7 +47,7 @@ class EmundusViewApplication extends JView{
 		
 		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
 		
-		$aid = JRequest::getVar('aid', null, 'GET', 'none', 0);
+		$aid = JRequest::getVar('sid', null, 'GET', 'none', 0);
 		$student = JFactory::getUser($aid);
 
 		$this->assignRef('student', $student);
@@ -61,15 +61,15 @@ class EmundusViewApplication extends JView{
 		$userDetails = $application->getApplicantDetails($aid, $details_id);
 		$this->assignRef('userDetails', $userDetails);
 
-		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender');
+		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate');
 		$userInformations = $application->getApplicantInfos($aid, $infos);
 		$this->assignRef('userInformations', $userInformations);
 		
 		$userCampaigns = $application->getUserCampaigns($aid);
 		$this->assignRef('userCampaigns', $userCampaigns);
 		
-		$userAttachements = $application->getUserAttachements($aid);
-		$this->assignRef('userAttachements', $userAttachements);
+		$userAttachments = $application->getUserAttachments($aid);
+		$this->assignRef('userAttachments', $userAttachments);
 		
 		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
