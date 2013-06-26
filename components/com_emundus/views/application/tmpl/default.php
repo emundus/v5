@@ -96,6 +96,13 @@
 			#actions span{
 				display:inline-block;
 			}
+			#actions .content li {
+				list-style-type: none;
+				margin :0;
+				padding:0;
+				display:inline;
+				margin-right:5px;
+			}
 	
 /* ACCORDION */
 	#accordion  {
@@ -263,13 +270,46 @@ JHTML::_('behavior.modal');
 			<div class="title"><?php echo JText::_('ACTIONS'); ?></div>
 			<div class="content">
 				<?php
-				echo '<span class="editlinktip hasTip" title="'.JText::_('UPLOAD_FILE_FOR_STUDENT').'::'.JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK').'">';
-				echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user_id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user_id.'&student_id='. $this->user_id.'&tmpl=component"><img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_16x16.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="16" height="16" align="bottom" /></a></span>';
+				echo '<ul>';
+				echo '<li>';
+					echo '<a ';
+					?>
+					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
+					<?php
+					echo'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user_id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user_id.'&student_id='. $this->user_id.'&tmpl=component">
+					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'"  width="5%" />
+					</a>
+				</li>';
 				
-				echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="32"></span><br />';
+				echo '<li>
+					<input type="image" ';
+					?>
+					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
+					<?php
+					echo'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="5%">
+				</li>';
 				
-				echo '<span class="editlinktip hasTip" title="'.JText::_('DOWNLOAD_APPLICATION_FORM').'::">';
-				echo '<a href="index.php?option=com_emundus&task=pdf&user='.$this->user_id.'" class="appsent" target="_blank"><img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" /></a></span>'; 
+				echo '<li>';
+					echo '<a ';
+					?>
+					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
+					<?php
+					echo'href="index.php?option=com_emundus&task=pdf&user='.$this->user_id.'" class="appsent" target="_blank">
+						<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" width="5%"/>
+					</a>
+				</li>'; 
+				
+				echo'<li>';
+					?>
+					<input type="image" onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="5%"/>
+					<?php
+				echo'</li>';
+				echo'<li>';
+					?>
+					<input type="image" onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHEMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachements" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachements.png" width="5%"/>
+					<?php
+				echo'</li>';
+				echo'</ul>';
 				?>
 			</div>
 		</div>
