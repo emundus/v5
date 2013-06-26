@@ -152,6 +152,13 @@ function OnSubmitForm() {
 			 	} else 
 			 		return false;
 			break;
+			case \'delete_attachements\': 
+				document.adminForm.task.value = "delete_attachements";
+				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
 			default: return false;
 		}
 		return true;

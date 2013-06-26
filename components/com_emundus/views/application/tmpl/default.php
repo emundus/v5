@@ -149,8 +149,8 @@
 	#comment {
 		border-bottom:1px solid #8E98A4;
 	}
-/* INFOBULLE */
-div#infobulle{
+/* tooltip */
+div#tooltip{
 	background-color: #EAF4F8;
 	border: 1px solid #555555;
 	width: auto;
@@ -158,7 +158,7 @@ div#infobulle{
 	text-align: justify;
 	font-size: 140%;
 }
-div#infobulle li {
+div#tooltip li {
 	list-style-type: none;
 	margin :0;
 	padding:0;
@@ -274,7 +274,7 @@ JHTML::_('behavior.modal');
 				echo '<li>';
 					echo '<a ';
 					?>
-					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
+					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 					<?php
 					echo'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->user_id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->user_id.'&student_id='. $this->user_id.'&tmpl=component">
 					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'"  width="5%" />
@@ -284,7 +284,7 @@ JHTML::_('behavior.modal');
 				echo '<li>
 					<input type="image" ';
 					?>
-					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
+					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 					<?php
 					echo'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="5%">
 				</li>';
@@ -292,7 +292,7 @@ JHTML::_('behavior.modal');
 				echo '<li>';
 					echo '<a ';
 					?>
-					onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
+					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
 					<?php
 					echo'href="index.php?option=com_emundus&task=pdf&user='.$this->user_id.'" class="appsent" target="_blank">
 						<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" width="5%"/>
@@ -301,12 +301,17 @@ JHTML::_('behavior.modal');
 				
 				echo'<li>';
 					?>
-					<input type="image" onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="5%"/>
+					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="5%"/>
 					<?php
 				echo'</li>';
 				echo'<li>';
 					?>
-					<input type="image" onMouseOver="infobulle(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHEMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachements" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachements.png" width="5%"/>
+					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="5%"/>
+					<?php
+				echo'</li>';
+				echo'<li>';
+					?>
+					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHEMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachements" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachements.png" width="5%"/>
 					<?php
 				echo'</li>';
 				echo'</ul>';
@@ -319,23 +324,23 @@ JHTML::_('behavior.modal');
 		<div class="content">
 			<?php
 			foreach($this->userCampaigns as $campaign){
-				$bulle= '<ul>';
-					$bulle.= '<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
+				$info= '<ul>';
+					$info.= '<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					if($campaign->submitted==1){
-						$bulle.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
-						$bulle.= '<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
+						$info.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
+						$info.= '<li><div id="title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
 					}else{
-						$bulle.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
+						$info.= '<li><div id="title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
 					}
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
-						$bulle.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
-						$bulle.= '<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
+						$info.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
+						$info.= '<li><div id="title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
 					}else{
-						$bulle.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
+						$info.= '<li><div id="title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
 					}
-				$bulle.= '</ul>';
+				$info.= '</ul>';
 				?>
-				<a onMouseOver="infobulle(this, '<?php echo htmlentities($bulle); ?>');" href="#" title="" >
+				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
 				<?php
 					echo'<div id="title-campaign">'.$campaign->label.'</div>
 				</a>';
@@ -352,24 +357,24 @@ JHTML::_('behavior.modal');
 		$i=0;
 		foreach($this->userAttachements as $attachement){
 			echo'<div id="attachement_name-'.$i.'">';
-				$bulle='<div id="hiddenMoreInfoAttachement-'.$i.'">';
-					$bulle.='<ul>';
-						$bulle.='<li><div id="title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
+				$info='<div id="hiddenMoreInfoAttachement-'.$i.'">';
+					$info.='<ul>';
+						$info.='<li><div id="title">'.JText::_('ATTACHEMENT_FILENAME').'</div> : '.$attachement->filename.'</li>';
 						if(!empty($attachement->description)){
-							$bulle.='<li><div id="title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
+							$info.='<li><div id="title">'.JText::_('ATTACHEMENT_DESCRIPTION').'</div> : '.$attachement->description.'</li>';
 						}
-						$bulle.='<li><div id="title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
-						$bulle.='<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
-						$bulle.='<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
-					$bulle.='</ul>';
-				$bulle.='</div>';
+						$info.='<li><div id="title">'.JText::_('ATTACHEMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachement->timedate)).'</li>';
+						$info.='<li><div id="title">'.JText::_('CAMPAIGN').'</div> : '.$attachement->campaign_label.'</li>';
+						$info.='<li><div id="title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachement->year.'</li>';
+					$info.='</ul>';
+				$info.='</div>';
 				
 				echo'<div id="attachement_name">';
-					echo'<input type="checkbox" name="aid[]" value="'.$attachement->aid.'" />';
+					echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachement->aid.'" />';
 					?>
-					<a onMouseOver="infobulle(this, '<?php echo htmlentities($bulle); ?>');" href="#" title="" >
+					<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
 					<?php
-						echo $attachement->value;
+						echo '<label for="aid_'.$i.'">'.$attachement->value.'</label>';
 					echo'</a>';
 				echo'</div>';
 			echo'</div>';
@@ -380,20 +385,22 @@ JHTML::_('behavior.modal');
 	<h2><input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/><?php echo JText::_('COMMENTS'); ?></h2>
 	<div id="em_application_comments" class="content">
 		<?php
+		$i=0;
 		foreach($this->userComments as $comment){
-			$bulle='<ul>';
-				$bulle.='<li><div id="title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
-				$bulle.='<li><div id="title">'.JText::_('COMMENT_DATE').'</div> : '.date('Y-m-d',strtotime($comment->date)).'</li>';
-				$bulle.='<li><div id="title">'.JText::_('COMMENT_BY').'</div> : '.$comment->name.'</li>';
-			$bulle.='</ul>';
+			$info='<ul>';
+				$info.='<li><div id="title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
+				$info.='<li><div id="title">'.JText::_('COMMENT_DATE').'</div> : '.date('Y-m-d',strtotime($comment->date)).'</li>';
+				$info.='<li><div id="title">'.JText::_('COMMENT_BY').'</div> : '.$comment->name.'</li>';
+			$info.='</ul>';
 			echo'<div id="comment">';
-				echo'<input type="checkbox" name="cid[]" value="'.$comment->id.'" />';
+				echo'<input type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
 				?>
-				<a onMouseOver="infobulle(this, '<?php echo htmlentities($bulle); ?>');" href="#" title="" >
+				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
 				<?php
-					echo $comment->comment;
+					echo '<label for="cid_'.$i.'">'.$comment->comment.'</label>';
 				echo'</a>
 			</div>';
+			$i++;
 		}
 		?>
 	</div>
@@ -407,22 +414,22 @@ window.addEvent('domready', function(){
 });
 
 
-function infobulle(element, text){
+function tooltip(element, text){
 	var is_ie = ((navigator.userAgent.toLowerCase().indexOf("msie") != -1) && (navigator.userAgent.toLowerCase().indexOf("opera") == -1));
 	
 	//Suppression du title de l'élément pour éviter une superposition
 	element.title = '';
 	
 	//Création d'une div provisoire
-	var infobulle = document.createElement('div');
-	infobulle.innerHTML = text;
-	infobulle.id = 'infobulle';
-	infobulle.style.display = 'none';
-	infobulle.style.opacity = '0';
-	infobulle.style.filter = 'alpha(opacity=0)';
-	document.body.appendChild(infobulle);
+	var tooltip = document.createElement('div');
+	tooltip.innerHTML = text;
+	tooltip.id = 'tooltip';
+	tooltip.style.display = 'none';
+	tooltip.style.opacity = '0';
+	tooltip.style.filter = 'alpha(opacity=0)';
+	document.body.appendChild(tooltip);
 	
-	infobulle.style.position = 'absolute';
+	tooltip.style.position = 'absolute';
 	document.onmousemove = function(e){
 		x = (!is_ie ? e.pageX : event.x+document.documentElement.scrollLeft)+15;
 		y = (!is_ie ? e.pageY : event.y+document.documentElement.scrollTop)+15;
@@ -432,13 +439,13 @@ function infobulle(element, text){
 		var scrollLeft = document.documentElement.scrollLeft;
 		var scrollTop = document.documentElement.scrollTop;
 		
-		//Calcul des dimensions de l'infobulle
-		infobulle.style.display = '';
-		var infoWidth = infobulle.offsetWidth;
-		var infoHeight = infobulle.offsetHeight;
-		infobulle.style.display = 'none';
+		//Calcul des dimensions de l'tooltip
+		tooltip.style.display = '';
+		var infoWidth = tooltip.offsetWidth;
+		var infoHeight = tooltip.offsetHeight;
+		tooltip.style.display = 'none';
 		
-		/*On vérifie que l'infobulle ne sorte pas de la fenêtre*/
+		/*On vérifie que l'tooltip ne sorte pas de la fenêtre*/
 		if((x+infoWidth) > (windowWidth+scrollLeft)){
 			x = (!is_ie ? e.pageX : event.x+document.documentElement.scrollLeft)-infoWidth-5;
 		}
@@ -446,14 +453,14 @@ function infobulle(element, text){
 			y = (!is_ie ? e.pageY : event.y+document.documentElement.scrollTop)-infoHeight-5;
 		}
 		
-		infobulle.style.left = x+'px';
-		infobulle.style.top = y+'px';
-		infobulle.style.display = '';
+		tooltip.style.left = x+'px';
+		tooltip.style.top = y+'px';
+		tooltip.style.display = '';
 	}
 
 	for(i=0; i<=100; i+=10){
 		var time = ((i/20)*30);
-		setTimeout('opacity('+i+', \'infobulle\');', time);
+		setTimeout('opacity('+i+', \'tooltip\');', time);
 	}
 
 
@@ -462,17 +469,17 @@ function infobulle(element, text){
 		for(i=0; i<=100; i+=10){
 			var time = ((i/20)*30);
 			var opacity = (100-i);
-			setTimeout('opacity('+opacity+', \'infobulle\', 1);', time);
+			setTimeout('opacity('+opacity+', \'tooltip\', 1);', time);
 		}
 	};
 	
 	//Fonction servant à faire varier l'opacité
 	opacity = function(opacity, id, close){
-			var infobulle = document.getElementById(id);
-			infobulle.style.opacity = (opacity/100);
-			infobulle.style.filter = 'alpha(opacity='+opacity+')';
+			var tooltip = document.getElementById(id);
+			tooltip.style.opacity = (opacity/100);
+			tooltip.style.filter = 'alpha(opacity='+opacity+')';
 			if(opacity == 0 && close){
-				document.body.removeChild(infobulle); //Suppression de la div provisoire
+				document.body.removeChild(tooltip); //Suppression de la div provisoire
 				document.onmousemove = '';
 			}
 	}
