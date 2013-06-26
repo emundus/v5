@@ -13,7 +13,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
  * Custom report controller
  * @package		Emundus
  */
-class EmundusControllerApplication_form extends JController
+class EmundusControllerApplication extends JController
 {
 	function display() {
 		// Set a default view if none exists
@@ -31,14 +31,14 @@ class EmundusControllerApplication_form extends JController
 	function export_zip() {
 		require_once('libraries/emundus/zip.php');
 		$db	= JFactory::getDBO();
-		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
-		JArrayHelper::toInteger( $user_id, 0 );
-		if (count( $user_id ) == 0) {
+		$cid = JRequest::getVar('cid', null, 'POST', 'array', 0);
+		JArrayHelper::toInteger( $cid, 0 );
+		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			exit;
 		}
-		zip_file($user_id);
+		zip_file($cid);
 		exit;
 	}
 
