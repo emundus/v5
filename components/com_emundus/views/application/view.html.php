@@ -1,7 +1,7 @@
 <?php
 /**
- * @package    eMundus
- * @subpackage Components
+ * @package    Joomla
+ * @subpackage emundus
  *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
@@ -29,8 +29,9 @@ class EmundusViewApplication extends JView{
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -51,6 +52,8 @@ class EmundusViewApplication extends JView{
 		$student = JFactory::getUser($aid);
 
 		$this->assignRef('student', $student);
+		$this->assignRef('current_user', $this->_user);
+
 
 		$profile = JUserHelper::getProfile($aid);
 		$this->assignRef('profile', $profile->emundus_profile);
@@ -73,7 +76,20 @@ class EmundusViewApplication extends JView{
 		
 		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
-		
+
+		$formsProgress = $application->getFormsProgress($aid, 9);
+		$this->assignRef('formsProgress', $formsProgress);
+
+		$attachmentsProgress = $application->getAttachmentsProgress($aid, 9);
+		$this->assignRef('attachmentsProgress', $attachmentsProgress);
+
+		$logged = $application->getlogged($aid);
+		$this->assignRef('logged', $logged);
+
+		$forms = $application->getforms($aid);
+		$this->assignRef('forms', $forms);
+
+		//var_dump($logged);
         parent::display($tpl);
     }
 }

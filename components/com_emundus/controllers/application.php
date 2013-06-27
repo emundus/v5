@@ -49,15 +49,16 @@ class EmundusControllerApplication extends JController
 		$mainframe = JFactory::getApplication();
 		$user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) die("You are not allowed to access to this action.");
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 		
 		$mainframe = JFactory::getApplication();
 		$db	= JFactory::getDBO();
 		$aid = JRequest::getVar('aid', null, 'POST', 'array', 0);
+	die(print_r($aid));
 		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
 		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
 
-		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'#attachments';
+		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'#attachments';
 		
 		JArrayHelper::toInteger( $aid, 0 );
 		if (count( $aid ) == 0) {

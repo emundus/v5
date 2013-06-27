@@ -4,7 +4,7 @@
 		position: relative;
 		float: left;
 		margin-bottom : 10px;
-		min-height:310px;
+		/*min-height:310px;*/
 	}
 	
 	.title {
@@ -181,11 +181,10 @@ div#tooltip li {
 </style>
 <?php  
 defined('_JEXEC') or die('Restricted access'); 
-$current_user = & JFactory::getUser();
-// if(!EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id)) die("ACCESS_DENIED");
 
-$itemid=JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$view=JRequest::getVar('view', null, 'GET', 'none',0);
+$itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$view 		= JRequest::getVar('view', null, 'GET', 'none',0);
+$task 		= JRequest::getVar('task', null, 'GET', 'none',0);
  
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
@@ -201,7 +200,7 @@ JHTML::_('behavior.modal');
 				<div id="photo">
 					<?php 
 						if(!empty($this->userInformations["filename"])) {
-							echo'<img id="image" src="'.JURI::Base().'images/emundus/files/'.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">'; 
+							echo'<img id="image" src="'.JURI::Base().EMUNDUS_PATH_REL.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">'; 
 						}else if(!empty($this->userInformations["gender"])){
 							echo'<img id="image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
 						}
@@ -215,71 +214,27 @@ JHTML::_('behavior.modal');
 							echo '<li><div id="'.$key.'" class="sub_title">'.JText::_(strtoupper($key)).'</div> : '.$value.'</li>';
 						}
 						foreach ($this->userDetails as $details) {
-							echo '<li><div id="'.$details->element_name.'" class="sub_title">'.$details->element_label.'</div> : '.$details->element_value.'</li>';
+							//$params = json_decode($details->params); print_r($params);
+							if ($details->element_plugin == "date") {
+								$params = json_decode($details->params);
+								$value = strftime($params->date_form_format, strtotime($details->element_value));
+								if ($details->element_name == "birth_date") {
+									$birthdate = new DateTime($this->userInformations['birthdate']);
+									$today = new DateTime();
+									$age = $today->diff($birthdate);
+									$value .= ' ('.$age->format('%y').' '.JText::_('YEARS_OLD').')';
+								}
+							} else
+								$value = $details->element_value;
+							echo '<li><div id="'.$details->element_name.'" class="sub_title">'.$details->element_label.'</div> : '.$value.'</li>';
 						}
 							echo '<li><a href="mailto:'.$this->student->email.'">'.$this->student->email.'</a></li>';
-							$birthdate = new DateTime($this->userInformations['birthdate']);
-							$today = new DateTime();
-							$age = $today->diff($birthdate);
-							echo '<li><div class="sub_title">'.JText::_('AGE').'</div> : '.$age->format('%y').'</li>';
-							echo '<li><div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date('Y-m-d',strtotime($this->student->registerDate)).'</li>';
-							echo '<li><div class="sub_title">'.JText::_('LAST_VISIT').'</div> : '.date('Y-m-d',strtotime($this->student->lastVisitDate)).'</li>';
+							/*echo '<li><div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date(JText::_('DATE_FORMAT_LC2'), strtotime($this->student->registerDate)).'</li>';
+							echo '<li><div class="sub_title">'.JText::_('LAST_VISIT').'</div> : '.date(JText::_('DATE_FORMAT_LC2'), strtotime($this->student->lastvisitDate)).'</li>';*/
 							echo '<li><div class="sub_title">'.JText::_('PROFILE').'</div> : '.$this->userInformations['profile'].'</li>';
 					?>
 					</ul>
 				</div>
-			</div>
-		</div>
-		<div id="actions">
-			<div class="title"><?php echo JText::_('ACTIONS'); ?></div>
-			<div class="content">
-				<?php
-				echo '<ul>';
-				echo '<li>';
-					echo '<a ';
-					?>
-					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
-					<?php
-					echo'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
-					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'"  width="5%" />
-					</a>
-				</li>';
-				
-				echo '<li>
-					<input type="image" ';
-					?>
-					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
-					<?php
-					echo'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="5%">
-				</li>';
-				
-				echo '<li>';
-					echo '<a ';
-					?>
-					onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
-					<?php
-					echo'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank">
-						<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" width="5%"/>
-					</a>
-				</li>'; 
-				
-				echo'<li>';
-					?>
-					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="5%"/>
-					<?php
-				echo'</li>';
-				echo'<li>';
-					?>
-					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="5%"/>
-					<?php
-				echo'</li>';
-				echo'<li>';
-					?>
-					<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="5%"/>
-					<?php
-				echo'</li>';
-				echo'</ul>';
-				?>
 			</div>
 		</div>
 	</div>
@@ -315,39 +270,108 @@ JHTML::_('behavior.modal');
 </div>
 
 <div id="accordion">
-	<h2><input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><?php echo JText::_('ATTACHMENTS'); ?></h2>
+	<h2><?php echo JText::_('ACCOUNT'); ?></h2>
+	<div id="em_application_forms" class="content">
+	<table class="adminlist">
+			<thead>
+				<tr>
+					<th><strong><?php echo JText::_('USERNAME'); ?></strong></th>
+					<th><strong><?php echo JText::_('ACCOUNT_CREATED_ON');?></strong></th>
+					<th><strong><?php echo JText::_('LAST_VISIT');?></strong></th>
+					<th><strong><?php echo JText::_('STATUS');?></strong></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					
+					<td class="center">
+						<?php 
+						if($this->current_user->authorise('core.manage', 'com_users'))
+							echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="'.JRoute::_('index.php?option=com_emundus&view=users&edit=1&rowid='.$this->student->id.'&tmpl=component').'">'. $this->student->username .'</a>';
+						else
+							echo $this->student->username;
+						?>
+					</td>
+					<td class="center">
+						<?php echo JHtml::_('date', $this->student->registerDate, JText::_('DATE_FORMAT_LC2')); ?>
+					</td>
+					<td class="center">
+						<?php echo JHtml::_('date', $this->student->lastvisitDate, JText::_('DATE_FORMAT_LC2')); ?>
+					</td>
+					<td class="center">
+						<?php 
+						if (isset($this->logged[0]->logoutLink)) 
+							echo '<img src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
+						else
+							echo '<img src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
+						?>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<h2><?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
+		<?php
+			echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
+					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" />
+					</a> '; ?>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="5%"/>
+	</h2>
 	<div id="em_application_attachments" class="content">
 		<?php
 		if(count($this->userAttachments) > 0) { 
+			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+				echo '<input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><label for="checkall1"><strong>'.JText::_('SELECT_ALL').'</strong></label>';;
 			$i=0;
 			foreach($this->userAttachments as $attachment){
-				$info='<div id="hiddenMoreInfoAttachment-'.$i.'">';
-					$info.='<ul>';
-						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_FILENAME').'</div> : '.$attachment->filename.'</li>';
-						if(!empty($attachment->description)){
-							$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DESCRIPTION').'</div> : '.$attachment->description.'</li>';
-						}
-						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachment->timedate)).'</li>';
-						$info.='<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachment->campaign_label.'</li>';
-						$info.='<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachment->year.'</li>';
-					$info.='</ul>';
-				$info.='</div>';
+				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$this->student->id.'/'.$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;
+				$img_missing = (!file_exists($path))?'<img src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
 				
-				echo'<div class="attachment_name">';
-					echo'<input type="checkbox" name="aid[]" id="aid_'.$i.'" value="'.$attachment->aid.'" />';
-					?>
-					<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
-					<?php
-						echo '<label for="aid_'.$i.'">'.$attachment->value.'</label>';
-					echo'</a> ';
+				$img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="'.$this->baseurl.'media/com_emundus/images/icones/encrypted.png" />':"";
+
+				$info = '<div id="hiddenMoreInfoAttachment-'.$i.'">';
+					$info .= '<ul>';		                	
+					$info .= '<li><div class="sub_title">'. $img_locked . JText::_('ATTACHMENT_FILENAME').'</div> : '.$attachment->filename.'</li>';
+					if(!empty($attachment->description)){
+						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DESCRIPTION').'</div> : '.$attachment->description.'</li>';
+					}
+					$info .= '<li><div class="sub_title">'.JText::_('ATTACHMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachment->timedate)).'</li>';
+					$info .= '<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachment->campaign_label.'</li>';
+					$info .= '<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachment->year.'</li>';
+					$info .= '</ul>';
+				$info .= '</div>';
+				
+				echo '<div class="attachment_name">';
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+					echo '<input type="checkbox" name="aid[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
+				echo '<a href="'.JURI::Base().$path.'" target="_blank" onMouseOver="tooltip(this, \''.htmlentities($info).'\');"';
+				echo '<label for="aid_'.$i.'">'. $img_locked.' '.$img_missing.' '.$attachment->value.'</label>';
+				echo '</a> ';
 					//echo '<input type="image" onMouseOver="tooltip(this, \'<div>'.JText::_('DELETE_ATTACHMENT').'</div>\');" onClick="document.pressed=this.name" name="delete_attachments" src="'.JURI::Base().'/media/com_emundus/images/icones/delete_attachments.png" width="5%" />';
-				echo'</div>';
+				echo '</div>';
 				$i++;
 			}
 		} else echo JText::_('NO_ATTACHMENT');
 		?>
 	</div>
-	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?></h2>
+	
+	<h2><?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
+		<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
+		<?php
+			echo 'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank">
+				<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" />
+			</a>'; ?>
+		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
+		<?php
+			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" >'; ?>
+	</h2>
+	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
+
+	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?>
+		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" />
+		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" />
+	</h2>
 	<div id="em_application_comments" class="content">
 		<?php
 		if(count($this->userComments) > 0) { 
@@ -370,11 +394,9 @@ JHTML::_('behavior.modal');
 		} else echo JText::_('NO_COMMENT');
 		?>
 	</div>
-	
-	<h2><?php echo JText::_('APPLICATION_FORM'); ?></h2>
-	<div id="em_application_forms" class="content">cccc</div>
+
 </div>
-<input type="hidden" name="user_id" value="<?php echo $this->student->id; ?>" />
+<input type="hidden" name="aid" value="<?php echo $this->student->id; ?>" />
 <input type="hidden" value="" name="task">
 <input type="hidden" value="<?php echo $itemid; ?>" name="itemid">
 <input type="hidden" value="<?php echo $view; ?>" name="view">
@@ -484,10 +506,6 @@ function OnSubmitForm() {
 				document.applicant_form.task.value = "transfert_view";
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=transfert_view&v=<?php echo $view; ?>";
 			break;
-			case "custom_email": 
-				document.applicant_form.task.value = "customEmail";
-				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=customEmail";
-			break;
 			case "applicant_email": 
 				document.applicant_form.task.value = "applicantEmail";
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=applicantEmail";
@@ -502,7 +520,7 @@ function OnSubmitForm() {
 			case "delete_attachments": 
 				document.applicant_form.task.value = "delete_attachments";
 				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_ATTACHMENTS"); ?>")) {
-	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_attachments&Itemid=<?php echo $itemid; ?>";
+	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_attachments&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?>";
 			 	} else 
 			 		return false;
 			break;
