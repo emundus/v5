@@ -22,6 +22,13 @@
 		display : inline;
 		font-weight:bold;
 	}
+	
+	.icon {
+		float:left;
+		display:inline;
+		margin-right:5px;
+	}
+
 	/* CENTER */
 		#center {
 			width:50%;
@@ -279,7 +286,20 @@ function age($naiss) {
 				$info.= '</ul>';
 				?>
 				<a onMouseOver="tooltip(this, '<?php echo htmlentities($info); ?>');" href="#" title="" >
-				<?php
+				<?php		
+					echo'<div class="icon">';
+						if($campaign->submitted==0){
+							echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/red.png" style="margin-right:20px;" />';
+						}else{
+							if($campaign->result_sent==0){
+								echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/green.png" />
+								<img src="'.JURI::Base().'media/com_emundus/images/icones/email_not_send.png" />';
+							}else if($campaign->result_sent==1){
+								echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/green.png" />
+								<img src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />';
+							}
+						}
+					echo'</div>';
 					echo'<div class="title-campaign">'.$campaign->label.'</div>
 				</a>';
 			}
@@ -386,13 +406,14 @@ function age($naiss) {
 			</a>'; ?>
 		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 		<?php
-			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="2%">'; ?>
+			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="2%" >'; ?>
 	</h2>
 	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
 
-	<h2 id="em_application_forms_title"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS');
+	<h2 id="em_application_forms_title"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>-->
+		<?php echo JText::_('COMMENTS');
 		echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1" style="filter:alpha(opacity=80);opacity:0.8;">'; ?>
-			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="2%"/>
+			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="2%" />
 		</a>
 	</h2>
 	<div id="em_application_comments" class="content">
