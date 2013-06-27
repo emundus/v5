@@ -27,6 +27,12 @@
 		display:inline;
 		margin-right:5px;
 	}
+	
+	.actions {
+		float:right;
+		display:inline;
+		margin:-40px 0 0 0;
+	}
 
 	/* CENTER */
 		#center {
@@ -85,7 +91,7 @@
 				margin-right: auto 
 			}
 		/* ACTIONS */
-			#actions {
+			/*#actions {
 				height: auto;
 				margin-top:5px;
 			}
@@ -108,7 +114,7 @@
 				padding:0;
 				display:inline;
 				margin-right:5px;
-			}
+			}*/
 	
 /* ACCORDION */
 	#accordion  {
@@ -123,7 +129,7 @@
 		cursor: pointer;
 		font: 14px Helvetica, Arial, sans-serif;
 		margin: 0 0 4px 0;
-		padding: 3px 5px 1px;
+		padding: 3px 5px 15px 0;
 	}
 	#accordion .attachment_name {
 		color:#fff;
