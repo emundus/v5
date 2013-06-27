@@ -46,7 +46,7 @@ class EmundusViewApplication extends JView{
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		
-		// if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
 		
 		$aid = JRequest::getVar('sid', null, 'GET', 'none', 0);
 		$student = JFactory::getUser($aid);

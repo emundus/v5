@@ -109,14 +109,22 @@ class EmundusModelApplication extends JModel
 				WHERE ec.applicant_id ='.$id.'
 				ORDER BY ec.date DESC';
 		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
+		return $this->_db->loadResultArray();
 	}
 
 	function deleteComment($id){ 
-		$query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
-		$this->_db->setQuery($query);
-		// die(str_replace ('#_', 'jos', $query));
-		return $this->_db->Query();
+		$query = 'SELECT user_id FROM #__emeundus_comments WHERE id='.$id;
+		$this->_db->setQuery( $query );
+		$result=$this->_db->loadResult();
+		
+		if($result==$this->_user){
+			$query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
+			$this->_db->setQuery($query);
+			// die(str_replace ('#_', 'jos', $query));
+			return $this->_db->Query();
+		}else{
+			return -1;
+		}
 	}
 
 	function getFormsProgress($aid, $pid) {
