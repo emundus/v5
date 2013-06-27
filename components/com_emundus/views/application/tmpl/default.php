@@ -296,10 +296,7 @@ function age($naiss) {
 </form>
 <script>
 window.addEvent('domready', function(){
-//  application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
-
-  application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
-  application.display(3);
+	application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
 });
 
 function tooltip(element, text){
