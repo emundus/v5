@@ -130,13 +130,13 @@ foreach ($this->users as $user) { ?>
 		</td>
 		<td>
             <?php 
-			if(strtoupper($user['name']) == strtoupper($user['jos_emundus_personal_detail__last_name'].' '.$user['jos_emundus_personal_detail__first_name'])) 
+			if(strtoupper($user['name']) == strtoupper(@$user['jos_emundus_personal_detail__last_name'].' '.@$user['jos_emundus_personal_detail__first_name'])) 
 				echo '<strong>'.strtoupper($user['jos_emundus_personal_detail__last_name']).'</strong><br />'.$user['jos_emundus_personal_detail__first_name']; 
 			else 
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user['name'].'</font></span>'; 
 			?>
 		</td>
-      <td><?php echo $user['jos_emundus_personal_detail__nationality']; ?></td>
+      <td><?php echo @$user['jos_emundus_personal_detail__nationality']; ?></td>
       <td><?php echo $this->campaigns[$user['user_id']][$user['user_id']][@$user->campaign_id]; ?></td>
 	  <td><?php echo $this->validate[$user['user_id']]; ?></td>	
 	</tr>

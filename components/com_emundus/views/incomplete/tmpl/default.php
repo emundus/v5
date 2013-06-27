@@ -129,7 +129,7 @@ foreach ($this->users as $user) { ?>
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user->name.'</font></span>'; 
 			?>
 		</td>
-      <td><?php echo $user->jos_emundus_personal_detail__nationality; ?></td>
+      <td><?php echo @$user->jos_emundus_personal_detail__nationality; ?></td>
       <td><?php echo $this->campaigns_by_applicant[$user->user][$user->user][$user->campaign_id]; ?></td>
 	</tr>
 <?php } ?>
