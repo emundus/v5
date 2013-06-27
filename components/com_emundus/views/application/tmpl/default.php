@@ -196,7 +196,7 @@ function age($naiss) {
 					</a> ';
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 		?>
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="30px"/>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px"/>
 	</div>
 	<div id="em_application_attachments" class="content">
 		
@@ -247,7 +247,7 @@ function age($naiss) {
 			</a>'; ?>
 		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 		<?php
-			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="30px" />'; ?>
+			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="document.pressed=this.name" name="export_zip" width="30px" />'; ?>
 	</div>
 	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
 
