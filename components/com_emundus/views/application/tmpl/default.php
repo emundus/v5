@@ -334,7 +334,7 @@ function age($naiss) {
 					</a> ';
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 		?>
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="5%"/>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="2%"/>
 	</h2>
 	<div id="em_application_attachments" class="content">
 		<?php
@@ -382,13 +382,13 @@ function age($naiss) {
 			</a>'; ?>
 		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 		<?php
-			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" >'; ?>
+			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="2%">'; ?>
 	</h2>
 	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
 
 	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?>
-		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" />
-		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" />
+		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="2%"/>
+		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="2%"/>
 	</h2>
 	<div id="em_application_comments" class="content">
 		<?php

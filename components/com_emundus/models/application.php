@@ -160,8 +160,8 @@ class EmundusModelApplication extends JModel
 		$user = JFactory::getUser();
 		$query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
 					FROM #__session AS s
-					LEFT JOIN #__users AS u on s.userid = u.id
-					WHERE u.id = '.$aid;
+					LEFT JOIN #__users AS u on s.userid = u.id 
+					WHERE u.id = "'.$aid.'"';
 		$this->_db->setQuery($query);
 		$results = $this->_db->loadObjectList();
 
