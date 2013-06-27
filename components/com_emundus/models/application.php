@@ -106,10 +106,11 @@ class EmundusModelApplication extends JModel
 		$query = 'SELECT ec.id, ec.comment, ec.reason, ec.date, u.name
 				FROM #__emundus_comments ec 
 				LEFT JOIN #__users u ON u.id = ec.user_id 
-				WHERE ec.applicant_id ='.$id.'
-				ORDER BY ec.date DESC';
+				WHERE ec.applicant_id ="'.$id.'" 
+				ORDER BY ec.date DESC ';
 		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		// echo str_replace ('#_', 'jos', $query);
+		return $this->_db->loadObjectList();
 	}
 
 	function deleteComment($id){ 
