@@ -25,7 +25,7 @@ class EmundusViewApplication extends JView{
 	var $_db = null;
 	
 	function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		// require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -46,7 +46,7 @@ class EmundusViewApplication extends JView{
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
+		// if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
 		
 		$aid = JRequest::getVar('sid', null, 'GET', 'none', 0);
 		$student = JFactory::getUser($aid);

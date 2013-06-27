@@ -45,28 +45,27 @@ class EmundusControllerApplication extends JController
 	/**
 	 * Delete an applicant attachment
 	 */
-	function delete_attachements() {
-		$mainframe = JFactory::getApplication();
+	function delete_attachments() {
 		$user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 		
-		$mainframe = JFactory::getApplication();
 		$db	= JFactory::getDBO();
-		$aid = JRequest::getVar('aid', null, 'POST', 'array', 0);
-	die(print_r($aid));
-		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
+		$attachments = JRequest::getVar('attachments', null, 'POST', 'array', 0);
+		
+		$user_id = JRequest::getVar('sid', null, 'POST', 'none', 0);
+		
 		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
 
-		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&aid='.$user_id.'#attachments';
-		
-		JArrayHelper::toInteger( $aid, 0 );
-		if (count( $aid ) == 0) {
+		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'#attachments';
+		// die(var_dump($attachments));
+		JArrayHelper::toInteger( $attachments, 0 );
+		if (count( $attachments ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$mainframe->redirect($url);
 			exit;
 		} 
-		foreach ($aid as $id) {
+		foreach ($attachments as $id) {
 			$query = 'SELECT filename FROM #__emundus_uploads WHERE id='.$id;
 			$db->setQuery( $query );
 			$filename = $db->loadResult();
@@ -83,29 +82,10 @@ class EmundusControllerApplication extends JController
 			$db->query();
 		}
 		
-		$this->setRedirect($url, JText::_('ATTACHEMENTS_DELETED'), 'message');
+		$this->setRedirect($url, JText::_('ATTACHMENTS_DELETED'), 'message');
 		return;
 	}
 	
-	/*function set_comment(){
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('Only Coordinator can access this function.'), 'error');
-			return;
-		}
-		
-		$comment = JRequest::getVar('comment', null, 'GET', 'none',0);
-		$id = JRequest::getVar('uid', null, 'GET', 'none',0);
-		if(!empty($comment)){
-			$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
-							VALUES('.$id.','.$user->id.',"Additional comments","'.date("Y.m.d H:i:s").'","'.$comment.'")';
-			$db->setQuery($query);
-			$db->Query() or die($db->getErrorMsg());
-			echo JText::_('SAVED');	
-		}
-	}*/
 	
 	function deletecomment(){
 		$user = JFactory::getUser();

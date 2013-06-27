@@ -386,7 +386,7 @@ function age($naiss) {
 				
 				echo '<div class="attachment_name">';
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-					echo '<input type="checkbox" name="aid[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
+					echo '<input type="checkbox" name="attachments[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
 				echo '<a href="'.JURI::Base().$path.'" target="_blank" onMouseOver="tooltip(this, \''.htmlentities($info).'\');"';
 				echo '<label for="aid_'.$i.'">'. $img_locked.' '.$img_missing.' '.$attachment->value.'</label>';
 				echo '</a> ';
@@ -444,7 +444,7 @@ function age($naiss) {
 	</div>
 
 </div>
-<input type="hidden" name="aid" value="<?php echo $this->student->id; ?>" />
+<input type="hidden" name="sid" value="<?php echo $this->student->id; ?>" />
 <input type="hidden" value="" name="task">
 <input type="hidden" value="<?php echo $itemid; ?>" name="itemid">
 <input type="hidden" value="<?php echo $view; ?>" name="view">
@@ -532,7 +532,7 @@ function check_all(id) {
 	var checked = document.getElementById(id).checked;
 	var name = document.getElementById(id).name;
 	if(name=="attachments"){
-		var checkbox = document.getElementsByName('aid[]');
+		var checkbox = document.getElementsByName('attachments[]');
 		for (i=0;i< checkbox.length;i++){
 			checkbox[i].checked=checked;
 		}
