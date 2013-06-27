@@ -221,7 +221,7 @@ function age($naiss) {
 			</a>'; ?>
 		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 		<?php
-			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="30%" >'; ?>
+			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/ZipFile-selected_48.png" onClick="document.pressed=this.name" name="export_zip" width="30%" />'; ?>
 	</div>
 	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
 

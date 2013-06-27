@@ -30,8 +30,8 @@
 	
 	.actions {
 		float:right;
-		display:inline;
 		margin:-40px 0 0 0;
+		padding:0;
 	}
 
 	/* CENTER */
@@ -129,7 +129,7 @@
 		cursor: pointer;
 		font: 14px Helvetica, Arial, sans-serif;
 		margin: 0 0 4px 0;
-		padding: 3px 5px 15px 0;
+		padding: 3px 5px 15px 5px;
 	}
 	#accordion .attachment_name {
 		color:#fff;
