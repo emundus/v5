@@ -163,6 +163,10 @@
 	.comment_details li{
 		display:inline;
 	}
+	.comment_icon {
+		float : right;
+		cursor: pointer;
+	}
 	
 /* tooltip */
 div#tooltip{
@@ -329,8 +333,8 @@ function age($naiss) {
 			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 		<?php
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-				echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
-					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" />
+				echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1" style="filter:alpha(opacity=60);opacity:0.6;">
+					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="2%"/>
 					</a> ';
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 		?>
@@ -378,7 +382,7 @@ function age($naiss) {
 		<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
 		<?php
 			echo 'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank">
-				<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf.png" />
+				<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/PDF_Icon.png" width="2%" />
 			</a>'; ?>
 		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
 		<?php
@@ -386,9 +390,10 @@ function age($naiss) {
 	</h2>
 	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
 
-	<h2><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS'); ?>
-		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_COMMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_comments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_comments.png" width="2%"/>
-		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="2%"/>
+	<h2 id="em_application_forms_title"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>--><?php echo JText::_('COMMENTS');
+		echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1" style="filter:alpha(opacity=80);opacity:0.8;">'; ?>
+			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="2%"/>
+		</a>
 	</h2>
 	<div id="em_application_comments" class="content">
 		<?php
@@ -396,9 +401,13 @@ function age($naiss) {
 			$i=0;
 			foreach($this->userComments as $comment){
 				
-				echo'<div class="comment">';
-					echo'<input style="display:none;" type="checkbox" name="cid[]" id="cid_'.$i.'" value="'.$comment->id.'" />';
-					echo '<div class="comment_content">'.$comment->comment.'</div>';
+				echo'<div class="comment" id="comment-box_'.$comment->id.'">';
+					echo '<div class="comment_content" id="comment_content_'.$comment->id.'">
+							<div class="comment_icon" id="comment_'.$comment->id.'">
+								<img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_COMMENT_CONFIRM").'"').')) {deleteComment('.$comment->id.');}"/>
+							</div>
+							'.$comment->comment.'
+							</div>';
 					echo'<div class="comment_details">';
 					echo '<ul>';
 						echo '<li><div class="sub_title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
@@ -421,7 +430,10 @@ function age($naiss) {
 </form>
 <script>
 window.addEvent('domready', function(){
-  new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
+//  application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
+
+  application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
+  application.display(3);
 });
 
 function tooltip(element, text){
@@ -542,23 +554,66 @@ function OnSubmitForm() {
 			 	} else 
 			 		return false;
 			break;
-			case "delete_comments": 
-				document.applicant_form.task.value = "delete_comments";
-				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_COMMENTS"); ?>")) {
-	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_comments&Itemid=<?php echo $itemid; ?>";
-			 	} else 
-			 		return false;
-			break;
-			case "add_comment": 
-				document.applicant_form.task.value = "add_comment";
-				if (confirm("<?php echo JText::_("CONFIRM_ADD_COMMENT"); ?>")) {
-	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=add_comment&Itemid=<?php echo $itemid; ?>";
-			 	} else 
-			 		return false;
-			break;
 			default: return false;
 		}
 		return true;
 	}
-} 
+}
+
+function getXMLHttpRequest() {
+	var xhr = null;
+	 
+	if (window.XMLHttpRequest || window.ActiveXObject) {
+		if (window.ActiveXObject) {
+			try {
+				xhr = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch(e) {
+				xhr = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+		} else {
+			xhr = new XMLHttpRequest();
+		}
+	} else {
+		alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+		return null;
+	}
+	 
+	return xhr;
+}
+		
+function deleteComment(comment_id){
+	var xhr = getXMLHttpRequest();
+	xhr.onreadystatechange = function()
+	{
+		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+		{
+			if(xhr.responseText!="SQL Error"){
+				var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
+				var comment_content = ($('comment_'+comment_id).parentNode).id;
+				var comment_icon = $('comment_'+comment_id);
+				var i;
+				for (i=0;i<comment_icon.childNodes.length;i++)
+				{
+					comment_icon.childNodes[i].src = "<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/trash.png";
+					comment_icon.childNodes[i].onclick = null;
+				}
+				$(comment).style.background="#B0B4B3";
+				$(comment_content).style.background="#B0B4B3";
+				$(comment).style.color="#FFFFFF";
+				$(comment_content).style.color="#FFFFFF";
+				$(comment).style.textDecoration="line-through";
+				$(comment_content).style.textDecoration="line-through";
+			}else{
+				alert(xhr.responseText);
+			}
+		}
+	};
+	xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=deletecomment&Itemid=<?php echo $itemid; ?>&comment_id="+comment_id, true);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	xhr.send("&comment_id="+comment_id);
+}
+function delayAct(user_id){
+	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?>";
+	setTimeout("document.applicant_form.submit()",10) 
+}
 </script>

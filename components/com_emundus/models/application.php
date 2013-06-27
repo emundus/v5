@@ -54,7 +54,7 @@ class EmundusModelApplication extends JModel
 
 	function getApplicantDetails($aid, $ids){
 		$details = EmundusHelperList::getElementsDetailsByID($ids);
-
+		$select=array();
 		foreach ($details as $detail) {
 			$select[] = $detail->tab_name.'.'.$detail->element_name.' AS "'.$detail->element_id.'"';
 		}
@@ -113,9 +113,10 @@ class EmundusModelApplication extends JModel
 	}
 
 	function deleteComment($id){ 
-		$query = 'DELETE #__emundus_comments WHERE id = '.$id;
+		$query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
 		$this->_db->setQuery($query);
-		$this->_db->Query() or die($this->_db->getErrorMsg());
+		// die(str_replace ('#_', 'jos', $query));
+		return $this->_db->Query();
 	}
 
 	function getFormsProgress($aid, $pid) {

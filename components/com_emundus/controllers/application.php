@@ -107,29 +107,20 @@ class EmundusControllerApplication extends JController
 		}
 	}*/
 	
-	function delete_comments(){
+	function deletecomment(){
 		$user = JFactory::getUser();
 		$db = JFactory::getDBO();
 		//$allowed = array("Super Users", "Administrator", "Editor");
-		if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid, JText::_('Only Coordinator can access this function.'), 'error');
-			return;
+		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+				
+		$comment_id = JRequest::getVar('comment_id', null, 'GET', 'none',0);
+		
+		$model = $this->getModel('application');
+		$result = $model->deleteComment($comment_id);
+				
+		if($result!=1){
+			echo JText::_('SQL_ERROR');
 		}
-		
-		$comments = JRequest::getVar('cid', null, 'POST', 'array',0);
-		$user_id = JRequest::getVar('user_id', null, 'POST', 'none', 0);
-		$itemid = JRequest::getVar('itemid', null, 'POST', 'none', 0);
-		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
-		
-		foreach($comments as $comment){
-			$query = 'DELETE FROM #__emundus_comments 
-					WHERE id = "'.$comment.'"';
-			$db->setQuery($query);
-			// die($query);
-			$db->Query() or die($db->getErrorMsg());
-		}
-		
-		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid, JText::_('DELETE_COM_OK'), 'message');
-		return;
 	}
 }
