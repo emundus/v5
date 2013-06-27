@@ -189,6 +189,24 @@ $task 		= JRequest::getVar('task', null, 'GET', 'none',0);
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
 JHTML::_('behavior.modal');
+
+function age($naiss) {
+	@list($annee, $mois, $jour) = split('[-.]', $naiss);
+	$today['mois'] = date('n');
+	$today['jour'] = date('j');
+	$today['annee'] = date('Y');
+	$annees = $today['annee'] - $annee;
+	if ($today['mois'] <= $mois) {
+		if ($mois == $today['mois']) {
+		if ($jour > $today['jour'])
+			$annees--;
+	}
+	else
+		$annees--;
+	}
+	return $annees;
+}
+
 ?>
 <form action="" name="applicant_form" method="POST" onsubmit="return OnSubmitForm();" >
 <div id="identity_card">
@@ -219,10 +237,7 @@ JHTML::_('behavior.modal');
 								$params = json_decode($details->params);
 								$value = strftime($params->date_form_format, strtotime($details->element_value));
 								if ($details->element_name == "birth_date") {
-									$birthdate = new DateTime($this->userInformations['birthdate']);
-									$today = new DateTime();
-									$age = $today->diff($birthdate);
-									$value .= ' ('.$age->format('%y').' '.JText::_('YEARS_OLD').')';
+									$value .= ' ('.age($this->userInformations['birthdate']).' '.JText::_('YEARS_OLD').')';
 								}
 							} else
 								$value = $details->element_value;
@@ -313,9 +328,12 @@ JHTML::_('behavior.modal');
 	<h2><?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 		<?php
-			echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
+			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+				echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component">
 					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attach_22x22.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" />
-					</a> '; ?>
+					</a> ';
+			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+		?>
 			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments.png" width="5%"/>
 	</h2>
 	<div id="em_application_attachments" class="content">

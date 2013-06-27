@@ -274,7 +274,7 @@ class EmundusModelApplication extends JModel
 												$where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
 												$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 												$query = preg_replace('#{thistable}#', $from, $query);
-												$query = preg_replace('#{my->id}#', $item->user_id, $query);
+												$query = preg_replace('#{my->id}#', @$item->user_id, $query);
 												$this->_db->setQuery( $query );
 												$elt = $this->_db->loadResult();
 										} else $elt = $r_elt;
