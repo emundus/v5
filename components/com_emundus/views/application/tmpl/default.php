@@ -5,6 +5,7 @@ defined('_JEXEC') or die('Restricted access');
 $itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $view 		= JRequest::getVar('view', null, 'GET', 'none',0);
 $task 		= JRequest::getVar('task', null, 'GET', 'none',0);
+$tmpl 		= JRequest::getVar('tmpl', null, 'GET', 'none',0);
  
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.tooltip'); 
@@ -291,6 +292,7 @@ function age($naiss) {
 <input type="hidden" value="" name="task">
 <input type="hidden" value="<?php echo $itemid; ?>" name="itemid">
 <input type="hidden" value="<?php echo $view; ?>" name="view">
+<input type="hidden" value="<?php echo $tmpl; ?>" name="tmpl">
 </form>
 <script>
 window.addEvent('domready', function(){
@@ -477,7 +479,7 @@ function deleteComment(comment_id){
 	xhr.send("&comment_id="+comment_id);
 }
 function delayAct(user_id){
-	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?>";
+	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?> <?php if(!empty($tmpl)){ echo'&tmpl='.$tmpl; }?>";
 	setTimeout("document.applicant_form.submit()",10) 
 }
 </script>

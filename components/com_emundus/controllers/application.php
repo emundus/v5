@@ -56,8 +56,9 @@ class EmundusControllerApplication extends JController
 		$user_id = JRequest::getVar('sid', null, 'POST', 'none', 0);
 		
 		$view = JRequest::getVar('view', null, 'POST', 'none', 0);
+		$tmpl = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
 
-		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'#attachments';
+		$url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
 		// die(var_dump($attachments));
 		JArrayHelper::toInteger( $attachments, 0 );
 		if (count( $attachments ) == 0) {
@@ -100,7 +101,7 @@ class EmundusControllerApplication extends JController
 		$result = $model->deleteComment($comment_id);
 				
 		if($result!=1){
-			echo JText::_('SQL_ERROR');
+			echo JText::_('COMMENT_DELETE_ERROR');
 		}
 	}
 }

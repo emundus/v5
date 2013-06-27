@@ -114,11 +114,10 @@ class EmundusModelApplication extends JModel
 	}
 
 	function deleteComment($id){ 
-		$query = 'SELECT user_id FROM #__emeundus_comments WHERE id='.$id;
+		$query = 'SELECT user_id FROM #__emundus_comments WHERE id="'.$id.'"';
 		$this->_db->setQuery( $query );
 		$result=$this->_db->loadResult();
-		
-		if($result==$this->_user){
+		if($result==$this->_user->id){
 			$query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
 			$this->_db->setQuery($query);
 			// die(str_replace ('#_', 'jos', $query));
