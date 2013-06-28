@@ -794,7 +794,7 @@ $htmldata .= '
 		$path_href=JURI::base().EMUNDUS_PATH_REL.$user_id.'/'.$upload->filename;
 		$htmldata .='<tr>
 			<td>'.$upload->value.'</td>
-			<td><a href="'.$path_href.'">'.$upload->filename.'</a></td>
+			<td><a href="'.$path_href.'" target="_blank">'.$upload->filename.'</a></td>
 			<td>'.$upload->description.'</td>
 			<td>'.strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)).'</td>
 		</tr>';

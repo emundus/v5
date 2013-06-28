@@ -344,6 +344,7 @@ function OnSubmitForm() {
 								var filter_id = xhr2.responseText;
 								// filter_id=parseInt(filter_id)+1;
 								$(\'select_filter\').options[$(\'select_filter\').options.length] = new Option(name, filter_id);
+								$(\'select_filter\').value=$(\'select_filter\').options[$(\'select_filter\').options.length-1].value;
 							}
 						}
 						xhr2.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=lastSavedFilter&Itemid="+itemid, true);
