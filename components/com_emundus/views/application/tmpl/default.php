@@ -39,9 +39,9 @@ function age($naiss) {
 				<div id="photo">
 					<?php 
 						if(!empty($this->userInformations["filename"])) {
-							echo'<img id="image" src="'.JURI::Base().EMUNDUS_PATH_REL.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">'; 
+							echo'<img id="image" style="border:0;" src="'.JURI::Base().EMUNDUS_PATH_REL.$this->student->id.'/'.$this->userInformations["filename"].'" width="50%">'; 
 						}else if(!empty($this->userInformations["gender"])){
-							echo'<img id="image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
+							echo'<img id="image" style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
 						}
 					echo '<div id="ID">'.$this->student->id.'</div>';
 					?>
@@ -99,7 +99,7 @@ function age($naiss) {
 						?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 						<?php
-						echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/publish_x.png" style="margin-right:20px;" />';
+						echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/publish_x.png" style="margin-right:20px;" />';
 						echo '</a>';
 					}else{
 						if($campaign->result_sent==0){
@@ -107,26 +107,26 @@ function age($naiss) {
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
-								echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
+								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
 							$contenu ='<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JNO").'</li>';
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
-								echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/email_not_send.png" />
+								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_not_send.png" />
 							</a>';
 						}else if($campaign->result_sent==1){
 							$contenu = '<div class="sub_title">'.JText::_("SUBMITTED").'</div> : '.JText::_("JYES").'</li>';
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
-								echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
+								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
 							$contenu = '<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JYES").'</li>';
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
-							echo '<img src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />';
+							echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />';
 						}
 					}
 				echo'</div>';
@@ -173,9 +173,9 @@ function age($naiss) {
 					<td class="center">
 						<?php 
 						if (isset($this->logged[0]->logoutLink)) 
-							echo '<img src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
+							echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
 						else
-							echo '<img src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
+							echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
 						?>
 					</td>
 				</tr>
@@ -193,7 +193,7 @@ function age($naiss) {
 			<?php
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 					echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">
-						<img src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
+						<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
 						</a> ';
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 			?>
@@ -206,7 +206,7 @@ function age($naiss) {
 			$i=0;
 			foreach($this->userAttachments as $attachment){
 				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;
-				$img_missing = (!file_exists($path))?'<img src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
+				$img_missing = (!file_exists($path))?'<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
 				
 				$img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="'.$this->baseurl.'media/com_emundus/images/icones/encrypted.png" />':"";
 
@@ -260,7 +260,7 @@ function age($naiss) {
 		<div class="actions">
 			<?php
 			echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">'; ?>
-			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="setCookie('current_display',3,20); document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="30px" />
+			<img style="border:0;" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="setCookie('current_display',3,20); document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="30px" />
 			</a>
 		</div>
 		<?php
