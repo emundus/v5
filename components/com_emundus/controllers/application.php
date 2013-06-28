@@ -72,12 +72,12 @@ class EmundusControllerApplication extends JController
 			$filename = $db->loadResult();
 			
 			$file = EMUNDUS_PATH_ABS.$user_id.DS.$filename;
-			if(!@unlink($file) && file_exists($file)) {
+			/*if(!@unlink($file) && file_exists($file)) {
 				// JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
 				$this->setRedirect($url, JText::_('FILE_NOT_FOUND'), 'error');
 				return;
-			}
-
+			}*/
+			
 			$query = 'DELETE FROM #__emundus_uploads WHERE id='.$id;
 			$db->setQuery( $query );
 			$db->query();
