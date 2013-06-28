@@ -34,7 +34,7 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($student->
 				'EVAL_CRITERIAS' => $criterias,
 				'EVAL_PERIOD' => $eval_period 
 			);
-$tags = $emails->setTags($student->id, $post);
+$tags = $emails->setTags($student->id, array());
 $email = $emails->getEmail("confirm_post");
 
 // Apllicant cannot delete this attachments now
@@ -109,6 +109,7 @@ $evaluators = $groups->getUsersByGroups($group_list);
 $email = $emails->getEmail("new_applicant");
 foreach ($evaluators as $evaluator) {
 	$eval_user = & JFactory::getUser($evaluator);
+	$tags = $emails->setTags($eval_user->id, $post);
 	// Mail 
 	$from = $email->emailfrom;
 	$from_id = 62;
@@ -126,7 +127,7 @@ foreach ($evaluators as $evaluator) {
 	$student->candidature_posted = 1;
 	$res = JUtility::sendMail( $from, $fromname, $recipient, $subject, $body, true );
 	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-					VALUES ('".$from_id."', '".$student->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+					VALUES ('".$from_id."', '".$eval_user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 	$db->setQuery( $sql );
 	try {
 		$db->Query();
