@@ -297,7 +297,7 @@ function age($naiss) {
 <input type="hidden" value="<?php echo $tmpl; ?>" name="tmpl">
 </form>
 <script>
-var current_display = 0;
+var current_display = 2;
 
 window.addEvent('domready', function(){
 	application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content', {
