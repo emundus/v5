@@ -141,28 +141,27 @@ class EmundusModelUsers extends JModel
 				}
 			}
 		}else if(!empty($campaigns) && $campaigns[0]!='%' &&  !empty($schoolyears) && $schoolyears[0]!='%'){
-			$applicant_campaigns = $this->getUserListWithCampaign($campaigns);
 			$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
 			$i=0;
-			$nb_element = count($applicant_campaigns);
 			$list_user='';
 			foreach($schoolyears as $schoolyear){
 				foreach($campaigns as $campaign){
 					$compare = $this->compareCampaignANDSchoolyear($campaign,$schoolyear);
 					// var_dump($compare.$campaign);
 					if($compare!=0){
+						$applicant_campaigns = $this->getUserListWithCampaign($campaign);
+						$nb_element = count($applicant_campaigns);
 						foreach($applicant_campaigns as $applicant){
-							if(++$i === $nb_element){
-								$list_user.=$applicant;
-							}else if($applicant!=NULL){
-								$list_user.=$applicant.", ";
-							}
+							$list_user.=$applicant.", ";
 						}
 					}
 				}
 			}
 			if($list_user==''){
 				$list_user='EMPTY';
+			}else{
+				$taille = strlen($list_user);
+				$list_user=substr($list_user,0,$taille-2);
 			}
 		}
 		
@@ -354,12 +353,19 @@ class EmundusModelUsers extends JModel
 				$list_campaign .= $c.", ";
 			}
 		}*/
-			
+		
 		$db = JFactory::getDBO();
-		$query = 'SELECT cc.applicant_id
-		FROM #__emundus_campaign_candidature AS cc 
-		LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
-		WHERE sc.published=1 AND sc.id IN ('.implode(",", $campaign).')';
+		if(!is_array($campaign)){
+			$query = 'SELECT cc.applicant_id
+			FROM #__emundus_campaign_candidature AS cc 
+			LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
+			WHERE sc.published=1 AND sc.id IN ('.$campaign.')';
+		}else{
+			$query = 'SELECT cc.applicant_id
+			FROM #__emundus_campaign_candidature AS cc 
+			LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
+			WHERE sc.published=1 AND sc.id IN ('.implode(",", $campaign).')';
+		}
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
