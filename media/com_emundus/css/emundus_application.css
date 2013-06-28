@@ -194,7 +194,7 @@ div#tooltip li {
 	margin :0;
 	padding:0;
 }
-.modal, .modal:hover {
+/*.modal, .modal:hover {
     background-color:transparent;
     margin-bottom: 0px;
     margin-left: 0px;
@@ -204,4 +204,4 @@ div#tooltip li {
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
-}
+}*/
