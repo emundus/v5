@@ -123,7 +123,7 @@ class EmundusModelUsers extends JModel
 				foreach($applicant_schoolyears as $applicant){
 					if(++$i === $nb_element){
 						$list_user.=$applicant;
-					}else{
+					}else if($applicant!=NULL){
 						$list_user.=$applicant.", ";
 					}
 				}
@@ -136,12 +136,11 @@ class EmundusModelUsers extends JModel
 			foreach($applicant_campaigns as $applicant){
 				if(++$i === $nb_element){
 					$list_user.=$applicant;
-				}else{
+				}else if($applicant!=NULL){
 					$list_user.=$applicant.", ";
 				}
 			}
 		}
-		
 		if(!empty($groupEval)){
 			$list_user="";
 			$applicant_groupEval = $this->getUserListWithGroupsEval($groupEval);
@@ -153,7 +152,7 @@ class EmundusModelUsers extends JModel
 				foreach($applicant_groupEval as $applicant){
 					if(++$i === $nb_element){
 						$list_user.=$applicant;
-					}else{
+					}else if($applicant!=NULL){
 						$list_user.=$applicant.", ";
 					}
 				}
@@ -326,10 +325,9 @@ class EmundusModelUsers extends JModel
 			
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
-		FROM #__emundus_setup_campaigns AS sc 
-		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		FROM #__emundus_campaign_candidature AS cc 
+		LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
 		WHERE sc.published=1 AND sc.id IN ('.implode(",", $campaign).')';
-// echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
