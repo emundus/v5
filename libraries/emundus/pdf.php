@@ -70,7 +70,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			if (is_file($this->logo))
 				$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 			// Set font
-			$this->SetFont('helvetica', 'B', 20);
+			$this->SetFont('helvetica', 'B', 16);
 			// Title
 			$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
 		}
@@ -135,7 +135,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-		$pdf->SetFont('helvetica', '', 9);
+		$pdf->SetFont('helvetica', '', 8);
 
 		//$dimensions = $pdf->getPageDimensions();
 
@@ -284,7 +284,7 @@ function letter_pdf_template ($user_id, $letter_id) {
 			if (is_file($this->logo))
 				$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 			// Set font
-			$this->SetFont('helvetica', 'B', 20);
+			$this->SetFont('helvetica', 'B', 16);
 			// Title
 			$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
 		}
@@ -348,7 +348,7 @@ function letter_pdf_template ($user_id, $letter_id) {
 
 		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-		$pdf->SetFont('helvetica', '', 9);
+		$pdf->SetFont('helvetica', '', 8);
 
 		//$dimensions = $pdf->getPageDimensions();
 
@@ -444,7 +444,7 @@ function application_form_pdf($user_id, $output = true) {
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-	$pdf->SetFont('helvetica', '', 9);
+	$pdf->SetFont('helvetica', '', 8);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
 	
@@ -453,7 +453,7 @@ $htmldata .=
 '<style>
 .card  { background-color: #cecece; border: none;}
 .name  { display: block; font-size: 16pt; margin: 0 0 0 20px; padding:0; }
-.maidenname  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
+.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
 .nationality { display: block; margin: 0 0 0 20px;  padding:0;}
 .sent { display: block; font-family: monospace; margin: 0 0 0 20px; padding:0;}
 .birthday { display: block; margin: 0 0 0 20px; padding:0;}
@@ -569,7 +569,7 @@ $htmldata .= '
 						}
 						$pdf->Bookmark(JText::_('COMMENTS'), 0);
 						$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-						$pdf->Ln(1);
+						// $pdf->Ln(1);
 						$htmldata = '';
 					}
 					//users' evaluators or groups
@@ -596,7 +596,7 @@ $htmldata .= '
 							foreach($groups as $group){
 								if($g != $group->id) $htmldata .= '<h2>'.$group->label.' group</h2><p>';
 								$g = $group->id;
-								$htmldata .= '- '.$group->name.'<br />';
+								$htmldata .= '- '.$group->name.'';
 								$i++;
 							}
 							$htmldata .= '</p>';
@@ -613,7 +613,7 @@ $htmldata .= '
 									WHERE ege.applicant_id='.$user_id;
 							$db->setQuery($query);
 							$eval = $db->loadResult();
-							$htmldata .= '<p><b>Evaluator '.$i.'</b><br />';
+							$htmldata .= '<p><b>Evaluator '.$i.'</b>';
 							$htmldata .= $eval;
 							$i++;
 						}
@@ -622,7 +622,7 @@ $htmldata .= '
 					
 					$pdf->Bookmark(JText::_('EVALUATORS'), 0);
 					$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-					$pdf->Ln(1);
+					// $pdf->Ln(1);
 					$htmldata = '';				
 				}
 			}// EVALUATION & COMMENTS 
@@ -757,14 +757,14 @@ $htmldata .= '
 				$start_page = $pdf->getPage();
 				$pdf->Bookmark($itemt->label, 0);
 				$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
-				$pdf->Ln(1);
+				// $pdf->Ln(1);
 				$end_page = $pdf->getPage();
 				if ($end_page != $start_page) {
 					$pdf = $pdf->rollbackTransaction();
 					$pdf->addPage(); 
 					$pdf->Bookmark($itemt->label, 0);
 					$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-					$pdf->Ln(1);
+					// $pdf->Ln(1);
 				}
 				$htmldata = '';
 			}
@@ -805,14 +805,14 @@ $htmldata .= '
 		$start_page = $pdf->getPage();
 		$pdf->Bookmark($itemt->label, 0);
 		$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
-		$pdf->Ln(1);
+		// $pdf->Ln(1);
 		$end_page = $pdf->getPage();
 		if ($end_page != $start_page) {
 			$pdf = $pdf->rollbackTransaction();
 			$pdf->addPage(); 
 			$pdf->Bookmark($itemt->label, 0);
 			$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-			$pdf->Ln(1);
+			// $pdf->Ln(1);
 		}
 		$htmldata = '';
 	}
