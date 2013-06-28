@@ -65,8 +65,6 @@ function age($naiss) {
 							echo '<li><div id="'.$details->element_name.'" class="sub_title">'.$details->element_label.'</div> : '.$value.'</li>';
 						}
 							echo '<li><a href="mailto:'.$this->student->email.'">'.$this->student->email.'</a></li>';
-							/*echo '<li><div class="sub_title">'.JText::_('ACCOUNT_CREATED_ON').'</div> : '.date(JText::_('DATE_FORMAT_LC2'), strtotime($this->student->registerDate)).'</li>';
-							echo '<li><div class="sub_title">'.JText::_('LAST_VISIT').'</div> : '.date(JText::_('DATE_FORMAT_LC2'), strtotime($this->student->lastvisitDate)).'</li>';*/
 							echo '<li><div class="sub_title">'.JText::_('PROFILE').'</div> : '.$this->userInformations['profile'].'</li>';
 					?>
 					</ul>
@@ -83,13 +81,13 @@ function age($naiss) {
 					$info.= '<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					if($campaign->submitted==1){
 						$info.= '<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
-						$info.= '<li><div class="sub_title">'.JText::_('DATE_SUBMITTED').'</div> : '.date('Y-m-d',strtotime($campaign->date_submitted)).'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('DATE_SUBMITTED').'</div> : '.JHtml::_('date', $campaign->date_submitted, JText::_('DATE_FORMAT_LC2')).'</li>';
 					}else{
 						$info.= '<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
 					}
 					if(!empty($campaign->result_sent) && $campaign->result_sent==1){
 						$info.= '<li><div class="sub_title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('SENT').'</li>';
-						$info.= '<li><div class="sub_title">'.JText::_('DATE_RESULT_SENT').'</div> : '.date('Y-m-d',strtotime($campaign->date_result_sent)).'</li>';
+						$info.= '<li><div class="sub_title">'.JText::_('DATE_RESULT_SENT').'</div> : '.JHtml::_('date', $campaign->date_result_sent, JText::_('DATE_FORMAT_LC2')).'</li>';
 					}else{
 						$info.= '<li><div class="sub_title">'.JText::_('RESULT_SENT').'</div> : '.JText::_('NOT_SENT').'</li>';
 					}
@@ -218,7 +216,7 @@ function age($naiss) {
 					if(!empty($attachment->description)){
 						$info.='<li><div class="sub_title">'.JText::_('ATTACHMENT_DESCRIPTION').'</div> : '.$attachment->description.'</li>';
 					}
-					$info .= '<li><div class="sub_title">'.JText::_('ATTACHMENT_DATE').'</div> : '.date('Y-m-d',strtotime($attachment->timedate)).'</li>';
+					$info .= '<li><div class="sub_title">'.JText::_('ATTACHMENT_DATE').'</div> : '.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'</li>';
 					$info .= '<li><div class="sub_title">'.JText::_('CAMPAIGN').'</div> : '.$attachment->campaign_label.'</li>';
 					$info .= '<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$attachment->year.'</li>';
 					$info .= '</ul>';
@@ -246,9 +244,8 @@ function age($naiss) {
 			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
 			<?php
 				echo 'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank"  onClick="setCookie(\'current_display\',2,20);">
-					<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/PDF_Icon.png" width="30px" />
-				</a>'; ?>
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
+					<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf_form_64x64.png" width="30px" /></a> '; ?>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_TO_ZIP')."</div>"; ?>');"
 			<?php
 				echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="setCookie(\'current_display\',2,20);document.pressed=this.name" name="export_zip" width="30px" />'; ?>
 		</div>
@@ -281,7 +278,7 @@ function age($naiss) {
 					echo'<div class="comment_details">';
 					echo '<ul>';
 						echo '<li><div class="sub_title">'.JText::_('COMMENT_REASON').'</div> : '.$comment->reason.'</li>';
-						echo '<li><div class="sub_title"> - '.JText::_('COMMENT_DATE').'</div> '.date('Y-m-d',strtotime($comment->date)).'</li>';
+						echo '<li><div class="sub_title"> - '.JText::_('COMMENT_DATE').'</div> '.JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')).'</li>';
 						echo '<li><div class="sub_title">'.JText::_('COMMENT_BY').'</div> '.$comment->name.'</li>';
 					echo '</ul>';
 					echo'</div>';
