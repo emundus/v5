@@ -791,9 +791,10 @@ $htmldata .= '
 		<td><h3>'.JText::_('SENT_ON').'</h3></td>
 	</tr>';
 	foreach($uploads as $upload){
+		$path_href=JURI::base().EMUNDUS_PATH_REL.$user_id.'/'.$upload->filename;
 		$htmldata .='<tr>
 			<td>'.$upload->value.'</td>
-			<td><a href="'.EMUNDUS_PATH_REL.$user_id.DS.$upload->filename.'">'.$upload->filename.'</a></td>
+			<td><a href="'.$path_href.'">'.$upload->filename.'</a></td>
 			<td>'.$upload->description.'</td>
 			<td>'.strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)).'</td>
 		</tr>';
