@@ -28,7 +28,7 @@ $upload=$db->loadResult();
 $filename = explode('/', $upload);
 
 if (is_file($filename[5])) {
-	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed) values(".$user->id.",".$attachment_id.",'".$filename[5]."','',".$can_be_deleted.",".$can_be_viewed.")";
+	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed, timedate, campaign_id) values(".$user->id.",".$attachment_id.",'".$filename[5]."','',".$can_be_deleted.",".$can_be_viewed.", NOW(), ".$user->campaign_id.")";
 
 	$db->setQuery($query);
 
