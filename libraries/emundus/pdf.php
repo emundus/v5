@@ -569,7 +569,7 @@ $htmldata .= '
 						}
 						$pdf->Bookmark(JText::_('COMMENTS'), 0);
 						$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-						$pdf->Ln(2);
+						$pdf->Ln(1);
 						$htmldata = '';
 					}
 					//users' evaluators or groups
@@ -622,7 +622,7 @@ $htmldata .= '
 					
 					$pdf->Bookmark(JText::_('EVALUATORS'), 0);
 					$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-					$pdf->Ln(2);
+					$pdf->Ln(1);
 					$htmldata = '';				
 				}
 			}// EVALUATION & COMMENTS 
@@ -747,30 +747,76 @@ $htmldata .= '
 						}
 					}
 					$htmldata .= '</fieldset>';
-				}
+				}			
 /// Add a page
 			}
+			
 			if (!empty($htmldata)) {
 				$pdf->startTransaction();
 				$start_y = $pdf->GetY();
 				$start_page = $pdf->getPage();
 				$pdf->Bookmark($itemt->label, 0);
 				$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
-				$pdf->Ln(2);
+				$pdf->Ln(1);
 				$end_page = $pdf->getPage();
 				if ($end_page != $start_page) {
 					$pdf = $pdf->rollbackTransaction();
 					$pdf->addPage(); 
 					$pdf->Bookmark($itemt->label, 0);
 					$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
-					$pdf->Ln(2);
+					$pdf->Ln(1);
 				}
 				$htmldata = '';
 			}
 ///			
-		}	
+		}
 	}
-
+	
+	/* --- Listes des fichiers chargés --- */
+	$query = 'SELECT sa.value, u.filename, u.description, u.timedate 
+	FROM #__emundus_uploads u 
+	LEFT JOIN #__emundus_setup_attachments AS sa ON sa.id=u.attachment_id 
+	WHERE user_id='.$user_id. ' ORDER BY sa.ordering, u.timedate';
+	$db->setQuery($query);
+	$uploads = $db->loadObjectList();
+	$nbuploads = count($uploads);
+	$titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
+	$htmldata .='<div id="file_upload">
+	<h2>'.$titleupload.' : '.$nbuploads.'</h2>		
+	<table>
+	<tr>
+		<td><h3>'.JText::_('FILE_TYPE').'</h3></td>
+		<td><h3>'.JText::_('FILE_NAME').'</h3></td>
+		<td><h3>'.JText::_('DESCRIPTION').'</h3></td>
+		<td><h3>'.JText::_('SENT_ON').'</h3></td>
+	</tr>';
+	foreach($uploads as $upload){
+		$htmldata .='<tr>
+			<td>'.$upload->value.'</td>
+			<td><a href="'.EMUNDUS_PATH_REL.$user_id.DS.$upload->filename.'">'.$upload->filename.'</a></td>
+			<td>'.$upload->description.'</td>
+			<td>'.strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)).'</td>
+		</tr>';
+	}
+	$htmldata .='</table></div>';
+	if (!empty($htmldata)) {
+		$pdf->startTransaction();
+		$start_y = $pdf->GetY();
+		$start_page = $pdf->getPage();
+		$pdf->Bookmark($itemt->label, 0);
+		$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1);
+		$pdf->Ln(1);
+		$end_page = $pdf->getPage();
+		if ($end_page != $start_page) {
+			$pdf = $pdf->rollbackTransaction();
+			$pdf->addPage(); 
+			$pdf->Bookmark($itemt->label, 0);
+			$pdf->writeHTMLCell(0,'','',$pdf->GetY(),$htmldata,'B', 1);
+			$pdf->Ln(1);
+		}
+		$htmldata = '';
+	}
+	
 	@chdir('tmp');
 	if($output){
 		if($current_user->usertype != $registered){
