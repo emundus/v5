@@ -383,3 +383,11 @@ input.btnhov {
 
 #em_comments{display:inline; float:left; margin-left: 15px;}
 #em_comments_action{display:inline;/*float:right;*/ padding:8px}
+
+#user_campaign a{
+	background-color:#E1F1F8;
+	padding:1px 5px 0px 5px;
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}

@@ -192,14 +192,17 @@ foreach ($this->users as $user) { ?>
 			}
 		?>
 		</td>
-		<td align="center"><?php 
+		<td align="center"><?php
 			foreach($this->campaigns as $campaign){ 
 				if($campaign->applicant_id==$user->id){
 					$campaign_date = JText::_('CAMPAIG_DATE');
 					$campaign_end_date = JText::_('CAMPAIGN_END_DATE');
 					$campaign_start_date = JText::_('CAMPAIGN_START_DATE');
-					echo '<span class="editlinktip hasTip" title="'.$campaign_date.' :: '.$campaign_start_date.' : '.date("Y-m-d", strtotime($campaign->start_date)).'<BR />'.$campaign_end_date.' : '.date("Y-m-d", strtotime($campaign->end_date)).'" >
-					<a href="#">'.$campaign->label.'</a></span>';
+					$year = JText::_('ACADEMIC_YEAR');
+					$start_date = JHtml::_('date', $campaign->start_date, JText::_('DATE_FORMAT_LC2'));
+					$end_date = JHtml::_('date', $campaign->end_date, JText::_('DATE_FORMAT_LC2'));
+					echo '<div id="user_campaign"><span class="editlinktip hasTip" title="'.$campaign_date.' :: '.$campaign_start_date.' : '.$start_date.'<BR />'.$campaign_end_date.' : '.$end_date.'<BR />'.$year.' : '.$campaign->year.'" >
+					<a href="#">'.$campaign->label.'</a></span></div>';
 				} 
 			} 
 		?>
