@@ -144,7 +144,7 @@ function age($naiss) {
 </div>
 
 <div id="accordion">
-	<h2><?php echo JText::_('ACCOUNT'); ?></h2>
+	<h2 onClick="setCookie('current_display',0,20);"><?php echo JText::_('ACCOUNT'); ?></h2>
 	<div id="em_application_forms" class="content">
 	<table class="adminlist">
 			<thead>
@@ -184,21 +184,22 @@ function age($naiss) {
 			</tbody>
 		</table>
 	</div>
-	<h2>
+	<h2 onClick="setCookie('current_display',1,20);">
 		<?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 	</h2>	
-	<div class="actions">
-		<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
-		<?php
-			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-				echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">
-					<img src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
-					</a> ';
-			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-		?>
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px"/>
-	</div>
+	
 	<div id="em_application_attachments" class="content">
+		<div class="actions">
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px"/>
+			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
+			<?php
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+					echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">
+						<img src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
+						</a> ';
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+			?>
+		</div>
 		
 		<?php
 		if(count($this->userAttachments) > 0) { 
@@ -239,28 +240,32 @@ function age($naiss) {
 	
 	<h2><?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
 	</h2>
-	<div class="actions">
-		<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
-		<?php
-			echo 'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank">
-				<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/PDF_Icon.png" width="30px" />
-			</a>'; ?>
-		<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
-		<?php
-			echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="document.pressed=this.name" name="export_zip" width="30px" />'; ?>
+	
+	<div id="em_application_forms" class="content">
+		<div class="actions">
+			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DOWNLOAD_APPLICATION_FORM')."</div>"; ?>');"
+			<?php
+				echo 'href="index.php?option=com_emundus&task=pdf&user='.$this->student->id.'" class="appsent" target="_blank"  onClick="setCookie(\'current_display\',2,20);">
+					<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/PDF_Icon.png" width="30px" />
+				</a>'; ?>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_SELECTED_TO_ZIP')."</div>"; ?>');"
+			<?php
+				echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="setCookie(\'current_display\',2,20);document.pressed=this.name" name="export_zip" width="30px" />'; ?>
+		</div>
+		<?php echo $this->forms; ?>
 	</div>
-	<div id="em_application_forms" class="content"><?php echo $this->forms; ?></div>
-
+		
 	<h2 id="em_application_forms_title"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>-->
 		<?php echo JText::_('COMMENTS'); ?>
 	</h2>
-	<div class="actions">
-		<?php
-		echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">'; ?>
-			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="30px" />
-		</a>
-	</div>
+	
 	<div id="em_application_comments" class="content">
+		<div class="actions">
+			<?php
+			echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">'; ?>
+			<img onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('ADD_COMMENT')."</div>"; ?>');" onClick="setCookie('current_display',3,20); document.pressed=this.name" name="add_comment" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/add_comment.png" width="30px" />
+			</a>
+		</div>
 		<?php
 		if(count($this->userComments) > 0) { 
 			$i=0;
@@ -295,8 +300,13 @@ function age($naiss) {
 <input type="hidden" value="<?php echo $tmpl; ?>" name="tmpl">
 </form>
 <script>
+var current_display = 0;
+
 window.addEvent('domready', function(){
-	application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content');
+	application = new Fx.Accordion($('accordion'), '#accordion h2', '#accordion .content', {
+		display: getCookie('current_display'),
+		alwaysHide: true
+	});
 });
 
 function tooltip(element, text){
@@ -475,8 +485,36 @@ function deleteComment(comment_id){
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	xhr.send("&comment_id="+comment_id);
 }
+
 function delayAct(user_id){
 	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?> <?php if(!empty($tmpl)){ echo'&tmpl='.$tmpl; }?>";
 	setTimeout("document.applicant_form.submit()",10) 
+}
+
+function setCookie(pLabel, pVal, psec)
+{
+	var tExpDate=new Date();
+	tExpDate.setTime( tExpDate.getTime()+(psec*1000) );
+	document.cookie= pLabel + "=" +escape(pVal)+ ( (psec==null) ? "" : ";expires="+ tExpDate.toGMTString() );
+}	
+
+function getCookie(c_name)
+{
+	var c_value = document.cookie;
+	var c_start = c_value.indexOf(" " + c_name + "=");
+	if (c_start == -1){
+		c_start = c_value.indexOf(c_name + "=");
+	}
+	if (c_start == -1){
+		c_value = null;
+	}else{
+		c_start = c_value.indexOf("=", c_start) + 1;
+		var c_end = c_value.indexOf(";", c_start);
+		if (c_end == -1){
+			c_end = c_value.length;
+		}
+		c_value = unescape(c_value.substring(c_start,c_end));
+	}
+	return c_value;
 }
 </script>

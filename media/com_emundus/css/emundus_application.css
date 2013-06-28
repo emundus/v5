@@ -29,10 +29,9 @@
 	}
 	
 	.actions {
-		float:right;
-		margin:-40px 0 0 0;
-		padding:0 3px 0 0;
-		display:inline;
+		padding:2px 2px 2px 2px;
+		margin:auto;
+		border:1px solid #8E98A4;
 	}
 
 	/* CENTER */
