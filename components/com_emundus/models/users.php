@@ -159,7 +159,6 @@ class EmundusModelUsers extends JModel
 			}
 		}
 		
-		
 		$query = 'SELECT u.id, e.lastname, e.firstname, u.name, u.email, u.username, u.block,  e.profile, up.profile_value as newsletter, u.registerDate, u.lastvisitDate, 
 					epd.nationality, epd.gender, e.university_id,
 					TO_DAYS(NOW()) - TO_DAYS(u.registerDate) as registred_for
@@ -302,8 +301,8 @@ class EmundusModelUsers extends JModel
 		$year = is_string($schoolyears)?$schoolyears:"'".implode("','", $schoolyears)."'";
 		$db = JFactory::getDBO();
 		$query = 'SELECT cc.applicant_id
-		FROM #__emundus_setup_campaigns AS sc 
-		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		FROM #__emundus_campaign_candidature AS cc 
+		LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
 		WHERE sc.published=1 AND sc.year IN ('.$year.') ORDER BY sc.year DESC';
 //echo str_replace('#_','jos',$query);
 		$db->setQuery( $query );
@@ -329,6 +328,7 @@ class EmundusModelUsers extends JModel
 		LEFT JOIN #__emundus_setup_campaigns AS sc ON cc.campaign_id = sc.id
 		WHERE sc.published=1 AND sc.id IN ('.implode(",", $campaign).')';
 		$db->setQuery( $query );
+		// echo '<BR />'.str_replace ('#_', 'jos', $query).'<BR />';
 		return $db->loadResultArray();
 	}
 	
