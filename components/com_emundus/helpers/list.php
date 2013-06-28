@@ -205,10 +205,15 @@ class EmundusHelperList{
 		return $db->loadObjectList();
 	}
 	
-	// get forms list to create action block for each users
+	// @description get forms list to create action block for each users
+	// @param	int applicant user id
+	// @return 	array Menu links of all forms needed to apply
 	function getFormsList($user_id){
 		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-		$profile = & EmundusHelperList::getProfile($user_id);
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+		$campaigns = new EmundusModelCampaign();
+		$campaign = $campaigns->getCampaignByApplicant($user_id);
+		$profile = $campaign[0]->profile_id;
 		return EmundusHelperMenu::buildMenuQuery($profile);
 	}
 	

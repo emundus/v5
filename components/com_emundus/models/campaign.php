@@ -109,7 +109,7 @@ class EmundusModelCampaign extends JModel
 	
 	function getMySubmittedCampaign()
 	{
-		$query = 'SELECT esc.* 
+		$query = 'SELECT esc.*
 					FROM #__emundus_campaign_candidature AS ecc 
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
 					WHERE esc.applicant_id='.$this->_user->id. 'AND ecc.submitted=1
