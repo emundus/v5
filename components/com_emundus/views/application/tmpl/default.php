@@ -205,7 +205,7 @@ function age($naiss) {
 				echo '<input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><label for="checkall1"><strong>'.JText::_('SELECT_ALL').'</strong></label>';;
 			$i=0;
 			foreach($this->userAttachments as $attachment){
-				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$this->student->id.'/'.$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;
+				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;
 				$img_missing = (!file_exists($path))?'<img src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
 				
 				$img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="'.$this->baseurl.'media/com_emundus/images/icones/encrypted.png" />':"";
