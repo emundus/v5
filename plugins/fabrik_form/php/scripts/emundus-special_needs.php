@@ -27,11 +27,18 @@ $upload=$db->loadResult();
 
 $filename = explode('/', $upload);
 
-if (is_file($filename[5])) {
-	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed, timedate, campaign_id) values(".$user->id.",".$attachment_id.",'".$filename[5]."','',".$can_be_deleted.",".$can_be_viewed.", NOW(), ".$user->campaign_id.")";
+if (!empty($filename[5])) {
+	$query="INSERT INTO #__emundus_uploads (user_id,attachment_id,filename,description,can_be_deleted,can_be_viewed, timedate, campaign_id) values(".$user->id.",".$attachment_id.",".$db->Quote($filename[5]).",'',".$can_be_deleted.",".$can_be_viewed.", NOW(), ".$user->campaign_id.")";
 
 	$db->setQuery($query);
-
+	try {
+	    $result = $db->query(); // Use $db->execute() for Joomla 3.0.
+	} catch (Exception $e) {
+	    // Catch the error.
+	}
+} else {
+	$query = "DELETE FROM #__emundus_uploads WHERE user_id=".$user->id." AND attachment_id=".$attachment_id;
+	$db->setQuery($query);
 	try {
 	    $result = $db->query(); // Use $db->execute() for Joomla 3.0.
 	} catch (Exception $e) {

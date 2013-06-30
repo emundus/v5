@@ -703,21 +703,25 @@ function updateprofile() {
 	 * Check if user can or not open PDF file
 	 */
 	function getfile() {
-		$url = $_GET['u'];
+		//$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',"checklist");
+		//$view = JRequest::getVar('view', null, 'GET');
+		$url = $_GET['u']; 
 		$urltab = explode('/', $url);
+		/*$file = explode('.', $urltab[4]);
+		$ext = $file[1];*/
 		$cpt = count($urltab);
-		$uid = $urltab[$cpt-2];
-		$current_user = JFactory::getUser();
-		//$allowed = array("Super Users", "Administrator", "Publisher", "Editor", "Author");
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			JError::raiseWarning( 500, JText::_( 'RESTRICTED_ACCESS' ) );
-			$Itemid=JSite::getMenu()->getActive()->id;
-			$this->setRedirect('index.php?option=com_emundus&Itemid='.$Itemid);
+		$uid = $urltab[$cpt-2]; 
+		$current_user = JFactory::getUser(); 
+//die( var_dump((!EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id))) && (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id != $uid));
+//die( var_dump( !EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id != $uid) ));
+
+		if( !EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id != $uid) ) { 
+			JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) );
 		} else {
 			$file = JPATH_BASE.DS.$url;
 			if (file_exists($file)) {
 				
-				header('Content-type: application/octet-stream');
+				header('Content-type: application/'.mime_content_type($url));
 				header('Content-Disposition: inline; filename='.basename($file));
 				header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
 				header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -725,14 +729,17 @@ function updateprofile() {
 				header('Pragma: anytextexeptno-cache', true);
 				header('Cache-control: private');
 				header('Expires: 0');
-				
+				//header('Content-Transfer-Encoding: binary');
+				//header('Content-Length: ' . filesize($file));
+				//header('Accept-Ranges: bytes');
+
 				ob_clean();
 				flush();
 				readfile($file);
 				exit;
 			} else {
 				JError::raiseWarning( 500, JText::_( 'FILE_NOT_FOUND' ).' '.$file );
-				$this->setRedirect('index.php?option=com_emundus');
+				//$this->setRedirect('index.php?option=com_emundus&view='.$view.'&Itemid='.$Itemid);
 			}
 		}
 	}

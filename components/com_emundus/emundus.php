@@ -8,7 +8,7 @@
 */
  
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined( '_JEXEC' ) or die( 'ACCESS_DENIED' );
 
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
@@ -31,7 +31,7 @@ $user = JFactory::getUser();
 $name = JRequest::getWord('view');
 
 if ($user->guest && $name != 'emailalert') {
-	$controller->setRedirect('index.php', JText::_("You must login to see the content."), 'error');
+	$controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else { 
 	// Perform the Request task
 	$controller->execute( JRequest::getWord( 'task' ) ); 
