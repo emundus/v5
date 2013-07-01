@@ -8,6 +8,9 @@ defined('_JEXEC') or die;
 
 /**
  * Joomla! 3 view renderer class
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFRenderJoomla3 extends FOFRenderStrapper
 {
@@ -17,27 +20,35 @@ class FOFRenderJoomla3 extends FOFRenderStrapper
 	 */
 	public function __construct()
 	{
-		$this->priority = 55;
-		$this->enabled = version_compare(JVERSION, '3.0', 'ge');
+		$this->priority	 = 55;
+		$this->enabled	 = FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge');
 	}
 
 	/**
 	 * Echoes any HTML to show before the view template
 	 *
-	 * @param   string  $view   The current view
-	 * @param   string  $task   The current task
-	 * @param   array   $input  The input array (request parameters)
+	 * @param   string    $view    The current view
+	 * @param   string    $task    The current task
+	 * @param   FOFInput  $input   The input array (request parameters)
+	 * @param   array     $config  The view configuration array
+	 *
+	 * @return  void
 	 */
 	public function preRender($view, $task, $input, $config = array())
 	{
-		$format = $input->getCmd('format', 'html');
-		if (empty($format))
-			$format = 'html';
-		if ($format != 'html')
-			return;
+		$format	 = $input->getCmd('format', 'html');
 
-		list($isCli, ) = FOFDispatcher::isCliAdmin();
-		if(!$isCli)
+		if (empty($format))
+		{
+			$format	 = 'html';
+		}
+
+		if ($format != 'html')
+		{
+			return;
+		}
+
+		if (!FOFPlatform::getInstance()->isCli())
 		{
 			// Wrap output in a Joomla-versioned div
 			$version = new JVersion;
@@ -46,23 +57,31 @@ class FOFRenderJoomla3 extends FOFRenderStrapper
 		}
 
 		// Render the submenu and toolbar
-		$this->renderButtons($view, $task, $input, $config);
-		$this->renderLinkbar($view, $task, $input, $config);
+		if ($input->getBool('render_toolbar', true))
+		{
+			$this->renderButtons($view, $task, $input, $config);
+			$this->renderLinkbar($view, $task, $input, $config);
+		}
 	}
 
 	/**
 	 * Echoes any HTML to show after the view template
 	 *
-	 * @param   string  $view   The current view
-	 * @param   string  $task   The current task
-	 * @param   array   $input  The input array (request parameters)
+	 * @param   string    $view    The current view
+	 * @param   string    $task    The current task
+	 * @param   FOFInput  $input   The input array (request parameters)
+	 * @param   array     $config  The view configuration array
+	 *
+	 * @return  void
 	 */
 	public function postRender($view, $task, $input, $config = array())
 	{
-		list($isCli, ) = FOFDispatcher::isCliAdmin();
 		$format = $input->getCmd('format', 'html');
-		if ($format != 'html' || $isCli)
+
+		if ($format != 'html' || FOFPlatform::getInstance()->isCli())
+		{
 			return;
+		}
 
 		echo "</div>\n";
 	}

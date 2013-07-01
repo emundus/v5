@@ -53,9 +53,14 @@ class FOFEncryptBase32
 	private function bin2str($str)
 	{
 		if (strlen($str) % 8 > 0)
+		{
 			throw new Exception('Length must be divisible by 8');
+		}
+
 		if (!preg_match('/^[01]+$/', $str))
+		{
 			throw new Exception('Only 0\'s and 1\'s are permitted');
+		}
 
 		preg_match_all('/.{8}/', $str, $chrs);
 		$chrs = array_map('bindec', $chrs[0]);
@@ -80,9 +85,14 @@ class FOFEncryptBase32
 	private function fromBin($str)
 	{
 		if (strlen($str) % 8 > 0)
+		{
 			throw new Exception('Length must be divisible by 8');
+		}
+
 		if (!preg_match('/^[01]+$/', $str))
+		{
 			throw new Exception('Only 0\'s and 1\'s are permitted');
+		}
 
 		// Base32 works on the first 5 bits of a byte, so we insert blanks to pad it out
 		$str = preg_replace('/(.{5})/', '000$1', $str);
@@ -130,8 +140,11 @@ class FOFEncryptBase32
 		// Unpad if nessicary
 		$length = strlen($str);
 		$rbits = $length & 7;
+
 		if ($rbits > 0)
+		{
 			$str = substr($str, 0, $length - $rbits);
+		}
 
 		return $str;
 	}

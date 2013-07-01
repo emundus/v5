@@ -34,30 +34,30 @@ class plgSystemAdmintoolsCore extends JPlugin
 {
 	/* When set to true, the cache files will be regenerated every time */
 	const DEBUG = false;
-	
+
 	/** @var string Combine feature's cache directory */
 	private $combineCache = null;
-	
+
 	/** @var object JavaScript merge parameters */
 	private $JSparams = null;
-	
+
 	/** @var array An array holding the JS files to replace in the output*/
 	private $jsFiles = array();
-	
+
 	/** @var object CSS merge parameters */
 	private $CSSparams = array();
-	
+
 	/** @var array An array holding the CSS files to replace in the output*/
 	private $cssFiles = array();
-	
+
 	/** @var AdminToolsModelStorage The component parameters store */
 	private $cparams = null;
-	
+
 	/** @var string The absolute base URL of the site */
 	private $baseURL = null;
-	
+
 	static public $myself = null;
-	
+
 	public static function &fetchMyself()
 	{
 		return self::$myself;
@@ -70,12 +70,12 @@ class plgSystemAdmintoolsCore extends JPlugin
 		JLoader::import('joomla.application.component.helper');
 		$plugin = JPluginHelper::getPlugin('system', 'admintools');
 		$defaultConfig = (array)($plugin);
-		
+
 		$config = array_merge($defaultConfig, $config);
-		
+
 		// Use the parent constructor to create the plugin object
 		parent::__construct($subject, $config);
-		
+
 		// Load the components parameters
 		JLoader::import('joomla.application.component.model');
 		require_once JPATH_ROOT.'/administrator/components/com_admintools/models/storage.php';
@@ -84,7 +84,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 		} else {
 			$this->cparams = JModel::getInstance('Storage','AdmintoolsModel');
 		}
-		
+
 		// Get the combine feature's cache directory
 		$combinecache = $this->cparams->getValue('combinecache', null);
 		if(empty($combinecache)) {
@@ -99,58 +99,58 @@ class plgSystemAdmintoolsCore extends JPlugin
 			}
 		}
 		$this->combineCache = $combinecache;
-		
+
 		// Do we have to deliver a file?
 		$hash = JRequest::getCmd('fetchcombinedfile',null);
 		if(!empty($hash))
 		{
 			$this->deliverFile($hash);
 		}
-		
+
 		self::$myself = $this;
 	}
-	
+
 	public function onAfterInitialise()
 	{
 		$app = JFactory::getApplication();
-		
+
 		if(in_array($app->getName(),array('administrator','admin'))) {
 			// Back-end stuff
 		} else {
 			// Front-end stuff
 		}
 	}
-	
+
 	public function onBeforeRender()
 	{
 		$app = JFactory::getApplication();
 		$app->registerEvent('onAfterRender', 'AdminToolsLateBoundAfterRender');
 	}
-	
+
 	public function onAfterRenderLatebound()
 	{
 		$app = JFactory::getApplication();
 		if(in_array($app->getName(),array('administrator','admin'))) return;
-		
+
 		// Link Migration - rewrite links pointing to the old domain name of the site
 		if($this->cparams->getValue('linkmigration',0) == 1) {
 			$this->linkMigration();
 		}
-		
+
 		// HTTPSizer - convert all links to HTTPS
 		if($this->cparams->getValue('httpsizer',0) == 1) {
 			$this->httpsizer();
 		}
-		
+
 		// CSS and JS combination
 		$this->onCssJsCombine();
 	}
-	
+
 	public function onCssJsCombine()
 	{
 		$app = JFactory::getApplication();
 		if(in_array($app->getName(),array('administrator','admin'))) return;
-		
+
 		// Get the site's base URI
 		$base = JURI::base();
 		if( $app->getName() == 'administrator' ) {
@@ -160,7 +160,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			$base = @implode('/', $base_pieces).'/';
 		}
 		$this->baseURL = $base;
-		
+
 		// Javascript Combine - Combines JavaScript files on the page to one, big file.
 		if(
 			($this->cparams->getValue('jscombine',0) == 1)
@@ -168,7 +168,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 		) {
 			// Initialise parameters
 			$this->JSparams = new JObject();
-			
+
 			// Fetch the files to skip when combining
 			$skip = $this->cparams->getValue('jsskip', '');
 			if(empty($skip)) {
@@ -178,22 +178,22 @@ class plgSystemAdmintoolsCore extends JPlugin
 				$skip = explode("\n", $skip);
 			}
 			$this->JSparams->set('skip', $skip);
-			
+
 			// Set the delivery method for combined files
 			$delivery = $this->cparams->getValue('jsdelivery', 'plugin');
 			if(!in_array($delivery, array('plugin','direct'))) $delivery = 'plugin';
 			$this->JSparams->set('delivery', $delivery);
-			
+
 			// Get the cache folder to use
 			$this->JSparams->set('cache', $this->combineCache);
-			
+
 			// Finally, get the signature...
 			$signature = md5(serialize($this->JSparams));
 			$this->JSparams->set('signature', $signature);
 			// ...and combine Javascript
 			$this->jscombine();
 		}
-		
+
 		// CSS Combine - Combines CSS files on the page to one, big file.
 		if(
 			($this->cparams->getValue('csscombine',0) == 1)
@@ -201,11 +201,11 @@ class plgSystemAdmintoolsCore extends JPlugin
 		) {
 			// Initialise parameters
 			$this->CSSparams = new JObject();
-			
+
 			if(!class_exists('aCssToken')) {
 				require_once 'cssmin.php';
 			}
-			
+
 			// Fetch the files to skip when combining
 			$skip = $this->cparams->getValue('cssskip', '');
 			if(empty($skip)) {
@@ -215,15 +215,15 @@ class plgSystemAdmintoolsCore extends JPlugin
 				$skip = explode("\n", $skip);
 			}
 			$this->CSSparams->set('skip', $skip);
-			
+
 			// Set the delivery method for combined files
 			$delivery = $this->cparams->getValue('cssdelivery', 'plugin');
 			if(!in_array($delivery, array('plugin','direct'))) $delivery = 'plugin';
 			$this->CSSparams->set('delivery', $delivery);
-			
+
 			// Get the cache folder to use
 			$this->CSSparams->set('cache', $this->combineCache);
-			
+
 			// Finally, get the signature...
 			$signature = md5(serialize($this->CSSparams));
 			$this->CSSparams->set('signature', $signature);
@@ -231,7 +231,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			$this->csscombine();
 		}
 	}
-	
+
 	/**
 	 * Provides link migration services. All absolute links pointing to any of the old domain names
 	 * are being rewritten to point to the current domain name. This runs a full page replacement
@@ -240,15 +240,15 @@ class plgSystemAdmintoolsCore extends JPlugin
 	private function linkMigration()
 	{
 		$buffer = JResponse::getBody();
-		
+
 		$pattern = '/(href|src)=\"([^"]*)\"/i';
 		$number_of_matches = preg_match_all($pattern, $buffer, $matches, PREG_OFFSET_CAPTURE);
-		
+
 		if($number_of_matches > 0) {
 			$substitutions = $matches[2];
 			$last_position = 0;
 			$temp = '';
-	
+
 			// Loop all URLs
 			foreach($substitutions as &$entry)
 			{
@@ -267,9 +267,9 @@ class plgSystemAdmintoolsCore extends JPlugin
 			unset($buffer);
 			JResponse::setBody($temp);
 			unset($temp);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Replaces a URL's domain name (if it is in the substitution list) with the
 	 * current site's domain name
@@ -302,7 +302,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			if(substr($mydomain,0,7) == 'http://') $mydomain = substr($mydomain,7);
 			if(substr($mydomain,0,8) == 'https://') $mydomain = substr($mydomain,8);
 		}
-	
+
 		if(!empty($old_domains))
 			foreach($old_domains as $domain)
 			{
@@ -317,11 +317,11 @@ class plgSystemAdmintoolsCore extends JPlugin
 					return 'https://'.$mydomain.substr($url, strlen($domain)+8);
 				}
 			}
-	
+
 		return $url;
 	}
-	
-	
+
+
 	/**
 	 * Converts all HTTP URLs to HTTPS URLs when the site is accessed over SSL
 	 */
@@ -331,12 +331,12 @@ class plgSystemAdmintoolsCore extends JPlugin
 		$uri = JURI::getInstance();
 		$protocol = $uri->toString(array('scheme'));
 		if($protocol != 'https://') return;
-		
+
 		$buffer = JResponse::getBody();
 		$buffer = str_replace('http://','https://',$buffer);
 		JResponse::setBody($buffer);
 	}
-	
+
 	private function jscombine()
 	{
 		// Get the HTML content from the JResponse class
@@ -344,7 +344,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 
 		// Load Joomla! classes
 		JLoader::import('joomla.filesystem.file');
-		
+
 		// Parse JavaScript separators
 		$this->jsFiles = array();
 		$scriptRegex="/<script [^>]+(\/>|><\/script>)/i";
@@ -375,7 +375,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 				if( substr( strtolower($file), -4 ) == '.php' ) {
 					$replace = false;
 				};
-				
+
 				// Do not add any file in the skip list
 				$skips = $this->JSparams->get('skip','');
 				if(!empty($skips)) foreach($skips as $skip) {
@@ -448,7 +448,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			{
 				if(!$file->internal) continue;
 				if(!$file->replace) continue;
-				
+
 				$myContent = JFile::read(JPATH_ROOT.DIRECTORY_SEPARATOR.$file->file, false, $file->size);
 				if($myContent === false) {
 					$file->replace = false;
@@ -475,7 +475,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			}
 			$newURL = rtrim($this->baseURL,'/').'/'.$myCache.'/js-'.$jsHash.'.js';
 		}
-		
+
 		$newHeadCode = '</title>';
 		foreach($this->jsFiles as $js) {
 			if(!$js->internal || !$js->replace) {
@@ -483,12 +483,12 @@ class plgSystemAdmintoolsCore extends JPlugin
 			}
 		}
 		$newHeadCode .="\n".'<script type="text/javascript" src="'.$newURL.'"></script>'."\n";
-		
+
 		//only match once
 		$body = preg_replace('/<\/title>/i',$newHeadCode , $body,1);
 		JResponse::setBody($body);
 	}
-	
+
 	private function csscombine()
 	{
 		// Get the HTML content from the JResponse class
@@ -496,13 +496,13 @@ class plgSystemAdmintoolsCore extends JPlugin
 
 		// Load Joomla! classes
 		JLoader::import('joomla.filesystem.file');
-		
+
 		// Parse JavaScript separators
 		$this->cssFiles = array();
 		$conditionRegex="/<\!--\[if.*?\[endif\]-->/is";
 	 	$linksRegex="|<link[^>]+[/]?>((.*)</[^>]+>)?|U";
 		$cssRegex="/([^\"\'=]+\.(css)(\?[^\"\']*){0,1})[\"\']/i";
-		
+
 		// Banned files from being minified
 		$cssBanList = array();
 		// Parse conditional CSS files
@@ -523,7 +523,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 	 			}
 	 		}
 	 	}
-		
+
 		// Only parse the CSS files for "all" and "screen" media (or those which
 		// do not define a media selector, implying "all")
 		preg_match_all($linksRegex, $body, $matches);
@@ -534,13 +534,13 @@ class plgSystemAdmintoolsCore extends JPlugin
 			// Make sure it's a CSS file
 			preg_match_all($cssRegex,$linkCode,$matches);
 			if(empty($matches[0])) continue;
-			
+
 			// Get URL
 			$url = array_pop($matches[1]);
-			
+
 			// Get media
 			preg_match_all($mediaRegex,$linkCode,$matches);
-			
+
 			if(!empty($matches[1])) {
 				$allMediaString = array_pop($matches[1]);
 				$media = explode(',', $allMediaString);
@@ -553,13 +553,13 @@ class plgSystemAdmintoolsCore extends JPlugin
 				$allMediaString = 'all';
 				$skip = false;
 			}
-			
+
 			if($skip) continue;
-			
+
 			// Add to array
 			$allCSSLinks[$url] = $allMediaString;
 		}
-				
+
 		foreach( $allCSSLinks as $url => $allMediaString )
 		{
 			$file = $url; // Clone the string, as it gets modified
@@ -583,7 +583,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 				if( substr( strtolower($file), -4 ) == '.php' ) {
 					$replace = false;
 				};
-				
+
 				// Do not add any file in the skip list
 				$skips = $this->CSSparams->get('skip','');
 				if(!empty($skips)) foreach($skips as $skip) {
@@ -620,7 +620,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 				} else {
 					$skip = false;
 				}
-				
+
 				$this->cssFiles[] = (object)array(
 					'url'		=> $url,
 					'file'		=> $file,
@@ -638,7 +638,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 				} else {
 					$skip = false;
 				}
-				
+
 				$this->cssFiles[] = (object)array(
 					'url'		=> $url,
 					'file'		=> null,
@@ -677,18 +677,18 @@ class plgSystemAdmintoolsCore extends JPlugin
 				if($file->skip) continue;
 				if(!$file->internal) continue;
 				if(!$file->replace) continue;
-				
+
 				$myContent = JFile::read(JPATH_ROOT.DIRECTORY_SEPARATOR.$file->file, false, $file->size);
 				if($myContent === false) {
 					$file->replace = false;
 					continue;
 				}
-				
+
 				$basePath = $this->baseURL . trim(dirname($file->file),'/\\') ;
 				if(DIRECTORY_SEPARATOR == '\\') $basePath = str_replace (DIRECTORY_SEPARATOR, '/', $basePath);
 				$this->cssBaseURL = $basePath;
 				$myContent = preg_replace_callback("/url\s*\((.*)\)/siU", array($this,"decode_url"), $myContent);
-				
+
 				$cssContent .= "\n\n/* COMBINED FILE: {$file->url} */\n\n";
 
 				$cmFilters = array (
@@ -712,12 +712,12 @@ class plgSystemAdmintoolsCore extends JPlugin
 					"CompressExpressionValues"      => true
 				);
 				$cssContent .= CssMin::minify($myContent, $cmFilters, $cmPlugins)."\n";
-				
+
 				//$cssContent .= $myContent . "\n\n";
-				
+
 				$basename = basename($file->file);
 			}
-			
+
 			// Write the cache file
 			JFile::write($this->combineCache.DIRECTORY_SEPARATOR.'css-'.$cssHash.'.css', $cssContent);
 		}
@@ -735,7 +735,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			}
 			$newURL = rtrim($this->baseURL,'/').'/'.$myCache.'/css-'.$cssHash.'.css';
 		}
-		
+
 		$newHeadCode = '</title>';
 		foreach($this->cssFiles as $css) {
 			if( (!$css->internal || !$css->replace) && !$css->skip) {
@@ -743,12 +743,12 @@ class plgSystemAdmintoolsCore extends JPlugin
 			}
 		}
 		$newHeadCode .="\n".'<link rel="stylesheet" type="text/css" href="'.$newURL.'" />'."\n";
-		
+
 		//only match once
 		$body = preg_replace('/<\/title>/i',$newHeadCode , $body,1);
 		JResponse::setBody($body);
 	}
-	
+
 	/**
 	 * Delivers a cached JS/CSS combined file
 	 */
@@ -760,7 +760,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 
 		// Kill caching
 		@ob_end_clean();
-		
+
 		// Check that it's a js- or css- file, or throw a Forbidden message
 		$pass = true;
 		if(substr($hash,0,3) == 'js-') {
@@ -771,10 +771,10 @@ class plgSystemAdmintoolsCore extends JPlugin
 			$ext = '.php';
 			$pass = false;
 		}
-		
+
 		// Is the file there?
 		if($pass) $pass = $pass && JFile::exists($this->combineCache.DIRECTORY_SEPARATOR.$hash.$ext);
-		
+
 		// Can we read the file?
 		if($pass)
 		{
@@ -784,13 +784,13 @@ class plgSystemAdmintoolsCore extends JPlugin
 				$pass = false;
 			}
 		}
-		
+
 		// If there is something wrong, throw a Forbidden header
 		if(!$pass) {
 			if(!headers_sent()) header('HTTP/1.0 403 Forbidden');
 			jexit(403);
 		}
-		
+
 		// Guess the appropriate content type
 		$contentType = (substr($hash,0,3) == 'js-') ? 'text/javascript' : 'text/css';
 		$suffix = (substr($hash,0,3) == 'js-') ? 'js' : 'css';
@@ -802,7 +802,15 @@ class plgSystemAdmintoolsCore extends JPlugin
 		$jfiledate = new JDate($filedate);
 		$modified = $jfiledate->toRFC822();
 		$filedate += 31536000; // Add one year
-		$date = new JDate($filedate,0);
+		$gmt = new DateTimeZone('GMT');
+		if (version_compare(JVERSION, '3.1.0', 'ge'))
+		{
+			$date = new JDate($filedate, $gmt);
+		}
+		else
+		{
+			$date = new JDate($filedate, 0);
+		}
 		$expires = $date->toRFC822();
 
 		// Calculate data length
@@ -953,7 +961,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 					if(($file->url == $url)) $found = true;
 					if(($file->file == $filename)) $found = true;
 					if(($file->file == 'administrator'.DIRECTORY_SEPARATOR.$filename)) $found = true;
-					
+
 					if($found) {
 						$file->REPLACED = 'REPLACED';
 						return ' ';
@@ -974,7 +982,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			return $matches[0];
 		}
 	}
-	
+
 	/**
 	 * Callback method to remove the CSS <link> tags
 	 * @param array $matches
@@ -1025,7 +1033,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 						return ' ';
 					}
 					/**/
-					
+
 				}
 				if(!$found) return $matches[0];
 			}
@@ -1042,7 +1050,7 @@ class plgSystemAdmintoolsCore extends JPlugin
 			return $matches[0];
 		}
 	}
-	
+
 	public function decode_url($match)
 	{
 		$baseurl = $this->cssBaseURL;

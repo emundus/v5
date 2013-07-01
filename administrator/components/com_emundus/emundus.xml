@@ -5,7 +5,7 @@
 	<author>Decision Publique</author>
 	<authorEmail>emundus@decisionpublique.fr</authorEmail>
 	<authorUrl>http://www.emundus.fr</authorUrl>
-	<version>2.0</version>
+	<version>5.0</version>
 	<description>Decision Publique eMundus application component for Joomla!.</description>
 
 	<files folder="site">

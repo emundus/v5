@@ -7,6 +7,14 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+/**
+ * FOFForm is an extension to JForm which support not only edit views but also
+ * browse (record list) and read (single record display) views based on XML
+ * forms.
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
+ */
 class FOFForm extends JForm
 {
 
@@ -91,6 +99,7 @@ class FOFForm extends JForm
 	public function getAttribute($attribute, $default = null)
 	{
 		$value = $this->xml->attributes()->$attribute;
+
 		if (is_null($value))
 		{
 			return $default;
@@ -104,6 +113,8 @@ class FOFForm extends JForm
 	/**
 	 * Loads the CSS files defined in the form, based on its cssfiles attribute
 	 *
+	 * @return  void
+	 *
 	 * @since 2.0
 	 */
 	public function loadCSSFiles()
@@ -114,6 +125,7 @@ class FOFForm extends JForm
 		if (!empty($cssfiles))
 		{
 			$cssfiles = explode(',', $cssfiles);
+
 			foreach ($cssfiles as $cssfile)
 			{
 				FOFTemplateUtils::addCSS(trim($cssfile));
@@ -126,6 +138,7 @@ class FOFForm extends JForm
 		if (!empty($lessfiles))
 		{
 			$lessfiles = explode(',', $lessfiles);
+
 			foreach ($lessfiles as $def)
 			{
 				$parts = explode('||', $def, 2);
@@ -139,6 +152,8 @@ class FOFForm extends JForm
 	/**
 	 * Loads the Javascript files defined in the form, based on its jsfiles attribute
 	 *
+	 * @return  void
+	 *
 	 * @since 2.0
 	 */
 	public function loadJSFiles()
@@ -151,6 +166,7 @@ class FOFForm extends JForm
 		}
 
 		$jsfiles = explode(',', $jsfiles);
+
 		foreach ($jsfiles as $jsfile)
 		{
 			FOFTemplateUtils::addJS(trim($jsfile));
@@ -173,7 +189,9 @@ class FOFForm extends JForm
 	/**
 	 * Attaches a FOFModel to this form
 	 *
-	 * @param   FOFModel  $model  The model to attach to the form
+	 * @param   FOFModel  &$model  The model to attach to the form
+	 *
+	 * @return  void
 	 */
 	public function setModel(FOFModel &$model)
 	{
@@ -193,7 +211,9 @@ class FOFForm extends JForm
 	/**
 	 * Attaches a FOFView to this form
 	 *
-	 * @param   FOFView  $view  The view to attach to the form
+	 * @param   FOFView  &$view  The view to attach to the form
+	 *
+	 * @return  void
 	 */
 	public function setView(FOFView &$view)
 	{
@@ -224,12 +244,14 @@ class FOFForm extends JForm
 		$elements = $this->findHeadersByGroup();
 
 		// If no field elements were found return empty.
+
 		if (empty($elements))
 		{
 			return $fields;
 		}
 
 		// Build the result array from the found field elements.
+
 		foreach ($elements as $element)
 		{
 			// Get the field groups for the element.
@@ -295,6 +317,7 @@ class FOFForm extends JForm
 					else
 					{
 						$groupNames = explode('.', $group);
+
 						foreach ($tmp as $field)
 						{
 							// Get the names of the groups that the field is in.
@@ -402,6 +425,7 @@ class FOFForm extends JForm
 
 			// Use the first correct match in the given group.
 			$groupNames = explode('.', $group);
+
 			foreach ($fields as &$field)
 			{
 				// Get the group names as strings for ancestor fields elements.

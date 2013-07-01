@@ -8,13 +8,19 @@
 
 defined('FOF_INCLUDED') or die();
 
+/**
+ * Configuration parser for the view-specific settings
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.1
+ */
 class FOFConfigDomainViews implements FOFConfigDomainInterface
 {
 	/**
 	 * Parse the XML data, adding them to the $ret array
 	 *
-	 * @param   SimpleXMLElement  $xml  The XML data of the component's configuration area
-	 * @param   array             $ret  The parsed data, in the form of a hash array
+	 * @param   SimpleXMLElement  $xml   The XML data of the component's configuration area
+	 * @param   array             &$ret  The parsed data, in the form of a hash array
 	 *
 	 * @return  void
 	 */
@@ -23,52 +29,56 @@ class FOFConfigDomainViews implements FOFConfigDomainInterface
 		// Initialise
 		$ret['views'] = array();
 
-		// Parse the dispatcher configuration
+		// Parse view configuration
 		$viewData = $xml->xpath('view');
 
 		// Sanity check
+
 		if (empty($viewData))
 		{
 			return;
 		}
 
-		foreach($viewData as $aView)
+		foreach ($viewData as $aView)
 		{
-			$key = (string)$aView['name'];
+			$key = (string) $aView['name'];
 
 			// Parse ACL options
 			$ret['views'][$key]['acl'] = array();
 			$aclData = $aView->xpath('acl/task');
+
 			if (!empty($aclData))
 			{
-				foreach($aclData as $acl)
+				foreach ($aclData as $acl)
 				{
-					$k = (string)$acl['name'];
-					$ret['views'][$key]['acl'][$k] = (string)$acl;
+					$k = (string) $acl['name'];
+					$ret['views'][$key]['acl'][$k] = (string) $acl;
 				}
 			}
 
 			// Parse taskmap
 			$ret['views'][$key]['taskmap'] = array();
 			$taskmapData = $aView->xpath('taskmap/task');
+
 			if (!empty($taskmapData))
 			{
-				foreach($taskmapData as $map)
+				foreach ($taskmapData as $map)
 				{
-					$k = (string)$map['name'];
-					$ret['views'][$key]['taskmap'][$k] = (string)$map;
+					$k = (string) $map['name'];
+					$ret['views'][$key]['taskmap'][$k] = (string) $map;
 				}
 			}
 
 			// Parse controller configuration
 			$ret['views'][$key]['config'] = array();
 			$optionData = $aView->xpath('config/option');
+
 			if (!empty($optionData))
 			{
-				foreach($optionData as $option)
+				foreach ($optionData as $option)
 				{
-					$k = (string)$option['name'];
-					$ret['views'][$key]['config'][$k] = (string)$option;
+					$k = (string) $option['name'];
+					$ret['views'][$key]['config'][$k] = (string) $option;
 				}
 			}
 		}
@@ -77,9 +87,9 @@ class FOFConfigDomainViews implements FOFConfigDomainInterface
 	/**
 	 * Return a configuration variable
 	 *
-	 * @param   string  $configuration  Configuration variables (hashed array)
-	 * @param   string  $var            The variable we want to fetch
-	 * @param   mixed   $default        Default value
+	 * @param   string  &$configuration  Configuration variables (hashed array)
+	 * @param   string  $var             The variable we want to fetch
+	 * @param   mixed   $default         Default value
 	 *
 	 * @return  mixed  The variable's value
 	 */
@@ -106,10 +116,10 @@ class FOFConfigDomainViews implements FOFConfigDomainInterface
 	/**
 	 * Internal function to return the task map for a view
 	 *
-	 * @param   string  $view           The view for which we will be fetching a task map
-	 * @param   array   $configuration  The configuration parameters hash array
-	 * @param   array   $params         Extra options (not used)
-	 * @param   array   $default        Default task map; empty array if not provided
+	 * @param   string  $view            The view for which we will be fetching a task map
+	 * @param   array   &$configuration  The configuration parameters hash array
+	 * @param   array   $params          Extra options (not used)
+	 * @param   array   $default         ßDefault task map; empty array if not provided
 	 *
 	 * @return  array  The task map as a hash array in the format task => method
 	 */
@@ -139,10 +149,10 @@ class FOFConfigDomainViews implements FOFConfigDomainInterface
 	 * Internal method to return the ACL mapping (privilege required to access
 	 * a specific task) for the given view's tasks
 	 *
-	 * @param   string  $view           The view for which we will be fetching a task map
-	 * @param   array   $configuration  The configuration parameters hash array
-	 * @param   array   $params         Extra options; key 0 defines the task we want to fetch
-	 * @param   string  $default        Default ACL option; empty (no ACL check) if not defined
+	 * @param   string  $view            The view for which we will be fetching a task map
+	 * @param   array   &$configuration  The configuration parameters hash array
+	 * @param   array   $params          Extra options; key 0 defines the task we want to fetch
+	 * @param   string  $default         Default ACL option; empty (no ACL check) if not defined
 	 *
 	 * @return  string  The privilege required to access this view
 	 */
@@ -179,29 +189,27 @@ class FOFConfigDomainViews implements FOFConfigDomainInterface
 	 * Internal method to return the a configuration option for the view. These
 	 * are equivalent to $config array options passed to the Controller
 	 *
-	 * @param   string  $view           The view for which we will be fetching a task map
-	 * @param   array   $configuration  The configuration parameters hash array
-	 * @param   array   $params         Extra options; key 0 defines the option variable we want to fetch
-	 * @param   mixed   $default        Default option; null if not defined
+	 * @param   string  $view            The view for which we will be fetching a task map
+	 * @param   array   &$configuration  The configuration parameters hash array
+	 * @param   array   $params          Extra options; key 0 defines the option variable we want to fetch
+	 * @param   mixed   $default         Default option; null if not defined
 	 *
 	 * @return  string  The setting for the requested option
 	 */
-	protected function getOption($view, &$configuration, $params, $default = null)
+	protected function getConfig($view, &$configuration, $params, $default = null)
 	{
 		$ret = $default;
 
 		if (isset($configuration['views']['*'])
 			&& isset($configuration['views']['*']['config'])
-			&& isset($configuration['views']['*']['config'][$params[0]])
-		)
+			&& isset($configuration['views']['*']['config'][$params[0]]))
 		{
 			$ret = $configuration['views']['*']['config'][$params[0]];
 		}
 
 		if (isset($configuration['views'][$view])
 			&& isset($configuration['views'][$view]['config'])
-			&& isset($configuration['views'][$view]['config'][$params[0]])
-		)
+			&& isset($configuration['views'][$view]['config'][$params[0]]))
 		{
 			$ret = $configuration['views'][$view]['config'][$params[0]];
 		}

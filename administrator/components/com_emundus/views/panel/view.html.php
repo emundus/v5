@@ -1,7 +1,7 @@
-<?php
+﻿<?php
 /**
  * @package   	eMundus
- * @copyright 	Copyright � 2009-2012 Benjamin Rivalland. All rights reserved.
+ * @copyright 	Copyright © 2009-2012 Benjamin Rivalland. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * eMundus is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

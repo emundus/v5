@@ -23,8 +23,8 @@ defined('_JEXEC') or die();
 class FOFLessParser
 {
 
-	static protected $nextBlockId = 0; // used to uniquely identify blocks
-	static protected $precedence = array(
+	protected static $nextBlockId = 0; // used to uniquely identify blocks
+	protected static $precedence = array(
 		'=<'					 => 0,
 		'>='					 => 0,
 		'='						 => 0,
@@ -36,15 +36,15 @@ class FOFLessParser
 		'/'						 => 2,
 		'%'						 => 2,
 	);
-	static protected $whitePattern;
-	static protected $commentMulti;
-	static protected $commentSingle = "//";
-	static protected $commentMultiLeft = "/*";
-	static protected $commentMultiRight = "*/";
+	protected static $whitePattern;
+	protected static $commentMulti;
+	protected static $commentSingle = "//";
+	protected static $commentMultiLeft = "/*";
+	protected static $commentMultiRight = "*/";
 	// regex string to match any of the operators
-	static protected $operatorString;
+	protected static $operatorString;
 	// these properties will supress division unless it's inside parenthases
-	static protected $supressDivisionProps =
+	protected static $supressDivisionProps =
 		array('/border-radius$/i', '/^font$/i');
 	protected $blockDirectives = array("font-face", "keyframes", "page", "-moz-document");
 	protected $lineDirectives = array("charset");
@@ -60,7 +60,7 @@ class FOFLessParser
 	 */
 	protected $inParens = false;
 	// caches preg escaped literals
-	static protected $literalCache = array();
+	protected static $literalCache = array();
 
 	public function __construct($lessc, $sourceName = null)
 	{
@@ -172,7 +172,6 @@ class FOFLessParser
 			$this->seek($s);
 		}
 
-
 		// look for special css blocks
 		if ($this->literal('@', false))
 		{
@@ -208,7 +207,8 @@ class FOFLessParser
 							$dir->value = $dirValue;
 						return true;
 					}
-				} elseif ($this->isDirective($dirName, $this->lineDirectives))
+				}
+				elseif ($this->isDirective($dirName, $this->lineDirectives))
 				{
 					if ($this->propertyValue($dirValue) && $this->end())
 					{
@@ -250,7 +250,8 @@ class FOFLessParser
 			if (!empty($guards))
 				$block->guards = $guards;
 			return true;
-		} else
+		}
+		else
 		{
 			$this->seek($s);
 		}
@@ -637,7 +638,8 @@ class FOFLessParser
 				$prop[] = "not";
 			$prop[] = $mediaType;
 			$parts[] = $prop;
-		} else
+		}
+		else
 		{
 			$this->seek($s);
 		}
@@ -1091,14 +1093,14 @@ class FOFLessParser
 				while ($this->tagBracket($brack))
 					$tag .= $brack;
 				continue;
-			} elseif ($this->unit($unit))
+			}
+			elseif ($this->unit($unit))
 			{ // for keyframes
 				$tag .= $unit[1] . $unit[2];
 				continue;
 			}
 			break;
 		}
-
 
 		$tag = trim($tag);
 		if ($tag == '')

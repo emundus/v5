@@ -14,19 +14,17 @@ class LiveUpdateConfig extends LiveUpdateAbstractConfig
 {
 	var $_extensionName			= 'com_admintools';
 	var $_versionStrategy		= 'different';
-	/**
 	var $_storageAdapter		= 'component';
 	var $_storageConfig			= array(
-			'extensionName'	=> 'com_admintools',
-			'key'			=> 'liveupdate'
-		);
-	*/
-	
+		'extensionName'	=> 'com_admintools',
+		'key'			=> 'liveupdate'
+	);
+
 	function __construct()
 	{
 		JLoader::import('joomla.filesystem.file');
 		$isPro = (ADMINTOOLS_PRO == 1);
-		
+
 		// Load the component parameters, not using JComponentHelper to avoid conflicts ;)
 		JLoader::import('joomla.html.parameter');
 		JLoader::import('joomla.application.component.helper');
@@ -56,7 +54,7 @@ class LiveUpdateConfig extends LiveUpdateAbstractConfig
 			$this->_updateURL = 'http://cdn.akeebabackup.com/updates/atcore.ini';
 			$this->_extensionTitle = 'Admin Tools Core';
 		}
-		
+
 		// Set up the version strategy
 		if(defined('ADMINTOOLS_VERSION')) {
 			if(in_array(substr(ADMINTOOLS_VERSION, 0, 3), array('svn','dev','rev'))) {
@@ -67,16 +65,16 @@ class LiveUpdateConfig extends LiveUpdateAbstractConfig
 				$this->_versionStrategy = 'different';
 			}
 		}
-		
+
 		// Get the minimum stability level for updates
 		$this->_minStability = $params->get('minstability', 'alpha');
-		
+
 		// Should I use our private CA store?
 		if(@file_exists(dirname(__FILE__).'/../assets/cacert.pem')) {
 			$this->_requiresAuthorization = $isPro;
 			$this->_cacerts = dirname(__FILE__).'/../assets/cacert.pem';
 		}
-		
-		parent::__construct();		
+
+		parent::__construct();
 	}
 }

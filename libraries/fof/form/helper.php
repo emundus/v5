@@ -9,6 +9,15 @@ defined('_JEXEC') or die();
 
 JLoader::import('joomla.form.helper');
 
+/**
+ * FOFForm's helper class.
+ * Provides a storage for filesystem's paths where FOFForm's entities reside and
+ * methods for creating those entities. Also stores objects with entities'
+ * prototypes for further reusing.
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
+ */
 class FOFFormHelper extends JFormHelper
 {
 
@@ -69,10 +78,12 @@ class FOFFormHelper extends JFormHelper
 		}
 
 		$class = self::loadClass($entity, $type);
+
 		if ($class !== false)
 		{
 			// Instantiate a new type object.
 			$types[$key] = new $class;
+
 			return $types[$key];
 		}
 		else
@@ -173,11 +184,13 @@ class FOFFormHelper extends JFormHelper
 
 		// Try to find the class file.
 		$type = strtolower($type) . '.php';
+
 		foreach ($paths as $path)
 		{
 			if ($file = JPath::find($path, $type))
 			{
 				require_once $file;
+
 				if (class_exists($class))
 				{
 					break;

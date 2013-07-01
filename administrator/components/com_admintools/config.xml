@@ -47,7 +47,7 @@
 			<option value="stable">ATOOLS_STABILITY_STABLE</option>
 		</field>
 		<field name="liveupdate" type="hidden" default="" label="" description="" />
-		<field name="sitename" type="hidden" default="" label="" description="" />
+		<field name="sitename" type="hidden" default="" label="" description="" />		
 	</fieldset>
 		
 	<fieldset

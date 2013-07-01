@@ -17,36 +17,81 @@ defined('_JEXEC') or die();
  *
  * Copyright 2012, Leaf Corcoran <leafot@gmail.com>
  * Licensed under MIT or GPLv3, see LICENSE
+ *
+ * THIS IS THIRD PARTY CODE. Code comments are mostly useless placeholders to
+ * stop phpcs from complaining...
+ *
+ * @package  FrameworkOnFramework
+ * @since    2.0
  */
 class FOFLess
 {
+	public static $VERSION = "v0.3.8";
 
-	static public $VERSION = "v0.3.8";
-	static protected $TRUE = array("keyword", "true");
-	static protected $FALSE = array("keyword", "false");
+	protected static $TRUE = array("keyword", "true");
+
+	protected static $FALSE = array("keyword", "false");
+
 	protected $libFunctions = array();
+
 	protected $registeredVars = array();
+
 	protected $preserveComments = false;
-	public $vPrefix = '@'; // prefix of abstract properties
-	public $mPrefix = '$'; // prefix of abstract blocks
+
+	/**
+	 * Prefix of abstract properties
+	 *
+	 * @var  string
+	 */
+	public $vPrefix = '@';
+
+	/**
+	 * Prefix of abstract blocks
+	 *
+	 * @var  string
+	 */
+	public $mPrefix = '$';
+
 	public $parentSelector = '&';
+
 	public $importDisabled = false;
+
 	public $importDir = '';
+
 	protected $numberPrecision = null;
-	// set to the parser that generated the current line when compiling
-	// so we know how to create error messages
+
+	/**
+	 * Set to the parser that generated the current line when compiling
+	 * so we know how to create error messages
+	 *
+	 * @var  FOFLessParser
+	 */
 	protected $sourceParser = null;
+
 	protected $sourceLoc = null;
-	static public $defaultValue = array("keyword", "");
-	static protected $nextImportId = 0; // uniquely identify imports
 
-	// attempts to find the path of an import url, returns null for css files
+	public static $defaultValue = array("keyword", "");
 
+	/**
+	 * Uniquely identify imports
+	 *
+	 * @var  integer
+	 */
+	protected static $nextImportId = 0;
+
+	/**
+	 * Attempts to find the path of an import url, returns null for css files
+	 *
+	 * @param   string  $url  The URL of the import
+	 *
+	 * @return  string|null
+	 */
 	protected function findImport($url)
 	{
 		foreach ((array) $this->importDir as $dir)
 		{
 			$full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
+
 			if ($this->fileExists($file = $full . '.less') || $this->fileExists($file = $full))
 			{
 				return $file;
@@ -56,27 +101,63 @@ class FOFLess
 		return null;
 	}
 
+	/**
+	 * Does file $name exists? It's a simple proxy to JFile for now
+	 *
+	 * @param   string  $name  The file we check for existence
+	 *
+	 * @return  boolean
+	 */
 	protected function fileExists($name)
 	{
 		/** FOF - BEGIN CHANGE * */
 		JLoader::import('joomla.filesystem.file');
+
 		return JFile::exists($name);
 		/** FOF - END CHANGE * */
 	}
 
-	static public function compressList($items, $delim)
+	/**
+	 * Compresslist
+	 *
+	 * @param   array   $items  Items
+	 * @param   string  $delim  Delimiter
+	 *
+	 * @return  array
+	 */
+	public static function compressList($items, $delim)
 	{
 		if (!isset($items[1]) && isset($items[0]))
+		{
 			return $items[0];
+		}
 		else
+		{
 			return array('list', $delim, $items);
+		}
 	}
 
-	static public function preg_quote($what)
+	/**
+	 * Quote for regular expression
+	 *
+	 * @param   string  $what  What to quote
+	 *
+	 * @return  string  Quoted string
+	 */
+	public static function preg_quote($what)
 	{
 		return preg_quote($what, '/');
 	}
 
+	/**
+	 * Try import
+	 *
+	 * @param   string     $importPath   Import path
+	 * @param   stdObject  $parentBlock  Parent block
+	 * @param   string     $out          Out
+	 *
+	 * @return  boolean
+	 */
 	protected function tryImport($importPath, $parentBlock, $out)
 	{
 		if ($importPath[0] == "function" && $importPath[1] == "url")
@@ -85,18 +166,26 @@ class FOFLess
 		}
 
 		$str = $this->coerceString($importPath);
+
 		if ($str === null)
+		{
 			return false;
+		}
 
 		$url = $this->compileValue($this->lib_e($str));
 
-		// don't import if it ends in css
+		// Don't import if it ends in css
 		if (substr_compare($url, '.css', -4, 4) === 0)
+		{
 			return false;
+		}
 
 		$realPath = $this->findImport($url);
+
 		if ($realPath === null)
+		{
 			return false;
+		}
 
 		if ($this->importDisabled)
 		{
@@ -107,7 +196,7 @@ class FOFLess
 		$parser = $this->makeParser($realPath);
 		$root = $parser->parse(file_get_contents($realPath));
 
-		// set the parents of all the block props
+		// Set the parents of all the block props
 		foreach ($root->props as $prop)
 		{
 			if ($prop[0] == "block")
@@ -116,15 +205,18 @@ class FOFLess
 			}
 		}
 
-		// copy mixins into scope, set their parents
-		// bring blocks from import into current block
-		// TODO: need to mark the source parser	these came from this file
+		/**
+		 * Copy mixins into scope, set their parents, bring blocks from import
+		 * into current block
+		 * TODO: need to mark the source parser	these came from this file
+		 */
 		foreach ($root->children as $childName => $child)
 		{
 			if (isset($parentBlock->children[$childName]))
 			{
 				$parentBlock->children[$childName] = array_merge(
-					$parentBlock->children[$childName], $child);
+					$parentBlock->children[$childName], $child
+				);
 			}
 			else
 			{
@@ -141,6 +233,17 @@ class FOFLess
 		return array(true, $bottom, $parser, $dir);
 	}
 
+	/**
+	 * Compile Imported Props
+	 *
+	 * @param   array          $props         Props
+	 * @param   stdClass       $block         Block
+	 * @param   string         $out           Out
+	 * @param   FOFLessParser  $sourceParser  Source parser
+	 * @param   string         $importDir     Import dir
+	 *
+	 * @return  void
+	 */
 	protected function compileImportedProps($props, $block, $out, $sourceParser, $importDir)
 	{
 		$oldSourceParser = $this->sourceParser;
@@ -178,8 +281,11 @@ class FOFLess
 	 * Compiling the block involves pushing a fresh environment on the stack,
 	 * and iterating through the props, compiling each one.
 	 *
-	 * See lessc::compileProp()
+	 * @param   stdClass  $block  Block
 	 *
+	 * @see  FOFLess::compileProp()
+	 *
+	 * @return  void
 	 */
 	protected function compileBlock($block)
 	{
@@ -196,6 +302,7 @@ class FOFLess
 				break;
 			case "directive":
 				$name = "@" . $block->name;
+
 				if (!empty($block->value))
 				{
 					$name .= " " . $this->compileValue($this->reduce($block->value));
@@ -208,6 +315,13 @@ class FOFLess
 		}
 	}
 
+	/**
+	 * Compile CSS block
+	 *
+	 * @param   stdClass  $block  Block to compile
+	 *
+	 * @return  void
+	 */
 	protected function compileCSSBlock($block)
 	{
 		$env = $this->pushEnv();
@@ -219,10 +333,18 @@ class FOFLess
 		$this->scope->children[] = $out;
 		$this->compileProps($block, $out);
 
-		$block->scope = $env; // mixins carry scope with them!
+		// Mixins carry scope with them!
+		$block->scope = $env;
 		$this->popEnv();
 	}
 
+	/**
+	 * Compile media
+	 *
+	 * @param   stdClass  $media  Media
+	 *
+	 * @return  void
+	 */
 	protected function compileMedia($media)
 	{
 		$env = $this->pushEnv($media);
@@ -238,6 +360,7 @@ class FOFLess
 		if (count($this->scope->lines) > 0)
 		{
 			$orphanSelelectors = $this->findClosestSelectors();
+
 			if (!is_null($orphanSelelectors))
 			{
 				$orphan = $this->makeOutputBlock(null, $orphanSelelectors);
@@ -251,6 +374,13 @@ class FOFLess
 		$this->popEnv();
 	}
 
+	/**
+	 * Media parent
+	 *
+	 * @param   stdClass  $scope  Scope
+	 *
+	 * @return  stdClass
+	 */
 	protected function mediaParent($scope)
 	{
 		while (!empty($scope->parent))
@@ -265,6 +395,14 @@ class FOFLess
 		return $scope;
 	}
 
+	/**
+	 * Compile nested block
+	 *
+	 * @param   stdClass  $block      Block
+	 * @param   array     $selectors  Selectors
+	 *
+	 * @return  void
+	 */
 	protected function compileNestedBlock($block, $selectors)
 	{
 		$this->pushEnv($block);
@@ -277,6 +415,13 @@ class FOFLess
 		$this->popEnv();
 	}
 
+	/**
+	 * Compile root
+	 *
+	 * @param   stdClass  $root  Root
+	 *
+	 * @return  void
+	 */
 	protected function compileRoot($root)
 	{
 		$this->pushEnv();
@@ -285,6 +430,14 @@ class FOFLess
 		$this->popEnv();
 	}
 
+	/**
+	 * Compile props
+	 *
+	 * @param   type  $block  Something
+	 * @param   type  $out    Something
+	 *
+	 * @return  void
+	 */
 	protected function compileProps($block, $out)
 	{
 		foreach ($this->sortProps($block->props) as $prop)
@@ -293,6 +446,14 @@ class FOFLess
 		}
 	}
 
+	/**
+	 * Sort props
+	 *
+	 * @param   type  $props  X
+	 * @param   type  $split  X
+	 *
+	 * @return  type
+	 */
 	protected function sortProps($props, $split = false)
 	{
 		$vars = array();
@@ -334,12 +495,21 @@ class FOFLess
 		}
 	}
 
+	/**
+	 * Compile media query
+	 *
+	 * @param   type  $queries  Queries
+	 *
+	 * @return  string
+	 */
 	protected function compileMediaQuery($queries)
 	{
 		$compiledQueries = array();
+
 		foreach ($queries as $query)
 		{
 			$parts = array();
+
 			foreach ($query as $q)
 			{
 				switch ($q[0])
@@ -368,6 +538,7 @@ class FOFLess
 		}
 
 		$out = "@media";
+
 		if (!empty($parts))
 		{
 			$out .= " " .
@@ -376,15 +547,26 @@ class FOFLess
 		return $out;
 	}
 
+	/**
+	 * Multiply media
+	 *
+	 * @param   type  $env           X
+	 * @param   type  $childQueries  X
+	 *
+	 * @return  type
+	 */
 	protected function multiplyMedia($env, $childQueries = null)
 	{
-		if (is_null($env) ||
-			!empty($env->block->type) && $env->block->type != "media")
+		if (
+			is_null($env)
+			|| !empty($env->block->type)
+			&& $env->block->type != "media"
+		)
 		{
 			return $childQueries;
 		}
 
-		// plain old block, skip
+		// Plain old block, skip
 		if (empty($env->block->type))
 		{
 			return $this->multiplyMedia($env->parent, $childQueries);
@@ -392,6 +574,7 @@ class FOFLess
 
 		$out = array();
 		$queries = $env->block->queries;
+
 		if (is_null($childQueries))
 		{
 			$out = $queries;
@@ -410,23 +593,39 @@ class FOFLess
 		return $this->multiplyMedia($env->parent, $out);
 	}
 
+	/**
+	 * Expand parent selectors
+	 *
+	 * @param   type  &$tag     Tag
+	 * @param   type  $replace  Replace
+	 *
+	 * @return  type
+	 */
 	protected function expandParentSelectors(&$tag, $replace)
 	{
 		$parts = explode("$&$", $tag);
 		$count = 0;
+
 		foreach ($parts as &$part)
 		{
 			$part = str_replace($this->parentSelector, $replace, $part, $c);
 			$count += $c;
 		}
 		$tag = implode($this->parentSelector, $parts);
+
 		return $count;
 	}
 
+	/**
+	 * Find closest selectors
+	 *
+	 * @return  array
+	 */
 	protected function findClosestSelectors()
 	{
 		$env = $this->env;
 		$selectors = null;
+
 		while ($env !== null)
 		{
 			if (isset($env->selectors))
@@ -440,15 +639,22 @@ class FOFLess
 		return $selectors;
 	}
 
-	// multiply $selectors against the nearest selectors in env
+	/**
+	 * Multiply $selectors against the nearest selectors in env
+	 *
+	 * @param   array  $selectors  The selectors
+	 *
+	 * @return  array
+	 */
 	protected function multiplySelectors($selectors)
 	{
-		// find parent selectors
+		// Find parent selectors
 
 		$parentSelectors = $this->findClosestSelectors();
+
 		if (is_null($parentSelectors))
 		{
-			// kill parent reference in top level selector
+			// Kill parent reference in top level selector
 			foreach ($selectors as &$s)
 			{
 				$this->expandParentSelectors($s, "");
@@ -458,13 +664,14 @@ class FOFLess
 		}
 
 		$out = array();
+
 		foreach ($parentSelectors as $parent)
 		{
 			foreach ($selectors as $child)
 			{
 				$count = $this->expandParentSelectors($child, $parent);
 
-				// don't prepend the parent tag if & was used
+				// Don't prepend the parent tag if & was used
 				if ($count > 0)
 				{
 					$out[] = trim($child);
@@ -479,7 +686,13 @@ class FOFLess
 		return $out;
 	}
 
-	// reduces selector expressions
+	/**
+	 * Reduces selector expressions
+	 *
+	 * @param   array  $selectors  The selector expressions
+	 *
+	 * @return  array
+	 */
 	protected function compileSelectors($selectors)
 	{
 		$out = array();
@@ -500,18 +713,37 @@ class FOFLess
 		return $out;
 	}
 
+	/**
+	 * Equality check
+	 *
+	 * @param   mixed  $left   Left operand
+	 * @param   mixed  $right  Right operand
+	 *
+	 * @return  boolean  True if equal
+	 */
 	protected function eq($left, $right)
 	{
 		return $left == $right;
 	}
 
+	/**
+	 * Pattern match
+	 *
+	 * @param   type  $block        X
+	 * @param   type  $callingArgs  X
+	 *
+	 * @return  boolean
+	 */
 	protected function patternMatch($block, $callingArgs)
 	{
-		// match the guards if it has them
-		// any one of the groups must have all its guards pass for a match
+		/**
+		 * Match the guards if it has them
+		 * any one of the groups must have all its guards pass for a match
+		 */
 		if (!empty($block->guards))
 		{
 			$groupPassed = false;
+
 			foreach ($block->guards as $guardGroup)
 			{
 				foreach ($guardGroup as $guard)
@@ -520,6 +752,7 @@ class FOFLess
 					$this->zipSetArgs($block->args, $callingArgs);
 
 					$negate = false;
+
 					if ($guard[0] == "negate")
 					{
 						$guard = $guard[1];
@@ -527,8 +760,11 @@ class FOFLess
 					}
 
 					$passed = $this->reduce($guard) == self::$TRUE;
+
 					if ($negate)
+					{
 						$passed = !$passed;
+					}
 
 					$this->popEnv();
 
@@ -544,7 +780,9 @@ class FOFLess
 				}
 
 				if ($groupPassed)
+				{
 					break;
+				}
 			}
 
 			if (!$groupPassed)
@@ -560,8 +798,10 @@ class FOFLess
 			return $block->isVararg || $numCalling == 0;
 		}
 
-		$i = -1; // no args
-		// try to match by arity or by argument literal
+		// No args
+		$i = -1;
+
+		// Try to match by arity or by argument literal
 		foreach ($block->args as $i => $arg)
 		{
 			switch ($arg[0])
@@ -573,33 +813,45 @@ class FOFLess
 					}
 					break;
 				case "arg":
-					// no arg and no default value
+					// No arg and no default value
 					if (!isset($callingArgs[$i]) && !isset($arg[2]))
 					{
 						return false;
 					}
 					break;
 				case "rest":
-					$i--; // rest can be empty
+					// Rest can be empty
+					$i--;
 					break 2;
 			}
 		}
 
 		if ($block->isVararg)
 		{
-			return true; // not having enough is handled above
+			// Not having enough is handled above
+			return true;
 		}
 		else
 		{
 			$numMatched = $i + 1;
-			// greater than becuase default values always match
+
+			// Greater than becuase default values always match
 			return $numMatched >= $numCalling;
 		}
 	}
 
+	/**
+	 * Pattern match all
+	 *
+	 * @param   type  $blocks       X
+	 * @param   type  $callingArgs  X
+	 *
+	 * @return  type
+	 */
 	protected function patternMatchAll($blocks, $callingArgs)
 	{
 		$matches = null;
+
 		foreach ($blocks as $block)
 		{
 			if ($this->patternMatch($block, $callingArgs))
@@ -611,13 +863,28 @@ class FOFLess
 		return $matches;
 	}
 
-	// attempt to find blocks matched by path and args
+	/**
+	 * Attempt to find blocks matched by path and args
+	 *
+	 * @param   array   $searchIn  Block to search in
+	 * @param   string  $path      The path to search for
+	 * @param   array   $args      Arguments
+	 * @param   array   $seen      Your guess is as good as mine; that's third party code
+	 *
+	 * @return  null
+	 */
 	protected function findBlocks($searchIn, $path, $args, $seen = array())
 	{
 		if ($searchIn == null)
+		{
 			return null;
+		}
+
 		if (isset($seen[$searchIn->id]))
+		{
 			return null;
+		}
+
 		$seen[$searchIn->id] = true;
 
 		$name = $path[0];
@@ -625,9 +892,11 @@ class FOFLess
 		if (isset($searchIn->children[$name]))
 		{
 			$blocks = $searchIn->children[$name];
+
 			if (count($path) == 1)
 			{
 				$matches = $this->patternMatchAll($blocks, $args);
+
 				if (!empty($matches))
 				{
 					// This will return all blocks that match in the closest
@@ -638,6 +907,7 @@ class FOFLess
 			else
 			{
 				$matches = array();
+
 				foreach ($blocks as $subBlock)
 				{
 					$subMatches = $this->findBlocks($subBlock, array_slice($path, 1), $args, $seen);
@@ -656,16 +926,27 @@ class FOFLess
 		}
 
 		if ($searchIn->parent === $searchIn)
+		{
 			return null;
+		}
+
 		return $this->findBlocks($searchIn->parent, $path, $args, $seen);
 	}
 
-	// sets all argument names in $args to either the default value
-	// or the one passed in through $values
+	/**
+	 * Sets all argument names in $args to either the default value
+	 * or the one passed in through $values
+	 *
+	 * @param   array  $args    Arguments
+	 * @param   array  $values  Values
+	 *
+	 * @return  void
+	 */
 	protected function zipSetArgs($args, $values)
 	{
 		$i = 0;
 		$assignedValues = array();
+
 		foreach ($args as $a)
 		{
 			if ($a[0] == "arg")
@@ -677,8 +958,11 @@ class FOFLess
 				elseif (isset($a[2]))
 				{
 					$value = $a[2];
-				} else
+				}
+				else
+				{
 					$value = null;
+				}
 
 				$value = $this->reduce($value);
 				$this->set($a[1], $value);
@@ -687,8 +971,9 @@ class FOFLess
 			$i++;
 		}
 
-		// check for a rest
+		// Check for a rest
 		$last = end($args);
+
 		if ($last[0] == "rest")
 		{
 			$rest = array_slice($values, count($args) - 1);
@@ -698,16 +983,25 @@ class FOFLess
 		$this->env->arguments = $assignedValues;
 	}
 
-	// compile a prop and update $lines or $blocks appropriately
+	/**
+	 * Compile a prop and update $lines or $blocks appropriately
+	 *
+	 * @param   array     $prop   Prop
+	 * @param   stdClass  $block  Block
+	 * @param   string    $out    Out
+	 *
+	 * @return  void
+	 */
 	protected function compileProp($prop, $block, $out)
 	{
-		// set error position context
+		// Set error position context
 		$this->sourceLoc = isset($prop[-1]) ? $prop[-1] : -1;
 
 		switch ($prop[0])
 		{
 			case 'assign':
 				list(, $name, $value) = $prop;
+
 				if ($name[0] == $this->vPrefix)
 				{
 					$this->set($name, $value);
@@ -729,13 +1023,14 @@ class FOFLess
 
 				if ($mixins === null)
 				{
-					// fwrite(STDERR,"failed to find block: ".implode(" > ", $path)."\n");
-					break; // throw error here??
+					// Throw error here??
+					break;
 				}
 
 				foreach ($mixins as $mixin)
 				{
 					$haveScope = false;
+
 					if (isset($mixin->parent->scope))
 					{
 						$haveScope = true;
@@ -744,6 +1039,7 @@ class FOFLess
 					}
 
 					$haveArgs = false;
+
 					if (isset($mixin->args))
 					{
 						$haveArgs = true;
@@ -752,15 +1048,20 @@ class FOFLess
 					}
 
 					$oldParent = $mixin->parent;
+
 					if ($mixin != $block)
+					{
 						$mixin->parent = $block;
+					}
 
 					foreach ($this->sortProps($mixin->props) as $subProp)
 					{
-						if ($suffix !== null &&
-							$subProp[0] == "assign" &&
-							is_string($subProp[1]) &&
-							$subProp[1]{0} != $this->vPrefix)
+						if (
+							$suffix !== null
+							&& $subProp[0] == "assign"
+							&& is_string($subProp[1])
+							&& $subProp[1]{0} != $this->vPrefix
+						)
 						{
 							$subProp[2] = array(
 								'list', ' ',
@@ -774,9 +1075,14 @@ class FOFLess
 					$mixin->parent = $oldParent;
 
 					if ($haveArgs)
+					{
 						$this->popEnv();
+					}
+
 					if ($haveScope)
+					{
 						$this->popEnv();
+					}
 				}
 
 				break;
@@ -809,6 +1115,7 @@ class FOFLess
 			case "import_mixin":
 				list(, $importId) = $prop;
 				$import = $this->env->imports[$importId];
+
 				if ($import[0] === false)
 				{
 					$out->lines[] = $import[1];
@@ -835,6 +1142,10 @@ class FOFLess
 	 *
 	 * The input is expected to be reduced. This function will not work on
 	 * things like expressions and variables.
+	 *
+	 * @param   array  $value  Value
+	 *
+	 * @return  void
 	 */
 	protected function compileValue($value)
 	{
@@ -854,9 +1165,9 @@ class FOFLess
 				// [1] - the keyword
 				return $value[1];
 			case 'number':
+				// Format: [1] - the number -- [2] - the unit
 				list(, $num, $unit) = $value;
-				// [1] - the number
-				// [2] - the unit
+
 				if ($this->numberPrecision !== null)
 				{
 					$num = round($num, $this->numberPrecision);
@@ -865,6 +1176,7 @@ class FOFLess
 			case 'string':
 				// [1] - contents of string (includes quotes)
 				list(, $delim, $content) = $value;
+
 				foreach ($content as &$part)
 				{
 					if (is_array($part))
@@ -874,17 +1186,22 @@ class FOFLess
 				}
 				return $delim . implode($content) . $delim;
 			case 'color':
-				// [1] - red component (either number or a %)
-				// [2] - green component
-				// [3] - blue component
-				// [4] - optional alpha component
+				/**
+				 * Format:
+				 *
+				 * [1] - red component (either number or a %)
+				 * [2] - green component
+				 * [3] - blue component
+				 * [4] - optional alpha component
+				 */
 				list(, $r, $g, $b) = $value;
 				$r = round($r);
 				$g = round($g);
 				$b = round($b);
 
 				if (count($value) == 5 && $value[4] != 1)
-				{ // rgba
+				{
+					// Return an rgba value
 					return 'rgba(' . $r . ',' . $g . ',' . $b . ',' . $value[4] . ')';
 				}
 
@@ -903,92 +1220,183 @@ class FOFLess
 
 			case 'function':
 				list(, $name, $args) = $value;
+
 				return $name . '(' . $this->compileValue($args) . ')';
-			default: // assumed to be unit
+
+			default:
+				// Assumed to be unit
 				$this->throwError("unknown value type: $value[0]");
 		}
 	}
 
+	/**
+	 * Lib is number
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_isnumber($value)
 	{
 		return $this->toBool($value[0] == "number");
 	}
 
+	/**
+	 * Lib is string
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_isstring($value)
 	{
 		return $this->toBool($value[0] == "string");
 	}
 
+	/**
+	 * Lib is color
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_iscolor($value)
 	{
 		return $this->toBool($this->coerceColor($value));
 	}
 
+	/**
+	 * Lib is keyword
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_iskeyword($value)
 	{
 		return $this->toBool($value[0] == "keyword");
 	}
 
+	/**
+	 * Lib is pixel
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_ispixel($value)
 	{
 		return $this->toBool($value[0] == "number" && $value[2] == "px");
 	}
 
+	/**
+	 * Lib is percentage
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_ispercentage($value)
 	{
 		return $this->toBool($value[0] == "number" && $value[2] == "%");
 	}
 
+	/**
+	 * Lib is em
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_isem($value)
 	{
 		return $this->toBool($value[0] == "number" && $value[2] == "em");
 	}
 
+	/**
+	 * LIb rgba hex
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  boolean
+	 */
 	protected function lib_rgbahex($color)
 	{
 		$color = $this->coerceColor($color);
 		if (is_null($color))
+		{
 			$this->throwError("color expected for rgbahex");
+		}
 
 		return sprintf("#%02x%02x%02x%02x", isset($color[4]) ? $color[4] * 255 : 255, $color[1], $color[2], $color[3]);
 	}
 
+	/**
+	 * Lib argb
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_argb($color)
 	{
 		return $this->lib_rgbahex($color);
 	}
 
-	// utility func to unquote a string
+	/**
+	 * Utility func to unquote a string
+	 *
+	 * @param   string  $arg  Arg
+	 *
+	 * @return  string
+	 */
 	protected function lib_e($arg)
 	{
 		switch ($arg[0])
 		{
 			case "list":
 				$items = $arg[2];
+
 				if (isset($items[0]))
 				{
 					return $this->lib_e($items[0]);
 				}
+
 				return self::$defaultValue;
+
 			case "string":
 				$arg[1] = "";
+
 				return $arg;
+
 			case "keyword":
 				return $arg;
+
 			default:
 				return array("keyword", $this->compileValue($arg));
 		}
 	}
 
+	/**
+	 * Lib sprintf
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib__sprintf($args)
 	{
 		if ($args[0] != "list")
+		{
 			return $args;
+		}
+
 		$values = $args[2];
 		$string = array_shift($values);
 		$template = $this->compileValue($this->lib_e($string));
 
 		$i = 0;
+
 		if (preg_match_all('/%[dsa]/', $template, $m))
 		{
 			foreach ($m[0] as $match)
@@ -996,7 +1404,7 @@ class FOFLess
 				$val = isset($values[$i]) ?
 					$this->reduce($values[$i]) : array('keyword', '');
 
-				// lessjs compat, renders fully expanded color, not raw color
+				// Lessjs compat, renders fully expanded color, not raw color
 				if ($color = $this->coerceColor($val))
 				{
 					$val = $color;
@@ -1009,30 +1417,59 @@ class FOFLess
 		}
 
 		$d = $string[0] == "string" ? $string[1] : '"';
+
 		return array("string", $d, array($template));
 	}
 
+	/**
+	 * Lib floor
+	 *
+	 * @param   type  $arg  X
+	 *
+	 * @return  array
+	 */
 	protected function lib_floor($arg)
 	{
 		$value = $this->assertNumber($arg);
+
 		return array("number", floor($value), $arg[2]);
 	}
 
+	/**
+	 * Lib ceil
+	 *
+	 * @param   type  $arg  X
+	 *
+	 * @return  array
+	 */
 	protected function lib_ceil($arg)
 	{
 		$value = $this->assertNumber($arg);
+
 		return array("number", ceil($value), $arg[2]);
 	}
 
+	/**
+	 * Lib round
+	 *
+	 * @param   type  $arg  X
+	 *
+	 * @return  array
+	 */
 	protected function lib_round($arg)
 	{
 		$value = $this->assertNumber($arg);
+
 		return array("number", round($value), $arg[2]);
 	}
 
 	/**
 	 * Helper function to get arguments for color manipulation functions.
 	 * takes a list that contains a color like thing and a percentage
+	 *
+	 * @param   array  $args  Args
+	 *
+	 * @return  array
 	 */
 	protected function colorArgs($args)
 	{
@@ -1047,42 +1484,81 @@ class FOFLess
 		return array($color, $delta);
 	}
 
+	/**
+	 * Lib darken
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_darken($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 
 		$hsl = $this->toHSL($color);
 		$hsl[3] = $this->clamp($hsl[3] - $delta, 100);
+
 		return $this->toRGB($hsl);
 	}
 
+	/**
+	 * Lib lighten
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_lighten($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 
 		$hsl = $this->toHSL($color);
 		$hsl[3] = $this->clamp($hsl[3] + $delta, 100);
+
 		return $this->toRGB($hsl);
 	}
 
+	/**
+	 * Lib saturate
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_saturate($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 
 		$hsl = $this->toHSL($color);
 		$hsl[2] = $this->clamp($hsl[2] + $delta, 100);
+
 		return $this->toRGB($hsl);
 	}
 
+	/**
+	 * Lib desaturate
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_desaturate($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 
 		$hsl = $this->toHSL($color);
 		$hsl[2] = $this->clamp($hsl[2] - $delta, 100);
+
 		return $this->toRGB($hsl);
 	}
 
+	/**
+	 * Lib spin
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_spin($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
@@ -1090,46 +1566,95 @@ class FOFLess
 		$hsl = $this->toHSL($color);
 
 		$hsl[1] = $hsl[1] + $delta % 360;
+
 		if ($hsl[1] < 0)
+		{
 			$hsl[1] += 360;
+		}
 
 		return $this->toRGB($hsl);
 	}
 
+	/**
+	 * Lib fadeout
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_fadeout($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 		$color[4] = $this->clamp((isset($color[4]) ? $color[4] : 1) - $delta / 100);
+
 		return $color;
 	}
 
+	/**
+	 * Lib fadein
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_fadein($args)
 	{
 		list($color, $delta) = $this->colorArgs($args);
 		$color[4] = $this->clamp((isset($color[4]) ? $color[4] : 1) + $delta / 100);
+
 		return $color;
 	}
 
+	/**
+	 * Lib hue
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_hue($color)
 	{
 		$hsl = $this->toHSL($this->assertColor($color));
+
 		return round($hsl[1]);
 	}
 
+	/**
+	 * Lib saturation
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_saturation($color)
 	{
 		$hsl = $this->toHSL($this->assertColor($color));
+
 		return round($hsl[2]);
 	}
 
+	/**
+	 * Lib lightness
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
+	 */
 	protected function lib_lightness($color)
 	{
 		$hsl = $this->toHSL($this->assertColor($color));
+
 		return round($hsl[3]);
 	}
 
-	// get the alpha of a color
-	// defaults to 1 for non-colors or colors without an alpha
+	/**
+	 * Get the alpha of a color
+	 * Defaults to 1 for non-colors or colors without an alpha
+	 *
+	 * @param   string  $value  Value
+	 *
+	 * @return  string
+	 */
 	protected function lib_alpha($value)
 	{
 		if (!is_null($color = $this->coerceColor($value)))
@@ -1138,27 +1663,50 @@ class FOFLess
 		}
 	}
 
-	// set the alpha of the color
+	/**
+	 * Set the alpha of the color
+	 *
+	 * @param   array  $args  Args
+	 *
+	 * @return  string
+	 */
 	protected function lib_fade($args)
 	{
 		list($color, $alpha) = $this->colorArgs($args);
 		$color[4] = $this->clamp($alpha / 100.0);
+
 		return $color;
 	}
 
+	/**
+	 * Third party code; your guess is as good as mine
+	 *
+	 * @param   array  $arg  Arg
+	 *
+	 * @return  string
+	 */
 	protected function lib_percentage($arg)
 	{
 		$num = $this->assertNumber($arg);
+
 		return array("number", $num * 100, "%");
 	}
 
-	// mixes two colors by weight
-	// mix(@color1, @color2, @weight);
-	// http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html#mix-instance_method
+	/**
+	 * mixes two colors by weight
+	 * mix(@color1, @color2, @weight);
+	 * http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html#mix-instance_method
+	 *
+	 * @param   array  $args  Args
+	 *
+	 * @return  string
+	 */
 	protected function lib_mix($args)
 	{
 		if ($args[0] != "list" || count($args[2]) < 3)
+		{
 			$this->throwError("mix expects (color1, color2, weight)");
+		}
 
 		list($first, $second, $weight) = $args[2];
 		$first = $this->assertColor($first);
@@ -1188,25 +1736,57 @@ class FOFLess
 		return $this->fixColor($new);
 	}
 
+	/**
+	 * Assert color
+	 *
+	 * @param   type  $value  X
+	 * @param   type  $error  X
+	 *
+	 * @return  type
+	 */
 	protected function assertColor($value, $error = "expected color value")
 	{
 		$color = $this->coerceColor($value);
+
 		if (is_null($color))
+		{
 			$this->throwError($error);
+		}
+
 		return $color;
 	}
 
+	/**
+	 * Assert number
+	 *
+	 * @param   type  $value  X
+	 * @param   type  $error  X
+	 *
+	 * @return  type
+	 */
 	protected function assertNumber($value, $error = "expecting number")
 	{
 		if ($value[0] == "number")
+		{
 			return $value[1];
+		}
+
 		$this->throwError($error);
 	}
 
+	/**
+	 * To HSL
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
+	 */
 	protected function toHSL($color)
 	{
 		if ($color[0] == 'hsl')
+		{
 			return $color;
+		}
 
 		$r = $color[1] / 255;
 		$g = $color[2] / 255;
@@ -1216,6 +1796,7 @@ class FOFLess
 		$max = max($r, $g, $b);
 
 		$L = ($min + $max) / 2;
+
 		if ($min == $max)
 		{
 			$S = $H = 0;
@@ -1223,16 +1804,26 @@ class FOFLess
 		else
 		{
 			if ($L < 0.5)
+			{
 				$S = ($max - $min) / ($max + $min);
+			}
 			else
+			{
 				$S = ($max - $min) / (2.0 - $max - $min);
+			}
 
 			if ($r == $max)
+			{
 				$H = ($g - $b) / ($max - $min);
+			}
 			elseif ($g == $max)
+			{
 				$H = 2.0 + ($b - $r) / ($max - $min);
+			}
 			elseif ($b == $max)
+			{
 				$H = 4.0 + ($r - $g) / ($max - $min);
+			}
 		}
 
 		$out = array('hsl',
@@ -1242,23 +1833,48 @@ class FOFLess
 		);
 
 		if (count($color) > 4)
-			$out[] = $color[4]; // copy alpha
+		{
+			// Copy alpha
+			$out[] = $color[4];
+		}
+
 		return $out;
 	}
 
+	/**
+	 * To RGB helper
+	 *
+	 * @param   type  $comp   X
+	 * @param   type  $temp1  X
+	 * @param   type  $temp2  X
+	 *
+	 * @return  type
+	 */
 	protected function toRGB_helper($comp, $temp1, $temp2)
 	{
 		if ($comp < 0)
+		{
 			$comp += 1.0;
+		}
 		elseif ($comp > 1)
+		{
 			$comp -= 1.0;
+		}
 
 		if (6 * $comp < 1)
+		{
 			return $temp1 + ($temp2 - $temp1) * 6 * $comp;
+		}
+
 		if (2 * $comp < 1)
+		{
 			return $temp2;
+		}
+
 		if (3 * $comp < 2)
+		{
 			return $temp1 + ($temp2 - $temp1) * ((2 / 3) - $comp) * 6;
+		}
 
 		return $temp1;
 	}
@@ -1266,11 +1882,17 @@ class FOFLess
 	/**
 	 * Converts a hsl array into a color value in rgb.
 	 * Expects H to be in range of 0 to 360, S and L in 0 to 100
+	 *
+	 * @param   type  $color  X
+	 *
+	 * @return  type
 	 */
 	protected function toRGB($color)
 	{
 		if ($color == 'color')
+		{
 			return $color;
+		}
 
 		$H = $color[1] / 360;
 		$S = $color[2] / 100;
@@ -1295,11 +1917,25 @@ class FOFLess
 
 		// $out = array('color', round($r*255), round($g*255), round($b*255));
 		$out = array('color', $r * 255, $g * 255, $b * 255);
+
 		if (count($color) > 4)
-			$out[] = $color[4]; // copy alpha
+		{
+			// Copy alpha
+			$out[] = $color[4];
+		}
+
 		return $out;
 	}
 
+	/**
+	 * Clamp
+	 *
+	 * @param   type  $v    X
+	 * @param   type  $max  X
+	 * @param   type  $min  X
+	 *
+	 * @return  type
+	 */
 	protected function clamp($v, $max = 1, $min = 0)
 	{
 		return min($max, max($min, $v));
@@ -1308,44 +1944,66 @@ class FOFLess
 	/**
 	 * Convert the rgb, rgba, hsl color literals of function type
 	 * as returned by the parser into values of color type.
+	 *
+	 * @param   type  $func  X
+	 *
+	 * @return  type
 	 */
 	protected function funcToColor($func)
 	{
 		$fname = $func[1];
+
 		if ($func[2][0] != 'list')
-			return false; // need a list of arguments
+		{
+			// Need a list of arguments
+			return false;
+		}
+
 		$rawComponents = $func[2][2];
 
 		if ($fname == 'hsl' || $fname == 'hsla')
 		{
 			$hsl = array('hsl');
 			$i = 0;
+
 			foreach ($rawComponents as $c)
 			{
 				$val = $this->reduce($c);
 				$val = isset($val[1]) ? floatval($val[1]) : 0;
 
 				if ($i == 0)
+				{
 					$clamp = 360;
+				}
 				elseif ($i < 3)
+				{
 					$clamp = 100;
+				}
 				else
+				{
 					$clamp = 1;
+				}
 
 				$hsl[] = $this->clamp($val, $clamp);
 				$i++;
 			}
 
 			while (count($hsl) < 4)
+			{
 				$hsl[] = 0;
+			}
+
 			return $this->toRGB($hsl);
-		} elseif ($fname == 'rgb' || $fname == 'rgba')
+		}
+		elseif ($fname == 'rgb' || $fname == 'rgba')
 		{
 			$components = array();
 			$i = 1;
+
 			foreach ($rawComponents as $c)
 			{
 				$c = $this->reduce($c);
+
 				if ($i < 4)
 				{
 					if ($c[0] == "number" && $c[2] == "%")
@@ -1367,26 +2025,42 @@ class FOFLess
 					{
 						$components[] = floatval($c[1]);
 					}
-				} else
+				}
+				else
+				{
 					break;
+				}
 
 				$i++;
 			}
 			while (count($components) < 3)
+			{
 				$components[] = 0;
+			}
+
 			array_unshift($components, 'color');
+
 			return $this->fixColor($components);
 		}
 
 		return false;
 	}
 
+	/**
+	 * Reduce
+	 *
+	 * @param   type  $value          X
+	 * @param   type  $forExpression  X
+	 *
+	 * @return  type
+	 */
 	protected function reduce($value, $forExpression = false)
 	{
 		switch ($value[0])
 		{
 			case "variable":
 				$key = $value[1];
+
 				if (is_array($key))
 				{
 					$key = $this->reduce($key);
@@ -1403,6 +2077,7 @@ class FOFLess
 				$seen[$key] = true;
 				$out = $this->reduce($this->get($key, self::$defaultValue));
 				$seen[$key] = false;
+
 				return $out;
 			case "list":
 				foreach ($value[2] as &$item)
@@ -1419,29 +2094,42 @@ class FOFLess
 					{
 						$strip = $part[0] == "variable";
 						$part = $this->reduce($part);
+
 						if ($strip)
+						{
 							$part = $this->lib_e($part);
+						}
 					}
 				}
 				return $value;
 			case "escape":
 				list(, $inner) = $value;
+
 				return $this->lib_e($this->reduce($inner));
 			case "function":
 				$color = $this->funcToColor($value);
+
 				if ($color)
+				{
 					return $color;
+				}
 
 				list(, $name, $args) = $value;
+
 				if ($name == "%")
+				{
 					$name = "_sprintf";
+				}
+
 				$f = isset($this->libFunctions[$name]) ?
 					$this->libFunctions[$name] : array($this, 'lib_' . $name);
 
 				if (is_callable($f))
 				{
 					if ($args[0] == 'list')
+					{
 						$args = self::compressList($args[2], $args[1]);
+					}
 
 					$ret = call_user_func($f, $this->reduce($args, true), $this);
 
@@ -1452,17 +2140,22 @@ class FOFLess
 							));
 					}
 
-					// convert to a typed value if the result is a php primitive
+					// Convert to a typed value if the result is a php primitive
 					if (is_numeric($ret))
+					{
 						$ret = array('number', $ret, "");
+					}
 					elseif (!is_array($ret))
+					{
 						$ret = array('keyword', $ret);
+					}
 
 					return $ret;
 				}
 
-				// plain function, reduce args
+				// Plain function, reduce args
 				$value[2] = $this->reduce($value[2]);
+
 				return $value;
 			case "unary":
 				list(, $op, $exp) = $value;
@@ -1476,9 +2169,11 @@ class FOFLess
 							return $exp;
 						case "-":
 							$exp[1] *= -1;
+
 							return $exp;
 					}
 				}
+
 				return array("string", "", array($op, $exp));
 		}
 
@@ -1500,12 +2195,19 @@ class FOFLess
 		return $value;
 	}
 
-	// coerce a value for use in color operation
+	/**
+	 * Coerce a value for use in color operation
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  null
+	 */
 	protected function coerceColor($value)
 	{
 		switch ($value[0])
 		{
-			case 'color': return $value;
+			case 'color':
+				return $value;
 			case 'raw_color':
 				$c = array("color", 0, 0, 0);
 				$colorStr = substr($value[1], 1);
@@ -1513,7 +2215,8 @@ class FOFLess
 				$width = strlen($colorStr) == 3 ? 16 : 256;
 
 				for ($i = 3; $i > 0; $i--)
-				{ // 3 2 1
+				{
+					// It's 3 2 1
 					$t = $num % $width;
 					$num /= $width;
 
@@ -1523,16 +2226,24 @@ class FOFLess
 				return $c;
 			case 'keyword':
 				$name = $value[1];
+
 				if (isset(self::$cssColors[$name]))
 				{
 					list($r, $g, $b) = explode(',', self::$cssColors[$name]);
+
 					return array('color', $r, $g, $b);
 				}
 				return null;
 		}
 	}
 
-	// make something string like into a string
+	/**
+	 * Make something string like into a string
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  null
+	 */
 	protected function coerceString($value)
 	{
 		switch ($value[0])
@@ -1545,7 +2256,13 @@ class FOFLess
 		return null;
 	}
 
-	// turn list of length 1 into value type
+	/**
+	 * Turn list of length 1 into value type
+	 *
+	 * @param   type  $value  X
+	 *
+	 * @return  type
+	 */
 	protected function flattenList($value)
 	{
 		if ($value[0] == "list" && count($value[2]) == 1)
@@ -1555,15 +2272,32 @@ class FOFLess
 		return $value;
 	}
 
+	/**
+	 * To bool
+	 *
+	 * @param   type  $a  X
+	 *
+	 * @return  type
+	 */
 	protected function toBool($a)
 	{
 		if ($a)
+		{
 			return self::$TRUE;
+		}
 		else
+		{
 			return self::$FALSE;
+		}
 	}
 
-	// evaluate an expression
+	/**
+	 * Evaluate an expression
+	 *
+	 * @param   type  $exp  X
+	 *
+	 * @return  type
+	 */
 	protected function evaluate($exp)
 	{
 		list(, $op, $left, $right, $whiteBefore, $whiteAfter) = $exp;
@@ -1584,7 +2318,7 @@ class FOFLess
 		$ltype = $left[0];
 		$rtype = $right[0];
 
-		// operators that work on all types
+		// Operators that work on all types
 		if ($op == "and")
 		{
 			return $this->toBool($left == self::$TRUE && $right == self::$TRUE);
@@ -1600,25 +2334,43 @@ class FOFLess
 			return $str;
 		}
 
-		// type based operators
+		// Type based operators
 		$fname = "op_${ltype}_${rtype}";
+
 		if (is_callable(array($this, $fname)))
 		{
 			$out = $this->$fname($op, $left, $right);
+
 			if (!is_null($out))
+			{
 				return $out;
+			}
 		}
 
-		// make the expression look it did before being parsed
+		// Make the expression look it did before being parsed
 		$paddedOp = $op;
+
 		if ($whiteBefore)
+		{
 			$paddedOp = " " . $paddedOp;
+		}
+
 		if ($whiteAfter)
+		{
 			$paddedOp .= " ";
+		}
 
 		return array("string", "", array($left, $paddedOp, $right));
 	}
 
+	/**
+	 * String concatenate
+	 *
+	 * @param   type    $left   X
+	 * @param   string  $right  X
+	 *
+	 * @return  string
+	 */
 	protected function stringConcatenate($left, $right)
 	{
 		if ($strLeft = $this->coerceString($left))
@@ -1628,30 +2380,52 @@ class FOFLess
 				$right[1] = "";
 			}
 			$strLeft[2][] = $right;
+
 			return $strLeft;
 		}
 
 		if ($strRight = $this->coerceString($right))
 		{
 			array_unshift($strRight[2], $left);
+
 			return $strRight;
 		}
 	}
 
-	// make sure a color's components don't go out of bounds
+	/**
+	 * Make sure a color's components don't go out of bounds
+	 *
+	 * @param   type  $c  X
+	 *
+	 * @return  int
+	 */
 	protected function fixColor($c)
 	{
 		foreach (range(1, 3) as $i)
 		{
 			if ($c[$i] < 0)
+			{
 				$c[$i] = 0;
+			}
+
 			if ($c[$i] > 255)
+			{
 				$c[$i] = 255;
+			}
 		}
 
 		return $c;
 	}
 
+	/**
+	 * Op number color
+	 *
+	 * @param   type  $op   X
+	 * @param   type  $lft  X
+	 * @param   type  $rgt  X
+	 *
+	 * @return  type
+	 */
 	protected function op_number_color($op, $lft, $rgt)
 	{
 		if ($op == '+' || $op == '*')
@@ -1660,22 +2434,44 @@ class FOFLess
 		}
 	}
 
+	/**
+	 * Op color number
+	 *
+	 * @param   type  $op   X
+	 * @param   type  $lft  X
+	 * @param   int   $rgt  X
+	 *
+	 * @return  type
+	 */
 	protected function op_color_number($op, $lft, $rgt)
 	{
 		if ($rgt[0] == '%')
+		{
 			$rgt[1] /= 100;
+		}
 
 		return $this->op_color_color($op, $lft, array_fill(1, count($lft) - 1, $rgt[1]));
 	}
 
+	/**
+	 * Op color color
+	 *
+	 * @param   type  $op     X
+	 * @param   type  $left   X
+	 * @param   type  $right  X
+	 *
+	 * @return  type
+	 */
 	protected function op_color_color($op, $left, $right)
 	{
 		$out = array('color');
 		$max = count($left) > count($right) ? count($left) : count($right);
+
 		foreach (range(1, $max - 1) as $i)
 		{
 			$lval = isset($left[$i]) ? $left[$i] : 0;
 			$rval = isset($right[$i]) ? $right[$i] : 0;
+
 			switch ($op)
 			{
 				case '+':
@@ -1692,7 +2488,10 @@ class FOFLess
 					break;
 				case '/':
 					if ($rval == 0)
+					{
 						$this->throwError("evaluate error: can't divide by zero");
+					}
+
 					$out[] = $lval / $rval;
 					break;
 				default:
@@ -1702,12 +2501,21 @@ class FOFLess
 		return $this->fixColor($out);
 	}
 
-	// operator on two numbers
+	/**
+	 * Operator on two numbers
+	 *
+	 * @param   type  $op     X
+	 * @param   type  $left   X
+	 * @param   type  $right  X
+	 *
+	 * @return  type
+	 */
 	protected function op_number_number($op, $left, $right)
 	{
 		$unit = empty($left[2]) ? $right[2] : $left[2];
 
 		$value = 0;
+
 		switch ($op)
 		{
 			case '+':
@@ -1724,7 +2532,9 @@ class FOFLess
 				break;
 			case '/':
 				if ($right[1] == 0)
+				{
 					$this->throwError('parse error: divide by zero');
+				}
 				$value = $left[1] / $right[1];
 				break;
 			case '<':
@@ -1742,8 +2552,14 @@ class FOFLess
 		return array("number", $value, $unit);
 	}
 
-	/* environment functions */
-
+	/**
+	 * Make output block
+	 *
+	 * @param   type  $type       X
+	 * @param   type  $selectors  X
+	 *
+	 * @return  stdclass
+	 */
 	protected function makeOutputBlock($type, $selectors = null)
 	{
 		$b = new stdclass;
@@ -1752,10 +2568,17 @@ class FOFLess
 		$b->selectors = $selectors;
 		$b->type = $type;
 		$b->parent = $this->scope;
+
 		return $b;
 	}
 
-	// the state of execution
+	/**
+	 * The state of execution
+	 *
+	 * @param   type  $block  X
+	 *
+	 * @return  stdclass
+	 */
 	protected function pushEnv($block = null)
 	{
 		$e = new stdclass;
@@ -1764,29 +2587,50 @@ class FOFLess
 		$e->block = $block;
 
 		$this->env = $e;
+
 		return $e;
 	}
 
-	// pop something off the stack
+	/**
+	 * Pop something off the stack
+	 *
+	 * @return  type
+	 */
 	protected function popEnv()
 	{
 		$old = $this->env;
 		$this->env = $this->env->parent;
+
 		return $old;
 	}
 
-	// set something in the current env
+	/**
+	 * Set something in the current env
+	 *
+	 * @param   type  $name   X
+	 * @param   type  $value  X
+	 *
+	 * @return  void
+	 */
 	protected function set($name, $value)
 	{
 		$this->env->store[$name] = $value;
 	}
 
-	// get the highest occurrence entry for a name
+	/**
+	 * Get the highest occurrence entry for a name
+	 *
+	 * @param   type  $name     X
+	 * @param   type  $default  X
+	 *
+	 * @return  type
+	 */
 	protected function get($name, $default = null)
 	{
 		$current = $this->env;
 
 		$isArguments = $name == $this->vPrefix . 'arguments';
+
 		while ($current)
 		{
 			if ($isArguments && isset($current->arguments))
@@ -1795,7 +2639,9 @@ class FOFLess
 			}
 
 			if (isset($current->store[$name]))
+			{
 				return $current->store[$name];
+			}
 			else
 			{
 				$current = isset($current->storeParent) ?
@@ -1806,7 +2652,13 @@ class FOFLess
 		return $default;
 	}
 
-	// inject array of unparsed strings into environment as variables
+	/**
+	 * Inject array of unparsed strings into environment as variables
+	 *
+	 * @param   type  $args  X
+	 *
+	 * @throws  Exception
+	 */
 	protected function injectVariables($args)
 	{
 		$this->pushEnv();
@@ -1816,9 +2668,13 @@ class FOFLess
 		foreach ($args as $name => $strValue)
 		{
 			if ($name{0} != '@')
+			{
 				$name = '@' . $name;
+			}
+
 			$parser->count = 0;
 			$parser->buffer = (string) $strValue;
+
 			if (!$parser->propertyValue($value))
 			{
 				throw new Exception("failed to parse passed in variable $name: $strValue");
@@ -1830,17 +2686,26 @@ class FOFLess
 
 	/**
 	 * Initialize any static state, can initialize parser for a file
-	 * $opts isn't used yet
+	 *
+	 * @param   type  $fname  X
 	 */
 	public function __construct($fname = null)
 	{
 		if ($fname !== null)
 		{
-			// used for deprecated parse method
+			// Used for deprecated parse method
 			$this->_parseFile = $fname;
 		}
 	}
 
+	/**
+	 * Compile
+	 *
+	 * @param   type  $string  X
+	 * @param   type  $name    X
+	 *
+	 * @return  type
+	 */
 	public function compile($string, $name = null)
 	{
 		$locale = setlocale(LC_NUMERIC, 0);
@@ -1859,16 +2724,28 @@ class FOFLess
 			$this->injectVariables($this->registeredVars);
 		}
 
-		$this->sourceParser = $this->parser; // used for error messages
+		// Used for error messages
+		$this->sourceParser = $this->parser;
 		$this->compileBlock($root);
 
 		ob_start();
 		$this->formatter->block($this->scope);
 		$out = ob_get_clean();
 		setlocale(LC_NUMERIC, $locale);
+
 		return $out;
 	}
 
+	/**
+	 * Compile file
+	 *
+	 * @param   type  $fname     X
+	 * @param   type  $outFname  X
+	 *
+	 * @return  type
+	 *
+	 * @throws  Exception
+	 */
 	public function compileFile($fname, $outFname = null)
 	{
 		if (!is_readable($fname))
@@ -1894,6 +2771,7 @@ class FOFLess
 		{
 			/** FOF - BEGIN CHANGE * */
 			JLoader::import('joomla.filesystem.file');
+
 			return JFile::write($outFname, $out);
 			/** FOF - END CHANGE * */
 		}
@@ -1901,12 +2779,20 @@ class FOFLess
 		return $out;
 	}
 
-	// compile only if changed input has changed or output doesn't exist
+	/**
+	 * Compile only if changed input has changed or output doesn't exist
+	 *
+	 * @param   type  $in   X
+	 * @param   type  $out  X
+	 *
+	 * @return  boolean
+	 */
 	public function checkedCompile($in, $out)
 	{
 		if (!is_file($out) || filemtime($in) > filemtime($out))
 		{
 			$this->compileFile($in, $out);
+
 			return true;
 		}
 		return false;
@@ -1928,13 +2814,14 @@ class FOFLess
 	 * The cache structure is a plain-ol' PHP associative array and can
 	 * be serialized and unserialized without a hitch.
 	 *
-	 * @param mixed $in Input
-	 * @param bool $force Force rebuild?
-	 * @return array lessphp cache structure
+	 * @param   mixed  $in     Input
+	 * @param   bool   $force  Force rebuild?
+	 *
+	 * @return  array  lessphp cache structure
 	 */
 	public function cachedCompile($in, $force = false)
 	{
-		// assume no root
+		// Assume no root
 		$root = null;
 
 		if (is_string($in))
@@ -1945,9 +2832,11 @@ class FOFLess
 		{
 			if ($force or !isset($in['files']))
 			{
-				// If we are forcing a recompile or if for some reason the
-				// structure does not contain any file information we should
-				// specify the root to trigger a rebuild.
+				/**
+				 * If we are forcing a recompile or if for some reason the
+				 * structure does not contain any file information we should
+				 * specify the root to trigger a rebuild.
+				 */
 				$root = $in['root'];
 			}
 			elseif (isset($in['files']) and is_array($in['files']))
@@ -1956,8 +2845,10 @@ class FOFLess
 				{
 					if (!file_exists($fname) or filemtime($fname) > $ftime)
 					{
-						// One of the files we knew about previously has changed
-						// so we should look at our incoming root again.
+						/**
+						 * One of the files we knew about previously has changed
+						 * so we should look at our incoming root again.
+						 */
 						$root = $in['root'];
 						break;
 					}
@@ -1966,8 +2857,10 @@ class FOFLess
 		}
 		else
 		{
-			// TODO: Throw an exception? We got neither a string nor something
-			// that looks like a compatible lessphp cache structure.
+			/**
+			 * TODO: Throw an exception? We got neither a string nor something
+			 * that looks like a compatible lessphp cache structure.
+			 */
 			return null;
 		}
 
@@ -1979,6 +2872,7 @@ class FOFLess
 			$out['compiled'] = $this->compileFile($root);
 			$out['files'] = $this->allParsedFiles();
 			$out['updated'] = time();
+
 			return $out;
 		}
 		else
@@ -1989,8 +2883,20 @@ class FOFLess
 		}
 	}
 
-	// parse and compile buffer
+	//
 	// This is deprecated
+	/**
+	 * Parse and compile buffer
+	 *
+	 * @param   null  $str               X
+	 * @param   type  $initialVariables  X
+	 *
+	 * @return  type
+	 *
+	 * @throws  Exception
+	 *
+	 * @deprecated  2.0
+	 */
 	public function parse($str = null, $initialVariables = null)
 	{
 		if (is_array($str))
@@ -2000,6 +2906,7 @@ class FOFLess
 		}
 
 		$oldVars = $this->registeredVars;
+
 		if ($initialVariables !== null)
 		{
 			$this->setVariables($initialVariables);
@@ -2020,9 +2927,17 @@ class FOFLess
 		}
 
 		$this->registeredVars = $oldVars;
+
 		return $out;
 	}
 
+	/**
+	 * Make parser
+	 *
+	 * @param   type  $name  X
+	 *
+	 * @return  FOFLessParser
+	 */
 	protected function makeParser($name)
 	{
 		/** FOF -- BEGIN CHANGE * */
@@ -2033,11 +2948,23 @@ class FOFLess
 		return $parser;
 	}
 
+	/**
+	 * Set Formatter
+	 *
+	 * @param   type  $name  X
+	 *
+	 * @return  void
+	 */
 	public function setFormatter($name)
 	{
 		$this->formatterName = $name;
 	}
 
+	/**
+	 * New formatter
+	 *
+	 * @return  FOFLessFormatterLessjs
+	 */
 	protected function newFormatter()
 	{
 		/** FOF -- BEGIN CHANGE * */
@@ -2055,47 +2982,109 @@ class FOFLess
 		return new $className;
 	}
 
+	/**
+	 * Set preserve comments
+	 *
+	 * @param   type   $preserve  X
+	 *
+	 * @return  void
+	 */
 	public function setPreserveComments($preserve)
 	{
 		$this->preserveComments = $preserve;
 	}
 
+	/**
+	 * Register function
+	 *
+	 * @param   type  $name  X
+	 * @param   type  $func  X
+	 *
+	 * @return  void
+	 */
 	public function registerFunction($name, $func)
 	{
 		$this->libFunctions[$name] = $func;
 	}
 
+	/**
+	 * Unregister function
+	 *
+	 * @param   type  $name  X
+	 *
+	 * @return  void
+	 */
 	public function unregisterFunction($name)
 	{
 		unset($this->libFunctions[$name]);
 	}
 
+	/**
+	 * Set variables
+	 *
+	 * @param   type  $variables  X
+	 *
+	 * @return  void
+	 */
 	public function setVariables($variables)
 	{
 		$this->registeredVars = array_merge($this->registeredVars, $variables);
 	}
 
+	/**
+	 * Unset variable
+	 *
+	 * @param   type  $name  X
+	 *
+	 * @return  void
+	 */
 	public function unsetVariable($name)
 	{
 		unset($this->registeredVars[$name]);
 	}
 
+	/**
+	 * Set import dir
+	 *
+	 * @param   type  $dirs  X
+	 *
+	 * @return  void
+	 */
 	public function setImportDir($dirs)
 	{
 		$this->importDir = (array) $dirs;
 	}
 
+	/**
+	 * Add import dir
+	 *
+	 * @param   type  $dir  X
+	 *
+	 * @return  void
+	 */
 	public function addImportDir($dir)
 	{
 		$this->importDir = (array) $this->importDir;
 		$this->importDir[] = $dir;
 	}
 
+	/**
+	 * All parsed files
+	 *
+	 * @return  type
+	 */
 	public function allParsedFiles()
 	{
 		return $this->allParsedFiles;
 	}
 
+	/**
+	 * Add parsed file
+	 *
+	 * @param   type  $file  X
+	 *
+	 * @return  void
+	 */
 	protected function addParsedFile($file)
 	{
 		$this->allParsedFiles[realpath($file)] = filemtime($file);
@@ -2103,6 +3092,10 @@ class FOFLess
 
 	/**
 	 * Uses the current value of $this->count to show line and line number
+	 *
+	 * @param   type  $msg  X
+	 *
+	 * @return  void
 	 */
 	protected function throwError($msg = null)
 	{
@@ -2113,8 +3106,16 @@ class FOFLess
 		throw new exception($msg);
 	}
 
-	// compile file $in to file $out if $in is newer than $out
-	// returns true when it compiles, false otherwise
+	/**
+	 * Compile file $in to file $out if $in is newer than $out
+	 * Returns true when it compiles, false otherwise
+	 *
+	 * @param   type  $in    X
+	 * @param   type  $out   X
+	 * @param   self  $less  X
+	 *
+	 * @return  type
+	 */
 	public static function ccompile($in, $out, $less = null)
 	{
 		if ($less === null)
@@ -2124,6 +3125,15 @@ class FOFLess
 		return $less->checkedCompile($in, $out);
 	}
 
+	/**
+	 * Compile execute
+	 *
+	 * @param   type  $in     X
+	 * @param   type  $force  X
+	 * @param   self  $less   X
+	 *
+	 * @return  type
+	 */
 	public static function cexecute($in, $force = false, $less = null)
 	{
 		if ($less === null)
@@ -2133,7 +3143,7 @@ class FOFLess
 		return $less->cachedCompile($in, $force);
 	}
 
-	static protected $cssColors = array(
+	protected static $cssColors = array(
 		'aliceblue'				 => '240,248,255',
 		'antiquewhite'			 => '250,235,215',
 		'aqua'					 => '0,255,255',

@@ -140,26 +140,13 @@ class FOFDispatcher extends JObject
 
 		if (!class_exists($className))
 		{
-			list($isCli, $isAdmin) = self::isCliAdmin();
-
-			if ($isAdmin)
-			{
-				$basePath = JPATH_ADMINISTRATOR;
-			}
-			elseif ($isCli)
-			{
-				$basePath = JPATH_ROOT;
-			}
-			else
-			{
-				$basePath = JPATH_SITE;
-			}
+			$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($config['option']);
 
 			$searchPaths = array(
-				$basePath . '/components/' . $config['option'],
-				$basePath . '/components/' . $config['option'] . '/dispatchers',
-				JPATH_ADMINISTRATOR . '/components/' . $config['option'],
-				JPATH_ADMINISTRATOR . '/components/' . $config['option'] . '/dispatchers'
+				$componentPaths['main'],
+				$componentPaths['main'] . '/dispatchers',
+				$componentPaths['admin'],
+				$componentPaths['admin'] . '/dispatchers'
 			);
 
 			if (array_key_exists('searchpath', $config))
@@ -223,6 +210,7 @@ class FOFDispatcher extends JObject
 		{
 			// Do we have a task formatted as controller.task?
 			$task = $this->input->getCmd('task', '');
+
 			if (!empty($task) && (strstr($task, '.') !== false))
 			{
 				list($this->view, $task) = explode('.', $task, 2);
@@ -265,51 +253,26 @@ class FOFDispatcher extends JObject
 	 */
 	public function dispatch()
 	{
-		// Timezone fix; avoids errors printed out by PHP 5.3.3+
-		list($isCli, $isAdmin) = self::isCliAdmin();
-
-		if ($isAdmin)
+		if (!FOFPlatform::getInstance()->authorizeAdmin($this->input->getCmd('option', 'com_foobar')))
 		{
-			// Master access check for the back-end, Joomla! 1.6 style.
-			$user = JFactory::getUser();
-
-			if (!$user->authorise('core.manage', $this->input->getCmd('option', 'com_foobar'))
-				&& !$user->authorise('core.admin', $this->input->getCmd('option', 'com_foobar')))
+			if (FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge'))
 			{
-				if (version_compare(JVERSION, '3.0', 'ge'))
-				{
-					throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
-				}
-				else
-				{
-					return JError::raiseError('403', JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'));
-				}
+				throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+			}
+			else
+			{
+				return JError::raiseError('403', JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'));
 			}
 		}
-		elseif (!$isCli)
-		{
-			// Perform transparent authentication for front-end requests
-			$this->transparentAuthentication();
-		}
+
+		$this->transparentAuthentication();
 
 		// Merge English and local translations
-		if ($isAdmin)
-		{
-			$paths = array(JPATH_ROOT, JPATH_ADMINISTRATOR);
-		}
-		else
-		{
-			$paths = array(JPATH_ADMINISTRATOR, JPATH_ROOT);
-		}
-
-		$jlang = JFactory::getLanguage();
-		$jlang->load($this->component, $paths[0], 'en-GB', true);
-		$jlang->load($this->component, $paths[0], null, true);
-		$jlang->load($this->component, $paths[1], 'en-GB', true);
-		$jlang->load($this->component, $paths[1], null, true);
+		FOFPlatform::getInstance()->loadTranslations($this->component);
 
 		$canDispatch = true;
-		if($isCli)
+
+		if (FOFPlatform::getInstance()->isCli())
 		{
 			$canDispatch = $canDispatch && $this->onBeforeDispatchCLI();
 		}
@@ -320,7 +283,7 @@ class FOFDispatcher extends JObject
 		{
 			JResponse::setHeader('Status', '403 Forbidden', true);
 
-			if (version_compare(JVERSION, '3.0', 'ge'))
+			if (FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge'))
 			{
 				throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
 			}
@@ -333,7 +296,7 @@ class FOFDispatcher extends JObject
 		// Get and execute the controller
 		$option = $this->input->getCmd('option', 'com_foobar');
 		$view = $this->input->getCmd('view', $this->defaultView);
-		$task = $this->input->getCmd('task', '');
+		$task = $this->input->getCmd('task', null);
 
 		if (empty($task))
 		{
@@ -364,7 +327,7 @@ class FOFDispatcher extends JObject
 		{
 			JResponse::setHeader('Status', '403 Forbidden', true);
 
-			if (version_compare(JVERSION, '3.0', 'ge'))
+			if (FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge'))
 			{
 				throw new Exception(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
 			}
@@ -407,6 +370,7 @@ class FOFDispatcher extends JObject
 	protected function getTask($view)
 	{
 		// Get a default task based on plural/singular view
+		$request_task = $this->input->getCmd('task', null);
 		$task = FOFInflector::isPlural($view) ? 'browse' : 'edit';
 
 		// Get a potential ID, we might need it later
@@ -435,25 +399,28 @@ class FOFDispatcher extends JObject
 		{
 			case 'POST':
 			case 'PUT':
-				$task = 'save';
+				if (!is_null($id))
+				{
+					$task = 'save';
+				}
 				break;
 
 			case 'DELETE':
 				if ($id != 0)
+				{
 					$task = 'delete';
+				}
 				break;
 
 			case 'GET':
 			default:
-				list($isCli, $isAdmin) = self::isCliAdmin();
-
 				// If it's an edit without an ID or ID=0, it's really an add
 				if (($task == 'edit') && ($id == 0))
 				{
 					$task = 'add';
 				}
 				// If it's an edit in the frontend, it's really a read
-				elseif (($task == 'edit') && !$isCli && !$isAdmin)
+				elseif (($task == 'edit') && FOFPlatform::getInstance()->isFrontend())
 				{
 					$task = 'read';
 				}
@@ -489,21 +456,24 @@ class FOFDispatcher extends JObject
 
 		// We have no Application Helper (there is no Application!), so I have to define these constants manually
 		$option = $this->input->get('option', '', 'cmd');
-		if($option)
+
+		if ($option)
 		{
-			if(!defined('JPATH_COMPONENT'))
+			$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($option);
+
+			if (!defined('JPATH_COMPONENT'))
 			{
-				define('JPATH_COMPONENT', JPATH_BASE . '/components/' . $option);
+				define('JPATH_COMPONENT', $componentPaths['main']);
 			}
 
-			if(!defined('JPATH_COMPONENT_SITE'))
+			if (!defined('JPATH_COMPONENT_SITE'))
 			{
-				define('JPATH_COMPONENT_SITE', JPATH_SITE . '/components/' . $option);
+				define('JPATH_COMPONENT_SITE', $componentPaths['site']);
 			}
 
-			if(!defined('JPATH_COMPONENT_ADMINISTRATOR'))
+			if (!defined('JPATH_COMPONENT_ADMINISTRATOR'))
 			{
-				define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/' . $option);
+				define('JPATH_COMPONENT_ADMINISTRATOR', $componentPaths['admin']);
 			}
 		}
 
@@ -524,7 +494,7 @@ class FOFDispatcher extends JObject
 			JLoader::import('joomla.user.authentication');
 			$app = JFactory::getApplication();
 			$options = array('remember'	 => false);
-			$parameters = array('username'	 => JFactory::getUser()->username);
+			$parameters = array('username'	 => FOFPlatform::getInstance()->getUser()->username);
 			$results = $app->triggerEvent('onLogoutUser', array($parameters, $options));
 		}
 
@@ -540,7 +510,7 @@ class FOFDispatcher extends JObject
 	{
 		// Only run when there is no logged in user
 
-		if (!JFactory::getUser()->guest)
+		if (!FOFPlatform::getInstance()->getUser()->guest)
 		{
 			return;
 		}
@@ -558,7 +528,9 @@ class FOFDispatcher extends JObject
 			// If we're already logged in, don't bother
 
 			if ($this->_fofAuth_isLoggedIn)
+			{
 				continue;
+			}
 
 			// This will hold our authentication data array (username, password)
 			$authInfo = null;
@@ -666,24 +638,21 @@ class FOFDispatcher extends JObject
 			}
 
 			JLoader::import('joomla.user.authentication');
-			$app = JFactory::getApplication();
 			$options = array('remember'		 => false);
 			$authenticate = JAuthentication::getInstance();
 			$response = $authenticate->authenticate($authInfo, $options);
 
-			if ($response->status == JAUTHENTICATE_STATUS_SUCCESS)
+			if ($response->status == JAuthentication::STATUS_SUCCESS)
 			{
-				JPluginHelper::importPlugin('user');
-				$results = $app->triggerEvent('onLoginUser', array((array) $response, $options));
+				FOFPlatform::getInstance()->importPlugin('user');
+				$results = FOFPlatform::getInstance()->runPlugins('onLoginUser', array((array) $response, $options));
 
 				JLoader::import('joomla.user.helper');
 				$userid = JUserHelper::getUserId($response->username);
-				$user = JFactory::getUser($userid);
+				$user = FOFPlatform::getInstance()->getUser($userid);
 
 				$session = JFactory::getSession();
 				$session->set('user', $user);
-
-				// $results = $app->triggerEvent('onLogoutUser', array($parameters, $options));
 
 				$this->_fofAuth_isLoggedIn = true;
 			}
@@ -771,35 +740,13 @@ class FOFDispatcher extends JObject
 	 */
 	public static function isCliAdmin()
 	{
-		static $isCLI = null;
+		static $isCLI   = null;
 		static $isAdmin = null;
 
 		if (is_null($isCLI) && is_null($isAdmin))
 		{
-			try
-			{
-				if (is_null(JFactory::$application))
-				{
-					$isCLI = true;
-				}
-				else
-				{
-					$isCLI = JFactory::getApplication() instanceof JException;
-				}
-			}
-			catch (Exception $e)
-			{
-				$isCLI = true;
-			}
-
-			if ($isCLI)
-			{
-				$isAdmin = false;
-			}
-			else
-			{
-				$isAdmin = !JFactory::$application ? false : JFactory::getApplication()->isAdmin();
-			}
+			$isCLI   = FOFPlatform::getInstance()->isCli();
+			$isAdmin = FOFPlatform::getInstance()->isBackend();
 		}
 
 		return array($isCLI, $isAdmin);

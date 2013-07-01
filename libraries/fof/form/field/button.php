@@ -11,7 +11,7 @@ JFormHelper::loadFieldClass('text');
 
 /**
  * Form Field class for the FOF framework
- * Supports a one line text field.
+ * Supports a button input.
  *
  * @package  FrameworkOnFramework
  * @since    2.0
@@ -84,12 +84,17 @@ class FOFFormFieldButton extends FOFFormFieldText implements FOFFormField
 		}
 
 		return '<button id="' . $this->id . '" class="btn ' . $class . '" ' .
-			$onclick .'>' .
+			$onclick . '>' .
 			$icon .
 			htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') .
 			'</button>';
 	}
 
+	/**
+	 * Method to get the field title.
+	 *
+	 * @return  string  The field title.
+	 */
 	protected function getTitle()
 	{
 		return null;

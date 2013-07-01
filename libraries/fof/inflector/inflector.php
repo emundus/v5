@@ -15,6 +15,7 @@ defined('_JEXEC') or die();
  * FOFInflector to pluralize and singularize English nouns.
  *
  * @package  FrameworkOnFramework
+ * @since    1.0
  */
 class FOFInflector
 {

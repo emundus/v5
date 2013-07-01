@@ -21,7 +21,6 @@ if (!class_exists('JFormFieldList'))
  */
 class FOFFormFieldList extends JFormFieldList implements FOFFormField
 {
-
 	protected $static;
 
 	protected $repeatable;
@@ -98,6 +97,7 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 		{
 			$show_link = true;
 		}
+
 		if ($this->element['url'])
 		{
 			$link_url = $this->element['url'];
@@ -138,7 +138,7 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 			$html .= '<a href="' . $link_url . '">';
 		}
 
-		$html .= htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8');
+		$html .= htmlspecialchars(self::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8');
 
 		if ($show_link)
 		{
@@ -196,4 +196,98 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 		return $ret;
 	}
 
+	/**
+	 * Method to get the field options.
+	 *
+	 * Ordering is disabled by default. You can enable ordering by setting the
+	 * 'order' element in your form field. The other order values are optional.
+	 *
+	 * - order					What to order.			Possible values: 'name' or 'value' (default = false)
+	 * - order_dir				Order direction.		Possible values: 'asc' = Ascending or 'desc' = Descending (default = 'asc')
+	 * - order_case_sensitive	Order case sensitive.	Possible values: 'true' or 'false' (default = false)
+	 *
+	 * @return  array  The field option objects.
+	 *
+	 * @since	Ordering is available since FOF 2.1.b2.
+	 */
+	protected function getOptions()
+	{
+		// Ordering is disabled by default for backward compatibility
+		$order = false;
+
+		// Set default order direction
+		$order_dir = 'asc';
+
+		// Set default value for case sensitive sorting
+		$order_case_sensitive = false;
+
+		if ($this->element['order'] && $this->element['order'] !== 'false')
+		{
+			$order = $this->element['order'];
+		}
+
+		if ($this->element['order_dir'])
+		{
+			$order_dir = $this->element['order_dir'];
+		}
+
+		if ($this->element['order_case_sensitive'])
+		{
+			// Override default setting when the form element value is 'true'
+			if ($this->element['order_case_sensitive'] == 'true')
+			{
+				$order_case_sensitive = true;
+			}
+		}
+
+		// Create a $sortOptions array in order to apply sorting
+		$i = 0;
+		$sortOptions = array();
+		foreach ($this->element->children() as $option)
+		{
+			$name = JText::alt(trim((string) $option), preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname));
+
+			$sortOptions[$i] = new stdClass();
+			$sortOptions[$i]->option = $option;
+			$sortOptions[$i]->value = $option['value'];
+			$sortOptions[$i]->name = $name;
+			$i++;
+		}
+
+		// Only order if it's set
+		if ($order)
+		{
+			jimport('joomla.utilities.arrayhelper');
+			JArrayHelper::sortObjects($sortOptions, $order, $order_dir == 'asc' ? 1 : -1, $order_case_sensitive, false);
+		}
+
+		// Get the field $options
+		$options = array();
+		foreach ($sortOptions as $sortOption)
+		{
+			$option = $sortOption->option;
+			$name = $sortOption->name;
+
+			// Only add <option /> elements.
+			if ($option->getName() != 'option')
+			{
+				continue;
+			}
+
+			$tmp = JHtml::_('select.option', (string) $option['value'], $name, 'value', 'text', ((string) $option['disabled'] == 'true'));
+
+			// Set some option attributes.
+			$tmp->class = (string) $option['class'];
+
+			// Set some JavaScript option attributes.
+			$tmp->onclick = (string) $option['onclick'];
+
+			// Add the option object to the result set.
+			$options[] = $tmp;
+		}
+
+		reset($options);
+
+		return $options;
+	}
 }

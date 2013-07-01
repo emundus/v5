@@ -71,11 +71,7 @@ if(!defined('FOF_INCLUDED') || !class_exists('FOFLess', true)) {
 }
 
 JLoader::import('joomla.filesystem.file');
-if( version_compare( JVERSION, '1.6.0', 'ge' ) ) {
-	$target_include = JPATH_ROOT.'/plugins/system/admintools/admintools/main.php';
-} else {
-	$target_include = JPATH_ROOT.'/plugins/system/admintools/main.php';
-}
+$target_include = JPATH_ROOT.'/plugins/system/admintools/admintools/main.php';
 
 if(JFile::exists($target_include)) {
 	require_once $target_include;

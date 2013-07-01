@@ -12,7 +12,6 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-jimport('joomla.application.component.controller');
 
 /**
  * Emundus Model
@@ -20,14 +19,14 @@ jimport('joomla.application.component.controller');
  * @package    Joomla.Components
  * @subpackage 	Emundus
  */
-class EmundusController extends JController
+class EmundusController extends JControllerLegacy
 {
 	/**
 	 * Method to display the view
 	 *
 	 * @access	public
 	 */
-	public function display(){
+	public function display($cachable = false, $urlparams = false){
 		parent::display();
 	}
 }

@@ -51,7 +51,6 @@ class FOFFormHeaderFieldsearchable extends FOFFormHeaderField
 			$onchange = ' onchange="document.adminForm.submit();"';
 		}
 
-
 		return '<input type="text" name="' . $name . '" id="' . $this->id . '"' . ' value="'
 			. htmlspecialchars($searchvalue, ENT_COMPAT, 'UTF-8') . '"' . $filterclass . $size . $placeholder . $onchange . $maxLength . '/>';
 	}

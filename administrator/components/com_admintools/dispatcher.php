@@ -54,7 +54,7 @@ class AdmintoolsDispatcher extends FOFDispatcher
 			$model = FOFModel::getAnInstance('Masterpw','AdmintoolsModel');
 			if(!$model->accessAllowed($view))
 			{
-				$url = ($viewName == 'cpanel') ? 'index.php' : 'index.php?option=com_admintools&view=cpanel';
+				$url = ($view == 'cpanel') ? 'index.php' : 'index.php?option=com_admintools&view=cpanel';
 				JFactory::getApplication()->redirect($url, JText::_('ATOOLS_ERR_NOTAUTHORIZED'), 'error');
 				return;
 			}

@@ -196,9 +196,7 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 		}
 		else
 		{
-			list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
-
-			if ($isAdmin)
+			if (FOFPlatform::getInstance()->isBackend())
 			{
 				// If no link is defined in the back-end, assume the user edit
 				// link in the User Manager component
@@ -235,9 +233,8 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 			if ($avatar_method == 'plugin')
 			{
 				// Use the user plugins to get an avatar
-				JPluginHelper::importPlugin('user');
-				$dispatcher = JDispatcher::getInstance();
-				$jResponse  = $dispatcher->trigger('onUserAvatar', array($user, $avatar_size));
+				FOFPlatform::getInstance()->importPlugin('user');
+				$jResponse = FOFPlatform::getInstance()->runPlugins('onUserAvatar', array($user, $avatar_size));
 
 				if (!empty($jResponse))
 				{
@@ -259,9 +256,8 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 			{
 				// Fall back to the Gravatar method
 				$md5 = md5($user->email);
-				list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
 
-				if ($isCLI)
+				if (FOFPlatform::getInstance()->isCli())
 				{
 					$scheme = 'http';
 				}

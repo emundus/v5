@@ -8,13 +8,14 @@
 defined('_JEXEC') or die();
 
 /**
- * FrameworkOnFramework model class
+ * FrameworkOnFramework Model class. The Model is the worhorse. It performs all
+ * of the business logic based on its state and then returns the raw (processed)
+ * data to the caller, or modifies its own state. It's important to note that
+ * the model doesn't get data directly from the request (this is the
+ * Controller's business) and that it doesn't output anything (that the View's
+ * business).
  *
- * FrameworkOnFramework is a set of classes whcih extend Joomla! 1.5 and later's
- * MVC framework with features making maintaining complex software much easier,
- * without tedious repetitive copying of the same code over and over again.
- *
- * @package  FrameworkOnFramework.Model
+ * @package  FrameworkOnFramework
  * @since    1.0
  */
 class FOFModel extends JObject
@@ -182,6 +183,20 @@ class FOFModel extends JObject
 	protected $configProvider = null;
 
 	/**
+	 * FOFModelDispatcherBehavior for dealing with extra behaviors
+	 *
+	 * @var    FOFModelDispatcherBehavior
+	 */
+	protected $modelDispatcher = null;
+
+	/**
+	 *	Default behaviors to apply to the model
+	 *
+	 * @var  	array
+	 */
+	protected $default_behaviors = array('filters');
+
+	/**
 	 * Returns a new model object. Unless overriden by the $config array, it will
 	 * try to automatically populate its state from the request variables.
 	 *
@@ -196,8 +211,9 @@ class FOFModel extends JObject
 		// Make sure $config is an array
 		if (is_object($config))
 		{
-			$config = (array)$config;
-		} elseif (!is_array($config))
+			$config = (array) $config;
+		}
+		elseif (!is_array($config))
 		{
 			$config = array();
 		}
@@ -256,29 +272,20 @@ class FOFModel extends JObject
 		}
 
 		$config['input']->set('option', $config['option']);
-		$config['input']->set('view', $config['view']);
+
+		// Get the component directories
+		$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($component);
 
 		// Try to load the requested model class
 		if (!class_exists($modelClass))
 		{
 			$include_paths = self::addIncludePath();
 
-			list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
+			$extra_paths = array(
+				$componentPaths['main'] . '/models',
+				$componentPaths['alt'] . '/models'
+			);
 
-			if ($isAdmin)
-			{
-				$extra_paths = array(
-					JPATH_ADMINISTRATOR . '/components/' . $component . '/models',
-					JPATH_SITE . '/components/' . $component . '/models'
-				);
-			}
-			else
-			{
-				$extra_paths = array(
-					JPATH_SITE . '/components/' . $component . '/models',
-					JPATH_ADMINISTRATOR . '/components/' . $component . '/models'
-				);
-			}
 			$include_paths = array_merge($extra_paths, $include_paths);
 
 			// Try to load the model file
@@ -303,22 +310,11 @@ class FOFModel extends JObject
 			{
 				$include_paths = self::addIncludePath();
 
-				list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
+				$extra_paths = array(
+					$componentPaths['main'] . '/models',
+					$componentPaths['alt'] . '/models'
+				);
 
-				if ($isAdmin)
-				{
-					$extra_paths = array(
-						JPATH_ADMINISTRATOR . '/components/' . $component . '/models',
-						JPATH_SITE . '/components/' . $component . '/models'
-					);
-				}
-				else
-				{
-					$extra_paths = array(
-						JPATH_SITE . '/components/' . $component . '/models',
-						JPATH_ADMINISTRATOR . '/components/' . $component . '/models'
-					);
-				}
 				$include_paths = array_merge($extra_paths, $include_paths);
 
 				// Try to load the model file
@@ -348,6 +344,29 @@ class FOFModel extends JObject
 	}
 
 	/**
+	 * Adds a behavior to the model
+	 *
+	 * @param   string  $name    The name of the behavior
+	 * @param   array   $config  Optional Behavior configuration
+	 *
+	 * @return  boolean
+	 */
+	public function addBehavior($name, $config = array())
+	{
+
+		$behaviorClass = 'FOFModelBehavior' . ucfirst(strtolower($name));
+
+		if (class_exists($behaviorClass) && $this->modelDispatcher)
+		{
+			$behavior = new $behaviorClass($this->modelDispatcher, $config);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns a new instance of a model, with the state reset to defaults
 	 *
 	 * @param   string  $type    Model type, e.g. 'Items'
@@ -361,10 +380,16 @@ class FOFModel extends JObject
 		// Make sure $config is an array
 		if (is_object($config))
 		{
-			$config = (array)$config;
-		} elseif (!is_array($config))
+			$config = (array) $config;
+		}
+		elseif (!is_array($config))
 		{
 			$config = array();
+		}
+
+		if (!array_key_exists('savesate', $config))
+		{
+			$config['savestate'] = false;
 		}
 
 		$ret = self::getAnInstance($type, $prefix, $config)
@@ -372,9 +397,9 @@ class FOFModel extends JObject
 			->clearState()
 			->clearInput()
 			->reset()
+			->savestate(0)
 			->limitstart(0)
-			->limit(0)
-			->savestate(0);
+			->limit(0);
 
 		return $ret;
 	}
@@ -475,8 +500,9 @@ class FOFModel extends JObject
 		// Make sure $config is an array
 		if (is_object($config))
 		{
-			$config = (array)$config;
-		} elseif (!is_array($config))
+			$config = (array) $config;
+		}
+		elseif (!is_array($config))
 		{
 			$config = array();
 		}
@@ -500,6 +526,9 @@ class FOFModel extends JObject
 
 		// Load the configuration provider
 		$this->configProvider = new FOFConfigProvider;
+
+		// Load the behavior dispatcher
+		$this->modelDispatcher = new FOFModelDispatcherBehavior;
 
 		// Set the $name/$_name variable
 		$component = $this->input->getCmd('option', 'com_foobar');
@@ -568,11 +597,14 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$path = JPATH_ADMINISTRATOR . '/components/' . $this->option . '/tables';
+			$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($this->option);
+
+			$path = $componentPaths['admin'] . '/tables';
 			$altPath = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.table_path', null);
+
 			if ($altPath)
 			{
-				$path = JPATH_ADMINISTRATOR . '/components/' . $this->option . '/' . $altPath;
+				$path = $componentPaths['main'] . '/' . $altPath;
 			}
 
 			$this->addTablePath($path);
@@ -585,24 +617,30 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$table = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.table', FOFInflector::singularize($view));
+			$table = $this->configProvider->get(
+				$this->option . '.views.' . FOFInflector::singularize($this->name) .
+				'.config.table', FOFInflector::singularize($view)
+			);
 			$this->table = $table;
 		}
 
 		// Set the internal state marker - used to ignore setting state from the request
-		if (
-			!empty($config['ignore_request']) ||
-			!is_null($this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.ignore_request', null))
-		)
+
+		if (!empty($config['ignore_request']) || !is_null(
+				$this->configProvider->get(
+					$this->option . '.views.' . FOFInflector::singularize($this->name) .
+					'.config.ignore_request', null
+				)
+		))
 		{
 			$this->__state_set = true;
 		}
 
 		// Get and store the pagination request variables
-		$this->populateSavesate();
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
+		$defaultSaveState = array_key_exists('savestate', $config) ? $config['savestate'] : -999;
+		$this->populateSavestate($defaultSaveState);
 
-		if ($isCLI)
+		if (FOFPlatform::getInstance()->isCli())
 		{
 			$limit = 20;
 			$limitstart = 0;
@@ -627,11 +665,15 @@ class FOFModel extends JObject
 		$this->setState('limitstart', $limitstart);
 
 		// Get the ID or list of IDs from the request or the configuration
+
 		if (array_key_exists('cid', $config))
 		{
 			$cid = $config['cid'];
 		}
-		elseif ($cid = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.cid', null))
+		elseif ($cid = $this->configProvider->get(
+				$this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.cid', null
+			)
+		)
 		{
 			$cid = explode(',', $cid);
 		}
@@ -644,7 +686,10 @@ class FOFModel extends JObject
 		{
 			$id = $config['id'];
 		}
-		elseif ($id = $this->configProvider->get($this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.id', null))
+		elseif ($id = $this->configProvider->get(
+				$this->option . '.views.' . FOFInflector::singularize($this->name) . '.config.id', null
+			)
+		)
 		{
 			$id = explode(',', $id);
 			$id = array_shift($id);
@@ -673,8 +718,10 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_after_delete = $this->configProvider->get($configKey . 'event_after_delete',
-				$this->event_after_delete);
+			$this->event_after_delete = $this->configProvider->get(
+				$configKey . 'event_after_delete',
+				$this->event_after_delete
+			);
 		}
 
 		if (isset($config['event_after_save']))
@@ -683,8 +730,10 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_after_save = $this->configProvider->get($configKey . 'event_after_save',
-				$this->event_after_save);
+			$this->event_after_save = $this->configProvider->get(
+				$configKey . 'event_after_save',
+				$this->event_after_save
+			);
 		}
 
 		if (isset($config['event_before_delete']))
@@ -693,8 +742,10 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_before_delete = $this->configProvider->get($configKey . 'event_before_delete',
-				$this->event_before_delete);
+			$this->event_before_delete = $this->configProvider->get(
+				$configKey . 'event_before_delete',
+				$this->event_before_delete
+			);
 		}
 
 		if (isset($config['event_before_save']))
@@ -703,8 +754,10 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_before_save = $this->configProvider->get($configKey . 'event_before_save',
-				$this->event_before_save);
+			$this->event_before_save = $this->configProvider->get(
+				$configKey . 'event_before_save',
+				$this->event_before_save
+			);
 		}
 
 		if (isset($config['event_change_state']))
@@ -713,8 +766,10 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_change_state = $this->configProvider->get($configKey . 'event_change_state',
-				$this->event_change_state);
+			$this->event_change_state = $this->configProvider->get(
+				$configKey . 'event_change_state',
+				$this->event_change_state
+			);
 		}
 
 		if (isset($config['event_clean_cache']))
@@ -723,8 +778,32 @@ class FOFModel extends JObject
 		}
 		else
 		{
-			$this->event_clean_cache = $this->configProvider->get($configKey . 'event_clean_cache',
-				$this->event_clean_cache);
+			$this->event_clean_cache = $this->configProvider->get(
+				$configKey . 'event_clean_cache',
+				$this->event_clean_cache
+			);
+		}
+
+		if (isset($config['behaviors']))
+		{
+			$behaviors = (array) $config['behaviors'];
+
+			foreach ($behaviors as $behavior)
+			{
+				$this->addBehavior($behavior);
+			}
+		}
+		else
+		{
+			$behaviors = $this->configProvider->get(
+				$configKey . 'behaviors',
+				$this->default_behaviors
+			);
+
+			foreach ($behaviors as $behavior)
+			{
+				$this->addBehavior($behavior);
+			}
 		}
 
 	}
@@ -987,8 +1066,10 @@ class FOFModel extends JObject
 	 */
 	public function &getFirstItem($overrideLimits = false)
 	{
-		// we have to clone the instance, or when multiple getFirstItem calls occuer,
-		// we'll update EVERY instance created
+		/**
+		 * We have to clone the instance, or when multiple getFirstItem calls occur,
+		 * we'll update EVERY instance created
+		 */
 		$table = clone $this->getTable($this->table);
 
 		$list = $this->getItemList($overrideLimits);
@@ -1160,7 +1241,7 @@ class FOFModel extends JObject
 		{
 			if (empty($user))
 			{
-				$oUser = JFactory::getUser();
+				$oUser = FOFPlatform::getInstance()->getUser();
 				$user = $oUser->id;
 			}
 			$table = $this->getTable($this->table);
@@ -1182,11 +1263,10 @@ class FOFModel extends JObject
 				$this->onAfterPublish($table);
 
 				// Call the plugin events
-				$dispatcher = JDispatcher::getInstance();
-				JPluginHelper::importPlugin('content');
+				FOFPlatform::getInstance()->importPlugin('content');
 				$name = $this->input->getCmd('view', 'cpanel');
 				$context = $this->option . '.' . $name;
-				$result = $dispatcher->trigger($this->event_change_state, array($context, $this->id_list, $publish));
+				$result = FOFPlatform::getInstance()->runPlugins($this->event_change_state, array($context, $this->id_list, $publish));
 			}
 		}
 
@@ -1201,7 +1281,7 @@ class FOFModel extends JObject
 	public function checkout()
 	{
 		$table = $this->getTable($this->table);
-		$status = $table->checkout(JFactory::getUser()->id, $this->id);
+		$status = $table->checkout(FOFPlatform::getInstance()->getUser()->id, $this->id);
 
 		if (!$status)
 		{
@@ -1386,10 +1466,11 @@ class FOFModel extends JObject
 
 			if ($query === false)
 			{
-				$sql = (string) $this->buildQuery(false);
+				$subquery = $this->buildQuery(false);
+				$subquery->clear('order');
 				$query = $this->_db->getQuery(true)
 					->select('COUNT(*)')
-					->from("($sql) AS a");
+					->from("(" . (string)$subquery . ") AS a");
 			}
 
 			$this->_db->setQuery((string) $query);
@@ -1509,45 +1590,7 @@ class FOFModel extends JObject
 	 */
 	protected function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $setUserState = true)
 	{
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
-
-		if ($isCLI)
-		{
-			return $default;
-		}
-
-		$app = JFactory::getApplication();
-
-		if (method_exists($app, 'getUserState'))
-		{
-			$old_state = $app->getUserState($key);
-		}
-		else
-		{
-			$old_state = null;
-		}
-
-		$cur_state = (!is_null($old_state)) ? $old_state : $default;
-		$new_state = $this->input->get($request, null, $type);
-
-		// Save the new value only if it was set in this request
-		if ($setUserState)
-		{
-			if ($new_state !== null)
-			{
-				$app->setUserState($key, $new_state);
-			}
-			else
-			{
-				$new_state = $cur_state;
-			}
-		}
-		elseif (is_null($new_state))
-		{
-			$new_state = $cur_state;
-		}
-
-		return $new_state;
+		return FOFPlatform::getInstance()->getUserStateFromRequest($key, $request, $this->input, $default, $type, $setUserState);
 	}
 
 	/**
@@ -1606,7 +1649,7 @@ class FOFModel extends JObject
 			return $table;
 		}
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
+		if (FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge'))
 		{
 			throw new Exception(JText::sprintf('JLIB_APPLICATION_ERROR_TABLE_NAME_NOT_SUPPORTED', $name), 0);
 		}
@@ -1632,8 +1675,9 @@ class FOFModel extends JObject
 		// Make sure $config is an array
 		if (is_object($config))
 		{
-			$config = (array)$config;
-		} elseif (!is_array($config))
+			$config = (array) $config;
+		}
+		elseif (!is_array($config))
 		{
 			$config = array();
 		}
@@ -1678,79 +1722,82 @@ class FOFModel extends JObject
 		$table = $this->getTable();
 		$tableName = $table->getTableName();
 		$tableKey = $table->getKeyName();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
-		$query = $db->getQuery(true)
-			->select('*')
-			->from($db->qn($tableName));
+		$query = $db->getQuery(true);
 
-		$where = array();
+		// Call the behaviors
+		$this->modelDispatcher->trigger('onBeforeBuildQuery', array(&$this, &$query));
 
-		if (version_compare(JVERSION, '3.0', 'ge'))
+		$alias = $this->getTableAlias();
+
+		if ($alias)
 		{
-			$fields = $db->getTableColumns($tableName, true);
-		}
-		else
+			$alias = ' AS ' . $db->qn($alias);
+		} else
 		{
-			$fieldsArray = $db->getTableFields($tableName, true);
-			$fields = array_shift($fieldsArray);
+			$alias = '';
 		}
 
-		foreach ($fields as $fieldname => $fieldtype)
-		{
-			$filterName = ($fieldname == $tableKey) ? 'id' : $fieldname;
-			$filterState = $this->getState($filterName, null);
-
-			if ($filterName == $table->getColumnAlias('enabled'))
-			{
-				if (!is_null($filterState) && ($filterState !== ''))
-				{
-					$query->where($db->qn($fieldname) . ' = ' . $db->q((int) $filterState));
-				}
-			}
-			elseif (!empty($filterState) || ($filterState === '0'))
-			{
-				switch ($fieldname)
-				{
-					case $table->getColumnAlias('title'):
-					case $table->getColumnAlias('description'):
-						$query->where('(' . $db->qn($fieldname) . ' LIKE ' . $db->q('%' . $filterState . '%') . ')');
-
-						break;
-
-					default:
-						if (is_array($filterState))
-						{
-							$tmp = array();
-							foreach ($filterState as $k => $v)
-							{
-								$tmp[] = $db->q($v);
-							}
-							$query->where('(' . $db->qn($fieldname) . ' IN(' . implode(',', $tmp) . '))');
-						}
-						else
-						{
-							$query->where('(' . $db->qn($fieldname) . '=' . $db->q($filterState) . ')');
-						}
-						break;
-				}
-			}
-		}
+		$query->select('*')->from($db->qn($tableName) . $alias) ;
 
 		if (!$overrideLimits)
 		{
 			$order = $this->getState('filter_order', null, 'cmd');
 
-			if (!in_array($order, array_keys($this->getTable()->getData())))
+			if (!in_array($order, array_keys($table->getData())))
 			{
 				$order = $tableKey;
 			}
 
+			$order = $db->qn($order);
+
+			if ($alias)
+			{
+				$order = $db->qn($this->getTableAlias()) . '.' . $order;
+			}
+
 			$dir = $this->getState('filter_order_Dir', 'ASC', 'cmd');
-			$query->order($db->qn($order) . ' ' . $dir);
+			$query->order($order . ' ' . $dir);
 		}
 
+		// Call the behaviors
+		$this->modelDispatcher->trigger('onAfterBuildQuery', array(&$this, &$query));
+
 		return $query;
+	}
+
+	/**
+	 * Returns a list of the fields of the table associated with this model
+	 *
+	 * @return  array
+	 */
+	public function getTableFields()
+	{
+		$tableName = $this->getTable()->getTableName();
+
+		if (FOFPlatform::getInstance()->checkVersion(JVERSION, '3.0', 'ge'))
+		{
+			$fields = $this->getDbo()->getTableColumns($tableName, true);
+		}
+		else
+		{
+			$fieldsArray = $this->getDbo()->getTableFields($tableName, true);
+			$fields = array_shift($fieldsArray);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Get the alias set for this model's table
+	 *
+	 *
+	 * @return  string 	The table alias
+	 */
+	public function getTableAlias()
+	{
+		return $this->getTable($this->table)->getTableAlias();
 	}
 
 	/**
@@ -1835,13 +1882,15 @@ class FOFModel extends JObject
 	/**
 	 * Initialises the _savestate variable
 	 *
+	 * @param   integer  $defaultSaveState  The default value for the savestate
+	 *
 	 * @return  void
 	 */
-	public function populateSavesate()
+	public function populateSavestate($defaultSaveState = -999)
 	{
 		if (is_null($this->_savestate))
 		{
-			$savestate = $this->input->getInt('savestate', -999);
+			$savestate = $this->input->getInt('savestate', $defaultSaveState);
 
 			if ($savestate == -999)
 			{
@@ -1878,7 +1927,7 @@ class FOFModel extends JObject
 	 */
 	public function applyAccessFiltering($userID = null)
 	{
-		$user = JFactory::getUser($userID);
+		$user = FOFPlatform::getInstance()->getUser($userID);
 		$this->setState('access', $user->getAuthorisedViewLevels());
 
 		return $this;
@@ -1966,14 +2015,12 @@ class FOFModel extends JObject
 		FOFForm::addFormPath(dirname($formFilename));
 
 		// Set up field paths
-		list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
 
 		$option = $this->input->getCmd('option', 'com_foobar');
+		$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($option);
 		$view = $this->input->getCmd('view', 'cpanels');
-		$file_root = ($isAdmin ? JPATH_ADMINISTRATOR : JPATH_SITE);
-		$file_root .= '/components/' . $option;
-		$alt_file_root = ($isAdmin ? JPATH_SITE : JPATH_ADMINISTRATOR);
-		$alt_file_root .= '/components/' . $option;
+		$file_root = $componentPaths['main'];
+		$alt_file_root = $componentPaths['alt'];
 
 		FOFForm::addFieldPath($file_root . '/fields');
 		FOFForm::addFieldPath($file_root . '/models/fields');
@@ -2023,66 +2070,58 @@ class FOFModel extends JObject
 	/**
 	 * Guesses the best candidate for the path to use for a particular form.
 	 *
-	 * @param   string  $source  The name of the form file to load, without the .xml extension
+	 * @param   string  $source  The name of the form file to load, without the .xml extension.
+	 * @param   array   $paths   The paths to look into. You can declare this to override the default FOF paths.
 	 *
-	 * @return  string  The path and filename of the form to load
+	 * @return  mixed  A string if the path and filename of the form to load is found, false otherwise.
 	 *
 	 * @since   2.0
 	 */
-	public function findFormFilename($source)
+	public function findFormFilename($source, $paths = array())
 	{
-		// Get some useful variables
-		list($isCli, $isAdmin) = FOFDispatcher::isCliAdmin();
-
 		$option = $this->input->getCmd('option', 'com_foobar');
 		$view 	= $this->input->getCmd('view', 'cpanels');
 
-		if(!$isCli)
-		{
-			$template = JFactory::getApplication()->getTemplate();
-		}
-		else
-		{
-			$template = 'cli';
-		}
+		$componentPaths = FOFPlatform::getInstance()->getComponentBaseDirs($option);
+		$file_root = $componentPaths['main'];
+		$alt_file_root = $componentPaths['alt'];
+		$template_root = FOFPlatform::getInstance()->getTemplateOverridePath($option);
 
-		$file_root = ($isAdmin ? JPATH_ADMINISTRATOR : JPATH_SITE);
-		$file_root .= '/components/' . $option;
-		$alt_file_root = ($isAdmin ? JPATH_SITE : JPATH_ADMINISTRATOR);
-		$alt_file_root .= '/components/' . $option;
-		$template_root = ($isAdmin ? JPATH_ADMINISTRATOR : JPATH_SITE);
-		$template_root .= '/templates/' . $template . '/html/' . $option;
-
-		// Set up the paths to look into
-		$paths = array(
-			// In the template override
-			$template_root . '/' . $view,
-			$template_root . '/' . FOFInflector::singularize($view),
-			$template_root . '/' . FOFInflector::pluralize($view),
-			// In this side of the component
-			$file_root . '/views/' . $view . '/tmpl',
-			$file_root . '/views/' . FOFInflector::singularize($view) . '/tmpl',
-			$file_root . '/views/' . FOFInflector::pluralize($view) . '/tmpl',
-			// In the other side of the component
-			$alt_file_root . '/views/' . $view . '/tmpl',
-			$alt_file_root . '/views/' . FOFInflector::singularize($view) . '/tmpl',
-			$alt_file_root . '/views/' . FOFInflector::pluralize($view) . '/tmpl',
-			// In the models/forms of this side
-			$file_root . '/models/forms',
-			// In the models/forms of the other side
-			$alt_file_root . '/models/forms',
-		);
+		if (empty($paths))
+		{
+			// Set up the paths to look into
+			$paths = array(
+				// In the template override
+				$template_root . '/' . $view,
+				$template_root . '/' . FOFInflector::singularize($view),
+				$template_root . '/' . FOFInflector::pluralize($view),
+				// In this side of the component
+				$file_root . '/views/' . $view . '/tmpl',
+				$file_root . '/views/' . FOFInflector::singularize($view) . '/tmpl',
+				$file_root . '/views/' . FOFInflector::pluralize($view) . '/tmpl',
+				// In the other side of the component
+				$alt_file_root . '/views/' . $view . '/tmpl',
+				$alt_file_root . '/views/' . FOFInflector::singularize($view) . '/tmpl',
+				$alt_file_root . '/views/' . FOFInflector::pluralize($view) . '/tmpl',
+				// In the models/forms of this side
+				$file_root . '/models/forms',
+				// In the models/forms of the other side
+				$alt_file_root . '/models/forms',
+			);
+		}
 
 		// Set up the suffixes to look into
-		$jversion = new JVersion;
-		$versionParts = explode('.', $jversion->RELEASE);
-		$majorVersion = array_shift($versionParts);
-		$suffixes = array(
-			'.j' . str_replace('.', '', $jversion->getHelpVersion()) . '.xml',
-			'.j' . $majorVersion . '.xml',
-			'.xml',
-		);
-		unset($jversion, $versionParts, $majorVersion);
+		$suffixes = array();
+		$temp_suffixes = FOFPlatform::getInstance()->getTemplateSuffixes();
+
+		if (!empty($temp_suffixes))
+		{
+			foreach ($temp_suffixes as $suffix)
+			{
+				$suffixes[] = $suffix . '.xml';
+			}
+		}
+		$suffixes[] = '.xml';
 
 		// Look for all suffixes in all paths
 		JLoader::import('joomla.filesystem.file');
@@ -2146,11 +2185,10 @@ class FOFModel extends JObject
 	{
 		// Import the appropriate plugin group.
 		JLoader::import('joomla.plugin.helper');
-		JPluginHelper::importPlugin($group);
+		FOFPlatform::getInstance()->importPlugin($group);
 
 		// Trigger the form preparation event.
-		$app = JFactory::getApplication();
-		$results = $app->triggerEvent('onContentPrepareForm', array($form, $data));
+		$results = FOFPlatform::getInstance()->runPlugins('onContentPrepareForm', array($form, $data));
 
 		// Check for errors encountered while preparing the form.
 		if (count($results) && in_array(false, $results, true))
@@ -2227,7 +2265,7 @@ class FOFModel extends JObject
 	 * operation. You can modify it before it's returned to the MVC triad for
 	 * further processing.
 	 *
-	 * @param   FOFTable  $record
+	 * @param   FOFTable  &$record  The table instance we fetched
 	 *
 	 * @return  void
 	 */
@@ -2240,23 +2278,16 @@ class FOFModel extends JObject
 	 * This method runs before the $data is saved to the $table. Return false to
 	 * stop saving.
 	 *
-	 * @param   array     $data   The data to save
-	 * @param   FOFTable  $table  The table to save the data to
+	 * @param   array     &$data   The data to save
+	 * @param   FOFTable  &$table  The table to save the data to
 	 *
 	 * @return  boolean  Return false to prevent saving, true to allow it
 	 */
 	protected function onBeforeSave(&$data, &$table)
 	{
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
-
 		// Let's import the plugin only if we're not in CLI (content plugin needs a user)
 
-		if (!$isCLI)
-		{
-			JPluginHelper::importPlugin('content');
-		}
-
-		$dispatcher = JDispatcher::getInstance();
+		FOFPlatform::getInstance()->importPlugin('content');
 
 		try
 		{
@@ -2283,9 +2314,18 @@ class FOFModel extends JObject
 			// Bind the data
 			$table->bind($allData);
 
+			// Call the behaviors
+			$result = $this->modelDispatcher->trigger('onBeforeSave', array(&$this, &$data));
+
+			if (in_array(false, $result, true))
+			{
+				// Behavior failed, return false
+				return false;
+			}
+
 			// Call the plugin
 			$name = $this->name;
-			$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $name, &$table, $this->_isNewRecord));
+			$result = FOFPlatform::getInstance()->runPlugins($this->event_before_save, array($this->option . '.' . $name, &$table, $this->_isNewRecord));
 
 			if (in_array(false, $result, true))
 			{
@@ -2325,27 +2365,29 @@ class FOFModel extends JObject
 	/**
 	 * This method runs after the data is saved to the $table.
 	 *
-	 * @param   FOFTable  $table
+	 * @param   FOFTable  &$table  The table which was saved
 	 *
 	 * @return  boolean
 	 */
 	protected function onAfterSave(&$table)
 	{
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
-
 		// Let's import the plugin only if we're not in CLI (content plugin needs a user)
 
-		if (!$isCLI)
-		{
-			JPluginHelper::importPlugin('content');
-		}
-
-		$dispatcher = JDispatcher::getInstance();
+		FOFPlatform::getInstance()->importPlugin('content');
 
 		try
 		{
+			// Call the behaviors
+			$result = $this->modelDispatcher->trigger('onAfterSave', array(&$this));
+
+			if (in_array(false, $result, true))
+			{
+				// Behavior failed, return false
+				return false;
+			}
+
 			$name = $this->name;
-			$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $name, &$table, $this->_isNewRecord));
+			FOFPlatform::getInstance()->runPlugins($this->event_after_save, array($this->option . '.' . $name, &$table, $this->_isNewRecord));
 		}
 		catch (Exception $e)
 		{
@@ -2359,30 +2401,33 @@ class FOFModel extends JObject
 	/**
 	 * This method runs before the record with key value of $id is deleted from $table
 	 *
-	 * @param   FOFTable  $table
+	 * @param   integer   &$id     The ID of the record being deleted
+	 * @param   FOFTable  &$table  The table instance used to delete the record
 	 *
 	 * @return  boolean
 	 */
 	protected function onBeforeDelete(&$id, &$table)
 	{
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
-
 		// Let's import the plugin only if we're not in CLI (content plugin needs a user)
 
-		if (!$isCLI)
-		{
-			JPluginHelper::importPlugin('content');
-		}
-
-		$dispatcher = JDispatcher::getInstance();
+		FOFPlatform::getInstance()->importPlugin('content');
 
 		try
 		{
 			$table->load($id);
 
+			// Call the behaviors
+			$result = $this->modelDispatcher->trigger('onBeforeDelete', array(&$this));
+
+			if (in_array(false, $result, true))
+			{
+				// Behavior failed, return false
+				return false;
+			}
+
 			$name = $this->input->getCmd('view', 'cpanel');
 			$context = $this->option . '.' . $name;
-			$result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+			$result = FOFPlatform::getInstance()->runPlugins($this->event_before_delete, array($context, $table));
 
 			if (in_array(false, $result, true))
 			{
@@ -2413,12 +2458,15 @@ class FOFModel extends JObject
 	 */
 	protected function onAfterDelete($id)
 	{
-		list($isCLI, $isAdmin) = FOFDispatcher::isCliAdmin();
+		FOFPlatform::getInstance()->importPlugin('content');
 
-		// Let's import the plugin only if we're not in CLI (content plugin needs a user)
-		if (!$isCLI)
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterDelete', array(&$this));
+
+		if (in_array(false, $result, true))
 		{
-			JPluginHelper::importPlugin('content');
+			// Behavior failed, return false
+			return false;
 		}
 
 		$dispatcher = JDispatcher::getInstance();
@@ -2427,7 +2475,7 @@ class FOFModel extends JObject
 		{
 			$name = $this->input->getCmd('view', 'cpanel');
 			$context = $this->option . '.' . $name;
-			$result = $dispatcher->trigger($this->event_after_delete, array($context, $this->_recordForDeletion));
+			$result = FOFPlatform::getInstance()->runPlugins($this->event_after_delete, array($context, $this->_recordForDeletion));
 			unset($this->_recordForDeletion);
 		}
 		catch (Exception $e)
@@ -2439,54 +2487,214 @@ class FOFModel extends JObject
 		}
 	}
 
+	/**
+	 * This method runs before a record is copied
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record being copied
+	 *
+	 * @return  boolean  True to allow the copy
+	 */
 	protected function onBeforeCopy(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onBeforeCopy', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs after a record has been copied
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record which was copied
+	 *
+	 * @return  boolean  True to allow the copy
+	 */
 	protected function onAfterCopy(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterCopy', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs before a record is published
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record being published
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onBeforePublish(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onBeforePublish', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs after a record has been published
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record which was published
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onAfterPublish(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterPublish', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs before a record is hit
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record being hit
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onBeforeHit(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onBeforeHit', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs after a record has been hit
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record which was hit
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onAfterHit(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterHit', array(&$this));
 
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
+		return true;
 	}
 
+	/**
+	 * This method runs before a record is moved
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record being moved
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onBeforeMove(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onBeforeMove', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
 		return true;
 	}
 
+	/**
+	 * This method runs after a record has been moved
+	 *
+	 * @param   FOFTable  &$table  The table instance of the record which was moved
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onAfterMove(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterMove', array(&$this));
 
-	}
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
 
-	protected function onBeforeReorder(&$table)
-	{
 		return true;
 	}
 
+	/**
+	 * This method runs before a table is reordered
+	 *
+	 * @param   FOFTable  &$table  The table instance being reordered
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
+	protected function onBeforeReorder(&$table)
+	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onBeforeReorder', array(&$this));
+
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * This method runs after a table is reordered
+	 *
+	 * @param   FOFTable  &$table  The table instance which was reordered
+	 *
+	 * @return  boolean  True to allow the operation
+	 */
 	protected function onAfterReorder(&$table)
 	{
+		// Call the behaviors
+		$result = $this->modelDispatcher->trigger('onAfterReorder', array(&$this));
 
+		if (in_array(false, $result, true))
+		{
+			// Behavior failed, return false
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -2507,7 +2715,6 @@ class FOFModel extends JObject
 	 *
 	 * @return  string  The name of the model
 	 *
-	 * @since   12.2
 	 * @throws  Exception
 	 */
 	public function getName()
@@ -2515,6 +2722,7 @@ class FOFModel extends JObject
 		if (empty($this->name))
 		{
 			$r = null;
+
 			if (!preg_match('/Model(.*)/i', get_class($this), $r))
 			{
 				throw new Exception(JText::_('JLIB_APPLICATION_ERROR_MODEL_GET_NAME'), 500);
@@ -2531,8 +2739,6 @@ class FOFModel extends JObject
 	 * @param   JDatabaseDriver  $db  A JDatabaseDriver based object
 	 *
 	 * @return  void
-	 *
-	 * @since   12.2
 	 */
 	public function setDbo($db)
 	{
@@ -2546,8 +2752,6 @@ class FOFModel extends JObject
 	 * @param   mixed   $value     The value of the property to set or null.
 	 *
 	 * @return  mixed  The previous value of the property or null if not set.
-	 *
-	 * @since   12.2
 	 */
 	public function setState($property, $value = null)
 	{
@@ -2561,13 +2765,10 @@ class FOFModel extends JObject
 	 * @param   integer  $client_id  The ID of the client
 	 *
 	 * @return  void
-	 *
-	 * @since   12.2
 	 */
 	protected function cleanCache($group = null, $client_id = 0)
 	{
 		$conf = JFactory::getConfig();
-		$dispatcher = JEventDispatcher::getInstance();
 
 		$options = array(
 			'defaultgroup' => ($group) ? $group : (isset($this->option) ? $this->option : JFactory::getApplication()->input->get('option')),
@@ -2577,6 +2778,6 @@ class FOFModel extends JObject
 		$cache->clean();
 
 		// Trigger the onContentCleanCache event.
-		$dispatcher->trigger($this->event_clean_cache, $options);
+		FOFPlatform::getInstance()->runPlugins($this->event_clean_cache, $options);
 	}
 }

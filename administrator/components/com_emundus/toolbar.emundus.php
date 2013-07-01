@@ -15,18 +15,9 @@
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-require_once( JApplicationHelper::getPath( 'toolbar_html' ) );
+//require_once( JApplicationHelper::getPath( 'toolbar_html' ) );
 
-switch ($task)
-{
-	case 'add'  :
-		TOOLBAR_emundus::_EDIT(false);
-		break;
-	case 'edit' :
-		TOOLBAR_emundus::_EDIT(true);
-		break;
+JToolBarHelper::title( JText::_( 'eMundus' ), 'generic.png' );
+JToolBarHelper::preferences('com_emundus', '500');
 
-	default:
-		TOOLBAR_emundus::_DEFAULT();
-		break;
-}
+?>

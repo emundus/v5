@@ -1,4 +1,14 @@
 <?php die() ?>
+Admin Tools 2.5.6
+================================================================================
++ IPv6 support
++ Allow URL redirections to keep (default) or drop query parameters, useful for redirecting non-SEF URLs
+~ Remove time penalty when blocking auto-banned IPs due to resource usage considerations
+# [MEDIUM] Combining CSS and Javascript using the plugin delivery method doesn't work on Joomla! 3.1
+# [LOW] The .htaccess Maker exception you'd add for files and folders with dashes in their names would not be effective
+# [LOW] The .htaccess Maker would assume that Apache version is 2.0 when it's not reported. Many Apache 2.5 servers are configured like that. We now assume version 2.5 in this case.
+# [LOW] Pre-installation script would run the wrong SQL files on upgrade (normally not causing a problem, but still it's not the intended behaviour)
+
 Admin Tools 2.5.5
 ================================================================================
 + Option to hide security exception stats & graphs

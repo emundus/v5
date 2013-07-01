@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	eMundus
- * @copyright 	Copyright © 2009-2012 Benjamin Rivalland. All rights reserved.
+ * @copyright 	Copyright ¬© 2009-2012 Benjamin Rivalland. All rights reserved.
  * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * eMundus is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -14,17 +14,18 @@ defined('_JEXEC') or die('RESTRICTED');
 <html><body bgcolor="#FFFFFF">
 <table width="100%" border="0">
   <tr>
-    <td width="80%"><p align="center"><a href="http://www.decisionpublique.fr" target="_blank" title="SociÈtÈ de conseil en organisation et management public"><img src="components/com_emundus/logo.png" alt="Decision Publique" border="0"></a></p>
+    <td width="80%"><p align="center"><a href="http://www.decisionpublique.fr" target="_blank" title="Soci√©t√© de conseil en organisation et management public"><img src="components/com_emundus/logo.png" alt="Decision Publique" border="0"></a></p>
       <p align="center"><?php echo JText::_("FIND_PRESTATION"); ?></p>
     <p align="center"><a href="http://www.emundus.fr" target="_blank">www.emundus.fr</a></p></td>
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
-      <p align="center">Version 4 - 08/2012</p>
+      <p align="center">Version 5 - 08/2013</p>
     <p align="center"><?php echo JText::_("AUTHOR"); ?> <em>Benjamin Rivalland </em></p>
-	<p align="center"><?php echo JText::_("DEVELOPER"); ?> <em>Benjamin Rivalland (2008-2012)</em>,<br />
+	<p align="center"><?php echo JText::_("DEVELOPER"); ?> <em>Benjamin Rivalland (2008-2013)</em>,<br />
 	<em>Jonas Lerebours (2010)</em>,<br>
 	<em>Mathilde Guillossou (2011-2012)</em>,<br>
   <em>Riwal Le Buhan (2012)</em>
+  <em>Elisabeth Recul√© (2013)</em>
 	</p></td>
   </tr>
 </table>

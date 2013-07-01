@@ -47,7 +47,16 @@ class FOFFormHeaderOrdering extends FOFFormHeader
 		else
 		{
 			// The new, drag'n'drop ordering support
-			return JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'ordering', $view->getLists()->order_Dir, $view->getLists()->order, null, 'asc', 'JGRID_HEADING_ORDERING');
+			return JHtml::_(
+				'grid.sort',
+				'<i class="icon-menu-2"></i>',
+				'ordering',
+				$view->getLists()->order_Dir,
+				$view->getLists()->order,
+				null,
+				'asc',
+				'JGRID_HEADING_ORDERING'
+			);
 		}
 	}
 

@@ -117,7 +117,7 @@ class FOFFormFieldOrdering extends JFormField implements FOFFormField
 			$html .= '<span>';
 			$html .= $viewObject->pagination->orderUpIcon($this->rowid, true, 'orderup', 'Move Up', $ordering);
 			$html .= '</span><span>';
-			$html .= $viewObject->pagination->orderDownIcon($this->rowid,$viewObject->pagination->total, true, 'orderdown', 'Move Down', $ordering);
+			$html .= $viewObject->pagination->orderDownIcon($this->rowid, $viewObject->pagination->total, true, 'orderdown', 'Move Down', $ordering);
 			$html .= '</span>';
 			$html .= '<input type="text" name="order[]" size="5" value="' . $this->value . '" ' . $disabled;
 			$html .= 'class="text_area" style="text-align: center" />';
