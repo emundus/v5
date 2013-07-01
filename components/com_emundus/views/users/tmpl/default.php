@@ -292,8 +292,23 @@ foreach ($this->users as $user) { ?>
      <tr id="show_group" style="visibility:hidden;">
        <th ><?php echo JText::_('GROUPS'); ?></th>
        <td>
-			<?php foreach($this->groups as $groups) { 
-					echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'"/>'.$groups->label.'</label><br />';
+			<?php 
+				$group_id="";
+				foreach($this->groups as $groups) { 
+					if($edit==1){
+						foreach($this->groupEval as $eval){
+							if($groups->id==$eval->id && $eval->user_id==$this->users[0]->id){
+								$group_id=$groups->id;
+							}
+						}
+						if($groups->id==$group_id){
+							echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'" checked />'.$groups->label.'</label><br />';
+						}else{
+							echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'"/>'.$groups->label.'</label><br />';
+						}
+					}else{
+						echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'"/>'.$groups->label.'</label><br />';
+					}
 				} 
 			?>
         </td>
