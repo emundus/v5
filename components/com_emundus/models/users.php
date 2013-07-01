@@ -410,17 +410,18 @@ class EmundusModelUsers extends JModel
 		return $db->loadObjectList();
 	}
 	
-	function getGroupEvalWithId()
+	function getGroupEval()
 	{
 		$db = JFactory::getDBO();
-		$query = 'SELECT esg.id, eu.user_id, eu.firstname, eu.lastname, u.email
+		$query = 'SELECT esg.id, eu.user_id, eu.firstname, eu.lastname, u.email, esg.label 
 				FROM #__emundus_setup_groups as esg
 				LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 				LEFT JOIN #__emundus_users as eu on eu.user_id=eg.user_id
 				LEFT JOIN #__users as u on u.id=eu.user_id
 				WHERE esg.published=1';
 		$db->setQuery( $query );
-		return $db->loadObjectList('user_id');
+		// echo str_replace('#_','jos',$query);
+		return $db->loadObjectList();
 	}
 	
 	function getGroupsEval()
