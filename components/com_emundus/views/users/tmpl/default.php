@@ -179,16 +179,18 @@ foreach ($this->users as $user) { ?>
 		if (strpos($user->lastvisitDate,"0000-00-00 00:00:00")===0 && $user->registred_for>7) $alert=1; else $alert=0;
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
 		<td align="center"><?php
-			if(gettype(@$this->groups_eval[$user->id])=="object"){
-				$group_eval = $this->groups_eval[$user->id];
+			foreach($this->groupEval as $eval){
 				$title_group = JText::_('MEMBERS_GROUP_EVAL');
-				echo '<span class="editlinktip hasTip" title="'.$title_group.'::<ul>';
+				if($eval->user_id==$user->id){
+					echo $eval->label;
+				}
+				/*echo '<span class="editlinktip hasTip" title="'.$title_group.'::<ul>';
 				foreach($this->groupEvalWithId as $eval){
 					if($eval->id==$group_eval->group_id){
 						echo '<li>'.strtoupper($eval->lastname).' '.strtolower($eval->firstname).'</li>';
 					}
 				}
-				echo '</ul>"><a href="#">'.$group_eval->label.'</a></span>';
+				echo '</ul>"><a href="#">'.$group_eval->label.'</a></span>';*/
 			}
 		?>
 		</td>
@@ -267,7 +269,7 @@ foreach ($this->users as $user) { ?>
 	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="<?php if($edit==1) echo $this->users[0]->email; ?>" onChange="validateEmail(email);"/>
 	</td></tr>
 	
-	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
+	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select id="profile" name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
 			<?php foreach($this->profiles as $profile) { 
 					echo '<option id="'.$profile->acl_aro_groups.'" value="'.$profile->id;
 					echo @$this->users[0]->profile==$profile->id?'" selected':'"';
@@ -275,13 +277,18 @@ foreach ($this->users as $user) { ?>
 				} ?>
 				</select><?php echo'<input type="hidden" id="acl_aro_groups" name="acl_aro_groups" value="" />'; ?></td></tr>
     
-	 <tr id="show_univ" style="visibility:hidden;"><th><?php echo JText::_('UNIVERSITY_FROM'); ?></th><td><select name="university_id">
+	 <tr id="show_univ" style="visibility:hidden;"><th><?php echo JText::_('UNIVERSITY_FROM'); ?></th>
+		<td>
+			<select name="university_id">
 			<?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 			foreach($this->universities as $university) { 
 				echo '<option value="'.$university->id;
 				echo @$this->users[0]->university_id==$university->id?'" selected':'"';
 				echo '>'.$university->title;'</option>'; 
-			} ?></select></td></tr>
+			} ?>
+			</select>
+		</td>
+	</tr>
      <tr id="show_group" style="visibility:hidden;">
        <th ><?php echo JText::_('GROUPS'); ?></th>
        <td>
@@ -303,6 +310,14 @@ foreach ($this->users as $user) { ?>
 
 
 <script type="text/javascript">
+window.onload=function(){
+	var profile = document.getElementById('profile');
+	if(<?php echo $edit; ?>==1 && profile[profile.selectedIndex].id!=2){
+		document.getElementById('show_univ').style.visibility = "visible";
+		document.getElementById('show_group').style.visibility = "visible";
+		document.getElementById('acl_aro_groups').value = profile[profile.selectedIndex].id;
+	}
+}
 
 function hidden_tr(div1,div2, profile)
 {
