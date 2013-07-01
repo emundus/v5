@@ -195,13 +195,13 @@
 
 .logout-button {
 	height: 20px;
-	background-color:#F8ABAD;
+	background-color:#95D5FE;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 	padding-bottom:5px;
 }
 
-.logout-button:hover { background-color:#F87689; -moz-border-radius: 10px;border-radius: 10px;}
+.logout-button:hover { background-color:#77BDEA; -moz-border-radius: 10px;border-radius: 10px;}
 
 .logout-button button {
 	border: none;
@@ -210,7 +210,7 @@
 	overflow: hidden;
 	font-size: 11px;
 	line-height: 20px;
-	color: #646464;
+	color: black;
 }
 
 .logout-button button:hover {
@@ -219,8 +219,10 @@
 
 .log_updateprofile { background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px; }
 
+.log_updateprofile:hover { background-color:#F1AF30; }
+
 .log_updateprofile button {/*display: block;*/ border: none;
-	background: none; cursor: pointer; overflow: hidden; font-size: 11px; line-height: 20px; color: #000;
+	background: none; cursor: pointer; overflow: hidden; font-size: 11px; line-height: 20px; color: black;
 }
 
 .log_updateprofile button:hover {color: #000000; -moz-border-radius: 10px;border-radius: 10px;}
