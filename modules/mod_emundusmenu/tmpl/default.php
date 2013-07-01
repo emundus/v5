@@ -11,8 +11,7 @@ defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
 ?>
-
-<ul class="menu<?php echo $class_sfx;?>"<?php
+<ul class="<?php echo $class_sfx;?>"<?php
 	$tag = '';
 	if ($params->get('tag_id')!=NULL) {
 		$tag = $params->get('tag_id').'';
@@ -21,6 +20,7 @@ defined('_JEXEC') or die;
 ?>>
 <?php
 foreach ($list as $i => &$item) :
+	$item->anchor_css="item";
 	$class = 'item-'.$item->id;
 	if ($item->id == $active_id) {
 		$class .= ' current';
@@ -68,12 +68,16 @@ foreach ($list as $i => &$item) :
 
 	// The next item is deeper.
 	if ($item->deeper) {
-		echo '<ul>';
+		echo '<div class="dropdown ';
+		if(($item->level+1)==3){
+			echo 'flyout';
+		}
+		echo'"><div class="column"><ul class="level'.($item->level+1).'">';
 	}
 	// The next item is shallower.
 	elseif ($item->shallower) {
 		echo '</li>';
-		echo str_repeat('</ul></li>', $item->level_diff);
+		echo str_repeat('</ul></div></div></li>', $item->level_diff);
 	}
 	// The next item is on the same level.
 	else {

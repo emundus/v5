@@ -7,7 +7,7 @@
 
  #log_username {
 	font-weight: bold;
-	color: #fff;
+	color: black;
 	margin-right: 5px;
  } 
  
@@ -26,6 +26,12 @@
 	width:auto;
 	padding-top: 10px;
 	z-index:90;
+	background:transparent;
+	padding:5px 5px 5px 5px;
+	-moz-border-radius:10px 0;
+	-webkit-border-radius:5px 5px 5px 5px;
+	border-radius:5px 5px 5px 5px;
+	/*border:1px solid #F7E1BE;*/
 }
 
  #log_submitbutton {
@@ -79,7 +85,6 @@
 
 .username input,
 .password input {
-	padding: 0px;
 	width: 100%;
 	background: none;
 	border: none;
@@ -102,8 +107,9 @@
 	padding:1px;
 	height: 20px;
 	/*background: url(images/button_bg.png) 0 0 no-repeat;  ie6png:crop */
-	background-color:#3270B7;
+	background-color:#FFCD50;
 	-moz-border-radius: 10px;border-radius: 10px;
+	padding:2px 5px 2px 5px;
 }
 .register-button {
 	margin-top: 2px;
@@ -111,17 +117,18 @@
 	padding:1px;
 	height: 20px;
 	/*background: url(images/button_bg.png) 0 0 no-repeat;  ie6png:crop */
-	background-color:#3270B7;
+	background-color:#FFCD50;
 	-moz-border-radius: 10px;border-radius: 10px;
+	padding:2px 5px 2px 5px;
 }
 
 .login-button:hover {
 	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
-	background-color:#FFFFFF;
+	background-color:#F9B445;
 }
 .register-button:hover {
 	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
-	background-color:#FFFFFF;
+	background-color:#F9B445;
 }
 
 .login-button button {
@@ -135,7 +142,7 @@
 	overflow: hidden;
 	font-size: 11px;
 	line-height: 20px;
-	color: #fff;
+	color: black;
 }
 .register-button button {
 	display: block;
@@ -148,7 +155,7 @@
 	overflow: hidden;
 	font-size: 11px;
 	line-height: 20px;
-	color: #fff;
+	color: black;
 }
 
 .login-button button:hover {
@@ -180,8 +187,6 @@
 .registration a,
 .log_updateprofile a{
 	/*display: block;*/
-	width: 100%;
-	height: 20px;
 }
 
 .greeting {
@@ -191,16 +196,14 @@
 .logout-button {
 	height: 20px;
 	background-color:#F8ABAD;
-	-moz-border-radius: 10px;border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding-bottom:5px;
 }
 
 .logout-button:hover { background-color:#F87689; -moz-border-radius: 10px;border-radius: 10px;}
 
 .logout-button button {
-	/*display: block;*/
-	padding: 0px 0px 0px 0px;
-	/*width: 100%;*/
-	height: 20px;
 	border: none;
 	background: none;
 	cursor: pointer;
@@ -214,9 +217,9 @@
 	color: #000000;
 }
 
-.log_updateprofile { width: 50px; height: 20px; background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px;}
+.log_updateprofile { background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px; }
 
-.log_updateprofile button {/*display: block;*/ padding: 0px 0px 0px 0px; width: 100%; height: 20px; border: none;
+.log_updateprofile button {/*display: block;*/ border: none;
 	background: none; cursor: pointer; overflow: hidden; font-size: 11px; line-height: 20px; color: #000;
 }
 

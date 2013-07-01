@@ -52,7 +52,7 @@ $user = JFactory::getUser();
 			$j = 0;
 			foreach($res as $r){
 				$src = $folder.''.$img[$j];
-				$str = '<a href="'.$r->link.'&Itemid='.$r->id.'"><img src="'.$src.'" /></a>';
+				$str = '<a href="'.$r->link.'&Itemid='.$r->id.'"><img src="'.JURI::Base().'/'.$src.'" /></a>';
 				if($is_text == '1')
 					$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
 				$tab[] = $str;
