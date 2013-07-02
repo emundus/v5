@@ -1099,6 +1099,10 @@ html body * dd.clear {
 .inputbox.invalid {
   border-color: #ff0000;
 }
+#contact-form dd textarea.invalid {
+  width: 500px;
+  margin: auto;
+}
 label.invalid {
   color: #ff0000 !important;
 }
@@ -1997,6 +2001,10 @@ btn[disabled]:hover {
 .inputbox {
   border: 1px solid #d9d9d9;
 }
+#contact-form dd textarea {
+  width: 500px;
+  margin: auto;
+}
 .login + div .nav-tabs.nav-stacked > li > a {
   background: none;
 }
@@ -2070,7 +2078,7 @@ blockquote.pull-right {
 legend {
   color: #303030;
   border-bottom: 1px solid #d5d5d5;
-  line-height: 10px;
+  line-height: 15px;
 }
 legend small {
   color: #d5d5d5;

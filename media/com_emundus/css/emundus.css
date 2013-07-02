@@ -499,9 +499,3 @@ input.btnhov {
 	-webkit-border-radius:7px;
 	border-radius:7px;
 }
-
-#mail_body textarea {
-width:50% !important;
-height:200px;
-margin:auto;
-}
