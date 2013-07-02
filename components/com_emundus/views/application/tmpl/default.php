@@ -188,7 +188,7 @@ function age($naiss) {
 	
 	<div id="em_application_attachments" class="content">
 		<div class="actions">
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px"/>
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px" />
 			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 			<?php
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
@@ -208,7 +208,7 @@ function age($naiss) {
 				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;
 				$img_missing = (!file_exists($path))?'<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
 				$img_dossier = (is_dir($path))?'<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="'.JText::_( 'FILE_NOT_FOUND' ).'"/> ':"";
-				$img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="'.$this->baseurl.'media/com_emundus/images/icones/encrypted.png" />':"";
+				$img_locked = (strpos($attachment->filename, "_locked") > 0)?'<img src="media/com_emundus/images/icones/encrypted.png" />':"";
 
 				$info = '<div id="hiddenMoreInfoAttachment-'.$i.'">';
 					$info .= '<ul>';		                	
@@ -247,7 +247,7 @@ function age($naiss) {
 					<img border="0" src="'.JURI::Base().'/media/com_emundus/images/icones/pdf_form_64x64.png" width="30px" /></a> '; ?>
 			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('EXPORT_TO_ZIP')."</div>"; ?>');"
 			<?php
-				echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="setCookie(\'current_display\',2,20);document.pressed=this.name" name="export_zip" width="30px" />'; ?>
+				echo 'src="'.JURI::Base().'/media/com_emundus/images/icones/zip2.png" onClick="setCookie(\'current_display\',2,20);document.pressed=this.name" name="export_zip" />'; ?>
 		</div>
 		<?php echo $this->forms; ?>
 	</div>
