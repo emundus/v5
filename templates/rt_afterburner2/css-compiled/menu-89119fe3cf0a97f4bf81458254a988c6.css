@@ -307,6 +307,8 @@
   padding: 0 25px;
   text-transform: uppercase;
   color: #666A6E;
+  width: 100px;
+  text-align: center;
 }
 .gf-menu.l1 > li > .item:after {
   content: "";
@@ -317,10 +319,10 @@
   border-right: 1px solid #F5F5F5;
 }
 .gf-menu.l1 > li:first-child {
-  margin-left: 5px;
+  margin-left: 0px;
 }
 .gf-menu.l1 > li:last-child {
-  margin-right: 5px;
+  margin-right: 0px;
 }
 .gf-menu li {
   float: left;

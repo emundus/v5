@@ -1591,7 +1591,7 @@ input[type="checkbox"] {
 }
 .menu-block {
   padding: 0;
-  margin: 25px 15px;
+  margin: 0;
 }
 #rt-top-surround .rt-num {
   font-size: 24px;
@@ -1601,6 +1601,10 @@ input[type="checkbox"] {
   text-align: center;
   border-radius: 100%;
   margin: 0 auto;
+}
+#rt-header .rt-container {
+  margin: 0 auto;
+  padding: 0;
 }
 .title {
   font-size: 18px;

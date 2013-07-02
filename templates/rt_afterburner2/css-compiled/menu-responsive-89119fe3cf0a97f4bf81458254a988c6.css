@@ -87,7 +87,7 @@
 .gf-menu-toggle .icon-bar + .icon-bar {
   margin-top: 3px;
 }
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
   .layout-mode-responsive .gf-menu-device-wrapper {
     margin-bottom: 15px !important;
   }
