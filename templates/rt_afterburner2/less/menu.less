@@ -20,7 +20,7 @@
 	.border-radius(@menuItemRadius);
 
 	// Menu positioning
-	margin: 0 15px 4px;
+	margin: 0 0px 4px;
 	list-style: none;
 	display: inline-block;
 
@@ -41,7 +41,7 @@
 	// Basic font stuff
 	.item {
 		font-family: @menuFontFamily;
-		font-size: @menuFontSize;
+		font-size: @menuFontSize - 3;
 		line-height: @menuLineHeight;
 		color: @menuDropText;
 
@@ -52,6 +52,7 @@
 		outline: 0;
 		cursor: pointer;
 		.transition(background 0.2s ease-out, border 0.2s ease-out);
+		//background:#DCEFF5;
 	}
 
 	// Level 1 Style Overrides
