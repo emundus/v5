@@ -300,14 +300,14 @@
   font-weight: bold;
 }
 .gf-menu.l1 > li > .item {
-  font-size: 11px;
+  font-size: 9px;
   line-height: 44px;
   position: relative;
   border-right: 1px solid #E3E3E3;
   padding: 0 25px;
   text-transform: uppercase;
   color: #666A6E;
-  width: 100px;
+  width: 90px;
   text-align: center;
 }
 .gf-menu.l1 > li > .item:after {
