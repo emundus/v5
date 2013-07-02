@@ -520,3 +520,14 @@ input.btnhov {
 #fieldset-filters {
 	margin-bottom:10px;
 }
+
+#rt-header .rt-container div{
+	float : left;
+	background:#F1F1F1;
+	margin:0;
+	padding:0;
+}
+
+#lschoolyears {
+	display : inline;
+}

@@ -28,7 +28,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 			$document = JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
-			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : '.$this->current_schoolyear.'</legend>';
+			echo '<fieldset><legend id="legend"><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : <div id="lschoolyears"></div></legend>';
 		?>
 		<div class="evaluation_users"><?php 
 			if(isset($this->users) && !empty($this->users)){ ?>

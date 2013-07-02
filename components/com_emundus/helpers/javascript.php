@@ -545,13 +545,38 @@ function OnSubmitForm() {
 		window.onload=function() {
 			// alert(getCookie(\'selected_id\'));
 			$(\'select_filter\').value=getCookie(\'selected_id\');
+			getLegend();
 		}
 		
 		function submitFilters(){
 			var selected_id = $(\'select_filter\').options[$(\'select_filter\').selectedIndex].value;
 			setCookie("selected_id",selected_id,3);
 			document.getElementById(\'search_button\').click();
-		}';
+		}
+				
+		function getLegend(){
+			var legend = document.getElementById(\'legend\');
+			var select = document.getElementById(\'select-multiple_schoolyears\');
+			var output = document.getElementById(\'lschoolyears\');
+			var text="";
+			var count=0;
+			
+			var options = select.options;
+			for(j=0;j<options.length;j++) {
+				if(options[j].selected){
+					var value_s = options[j].value;
+					if(j==options.length || (j+1)==options.length || options[(j+1)].selected==false){
+						text+=value_s;
+					}else{
+						text+=value_s+", ";
+					}
+				}
+			}
+			document.getElementById(\'lschoolyears\').innerHTML=text;
+			return ;
+		}
+		
+		';
 		return $script;
 	}
 }
