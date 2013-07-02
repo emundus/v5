@@ -424,7 +424,7 @@ function OnSubmitForm() {
 					for(j=0;j<field.length;j++) {
 						if(field[j].value == constraintsObj[i].value){
 							field[j].selected = true;							
-							alert(field[j].value);
+							// alert(field[j].value);
 						}else if(!in_array(field[j].value,constraintsObj)){
 							field[j].selected = false;
 						}
