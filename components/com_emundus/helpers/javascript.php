@@ -565,10 +565,12 @@ function OnSubmitForm() {
 			for(j=0;j<options.length;j++) {
 				if(options[j].selected){
 					var value_s = options[j].value;
-					if(j==options.length || (j+1)==options.length || options[(j+1)].selected==false){
-						text+=value_s;
-					}else{
-						text+=value_s+", ";
+					if(value_s!="%"){
+						if(j==options.length || (j+1)==options.length || options[(j+1)].selected==false){
+							text+=value_s;
+						}else{
+							text+=value_s+", ";
+						}
 					}
 				}
 			}
