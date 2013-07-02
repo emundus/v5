@@ -521,17 +521,11 @@ input.btnhov {
 	margin-bottom:10px;
 }
 /*
-#rt-header .rt-container div{
-	float : left;
-	background:#F1F1F1;
-}
-*/
-
 .rt-container div:first-child{
 	float:left;
 	display:inline;
 }
-
+*/
 #lschoolyears {
 	display : inline;
 }

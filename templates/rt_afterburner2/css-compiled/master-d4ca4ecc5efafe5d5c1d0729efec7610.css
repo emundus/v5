@@ -1580,15 +1580,6 @@ input[type="checkbox"] {
   position: relative;
   z-index: 2;
 }
-#rt-logo-accent {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  top: 14px;
-  left: 219px;
-  z-index: 1;
-  border-radius: 100%;
-}
 .menu-block {
   padding: 0;
   margin: 0;
