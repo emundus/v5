@@ -5,15 +5,123 @@
  	display:none;
  }
 .bold {font-weight:bold;}
-.green{background-color:#AEE3BE;background-image: -moz-linear-gradient(center top , #FFFFFF, #AEE3BE);}
-.orange{background-color:#FC0;background-image: -moz-linear-gradient(center top , #FFFFFF, #FC0);}
-.red{background-color:#FFA8A8;background-image: -moz-linear-gradient(center top , #FFFFFF, #FFA8A8);}
-.blue{background-color:#09F;background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);}
-input[name="search_button"]{background-color:#09F;background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);}
-input[name="clear_button"]{background-color:#FC0;background-image: -moz-linear-gradient(center top , #FFFFFF, #FC0);}
-input[name="custom_email"]{background-color:#09F;background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);}
-input[name="delete_filter"]{background-image:-moz-linear-gradient(center top , #FFFFFF, #F4E46F);}
-input[name="save_as_filter"]{background-image:-moz-linear-gradient(center top , #FFFFFF, #E2CDAF);}
+.green{
+	background-color:#AEE3BE;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #AEE3BE);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #AEE3BE), color-stop(1, #AEE3BE));
+	background:-moz-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
+	background:-webkit-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
+	background:-o-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
+	background:-ms-linear-gradient(top, #FFFFFF 5%, #AEE3BE 100%);
+	background:linear-gradient(to bottom, #FFFFFF 5%, #AEE3BE 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+.orange{
+	background-color:#FC0;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #FC0);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #FC0), color-stop(1, #FC0));
+	background:-moz-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
+	background:-webkit-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
+	background:-o-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
+	background:-ms-linear-gradient(top, #FFFFFF 5%, #FC0 100%);
+	background:linear-gradient(to bottom, #FFFFFF 5%, #FC0 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+.red{
+	background-color:#FFA8A8;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFA8A8);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #FFA8A8), color-stop(1, #FFA8A8));
+	background:-moz-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
+	background:-webkit-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
+	background:-o-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
+	background:-ms-linear-gradient(top, #FFFFFF 5%, #FFA8A8 100%);
+	background:linear-gradient(to bottom, #FFFFFF 5%, #FFA8A8 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+.blue{
+	background-color:#09F;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #09F), color-stop(1, #09F));
+	background:-moz-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-webkit-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-o-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-ms-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:linear-gradient(to bottom, #FFFFFF 5%, #09F 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+input[name="search_button"]{
+	background-color:#90CBF7;
+	background-image: -moz-linear-gradient(center top , #71BDF4, #90CBF7);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #90CBF7), color-stop(1, #90CBF7));
+	background:-moz-linear-gradient(top, #71BDF4 5%, #90CBF7 100%);
+	background:-webkit-linear-gradient(top, #71BDF4 5%, #90CBF7 100%);
+	background:-o-linear-gradient(top, #71BDF4 5%, #90CBF7 100%);
+	background:-ms-linear-gradient(top, #71BDF4 5%, #90CBF7 100%);
+	background:linear-gradient(to bottom, #71BDF4 5%, #90CBF7 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+input[name="clear_button"]{
+	background-color:#F4C458;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #F4C458);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #F4C458), color-stop(1, #F4C458));
+	background:-moz-linear-gradient(top, #FEA83C 5%, #F4C458 100%);
+	background:-webkit-linear-gradient(top, #FEA83C 5%, #F4C458 100%);
+	background:-o-linear-gradient(top, #FEA83C 5%, #F4C458 100%);
+	background:-ms-linear-gradient(top, #FEA83C 5%, #F4C458 100%);
+	background:linear-gradient(to bottom, #FEA83C 5%, #F4C458 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+input[name="custom_email"]{
+	background-color:#09F;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);
+}
+input[name="delete_filter"]{
+	background-color:#F4E46F;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #F4E46F);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #F4E46F), color-stop(1, #F4E46F));
+	background:-moz-linear-gradient(top, #FEA83C 5%, #F4E46F 100%);
+	background:-webkit-linear-gradient(top, #FEA83C 5%, #F4E46F 100%);
+	background:-o-linear-gradient(top, #FEA83C 5%, #F4E46F 100%);
+	background:-ms-linear-gradient(top, #FEA83C 5%, #F4E46F 100%);
+	background:linear-gradient(to bottom, #FEA83C 5%, #F4E46F 100%);
+	
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+input[name="save_as_filter"]{
+	background-color:#E2CDAF;
+	background-image: -moz-linear-gradient(center top , #FEB084, #E2CDAF);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #E2CDAF), color-stop(1, #E2CDAF));
+	background:-moz-linear-gradient(top, #FEB084 5%, #E2CDAF 100%);
+	background:-webkit-linear-gradient(top, #FEB084 5%, #E2CDAF 100%);
+	background:-o-linear-gradient(top, #FEB084 5%, #E2CDAF 100%);
+	background:-ms-linear-gradient(top, #FEB084 5%, #E2CDAF 100%);
+	background:linear-gradient(to bottom, #FEB084 5%, #E2CDAF 100%);
+	
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+
 #legend {
 	margin:0px auto 20px auto;
 }
@@ -390,4 +498,10 @@ input.btnhov {
 	-moz-border-radius:7px;
 	-webkit-border-radius:7px;
 	border-radius:7px;
+}
+
+#mail_body textarea {
+width:50% !important;
+height:200px;
+margin:auto;
 }
