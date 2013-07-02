@@ -472,7 +472,7 @@ class EmundusHelperFilters {
 		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', @$params['validate'] );
 		
 		$option;
-		$filters = '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
+		$filters = '<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
 		$research_filters = EmundusHelperFilters::getEmundusFilters();
 		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid; border-radius: 10px; padding:0px 10px 10px 10px;">
 		<table style="border-spacing:10px;">

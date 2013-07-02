@@ -92,6 +92,16 @@ input[name="clear_button"]{
 input[name="custom_email"]{
 	background-color:#09F;
 	background-image: -moz-linear-gradient(center top , #FFFFFF, #09F);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #09F), color-stop(1, #09F));
+	background:-moz-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-webkit-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-o-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:-ms-linear-gradient(top, #FFFFFF 5%, #09F 100%);
+	background:linear-gradient(to bottom, #FFFFFF 5%, #09F 100%);
+
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
 }
 input[name="delete_filter"]{
 	background-color:#F4E46F;
@@ -498,4 +508,15 @@ input.btnhov {
 	-moz-border-radius:7px;
 	-webkit-border-radius:7px;
 	border-radius:7px;
+}
+.em_email_block div {
+	display:table !important;
+}
+
+.em_email_block fieldset {
+	margin: 0 0 15px 0 !important;
+}
+
+#fieldset-filters {
+	margin-bottom:10px;
 }

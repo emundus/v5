@@ -1083,7 +1083,7 @@ html body * dd.clear {
 }
 .component-content form fieldset dd {
   float: left;
-  padding: 3px 0;
+  padding: 3px 15px;
 }
 .invalid,
 .login-fields #username.invalid,
@@ -2001,8 +2001,8 @@ btn[disabled]:hover {
 .inputbox {
   border: 1px solid #d9d9d9;
 }
-#contact-form dd textarea {
-  width: 500px;
+textarea {
+  width: 500px !important;
   margin: auto;
 }
 .login + div .nav-tabs.nav-stacked > li > a {
