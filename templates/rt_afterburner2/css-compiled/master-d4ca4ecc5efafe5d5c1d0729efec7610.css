@@ -2070,6 +2070,7 @@ blockquote.pull-right {
 legend {
   color: #303030;
   border-bottom: 1px solid #d5d5d5;
+  line-height: 10px;
 }
 legend small {
   color: #d5d5d5;
