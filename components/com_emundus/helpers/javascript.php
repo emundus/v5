@@ -423,7 +423,10 @@ function OnSubmitForm() {
 				}else if(define_type[0]==\'select-multiple\'){
 					for(j=0;j<field.length;j++) {
 						if(field[j].value == constraintsObj[i].value){
-							field[j].selected = true;
+							field[j].selected = true;							
+							alert(field[j].value);
+						}else if(!in_array(field[j].value,constraintsObj)){
+							field[j].selected = false;
 						}
 					}
 				}else if(define_type[0]==\'text\'){
@@ -450,7 +453,16 @@ function OnSubmitForm() {
 				}
 			}
 		}
-
+		
+		function in_array(value,tab){
+			for(var j=0;j<tab.length;j++) {
+				if(value==tab[j].value){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		function clear_filter(){
 		
 			// delete advance filter
@@ -463,6 +475,7 @@ function OnSubmitForm() {
 					d.removeChild(olddiv);
 				}
 			}
+			
 
 			var view="'.JRequest::getVar('view', null, 'GET', 'none', 0).'";
 			var xhr2 = getXMLHttpRequest();
@@ -533,7 +546,7 @@ function OnSubmitForm() {
 			// alert(getCookie(\'selected_id\'));
 			$(\'select_filter\').value=getCookie(\'selected_id\');
 		}
-
+		
 		function submitFilters(){
 			var selected_id = $(\'select_filter\').options[$(\'select_filter\').selectedIndex].value;
 			setCookie("selected_id",selected_id,3);
