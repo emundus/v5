@@ -24,6 +24,7 @@ $current_user = JFactory::getUser();
 
 if($edit!=1) {
 ?>
+
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <?php
 echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid.'" rel="{handler:\'iframe\',size:{x:window.innerWidth*0.4,y:window.innerHeight*0.8}}" 
@@ -32,6 +33,7 @@ echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=c
 </a>';
 ?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST"/>
+
 <SCRIPT TYPE="text/javascript">
 <!--
 function submitenter(myfield, e) {
@@ -51,34 +53,6 @@ function submitenter(myfield, e) {
 //-->
 </SCRIPT>
 
-<div class="emundusraw">
-<?php 
-/*if(!EmundusHelperAccess::isAdministrator($current_user->id)) {
-	if ( isset($this->schoolyear) && $this->schoolyear!='' ) {
-		$url = JURI::getInstance()->toString();
-		echo '
-				<dl id="system-message">
-				<dt class="message">Message</dt>
-				<dd class="message message fade">
-					<ul>
-						<li>'.JText::_('CURRENT_SCHOOLYEAR').'<input type="text" name="schoolyear" value="'.$this->schoolyear.'"/><input type="submit" name="setSchoolyear" onclick="document.pressed=this.name" value="'.JText::_('UPDATE_SCHOOLYEAR').'"/></li>
-					</ul>
-				</dd>
-				</dl>';
-	} else {
-			echo '
-				<dl id="system-message">
-				<dt class="notice">Annonce</dt>
-				<dd class="notice message fade">
-					<ul>
-						<li>'.JText::_('SCHOOLYEAR_NOT_SET').'<input type="text" name="schoolyear" value="'.$this->schoolyear.'"/><input type="submit" name="setSchoolyear" onclick="document.pressed=this.name" value="'.JText::_('SET_SCHOOLYEAR').'"/></li>
-					</ul>
-				</dd>
-				</dl>';
-	}
-}*/
-?>
-</div>
 <input type="hidden" name="option" value="com_emundus"/>
 <input type="hidden" name="view" value="users"/>
 <input type="hidden" name="task" value=""/>
@@ -92,61 +66,55 @@ function submitenter(myfield, e) {
 echo $this->filters;
 ?>
 
-
-<div class="emundusraw">
-
-
-<?php
+ <?php
 if(!empty($this->users)) {
+	echo '<div class="emundusraw">';
 	echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_XLS').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile-selected_48.png" name="export_account_to_xls" onclick="document.pressed=this.name"></span>'; 
 	//echo '<span class="editlinktip hasTip" title="'.sprintf(JText::_('EXPORT_CURRENT_CAMPAIGN'), $this->schoolyear).'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/XLSFile_48.png" name="export_xls" onclick="document.pressed=this.name" /></span>';
 	//echo '<span class="editlinktip hasTip" title="'.JText::_('EXPORT_SELECTED_TO_ZIP').'"><input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/ZipFile-selected_48.png" name="export_zip" onclick="document.pressed=this.name" /></span>'; 
 ?>
 </div>
-
-<fieldset><legend><?php if(!empty($current_p) && isset($this->profiles[$current_p]->label)) echo $this->profiles[$current_p]->label; else echo JText::_('ALL');?></legend>
-<table id="userlist">
-	<thead>
-        <tr>
-            <td align="center" colspan="10">
-                <?php echo $this->pagination->getResultsCounter(); ?>
-            </td>
-        </tr>
-        <tr>
-            <th align="center">
-            	<input type="checkbox" id="checkall" class="emundusraw" onClick="javascript:check_all()"/><?php echo JHTML::_('grid.sort', JText::_('#'), 'id', $this->lists['order_Dir'], $this->lists['order']); ?>
-            </th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('USERNAME'), 'username', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('EMAIL'), 'email', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('PROFILE'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('LAST_VISIT'), 'lastvisitDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th><?php echo JHTML::_('grid.sort', JText::_('REGISTRED_ON'), 'registerDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-			<th><?php echo JText::_('GROUP_EVAL'); ?></th>
-			<th><?php echo JText::_('CAMPAIGN'); ?></th>
-			<th><?php echo JHTML::_('grid.sort', JText::_('NEWSLETTER'), 'newsletter', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th align="center" class="emundusraw"><?php echo JHTML::_('grid.sort', JText::_('ACTIVE'), 'block', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-            <th align="center"><div class="emundusraw"><?php echo JText::_('EDIT'); ?></div></th>  
-        </tr>
+<fieldset>
+  <legend>
+  <?php if(!empty($current_p) && isset($this->profiles[$current_p]->label)) echo $this->profiles[$current_p]->label; else echo JText::_('ALL');?>
+  </legend>
+  <table id="userlist">
+    <thead>
+      <tr>
+        <td align="center" colspan="10"><?php echo $this->pagination->getResultsCounter(); ?></td>
+      </tr>
+      <tr>
+        <th align="center"> <input type="checkbox" id="checkall" class="emundusraw" onClick="javascript:check_all()"/>
+          <?php echo JHTML::_('grid.sort', JText::_('#'), 'id', $this->lists['order_Dir'], $this->lists['order']); ?> </th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'lastname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('USERNAME'), 'username', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('EMAIL'), 'email', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('PROFILE'), 'profile', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('LAST_VISIT'), 'lastvisitDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('REGISTRED_ON'), 'registerDate', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th><?php echo JText::_('GROUP_EVAL'); ?></th>
+        <th><?php echo JText::_('CAMPAIGN'); ?></th>
+        <th><?php echo JHTML::_('grid.sort', JText::_('NEWSLETTER'), 'newsletter', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th align="center" class="emundusraw"><?php echo JHTML::_('grid.sort', JText::_('ACTIVE'), 'block', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+        <th align="center"><div class="emundusraw"><?php echo JText::_('EDIT'); ?></div></th>
+      </tr>
     </thead>
-	<tfoot>
-		<tr>
-			<td colspan="10">
-			<?php echo $this->pagination->getListFooter(); ?>
-			</td>
-		</tr>
-	</tfoot>
-	<tbody>
-<?php 
+    <tfoot>
+      <tr>
+        <td colspan="12"><?php echo $this->pagination->getListFooter(); ?></td>
+      </tr>
+    </tfoot>
+    <tbody>
+      <?php 
 $i=0;
 $j=0;
 foreach ($this->users as $user) { ?>
-	<tr class="row<?php echo $j++%2; ?>">
-		<td width="150">
-		<?php 
+      <tr class="row<?php echo $j++%2; ?>">
+        <td width="150"><?php 
 			echo ++$i+$limitstart;
-			if($user->id != 62)  ?> <input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" class="emundusraw" value="<?php echo $user->id; ?>"/>
-        <?php
+			if($user->id != 62)  ?>
+          <input id="cb<?php echo $user->id; ?>" type="checkbox" name="ud[]" class="emundusraw" value="<?php echo $user->id; ?>"/>
+          <?php
 			echo '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user->email.'">';
 			if (isset($user->gender)) {
 				echo '<a href="mailto:'.$user->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_'.$user->gender.'.png" width="22" height="22" align="bottom" /></a></span> ';
@@ -157,18 +125,18 @@ foreach ($this->users as $user) { ?>
 				echo '<a href="mailto:'.$user->email.'">'.$user->gender.'</a></span> ';
 			
 			echo '#'.$user->id;
-		?>
-        </td>
-		<td><?php 
+		?></td>
+        <td><?php 
 			if(strtoupper($user->name) == strtoupper($user->firstname).' '.strtoupper($user->lastname)) 
 				echo '<strong>'.strtoupper($user->lastname).'</strong> '.$user->firstname; 
 			else 
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user->name.'</font></span>'; 
-			?>
-        </td>
-		<td><?php echo $user->username; ?></td>
-		<td><?php echo $user->email; ?></td>
-		<td><div class="emundusprofile<?php echo $user->profile; ?>"><?php if(!empty($user->profile) && isset($this->profiles[$user->profile]->label)) echo $this->profiles[$user->profile]->label; else echo '<span class="hasTip" title="'.JText::_('USER_PROFILE_ALERT').'"><font color="red">'.JText::_('NO_PROFILE').'</font></span>'; ?></div></td>
+			?></td>
+        <td><?php echo $user->username; ?></td>
+        <td><?php echo $user->email; ?></td>
+        <td><div class="emundusprofile<?php echo $user->profile; ?>">
+            <?php if(!empty($user->profile) && isset($this->profiles[$user->profile]->label)) echo $this->profiles[$user->profile]->label; else echo '<span class="hasTip" title="'.JText::_('USER_PROFILE_ALERT').'"><font color="red">'.JText::_('NO_PROFILE').'</font></span>'; ?>
+          </div></td>
         <!--<td><?php //echo $user->schoolyear; ?></td>-->
         <td <?php echo strpos($user->lastvisitDate,"0000-00-00 00:00:00")===false?'':'class="red"'; ?>><?php echo $user->lastvisitDate; ?></td>
         <td <?php 
@@ -178,7 +146,7 @@ foreach ($this->users as $user) { ?>
 		$diff_jour = $diff/60/60/24;
 		if (strpos($user->lastvisitDate,"0000-00-00 00:00:00")===0 && $user->registred_for>7) $alert=1; else $alert=0;
 		echo $alert==1?'class="red"':''; ?>><?php echo $user->registerDate; ?></td>
-		<td align="center"><?php
+        <td align="center"><?php
 			foreach($this->groupEval as $eval){
 				$title_group = JText::_('MEMBERS_GROUP_EVAL');
 				if($eval->user_id==$user->id){
@@ -192,9 +160,8 @@ foreach ($this->users as $user) { ?>
 				}
 				echo '</ul>"><a href="#">'.$group_eval->label.'</a></span>';*/
 			}
-		?>
-		</td>
-		<td align="center"><?php
+		?></td>
+        <td align="center"><?php
 			foreach($this->campaigns as $campaign){ 
 				if($campaign->applicant_id==$user->id){
 					$campaign_date = JText::_('CAMPAIG_DATE');
@@ -207,92 +174,99 @@ foreach ($this->users as $user) { ?>
 					<a href="#">'.$campaign->label.'</a></span></div>';
 				} 
 			} 
-		?>
-		</td>
-		<td align="center"><?php  echo (json_decode($user->newsletter) == 1 ? JText::_('JYES') : JText::_('JNO')); ?>
-		</td>
-		<td align="center" class="emundusraw"><?php if($user->id != 62) {?><a href="index.php?option=com_emundus&view=users&controller=users&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a><?php } ?></td>
-		<td align="center">
-        	<div class="emundusraw">
-<?php 
+		?></td>
+        <td align="center"><?php  echo (json_decode($user->newsletter) == 1 ? JText::_('JYES') : JText::_('JNO')); ?></td>
+        <td align="center" class="emundusraw"><?php if($user->id != 62) {?>
+          <a href="index.php?option=com_emundus&view=users&controller=users&task=<?php echo $user->block>0?'unblockuser':'blockuser'; ?>&uid=<?php echo $user->id; ?>&Itemid=<?php echo $itemid; ?>"><img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/<?php echo $user->block>0?'publish_x.png':'tick.png' ?>" alt="<?php echo $user->block>0?JText::_('UNBLOCK_USER'):JText::_('BLOCK_USER'); ?>"/></a>
+          <?php } ?></td>
+        <td align="center"><div class="emundusraw">
+            <?php 
         	//if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { 
 ?>
-				<a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?></a><?php 
+            <a class="modal" target="_self" href="index.php?option=com_emundus&view=users&edit=1&rowid=<?php echo $user->id; ?>&tmpl=component&Itemid=<?php echo $itemid; ?>" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}"><?php echo JText::_('EDIT'); ?></a>
+            <?php 
 				 //} ?>
-        	</div>
-        </td>
-  	</tr>
-<?php } ?>
-  	<tr>
-        <td height="1975" colspan="8" align="left">
-            <div class="emundusraw">
-                <input type="submit" name="delusers" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_SELECTED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
-           <?php /*if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { ?> |        
+          </div></td>
+      </tr>
+      <?php } ?>
+      <tr>
+        <td height="1975" colspan="12" align="left"><div class="emundusraw">
+            <input type="submit" name="delusers" onClick="document.pressed=this.name" value="<?php echo JText::_('DELETE_SELECTED'); ?>" class="emundusdelete" onMouseOver="this.className='emundusdelete btnhov'" onMouseOut="this.className='emundusdelete'" />
+            <?php /*if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) { ?> |        
                 <input type="submit" name="delincomplete" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_INCOMPLETE'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" /> 
 				<input type="submit" name="delnonevaluated" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_NON_EVALUATED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
                 <input type="submit" name="delrefused" onclick="document.pressed=this.name" value="<?php echo JText::_('DELETE_REFUSED'); ?>" class="emundusdelete" onmouseover="this.className='emundusdelete btnhov'" onmouseout="this.className='emundusdelete'" />
               
             <?php } */?>
-            </div>
-        </td>
-    </tr>
+          </div></td>
+      </tr>
     </tbody>
-</table>
+  </table>
 </fieldset>
-<div class="emundusraw"><?php 
+<div class="emundusraw">
+  <?php 
 	if(!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-	?><fieldset>
-		  <legend> 
-			<span class="editlinktip hasTip" title="<?php echo JText::_('ARCHIVE').'::'.JText::_('ARCHIVE_TIP'); ?>">
-				<img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_( 'ARCHIVE' ); ?>
-			</span>
-		  </legend>
-		  <input type="submit" name="archive" onclick="document.pressed=this.name" value="<?php echo JText::_( 'ARCHIVE_SELECTED_USERS' );?>" />
-	</fieldset>
-<?php } ?>
+	?>
+  <fieldset>
+    <legend> <span class="editlinktip hasTip" title="<?php echo JText::_('ARCHIVE').'::'.JText::_('ARCHIVE_TIP'); ?>"> <img src="<?php JURI::Base(); ?>media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="<?php JText::_('BATCH'); ?>"/> <?php echo JText::_( 'ARCHIVE' ); ?> </span> </legend>
+    <input type="submit" name="archive" onClick="document.pressed=this.name" value="<?php echo JText::_( 'ARCHIVE_SELECTED_USERS' );?>" />
+  </fieldset>
+  <?php } ?>
 </div>
 <?php } else { ?>
 <h2><?php echo JText::_('NO_RESULT'); ?></h2>
 <?php } } ?>
 </form>
 
-
 <div class="emundusraw">
 <form action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user" method="POST" name="adduser"/>
-<fieldset><legend><?php echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; echo JText::_('ADD_USER'); ?></legend>
-<input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
-<input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
-<table>
-	<tr><th><?php echo JText::_('FIRSTNAME_FORM'); ?></th><td><input type="text" size="30" name="firstname" value="<?php if($edit==1) echo $this->users[0]->firstname; ?>" /></td></tr>
-	<tr><th><?php echo JText::_('LASTNAME_FORM'); ?></th><td><input type="text" size="30" name="lastname" value="<?php if($edit==1) echo $this->users[0]->lastname; ?>" /></td></tr>
-	<tr><th><?php echo JText::_('LOGIN_FORM'); ?></th><td><input type="text" size="30" name="login" value="<?php if($edit==1) echo $this->users[0]->username; ?>"/></td></tr>
-	<tr><th><?php echo JText::_('EMAIL_FORM'); ?></th><td><input style="padding-left:20px;" type="text" size="30" name="email" value="<?php if($edit==1) echo $this->users[0]->email; ?>" onChange="validateEmail(email);"/>
-	</td></tr>
-	
-	<tr><th><?php echo JText::_('PROFILE_FORM'); ?></th><td><select id="profile" name="profile" onchange="hidden_tr('show_univ','show_group', this);" >
-			<?php foreach($this->profiles as $profile) { 
+
+<fieldset>
+  <legend><?php echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; echo JText::_('ADD_USER'); ?></legend>
+  <input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
+  <input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
+  <table>
+    <tr>
+      <th><?php echo JText::_('FIRSTNAME_FORM'); ?></th>
+      <td><input type="text" size="30" name="firstname" value="<?php if($edit==1) echo $this->users[0]->firstname; ?>" /></td>
+    </tr>
+    <tr>
+      <th><?php echo JText::_('LASTNAME_FORM'); ?></th>
+      <td><input type="text" size="30" name="lastname" value="<?php if($edit==1) echo $this->users[0]->lastname; ?>" /></td>
+    </tr>
+    <tr>
+      <th><?php echo JText::_('LOGIN_FORM'); ?></th>
+      <td><input type="text" size="30" name="login" value="<?php if($edit==1) echo $this->users[0]->username; ?>"/></td>
+    </tr>
+    <tr>
+      <th><?php echo JText::_('EMAIL_FORM'); ?></th>
+      <td><input style="padding-left:20px;" type="text" size="30" name="email" value="<?php if($edit==1) echo $this->users[0]->email; ?>" onChange="validateEmail(email);"/></td>
+    </tr>
+    <tr>
+      <th><?php echo JText::_('PROFILE_FORM'); ?></th>
+      <td><select id="profile" name="profile" onChange="hidden_tr('show_univ','show_group', this);" >
+          <?php foreach($this->profiles as $profile) { 
 					echo '<option id="'.$profile->acl_aro_groups.'" value="'.$profile->id;
 					echo @$this->users[0]->profile==$profile->id?'" selected':'"';
 					echo '>'.$profile->label;'</option>'; 
 				} ?>
-				</select><?php echo'<input type="hidden" id="acl_aro_groups" name="acl_aro_groups" value="" />'; ?></td></tr>
-    
-	 <tr id="show_univ" style="visibility:hidden;"><th><?php echo JText::_('UNIVERSITY_FROM'); ?></th>
-		<td>
-			<select name="university_id">
-			<?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
+        </select>
+        <?php echo'<input type="hidden" id="acl_aro_groups" name="acl_aro_groups" value="" />'; ?></td>
+    </tr>
+    <tr id="show_univ" style="visibility:hidden;">
+      <th><?php echo JText::_('UNIVERSITY_FROM'); ?></th>
+      <td><select name="university_id">
+          <?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 			foreach($this->universities as $university) { 
 				echo '<option value="'.$university->id;
 				echo @$this->users[0]->university_id==$university->id?'" selected':'"';
 				echo '>'.$university->title;'</option>'; 
 			} ?>
-			</select>
-		</td>
-	</tr>
-     <tr id="show_group" style="visibility:hidden;">
-       <th ><?php echo JText::_('GROUPS'); ?></th>
-       <td>
-			<?php 
+        </select></td>
+    </tr>
+    <tr id="show_group" style="visibility:hidden;">
+      <th ><?php echo JText::_('GROUPS'); ?></th>
+      <td><?php 
 				$group_id="";
 				foreach($this->groups as $groups) { 
 					if($edit==1){
@@ -310,19 +284,16 @@ foreach ($this->users as $user) { ?>
 						echo '<label><input type="checkbox" name="cb_groups[]" value="'.$groups->id.'"/>'.$groups->label.'</label><br />';
 					}
 				} 
-			?>
-        </td>
+			?></td>
     </tr>
-	<tr>
-		<td colspan="2" align="center">
-			<input type="submit" value="<?php echo JText::_('SAVE'); ?>"/>
-		</td>
-	</tr>
-</table>
+    <tr>
+      <td colspan="2" align="center"><input type="submit" value="<?php echo JText::_('SAVE'); ?>"/></td>
+    </tr>
+  </table>
 </fieldset>
 <input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 </form>
-
+</div>
 
 <script type="text/javascript">
 window.onload=function(){
@@ -386,5 +357,6 @@ function tableOrdering( order, dir, task ) {
 }
 <?php 
 	echo $this->onSubmitForm; 
-	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>
+	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );
+?>
 </script>

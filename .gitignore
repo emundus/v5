@@ -170,3 +170,4 @@ tmp/*
 images/emundus/files/*
 db_save/*
 .htaccess
+templates/rt_afterburner2/css-compiled/*

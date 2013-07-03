@@ -39,19 +39,21 @@
         <option value="dark">DARK</option>
         <option value="grey">GREY</option>
         <option value="light">LIGHT</option>
+		<option value="em_color">EM_COLOR</option>
     </field>
 
     <field name="menustyle" type="selectbox" default="light" label="MENU_STYLE" isbodyclass="true" description="MENU_STYLE_DESC" setinsession="true" setbysession="true" setincookie="true" setbycookie="true">
         <option value="dark">DARK</option>
         <option value="grey">GREY</option>
         <option value="light">LIGHT</option>
-        <option value="color">EMUNDUS</option>
+        <option value="em_color">EM_COLOR</option>
     </field>
 
     <field name="footerstyle" type="selectbox" default="dark" label="FOOTER_STYLE" isbodyclass="true" description="FOOTER_STYLE_DESC" setinsession="true" setbysession="true" setincookie="true" setbycookie="true">
         <option value="dark">DARK</option>
         <option value="grey">GREY</option>
         <option value="light">LIGHT</option>
+		<option value="em_color">EM_COLOR</option>
     </field>
 
      <field name="linkcolor" type="colorchooser" default="#ED6F6D" label="LINK_COLOR" description="LINK_COLOR_DESC"/>

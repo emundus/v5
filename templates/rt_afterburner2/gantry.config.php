@@ -37,12 +37,12 @@ $gantry_presets = array(
 		    'font-family' => 's:helvetica'
 		),
 		'preset4' => array(
-		    'name' => 'Preset4',
-		    'headerstyle' => 'light',
-		    'footerstyle' => 'light',
-		    'menustyle' => 'emundus',
-		    'linkcolor' => '#ED6F6D',
-			'accentcolor' => '#ED6F6D',
+		    'name' => 'eMundus',
+		    'headerstyle' => 'em_color',
+		    'footerstyle' => 'em_color',
+		    'menustyle' => 'em_color',
+		    'linkcolor' => '#4f95ab',
+			'accentcolor' => '#f7c07a',
 		    'font-family' => 's:helvetica'
 		)
 	)

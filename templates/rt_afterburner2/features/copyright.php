@@ -26,7 +26,7 @@ class GantryFeatureCopyright extends GantryFeature
 		?>
 	<div class="clear"></div>
 	<div class="rt-block rt-copyright-block">
-		<a href="http://www.rockettheme.com/" title="rockettheme.com" id="rocket">
+		<a href="http://www.emundus.fr/" title="emundus.fr" id="rocket">
 			<?php echo $this->get('text'); ?>
 		</a>
 	</div>
