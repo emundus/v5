@@ -123,7 +123,7 @@
     background: none;
   }
   .gf-menu .dropdown ul li:hover > .item {
-    background: #ffffff;
+    background: #f7c280;
     color: #495565;
   }
   .gf-menu .dropdown li:hover > .flyout {
@@ -239,7 +239,7 @@
 }
 .layout-mode-960fixed .gf-menu .dropdown ul li:hover > .item,
 .layout-mode-1200fixed .gf-menu .dropdown ul li:hover > .item {
-  background: #ffffff;
+  background: #f7c280;
   color: #495565;
 }
 .layout-mode-960fixed .gf-menu .dropdown li:hover > .flyout,
@@ -264,7 +264,7 @@
   margin-right: -6px;
 }
 .gf-menu {
-  background: #02ade3;
+  background: #02ADE3;
   border-radius: 4px;
   margin: 0 0px 4px;
   list-style: none;
@@ -340,7 +340,7 @@
   left: -999em;
   text-align: left;
   border-top: 0;
-  background: #d6e8f5;
+  background: #f4ab50;
   -webkit-transition: opacity 0.2s ease-out;
   -moz-transition: opacity 0.2s ease-out;
   -o-transition: opacity 0.2s ease-out;

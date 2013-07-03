@@ -53,14 +53,14 @@
 .gf-menu-toggle {
   padding: 7px 10px;
   border-radius: 4px;
-  background-color: #02a9de;
-  background-image: -moz-linear-gradient(top,#02c0fc,#0286b0);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#02c0fc),to(#0286b0));
-  background-image: -webkit-linear-gradient(top,#02c0fc,#0286b0);
-  background-image: -o-linear-gradient(top,#02c0fc,#0286b0);
-  background-image: linear-gradient(to bottom,#02c0fc,#0286b0);
+  background-color: #c0e4fe;
+  background-image: -moz-linear-gradient(top,#def1fe,#93d0fd);
+  background-image: -webkit-gradient(linear,0 0,0 100%,from(#def1fe),to(#93d0fd));
+  background-image: -webkit-linear-gradient(top,#def1fe,#93d0fd);
+  background-image: -o-linear-gradient(top,#def1fe,#93d0fd);
+  background-image: linear-gradient(to bottom,#def1fe,#93d0fd);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff02c0fc', endColorstr='#ff0186b0', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdef0fe', endColorstr='#ff92d0fd', GradientType=0);
   position: absolute;
   z-index: 2;
   top: 10px;
@@ -68,14 +68,14 @@
   cursor: pointer;
 }
 .gf-menu-toggle.active {
-  background-color: #028ab6;
-  background-image: -moz-linear-gradient(top,#017397,#02ade3);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#017397),to(#02ade3));
-  background-image: -webkit-linear-gradient(top,#017397,#02ade3);
-  background-image: -o-linear-gradient(top,#017397,#02ade3);
-  background-image: linear-gradient(to bottom,#017397,#02ade3);
+  background-color: #98d3fd;
+  background-image: -moz-linear-gradient(top,#7ac6fd,#C5E6FE);
+  background-image: -webkit-gradient(linear,0 0,0 100%,from(#7ac6fd),to(#C5E6FE));
+  background-image: -webkit-linear-gradient(top,#7ac6fd,#C5E6FE);
+  background-image: -o-linear-gradient(top,#7ac6fd,#C5E6FE);
+  background-image: linear-gradient(to bottom,#7ac6fd,#C5E6FE);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff017397', endColorstr='#ff02ade3', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff79c5fc', endColorstr='#ffc5e6fe', GradientType=0);
 }
 .gf-menu-toggle .icon-bar {
   background-color: #32373D;
@@ -125,7 +125,7 @@
   }
   .layout-mode-responsive .gf-menu li.active.last > .item {
     border-radius: 4px;
-    background: rgba(255,255,255,0.5);
+    background: rgba(172,205,228,0.5);
   }
   .layout-mode-responsive .gf-menu li:hover > .item {
     color:  !important;

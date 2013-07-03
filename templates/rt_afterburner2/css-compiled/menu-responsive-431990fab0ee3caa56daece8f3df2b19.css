@@ -69,11 +69,11 @@
 }
 .gf-menu-toggle.active {
   background-color: #028ab6;
-  background-image: -moz-linear-gradient(top,#017397,#02ade3);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#017397),to(#02ade3));
-  background-image: -webkit-linear-gradient(top,#017397,#02ade3);
-  background-image: -o-linear-gradient(top,#017397,#02ade3);
-  background-image: linear-gradient(to bottom,#017397,#02ade3);
+  background-image: -moz-linear-gradient(top,#017397,#02ADE3);
+  background-image: -webkit-gradient(linear,0 0,0 100%,from(#017397),to(#02ADE3));
+  background-image: -webkit-linear-gradient(top,#017397,#02ADE3);
+  background-image: -o-linear-gradient(top,#017397,#02ADE3);
+  background-image: linear-gradient(to bottom,#017397,#02ADE3);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff017397', endColorstr='#ff02ade3', GradientType=0);
 }
@@ -92,7 +92,7 @@
     margin-bottom: 15px !important;
   }
   .layout-mode-responsive .gf-menu-device-container {
-    background: #cee3f3;
+    background: #f6bb70;
     border-radius: 5px;
     padding: 5px;
   }
@@ -103,7 +103,7 @@
   .layout-mode-responsive .gf-menu {
     background-clip: content-box;
     -webkit-background-clip: content-box;
-    background: #cee3f3;
+    background: #f6bb70;
     border: none !important;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;

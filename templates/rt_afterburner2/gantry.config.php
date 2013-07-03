@@ -35,6 +35,15 @@ $gantry_presets = array(
 		    'linkcolor' => '#ED6F6D',
 			'accentcolor' => '#ED6F6D',
 		    'font-family' => 's:helvetica'
+		),
+		'preset4' => array(
+		    'name' => 'Preset4',
+		    'headerstyle' => 'light',
+		    'footerstyle' => 'light',
+		    'menustyle' => 'emundus',
+		    'linkcolor' => '#ED6F6D',
+			'accentcolor' => '#ED6F6D',
+		    'font-family' => 's:helvetica'
 		)
 	)
 );

@@ -45,6 +45,7 @@
         <option value="dark">DARK</option>
         <option value="grey">GREY</option>
         <option value="light">LIGHT</option>
+        <option value="color">EMUNDUS</option>
     </field>
 
     <field name="footerstyle" type="selectbox" default="dark" label="FOOTER_STYLE" isbodyclass="true" description="FOOTER_STYLE_DESC" setinsession="true" setbysession="true" setincookie="true" setbycookie="true">
