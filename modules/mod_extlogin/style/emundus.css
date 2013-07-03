@@ -107,7 +107,7 @@
 	padding:1px;
 	height: 20px;
 	/*background: url(images/button_bg.png) 0 0 no-repeat;  ie6png:crop */
-	background-color:#FFCD50;
+	background-color:#95D5FE;
 	-moz-border-radius: 10px;border-radius: 10px;
 	padding:2px 5px 2px 5px;
 }
@@ -124,7 +124,7 @@
 
 .login-button:hover {
 	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/
-	background-color:#F9B445;
+	background-color:#77BDEA;
 }
 .register-button:hover {
 	/*background: url(images/button_bg.png) 0 -20px no-repeat;*/

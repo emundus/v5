@@ -331,10 +331,10 @@
   border-right: 1px solid #F5F5F5;
 }
 .gf-menu.l1 > li:first-child {
-  margin-left: 0px;
+  margin-left: 2px;
 }
 .gf-menu.l1 > li:last-child {
-  margin-right: 0px;
+  margin-right: 2px;
 }
 .gf-menu li {
   float: left;
