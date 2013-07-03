@@ -188,7 +188,7 @@ function age($naiss) {
 	
 	<div id="em_application_attachments" class="content">
 		<div class="actions">
-			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" width="30px" />
+			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" />
 			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 			<?php
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
@@ -202,7 +202,7 @@ function age($naiss) {
 		<?php
 		if(count($this->userAttachments) > 0) { 
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-				echo '<input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><label for="checkall1"><strong>'.JText::_('SELECT_ALL').'</strong></label>';;
+				echo '<div id="checkall-attachment"><input type="checkbox" name="attachments" id="checkall1" onClick="check_all(this.id)"/><label for="checkall1"><strong>'.JText::_('SELECT_ALL').'</strong></label></div>';
 			$i=0;
 			foreach($this->userAttachments as $attachment){
 				$path = $attachment->id == 27?EMUNDUS_PATH_REL."archives/".$attachment->filename:EMUNDUS_PATH_REL.$this->student->id.'/'.$attachment->filename;

@@ -213,6 +213,7 @@ p.description  {
 }
 #attachment_list legend {
 	font-size: 14px;
+	height:100%;
 }
 #attachment_list fieldset {
 	padding:5px;
@@ -530,4 +531,8 @@ input.btnhov {
 */
 #lschoolyears {
 	display : inline;
+}
+
+#checkall-attachment label{
+	display : inline-block !important;
 }

@@ -90,31 +90,6 @@
 				margin-left: auto;
 				margin-right: auto 
 			}
-		/* ACTIONS */
-			/*#actions {
-				height: auto;
-				margin-top:5px;
-			}
-			#actions .title{
-				margin:0;
-				padding:5px;
-				font: 14px Helvetica, Arial, sans-serif;
-				color:#fff;
-				background-color:#9DADC6;
-				border-bottom:1px solid #8E98A4;
-				border-bottom:0;
-				text-align:center;
-			}
-			#actions span{
-				display:inline-block;
-			}
-			#actions .content li {
-				list-style-type: none;
-				margin :0;
-				padding:0;
-				display:inline;
-				margin-right:5px;
-			}*/
 	
 /* ACCORDION */
 	#accordion  {
