@@ -47,8 +47,10 @@
 	display: inline !important;
 }
 .progression{
-	height: 20px;
-	background-color: #158bc8;
+	height: 20px !important;
+	margin:0 !important;
+	padding-right:5px;
+	/*background-color: #158bc8;*/
 	
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -57,12 +59,13 @@
 }
 .part{
 	margin-left:10px;
-	width:25%;
+	width:20%;
 }
 .bar{
 	background:transparent;
 	border:1px solid black;
-	margin-left:5px;
+	margin:0 0 0 5px!important;
+	padding:0 !important;
 	width:90%;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -75,4 +78,13 @@
 	display: block;
 	text-align: center;
 	margin-left:10px;
+}
+
+.progress {
+	width:90%;
+	margin-left:2px;
+}
+
+.status {
+	margin-left:2px;
 }
