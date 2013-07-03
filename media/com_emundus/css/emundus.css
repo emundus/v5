@@ -132,9 +132,6 @@ input[name="save_as_filter"]{
 	border-radius:7px;
 }
 
-#legend {
-	margin:0px auto 20px auto;
-}
 #legend td {
 	min-width:25%;
 }
@@ -529,4 +526,3 @@ input.btnhov {
 #lschoolyears {
 	display : inline;
 }
-
