@@ -46,7 +46,7 @@
 
 	ul {
 		list-style: none;
-		padding: 0;
+		padding: 10px 10px 10px 10px;
 		margin: 0;
 	}
 
@@ -58,7 +58,7 @@
 		line-height: @menuLineHeight;
 		color: @menuDropText;
 
-		padding: 10px 25px;
+		padding: 2px 2px;
 		text-align: left;
 		text-decoration: none;
 		display: block;
@@ -74,20 +74,20 @@
 			background: @menuActiveBack;
 			> .item {
 				color: @menuActiveColor;
-				font-weight: bold; 
+				font-weight: bold;
 			}
 		}
 
 		> li > .item {
-			font-size: @menuFontSize - 5;
+			font-size: @menuFontSize;
 			line-height: @menuLineHeight + 23;
 			position: relative;
 			border-right: 1px solid @menuBorder1;
-			padding: 0 25px;
+			padding: 5px 15px 5px 15px;
 			text-transform: uppercase;
 			color: @menuColor;
-			width:90px;
 			text-align:center;
+			width:auto;
 			&:after {
 				content: "";
 				position: absolute;

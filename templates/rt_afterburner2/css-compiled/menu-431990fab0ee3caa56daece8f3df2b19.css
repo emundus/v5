@@ -289,15 +289,15 @@
 }
 .gf-menu ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 10px 10px 10px 10px;
+  margin-left: 10px;
 }
 .gf-menu .item {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11px;
   line-height: 21px;
   color: #000000;
-  padding: 10px 25px;
+  padding: 2px 2px;
   text-align: left;
   text-decoration: none;
   display: block;
@@ -312,15 +312,15 @@
   font-weight: bold;
 }
 .gf-menu.l1 > li > .item {
-  font-size: 9px;
+  font-size: 14px;
   line-height: 44px;
   position: relative;
   border-right: 1px solid #E3E3E3;
-  padding: 0 25px;
+  padding: 5px 15px 5px 15px;
   text-transform: uppercase;
   color: #FFFFFF;
-  width: 90px;
   text-align: center;
+  width: auto;
 }
 .gf-menu.l1 > li > .item:after {
   content: "";
