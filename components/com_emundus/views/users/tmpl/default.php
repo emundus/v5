@@ -81,7 +81,7 @@ if(!empty($this->users)) {
   <table id="userlist">
     <thead>
       <tr>
-        <td align="center" colspan="10"><?php echo $this->pagination->getResultsCounter(); ?></td>
+        <td align="center" colspan="12"><?php echo $this->pagination->getResultsCounter(); ?></td>
       </tr>
       <tr>
         <th align="center"> <input type="checkbox" id="checkall" class="emundusraw" onClick="javascript:check_all()"/>

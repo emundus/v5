@@ -318,7 +318,10 @@ h1 a {
 	width: 100%;
 	border-spacing: 1px;
 	background-color: #e7e7e7;
-	color: #666;
+	color: #666;	
+	border-radius:5px 5px 5px 5px;
+	-moz-border-radius:5px 5px 5px 5px;
+	-webkit-border-radius:5px 5px 5px 5px;
 }
 #userlist td,
 #userlist th { padding: 4px; }
@@ -334,6 +337,7 @@ h1 a {
 #userlist tbody th { font-weight: bold; }
 #userlist tbody tr			{ background-color: #fff;  text-align: left; font-size: 80%;}
 #userlist tbody tr.row1 	{ background: #f9f9f9; border-top: 1px solid #fff; }
+
 /*
 #userlist tbody tr.row1 .red 	{ background-color:#FFA8A8;background-image: -moz-linear-gradient(center top , #FFFFFF, #FFA8A8);}
 #userlist tbody tr.row1 .green 	{ background-color:#AEE3BE;background-image: -moz-linear-gradient(center top , #FFFFFF, #AEE3BE);}
@@ -350,6 +354,7 @@ h1 a {
 #userlist tbody tr td.red:hover, 
 #userlist tbody tr td.red{background-color:#FFA8A8;}
 /*#userlist tbody tr.row1 td { background: #f9f9f9; border-top: 1px solid #FFF; }*/
+
 #userlist tfoot tr { text-align: center;  color: #333; }
 #userlist tfoot td,
 #userlist tfoot th { background-color: #f3f3f3; border-top: 1px solid #999; text-align: center; }
