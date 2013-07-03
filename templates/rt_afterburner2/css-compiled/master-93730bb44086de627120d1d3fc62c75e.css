@@ -1349,7 +1349,7 @@ input[type="checkbox"] {
 }
 .component-content .profile-edit #member-profile fieldset dt,
 .component-content .registration #member-registration fieldset dt {
-  padding: 5px 5px 5px 0;
+  padding: 0;
   width: 13em;
 }
 .component-content .optional {
@@ -1596,6 +1596,9 @@ input[type="checkbox"] {
 #rt-header .rt-container {
   margin: 0 auto;
   padding: 0;
+}
+#rt-sidebar-c {
+  margin-left: 10px;
 }
 .title {
   font-size: 18px;
@@ -1844,13 +1847,13 @@ button.validate,
 .btn.btn-primary[disabled],
 a.btn.btn-primary.disabled:hover {
   border-color: #2f5865;
-  background: #F7C07A;
+  background: #f7c07a;
 }
 #rt-logo-accent,
 #rt-bottom .rt-grey:hover,
 #rt-footer .rt-grey:hover,
 .menustyle-dark .gf-menu.l1 > li.active {
-  background: #F7C07A;
+  background: #f7c07a;
 }
 body {
   background: #FFFFFF;
