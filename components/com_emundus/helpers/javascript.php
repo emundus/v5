@@ -542,15 +542,9 @@ function OnSubmitForm() {
 			return c_value;
 		}
 		
-		window.onload=function() {
-			// alert(getCookie(\'selected_id\'));
-			$(\'select_filter\').value=getCookie(\'selected_id\');
-			getLegend();
-		}
-		
 		function submitFilters(){
 			var selected_id = $(\'select_filter\').options[$(\'select_filter\').selectedIndex].value;
-			setCookie("selected_id",selected_id,3);
+			setCookie("selected_id",selected_id,5);
 			document.getElementById(\'search_button\').click();
 		}
 				
@@ -578,6 +572,10 @@ function OnSubmitForm() {
 			return ;
 		}
 		
+		window.onload=function() {
+			$(\'select_filter\').value=getCookie(\'selected_id\');
+			getLegend();
+		}
 		';
 		return $script;
 	}

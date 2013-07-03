@@ -1,3 +1,4 @@
+/* old_style
 #emundusflow {
     margin-bottom: auto;
     margin-left: 0px;
@@ -13,6 +14,7 @@
 	margin:auto;
 	margin: -5px 0 20px 310px;
 	position:absolute;*/
+/*
 }
 #emundusflow fieldset {
 	padding: 0 2px 0 0;
@@ -32,4 +34,45 @@
 }
 #flowsent{
     vertical-align: central;
+}
+*/
+
+/* new style */
+#emundusflow_new {
+	text-align: center;
+	margin-top: 5px;
+}
+#emundusflow_new div {
+	float : left;
+	display: inline !important;
+}
+.progression{
+	height: 20px;
+	background-color: #158bc8;
+	
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+}
+.part{
+	margin-left:10px;
+	width:25%;
+}
+.bar{
+	background:transparent;
+	border:1px solid black;
+	margin-left:5px;
+	width:90%;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+}
+
+.precent{
+	color: white;
+	display: block;
+	text-align: center;
+	margin-left:10px;
 }
