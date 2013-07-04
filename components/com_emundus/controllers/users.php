@@ -253,5 +253,12 @@ class EmundusControllerUsers extends JController {
 		exit;
 	}
 	
+	function addsession(){
+		global $option;
+		$select_filter = JRequest::getVar('select_id', null, 'GET', 'none',0);
+		$mainframe = JFactory::getApplication();
+		$mainframe->setUserState( $option."select_filter", $select_filter );
+	}
+	
 } //END CLASS
 ?>

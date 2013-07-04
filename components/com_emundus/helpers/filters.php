@@ -82,6 +82,7 @@ class EmundusHelperFilters {
 		$mainframe->setUserState( $option."validate", $filts_details['validate'] );
 		$mainframe->setUserState( $option."newsletter", $filts_details['newsletter'] );
 		$mainframe->setUserState( $option."spam_suspect", $filts_details['spam_suspect'] );
+		$mainframe->setUserState( $option."select_filter", "" );
 		
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.JRequest::getCmd( 'Itemid' ));
 	}
@@ -470,6 +471,7 @@ class EmundusHelperFilters {
 		$search_values_other	= $mainframe->getUserStateFromRequest(  $option.'elements_values_other', 'elements_values_other' );
 		$complete_application	= $mainframe->getUserStateFromRequest(  $option.'complete', 'complete', @$params['complete'] );
 		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', @$params['validate'] );
+		$select_id				= $mainframe->getUserStateFromRequest(  $option.'select_filter', 'select_filter');
 		
 		$option;
 		$filters = '<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
@@ -480,11 +482,16 @@ class EmundusHelperFilters {
 				<td  colspan="2">'.JText::_('SELECT_FILTER').'</td>
 			</tr><tr>
 				<td>
-				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this)}; ">
+				<select id="select_filter" name="select_filter" onchange="clear_filter(); if(this.value!=0) { getConstraints(this)};">
 				<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
 				if(!empty($research_filters)){
 					foreach($research_filters as $filter){
-						$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+						// var_dump($select_id);
+						if($select_id==$filter->id){
+							$filters .= '<option value="'.$filter->id.'" selected >'.$filter->name.'</option>';
+						}else{
+							$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+						}
 					}
 				}
 			$filters .='

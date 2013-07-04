@@ -256,6 +256,8 @@ function OnSubmitForm() {
 	}
 	
 	function getPreferenceFilters(){
+		global $option;
+		$mainframe = JFactory::getApplication();
 		
 		$script = '
 		function save_filter()
@@ -401,7 +403,7 @@ function OnSubmitForm() {
 					constraints = xhr.responseText; //getConstraintsFilter
 					if(constraints!=""){
 						setFilters(select, constraints);
-						
+						setSessionFilterId(select_id);
 						submitFilters();
 					}
 				}
@@ -572,8 +574,23 @@ function OnSubmitForm() {
 			return ;
 		}
 		
+		function setSessionFilterId(select_id){
+				var xhr3 = getXMLHttpRequest();
+				$select_id=$(\'select_filter\').value;
+				xhr3.onreadystatechange = function()
+				{
+					if (xhr3.readyState == 4 && (xhr3.status == 200 || xhr3.status == 0))
+					{
+					
+					}
+				};
+				xhr3.open("GET", "index.php?option=com_emundus&controller=users&format=raw&task=addsession", true);
+				xhr3.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr3.send("&select_id="+select_id);
+		}
+		
 		window.onload=function() {
-			$(\'select_filter\').value=getCookie(\'selected_id\');
+			$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
 			getLegend();
 		}
 		';
