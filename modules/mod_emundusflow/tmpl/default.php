@@ -87,7 +87,7 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusflow/style/' 
 							'.JText::_('APPLICATION_NOT_SENT').'
 						</div>
 						<div class="status">
-							<img src="'.JURI::Base().'media/com_emundus/images/icones/green.png" align="middle" />
+							<img src="'.JURI::Base().'media/com_emundus/images/icones/red.png" align="middle" />
 						</div>
 						<div class="progress">
 							<div class="progression gf-menu" style="width: 0%">
