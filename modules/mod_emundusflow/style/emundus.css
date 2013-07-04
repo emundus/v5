@@ -66,6 +66,7 @@
 	border:1px solid black;
 	margin:0 0 0 5px!important;
 	padding:0 !important;
+	height:20px;
 	width:90%;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -80,11 +81,16 @@
 	margin-left:10px;
 }
 
-.progress {
+.em_progress {
+	background:#D4D5D5;
 	width:90%;
 	margin-left:2px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
 }
 
 .status {
-	margin-left:2px;
+	margin:0 0 0 2px;
 }
