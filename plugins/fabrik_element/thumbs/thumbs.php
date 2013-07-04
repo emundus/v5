@@ -277,6 +277,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 
 	function onAjax_rate()
 	{
+		$this->loadMeForAjax();
 		$listid = JRequest::getInt('listid');
 		$list = JModel::getInstance('list', 'FabrikFEModel');
 		$list->setId($listid);
@@ -345,7 +346,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 					date_created = " . $db->Quote($strDate) . ",
 					thumb = " . $db->quote($thumb)
 		);
-		$db->query();
+		$db->execute();
 		if ($db->getErrorNum())
 		{
 			$err = new stdClass;
@@ -371,7 +372,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 					. " AND thumb = 'down'))
                     WHERE " . $this->getlistModel()->getTable()->db_primary_key . " = " . (int) $row_id . "
                         LIMIT 1");
-		$db->query();
+		$db->execute();
 		if ($db->getErrorNum())
 		{
 			$err = new stdClass;
@@ -385,9 +386,9 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -395,7 +396,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 		$user = JFactory::getUser();
 		if (JRequest::getVar('view') == 'form')
 		{
-			return;
+			return array();
 		}
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
@@ -412,10 +413,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 		$opts->userid = (int) $user->get('id');
 		$opts->view = JRequest::getCmd('view');
 		$opts->listid = $listid;
-		$opts = json_encode($opts);
-
-		$str = "new FbThumbs('$id', $opts, '$value')";
-		return $str;
+		return array('FbThumbs', $id, $opts);
 	}
 
 	/**
@@ -555,6 +553,6 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element
 	 PRIMARY KEY ( `user_id` , `listid` , `formid` , `row_id`, `element_id` )
 );";
 		$db->setQuery($query);
-		$db->query();
+		$db->execute();
 	}
 }

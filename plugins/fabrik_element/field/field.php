@@ -21,7 +21,7 @@ jimport('joomla.application.component.model');
  * @since       3.0
  */
 
-class plgFabrik_ElementField extends plgFabrik_Element
+class PlgFabrik_ElementField extends PlgFabrik_Element
 {
 
 	/**
@@ -50,6 +50,27 @@ class plgFabrik_ElementField extends plgFabrik_Element
 		return parent::renderListData($data, $thisRow);
 	}
 
+	/**
+	 * Prepares the element data for CSV export
+	 *
+	 * @param   string  $data      Element data
+	 * @param   object  &$thisRow  All the data in the lists current row
+	 *
+	 * @return  string	Formatted CSV export value
+	 */
+	
+	public function renderListData_csv($data, &$thisRow)
+	{
+		$params = $this->getParams();
+		$data = $this->numberFormat($data);
+		$format = $params->get('text_format_string');
+		if ($format != '')
+		{
+			$data = sprintf($format, $data);
+		}
+		return $data;
+	}
+	
 	/**
 	 * Determines if the element can contain data used in sending receipts,
 	 * e.g. fabrikfield returns true
@@ -203,17 +224,16 @@ class plgFabrik_ElementField extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts = json_encode($opts);
-		return "new FbField('$id', $opts)";
+		return array('FbField', $id, $opts);
 	}
 
 	/**
@@ -228,11 +248,6 @@ class plgFabrik_ElementField extends plgFabrik_Element
 		if ($this->encryptMe())
 		{
 			return 'BLOB';
-		}
-		$group = $this->getGroup();
-		if ($group->isJoin() == 0 && $group->canRepeat())
-		{
-			return "TEXT";
 		}
 		switch ($p->get('text_format'))
 		{

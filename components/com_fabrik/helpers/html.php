@@ -1056,6 +1056,8 @@ EOD;
 
 		$file = (array) $file;
 		$src = array();
+		$counter = 0;
+		$last = count($file) - 1;
 		foreach ($file as $f)
 		{
 			if (!(JString::stristr($f, 'http://') || JString::stristr($f, 'https://')))
@@ -1095,13 +1097,23 @@ EOD;
 
 			if (JRequest::getCmd('format') == 'raw')
 			{
-				$opts = trim($onLoad) !== '' ? '\'onLoad\':function(){' . $onLoad . '}' : '';
-				echo '<script type="text/javascript">Asset.javascript(\'' . $f . '\', {' . $opts . '});</script>';
+				// Only load $onLoad on last script
+				if ($counter !== $last)
+				{
+					echo '<script type="text/javascript">Asset.javascript(\'' . $f . '\');</script>';
+				}
+				else
+				{
+					$opts = trim($onLoad) !== '' ? '\'onLoad\':function(){' . $onLoad . '}' : '';
+					echo '<script type="text/javascript">Asset.javascript(\'' . $f . '\', {' . $opts . '});</script>';
+				}
+
 			}
 			else
 			{
 				$src[] = "'" . $f . "'";
 			}
+			$counter ++;
 		}
 		if ($onLoad !== '' && JRequest::getCmd('format') != 'raw' && !empty($src))
 		{
@@ -1307,16 +1319,17 @@ EOD;
 	 *
 	 * @param   string  $htmlid     of element to turn into autocomplete
 	 * @param   int     $elementid  element id
+	 * @param   int     $formid     form id
 	 * @param   string  $plugin     plugin name
 	 * @param   array   $opts       (currently only takes 'onSelection')
 	 *
 	 * @return  void
 	 */
 
-	public static function autoComplete($htmlid, $elementid, $plugin = 'field', $opts = array())
+	public static function autoComplete($htmlid, $elementid, $formid, $plugin = 'field', $opts = array())
 	{
 		self::autoCompleteScript();
-		$json = self::autoCompletOptions($htmlid, $elementid, $plugin, $opts);
+		$json = self::autoCompletOptions($htmlid, $elementid, $formid, $plugin, $opts);
 		$str = json_encode($json);
 		$class = $plugin === 'cascadingdropdown' ? 'FabCddAutocomplete' : 'FbAutocomplete';
 		self::addScriptDeclaration("head.ready(function() { new $class('$htmlid', $str); });");
@@ -1327,19 +1340,20 @@ EOD;
 	 *
 	 * @param   string  $htmlid     element to turn into autocomplete
 	 * @param   int     $elementid  element id
+	 * @param   int     $formid     form id
 	 * @param   string  $plugin     plugin type
 	 * @param   array   $opts       (currently only takes 'onSelection')
 	 *
 	 * @return  array	autocomplete options (needed for elements so when duplicated we can create a new FabAutocomplete object
 	 */
 
-	public static function autoCompletOptions($htmlid, $elementid, $plugin = 'field', $opts = array())
+	public static function autoCompletOptions($htmlid, $elementid, $formid, $plugin = 'field', $opts = array())
 	{
 		$json = new stdClass;
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$json->url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&format=raw&view=plugin&task=pluginAjax&g=element&element_id=' . $elementid
-			. '&plugin=' . $plugin . '&method=autocomplete_options&package=' . $package;
+			. '&formid=' . $formid . '&plugin=' . $plugin . '&method=autocomplete_options&package=' . $package;
 		$c = JArrayHelper::getValue($opts, 'onSelection');
 		if ($c != '')
 		{
@@ -1564,31 +1578,45 @@ EOD;
 	/**
 	 * Make a grid of items
 	 *
-	 * @param   array   $values              option values
-	 * @param   array   $labels              option labels
-	 * @param   array   $selected            selected options
-	 * @param   string  $name                input name
-	 * @param   string  $type                *checkbox/radio etc
-	 * @param   bool    $elementBeforeLabel  element before or after the label
-	 * @param   int     $optionsPerRow       number of suboptions to show per row
+	 * @param   array   $values              Option values
+	 * @param   array   $labels              Option labels
+	 * @param   array   $selected            Selected options
+	 * @param   string  $name                Input name
+	 * @param   string  $type                Checkbox/radio etc
+	 * @param   bool    $elementBeforeLabel  Element before or after the label - deprecated - not used in Joomla 3
+	 * @param   int     $optionsPerRow       Number of suboptions to show per row
+	 * @param   array   $classes             Label classes
+	 * @param   bool    $buttonGroup         Should it be rendered as a bootstrap button group (radio only)
 	 *
 	 * @return  string  grid
 	 */
 
-	public static function grid($values, $labels, $selected, $name, $type = "checkbox", $elementBeforeLabel = true, $optionsPerRow = 4)
+	public static function grid($values, $labels, $selected, $name, $type = "checkbox", $elementBeforeLabel = true, $optionsPerRow = 4, $classes = array(), $buttonGroup = false)
 	{
 		$items = array();
+
+		if (FabrikWorker::j3())
+		{
+			$elementBeforeLabel = true;
+		}
 		for ($i = 0; $i < count($values); $i++)
 		{
 			$item = array();
 			$thisname = $type === 'checkbox' ? FabrikString::rtrimword($name, '[]') . '[' . $i . ']' : $name;
-			$label = '<span>' . $labels[$i] . '</span>';
+			$label = FabrikWorker::j3() ? $labels[$i] : '<span>' . $labels[$i] . '</span>';
 
 			// For values like '1"'
 			$value = htmlspecialchars($values[$i], ENT_QUOTES);
-			$chx = '<input type="' . $type . '" class="fabrikinput ' . $type . '" name="' . $thisname . '" value="' . $value . '" ';
-			$chx .= in_array($values[$i], $selected) ? ' checked="checked" />' : ' />';
-			$item[] = '<label class="fabrikgrid_' . $value . '">';
+			$inputClass = FabrikWorker::j3() ? '' : $type;
+			if (array_key_exists('input', $classes))
+			{
+				$inputClass .= ' ' . implode(' ', $classes['input']);
+			}
+			$chx = '<input type="' . $type . '" class="fabrikinput ' . $inputClass . '" name="' . $thisname . '" value="' . $value . '" ';
+			$sel = in_array($values[$i], $selected);
+			$chx .= $sel ? ' checked="checked" />' : ' />';
+			$labelClass = FabrikWorker::j3() && !$buttonGroup ? $type : '';
+			$item[] = '<label class="fabrikgrid_' . $value .  ' ' . $labelClass . '">';
 			$item[] = $elementBeforeLabel == '1' ? $chx . $label : $label . $chx;
 			$item[] = '</label>';
 			$items[] = implode("\n", $item);
@@ -1598,13 +1626,53 @@ EOD;
 		$optionsPerRow = empty($optionsPerRow) ? 4 : $optionsPerRow;
 		$w = floor(100 / $optionsPerRow);
 		$widthConstraint = '';
-		$grid[] = '<ul>';
-		foreach ($items as $i => $s)
+		if ($buttonGroup && $type == 'radio')
 		{
-			$clear = ($i % $optionsPerRow == 0) ? 'clear:left;' : '';
-			$grid[] = '<li style="' . $clear . 'float:left;width:' . $w . '%;padding:0;margin:0;">' . $s . '</li>';
+			$grid[] = '<fieldset class="' . $type . ' btn-group">';
+			foreach ($items as $i => $s)
+			{
+				$grid[] = $s;
+			}
+			$grid[] = '</fieldset>';
 		}
-		$grid[] = '</ul>';
+		else
+		{
+			if (FabrikWorker::j3())
+			{
+				$span = floor(12 / $optionsPerRow);
+				foreach ($items as $i => $s)
+				{
+					$endLine = ($i !== 0 && (($i ) % $optionsPerRow == 0));
+					if ($endLine && $optionsPerRow > 1)
+					{
+						$grid[] = '</div><!-- grid close row -->';
+					}
+
+					$newLine = ($i % $optionsPerRow == 0);
+					if ($newLine && $optionsPerRow > 1)
+					{
+						$grid[] = '<div class="row-fluid">';
+					}
+
+					$grid[] =  $optionsPerRow != 1 ? '<div class="span' . $span . '">' . $s . '</div>' : $s;
+				}
+				if ($i + 1 % $optionsPerRow !== 0 && $optionsPerRow > 1)
+				{
+					// Close opened and unfinished row.
+					$grid[] = '</div><!-- grid close end row -->';
+				}
+			}
+			else
+			{
+				$grid[] = '<ul>';
+				foreach ($items as $i => $s)
+				{
+					$clear = ($i % $optionsPerRow == 0) ? 'clear:left;' : '';
+					$grid[] = '<li style="' . $clear . 'float:left;width:' . $w . '%;padding:0;margin:0;">' . $s . '</li>';
+				}
+				$grid[] = '</ul>';
+			}
+		}
 		return $grid;
 	}
 
@@ -1698,7 +1766,7 @@ EOD;
 		$result = require $tmpl;
 		$message = ob_get_contents();
 		ob_end_clean();
-		if ($return === false)
+		if ($result === false)
 		{
 			return false;
 		}

@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
  * @since       3.0
  */
 
-class plgFabrik_ElementDropdown extends plgFabrik_ElementList
+class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 {
 
 	/**
@@ -54,8 +54,6 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
 		$params = $this->getParams();
-		$allowAdd = $params->get('allow_frontend_addtodropdown', false);
-
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
 		$multiple = $params->get('multiple', 0);
@@ -111,9 +109,9 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -132,9 +130,8 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		$opts->defaultVal = $this->getDefaultValue($data);
 
 		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
-		$opts = json_encode($opts);
 		JText::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
-		return "new FbDropdown('$id', $opts)";
+		return array('FbDropdown', $id, $opts);
 	}
 
 	/**
@@ -171,9 +168,11 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 					$default = $w->parseMessageForPlaceHolder($default, $data);
 					if ($element->eval == "1")
 					{
-						$v = @eval(stripslashes($default));
+						$v = @eval((string) stripslashes($default));
 						FabrikWorker::logEval($default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
-					}else{
+					}
+					else
+					{
 						$v = $default;
 					}
 				}

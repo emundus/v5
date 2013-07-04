@@ -19,7 +19,7 @@ defined('_JEXEC') or die();
  * @since       3.0
  */
 
-class plgFabrik_ElementCalc extends plgFabrik_Element
+class PlgFabrik_ElementCalc extends PlgFabrik_Element
 {
 
 	/**
@@ -254,9 +254,11 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$params = $this->getParams();
 		$w = new FabrikWorker;
 		$form = $this->getForm();
-		// $$$ hugh - need to copy the array, otherwise we blow away join data
-		// from _formData in $joindata foreach below.
-		//$d = $form->_formData;
+
+		/*
+		 * $$$ hugh - need to copy the array, otherwise we blow away join data
+		 * from _formData in $joindata foreach below.
+		 */
 		$d = unserialize(serialize($form->_formData));
 		$joindata = JArrayHelper::getValue($d, 'join', array());
 		$calc = $params->get('calc_calculation');
@@ -459,7 +461,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		{
 			if (!$this->isEditable())
 			{
-				$value = $this->_replaceWithIcons($value);
+				$value = $this->replaceWithIcons($value);
 				$str[] = $value;
 			}
 			else
@@ -470,7 +472,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 				}
 				else
 				{
-					$str[] = '<textarea class="fabrikinput" disabled="disabled" name="' . $name . '" id="' . $id . '" cols="' . $element->width . '" rows="' . $element->height . '">' . $value . '</textarea>\n';
+					$str[] = '<textarea class="fabrikinput" disabled="disabled" name="' . $name . '" id="' . $id . '" cols="' . $element->width . '" rows="' . $element->height . '">' . $value . '</textarea>';
 				}
 			}
 		}
@@ -487,9 +489,9 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -518,8 +520,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$opts->id = $this->_id;
 		$validations = $this->getValidations();
 		$opts->validations = empty($validations) ? false : true;
-		$opts = json_encode($opts);
-		return "new FbCalc('$id', $opts)";
+		return array('FbCalc', $id, $opts);
 	}
 
 	/**
@@ -533,7 +534,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$app = JFactory::getApplication();
 		$input = $app->input;
 		$this->setId($input->getInt('element_id'));
-		$this->getElement();
+		$this->loadMeForAjax();
 		$params = $this->getParams();
 		$w = new FabrikWorker;
 		$d = JRequest::get('request');
@@ -665,7 +666,6 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		return $params->get('calc_format_string');
 	}
 
-
 	/**
 	 * Get JS code for ini element list js
 	 * Overwritten in plugin classes
@@ -685,6 +685,12 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$opts = json_encode($opts);
 		return "new FbCalcList('$id', $opts);\n";
 	}
+
+	/**
+	 * Update list data
+	 *
+	 * @return  void
+	 */
 
 	public function onAjax_listUpdate()
 	{
@@ -711,7 +717,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			{
 				$key = $listRef . $row->__pk_val;
 				$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $row);
-				$return->$key =  @eval($default);
+				$return->$key = @eval($default);
 				if ($store)
 				{
 					$listModel->storeCell($row->__pk_val, $storeKey, $return->$key);
@@ -721,4 +727,46 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 
 		echo json_encode($return);
 	}
+
+	/**
+	* Turn form value into email formatted value
+	* $$$ hugh - I added this as for reasons I don't understand, something to do with
+	* how the value gets calc'ed durind preProcess, sometimes the calc is "right" when
+	* it's submitted to the database, but wrong during form email plugin processing.  So
+	* I gave up trying to work out why, and now just re-calc it during getEmailData()
+	*
+	* @param   mixed  $value          Element value
+	* @param   array  $data           Form data
+	* @param   int    $repeatCounter  Group repeat counter
+	*
+	* @return  string  email formatted value
+	*/
+
+	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		$params = $this->getParams();
+		if (!$params->get('calc_on_save_only', true))
+		{
+			$value = $this->_getV($data, $repeatCounter);
+		}
+		return $value;
+	}
+
+	/**
+	* Get database field description
+	* For calc, as we have no idea what they will be storing, needs to be TEXT.
+	*
+	* @return  string  db field type
+	*/
+
+	public function getFieldDescription()
+	{
+		$p = $this->getParams();
+		if ($this->encryptMe())
+		{
+			return 'BLOB';
+		}
+		return "TEXT";
+	}
+
 }

@@ -3,7 +3,7 @@
  */
 
 /*jshint mootools: true */
-/*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $A:true, $H:true,unescape:true */
+/*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true */
 
 var FbAutocomplete = new Class({
 	
@@ -18,10 +18,12 @@ var FbAutocomplete = new Class({
 		url: 'index.php',
 		max: 10,
 		onSelection: Class.empty,
-		autoLoadSingleResult: true
+		autoLoadSingleResult: true,
+		storeMatchedResultsOnly: false // Only store a value if selected from picklist
 	},
 
 	initialize: function (element, options) {
+		this.matchedResult = false;
 		this.setOptions(options);
 		this.options.labelelement = typeOf(document.id(element + '-auto-complete')) === "null" ? document.getElement(element + '-auto-complete') : document.id(element + '-auto-complete');
 		this.cache = {};
@@ -30,7 +32,6 @@ var FbAutocomplete = new Class({
 		document.addEvent('keydown', function (e) {
 			this.doWatchKeys(e);
 		}.bind(this));
-		this.testMenuClose = this.doTestMenuClose.bindWithEvent(this);
 		this.element = typeOf(document.id(element)) === "null" ? document.getElement(element) : document.id(element);
 		this.buildMenu();
 		if (!this.getInputElement()) {
@@ -42,9 +43,20 @@ var FbAutocomplete = new Class({
 			this.search(e);
 		}.bind(this));
 		
+		this.getInputElement().addEvent('blur', function (e) {
+			if (this.options.storeMatchedResultsOnly) {
+				if (!this.matchedResult) {
+					if (!(this.data.length === 1 && this.options.autoLoadSingleResult)) {
+						this.element.value = '';
+					}
+				}
+			}
+		}.bind(this));
+		
 	},
 	
 	search: function (e) {
+		this.matchedResult = false;
 		if (e.key === 'tab') {
 			this.closeMenu();
 			return;
@@ -127,6 +139,7 @@ var FbAutocomplete = new Class({
 		var ul = this.menu.getElement('ul');
 		ul.empty();
 		if (data.length === 1 && this.options.autoLoadSingleResult) {
+			this.matchedResult = true;
 			this.element.value = data[0].value;
 			this.fireEvent('selection', [this, this.element.value]);
 		}
@@ -134,18 +147,23 @@ var FbAutocomplete = new Class({
 			var pair = data[i];
 			var li = new Element('li', {'data-value': pair.value, 'class': 'unselected ' + this.options.classes.li}).set('text', pair.text);
 			li.inject(ul);
-			li.addEvent('click', this.makeSelection.bindWithEvent(this, [li]));
+			li.addEvent('click', function (e) {
+				this.makeSelection(e);
+			}.bind(this));
 		}
 		if (data.length > this.options.max) {
 			new Element('li').set('text', '....').inject(ul);
 		}
 	},
 	
-	makeSelection: function (e, li) {
+	makeSelection: function (e) {
+		var li = e.target;
 		// $$$ tom - make sure an item was selected before operating on it.
 		if (typeOf(li) !== 'null') {
 			this.getInputElement().value = li.get('text');
 			this.element.value = li.getProperty('data-value');
+			
+			this.matchedResult = true;
 			this.closeMenu();
 			this.fireEvent('selection', [this, this.element.value]);
 			// $$$ hugh - need to fire change event, in case it's something like a join element
@@ -164,7 +182,9 @@ var FbAutocomplete = new Class({
 			this.shown = false;
 			this.menu.fade('out');
 			this.selected = -1;
-			document.removeEvent('click', this.testMenuClose);
+			document.removeEvent('click', function (e) {
+				this.doTestMenuClose(e);
+			}.bind(this));
 		}
 	},
 	
@@ -172,7 +192,9 @@ var FbAutocomplete = new Class({
 		if (!this.shown) {
 			this.shown = true;
 			this.menu.setStyle('visibility', 'visible').fade('in');
-			document.addEvent('click', this.testMenuClose);
+			document.addEvent('click', function (e) {
+				this.doTestMenuClose(e);
+			}.bind(this));
 			this.selected = 0;
 			this.highlight();
 		}
@@ -288,7 +310,11 @@ var FabCddAutocomplete = new Class({
 						fabrik_cascade_ajax_update: 1,
 						v: document.id(this.options.observerid).get('value')
 					},
-					onSuccess: this.completeAjax.bindWithEvent(this, [key]),
+					
+					onSuccess: function (e) {
+						this.completeAjax(e);
+					}.bind(this),
+					
 					onError: function (text, error) {
 						console.log(text, error);
 					},

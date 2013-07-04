@@ -507,8 +507,8 @@ class FabrikWorker
 	/**
 	 * Check a string is not reserved by Fabrik
 	 *
-	 * @param   string  $str  to check
-	 * @param   bool  $strict  incude things like rowid, listid in the reserved words, defaults to true
+	 * @param   string  $str     To check
+	 * @param   bool    $strict  Incude things like rowid, listid in the reserved words, defaults to true
 	 *
 	 * @return bool
 	 */
@@ -546,7 +546,11 @@ class FabrikWorker
 		jimport('joomla.crypt.crypt');
 		jimport('joomla.crypt.key');
 		$config = JFactory::getConfig();
-		$secret = $config->get('secret');
+		$secret = $config->get('secret', '');
+		if (trim($secret) == '')
+		{
+			JError::raiseError(500, 'You must supply a secret code in your Joomla configuration.php file');
+		}
 		$key = new JCryptKey('simple', $secret, $secret);
 		$crypt = new JCrypt(new JCryptCipherSimple, $key);
 		return $crypt;
@@ -567,7 +571,7 @@ class FabrikWorker
 
 	public function parseMessageForPlaceHolder($msg, $searchData = null, $keepPlaceholders = true, $addslashes = false, $theirUser = null)
 	{
-		$this->_parseAddSlases = $addslashes;
+		$this->parseAddSlases = $addslashes;
 		if ($msg == '' || is_array($msg) || JString::strpos($msg, '{') === false)
 		{
 			return $msg;
@@ -589,7 +593,8 @@ class FabrikWorker
 		 * self::replaceRequest($msg);
 		 */
 
-		$post = JRequest::get('request');
+		$f = JFilterInput::getInstance();
+		$post = $f->clean($_REQUEST, 'array');
 		$this->_searchData = is_null($searchData) ? $post : array_merge($post, $searchData);
 		$this->_searchData['JSession::getFormToken'] = JSession::getFormToken();
 		$msg = self::replaceWithUserData($msg);
@@ -599,12 +604,14 @@ class FabrikWorker
 		}
 		$msg = self::replaceWithGlobals($msg);
 		$msg = preg_replace("/{}/", "", $msg);
-		/* replace {element name} with form data */
+
+		// Replace {element name} with form data
 		$msg = preg_replace_callback("/{[^}\s]+}/i", array($this, 'replaceWithFormData'), $msg);
 		if (!$keepPlaceholders)
 		{
 			$msg = preg_replace("/{[^}\s]+}/i", '', $msg);
 		}
+
 		return $msg;
 	}
 
@@ -618,7 +625,8 @@ class FabrikWorker
 
 	public function replaceRequest(&$msg)
 	{
-		$request = JRequest::get('request');
+		$f = JFilterInput::getInstance();
+		$request = $f->clean($_REQUEST, 'array');
 		foreach ($request as $key => $val)
 		{
 			if (is_string($val))
@@ -645,6 +653,7 @@ class FabrikWorker
 
 	public static function replaceWithUserData($msg, $user = null, $prefix = 'my')
 	{
+		$app = JFactory::getApplication();
 		if (is_null($user))
 		{
 			$user = JFactory::getUser();
@@ -665,7 +674,7 @@ class FabrikWorker
 		}
 		/*
 		 *  $$$rob parse another users data into the string:
-		 *  format: is {$their->var->email} where var is the JRequest var to search for
+		 *  format: is {$their->var->email} where var is the $app->input var to search for
 		 *  e.g url - index.php?owner=62 with placeholder {$their->owner->id}
 		 *  var should be an integer corresponding to the user id to load
 		 */
@@ -675,7 +684,7 @@ class FabrikWorker
 		foreach ($matches as $match)
 		{
 			$bits = explode('->', str_replace(array('{', '}'), '', $match));
-			$userid = JRequest::getInt(JArrayHelper::getValue($bits, 1));
+			$userid = $app->input->getInt(JArrayHelper::getValue($bits, 1));
 			if ($userid !== 0)
 			{
 				$user = JFactory::getUser($userid);
@@ -707,7 +716,7 @@ class FabrikWorker
 		$msg = str_replace('{$Itemid}', $Itemid, $msg);
 		$msg = str_replace('{$mosConfig_sitename}', $config->get('sitename'), $msg);
 		$msg = str_replace('{$mosConfig_mailfrom}', $config->get('mailfrom'), $msg);
-		$msg = str_replace('{where_i_came_from}', JRequest::getVar('HTTP_REFERER', '', 'server'), $msg);
+		$msg = str_replace('{where_i_came_from}', $app->input->server->get('HTTP_REFERER', ''), $msg);
 		foreach ($_SERVER as $key => $val)
 		{
 			if (!is_object($val) && !is_array($val))
@@ -747,6 +756,14 @@ class FabrikWorker
 		$orig = $match;
 		/* strip the {} */
 		$match = JString::substr($match, 1, JString::strlen($match) - 2);
+
+		/* $$$ hugh - added dbprefix substitution
+		 * Not 100% if we should do this on $match before copying to $orig, but for now doing it
+		 * after, so we don't potentially disclose dbprefix if no substitution found.
+		 */
+		$config = JFactory::getConfig();
+		$prefix = $config->get('dbprefix');
+		$match = str_replace('#__', $prefix, $match);
 
 		// $$$ rob test this format searchvalue||defaultsearchvalue
 		$bits = explode('||', $match);
@@ -840,7 +857,7 @@ class FabrikWorker
 			}
 			$match = $aPost;
 		}
-		if ($this->_parseAddSlases)
+		if ($this->parseAddSlases)
 		{
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
@@ -1124,11 +1141,17 @@ class FabrikWorker
 
 	public static function logEval($val, $msg)
 	{
+		$app = JFactory::getApplication();
 		if (version_compare(phpversion(), '5.2.0', '>='))
 		{
-			if ($val === false && $error = error_get_last() && (JRequest::getVar('fabrikdebug') == 1 || JDEBUG))
+			if ($val === false && $error = error_get_last() && ($app->input->get('fabrikdebug') == 1 || JDEBUG))
 			{
-				JError::raiseNotice(500, sprintf($msg, $error['message']));
+				// $$$ hugh - for some strange reason, error_get_last() sometimes returns true, instead of an array
+				// or null, when there hasn't been an eror.
+				if ($error !== true)
+				{
+					JError::raiseNotice(500, sprintf($msg, $error['message']));
+				}
 			}
 		}
 	}
@@ -1225,7 +1248,7 @@ class FabrikWorker
 			{
 				$fabrikDb = self::$database[$sig];
 				$fabrikDb->setQuery("SET OPTION SQL_BIG_SELECTS=1");
-				$fabrikDb->query();
+				$fabrikDb->execute();
 			}
 		}
 		return self::$database[$sig];
@@ -1243,13 +1266,14 @@ class FabrikWorker
 
 	public static function getConnection($item = null)
 	{
-		$jform = JRequest::getVar('jform', array(), 'post');
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$jform = $input->get('jform', array(), 'array');
 		if (is_object($item))
 		{
 			$item = is_null($item->connection_id) ? JArrayHelper::getValue($jform, 'connection_id', -1) : $item->connection_id;
 		}
 		$connId = (int) $item;
-		$config = JFactory::getConfig();
 		if (!self::$connection)
 		{
 			self::$connection = array();
@@ -1440,9 +1464,10 @@ class FabrikWorker
 	public static function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu')
 	{
 		$app = JFactory::getApplication();
+		$input = $app->input;
 		if ($priority === 'menu')
 		{
-			$val = JRequest::getVar($name, $val);
+			$val = $input->get($name, $val, 'string');
 			if (!$app->isAdmin())
 			{
 				$menus = $app->getMenu();
@@ -1468,7 +1493,7 @@ class FabrikWorker
 					$val = $menu->params->get($name, $val);
 				}
 			}
-			$val = JRequest::getVar($name, $val);
+			$val = $input->get($name, $val, 'string');
 		}
 		return $val;
 	}
@@ -1488,6 +1513,8 @@ class FabrikWorker
 	{
 		if (!is_null($row))
 		{
+			$app = JFactory::getApplication();
+			$input = $app->input;
 			$user = JFactory::getUser();
 			$usercol = $params->get($col, '');
 			if ($usercol != '')
@@ -1511,7 +1538,7 @@ class FabrikWorker
 					{
 						return false;
 					}
-					if (intVal($usercol_val) === intVal($myid) || JRequest::getVar('rowid') == -1)
+					if (intVal($usercol_val) === intVal($myid) || $input->get('rowid') == -1)
 					{
 						return true;
 					}
@@ -1535,21 +1562,28 @@ class FabrikWorker
 
 	/**
 	 * Get a cachec handler
+	 * $$$ hugh - added $listModel arg, needed so we can see if they have set "Disable Caching" on the List
 	 *
 	 * @since   3.0.7
+	 *
+	 * @param   object  listModel
 	 *
 	 * @return  JCache
 	 */
 
-	public static function getCache()
+	public static function getCache($listModel = null)
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$cache = JCache::getInstance('callback',
-				array('defaultgroup' => 'com_' . $package, 'cachebase' => JPATH_BASE . '/cache/', 'lifetime' => ((float) 2 * 60 * 60), 'language' => 'en-GB',
-						'storage' => 'file'));
+		$opts = array('defaultgroup' => 'com_' . $package, 'cachebase' => JPATH_BASE . '/cache/', 'lifetime' => ((float) 2 * 60 * 60),
+			 'language' => 'en-GB', 'storage' => 'file');
+		$cache = JCache::getInstance('callback', $opts);
 		$config = JFactory::getConfig();
 		$doCache = $config->get('caching', 0) > 0 ? true : false;
+		if ($doCache && $listModel !== null)
+		{
+			$doCache = $listModel->getParams()->get('list_disable_caching', '0') == '0';
+		}
 		$cache->setCaching($doCache);
 		return $cache;
 	}
@@ -1574,7 +1608,8 @@ class FabrikWorker
 
 		foreach ($fs as $name => $field)
 		{
-			if (substr($name, 0, 7) === 'params_') {
+			if (substr($name, 0, 7) === 'params_')
+			{
 				$name = str_replace('params_', '', $name);
 				$json['params'][$name] = $field->value;
 			}
@@ -1600,6 +1635,7 @@ class FabrikWorker
 		$version = new JVersion;
 
 		// Only use template test for testing in 2.5 with my temp J bootstrap template.
-		return ($app->getTemplate() === 'bootstrap' || $version->RELEASE > 2.5);
+		$tpl = $app->getTemplate();
+		return ($tpl === 'bootstrap' || $tpl === 'fabrik4' || $version->RELEASE > 2.5);
 	}
 }

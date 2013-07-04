@@ -139,7 +139,7 @@ var FbForm = new Class({
 					method : this.options.ajaxmethod,
 					data : editopts,
 					onComplete : function (r) {
-						Fabrik.loader.stop('form_' + this.id);
+						Fabrik.loader.stop(this.getBlock());
 						r = JSON.decode(r);
 						this.update(r);
 						this.form.getElement('input[name=rowid]').value = r.post.rowid;
@@ -149,7 +149,7 @@ var FbForm = new Class({
 				this.form.getElement(b).addEvent('click', function (e) {
 					myAjax.options.data.rowid = this.form.getElement('input[name=rowid]').value;
 					e.stop();
-					Fabrik.loader.start('form_' + this.id, Joomla.JText._('COM_FABRIK_LOADING'));
+					Fabrik.loader.start(this.getBlock(), Joomla.JText._('COM_FABRIK_LOADING'));
 					myAjax.send();
 				}.bind(this));
 			}
@@ -170,6 +170,10 @@ var FbForm = new Class({
 				e.stop();
 				if (Fabrik.Windows[this.options.fabrik_window_id]) {
 					Fabrik.Windows[this.options.fabrik_window_id].close();
+				}
+				else {
+					// $$$ hugh - http://fabrikar.com/forums/showthread.php?p=166140#post166140
+					window.history.back();
 				}
 			}.bind(this));
 		}
@@ -206,7 +210,8 @@ var FbForm = new Class({
 	},
 
 	getBlock : function () {
-		return this.options.editable === true ? 'form_' + this.id : 'details_' + this.id;
+		var block = this.options.editable === true ? 'form_' + this.id : 'details_' + this.id;
+		return block;
 	},
 
 	/**
@@ -418,7 +423,7 @@ var FbForm = new Class({
 				document.getElement('.tool-tip').setStyle('top', 0);
 			}
 			var url = Fabrik.liveSite + 'index.php?option=com_fabrik&format=raw&task=form.ajax_validate&form_id=' + this.id;
-			Fabrik.loader.start('form_' + this.id, Joomla.JText._('COM_FABRIK_VALIDATING'));
+			Fabrik.loader.start(this.getBlock(), Joomla.JText._('COM_FABRIK_VALIDATING'));
 	
 			// Only validate the current groups elements, otherwise validations on
 			// other pages cause the form to show an error.
@@ -437,7 +442,7 @@ var FbForm = new Class({
 				method: this.options.ajaxmethod,
 				data: d,
 				onComplete: function (r) {
-					Fabrik.loader.stop('form_' + this.id);
+					Fabrik.loader.stop(this.getBlock());
 					r = JSON.decode(r);
 					// Don't show validation errors if we are going back a page
 					if (dir === -1 || this._showGroupError(r, d) === false) {
@@ -469,7 +474,7 @@ var FbForm = new Class({
 		this.form.getElement('input[name=task]').value = 'form.savepage';
 
 		var url = Fabrik.liveSite + 'index.php?option=com_fabrik&format=raw&page=' + this.currentPage;
-		Fabrik.loader.start('form_' + this.id, 'saving page');
+		Fabrik.loader.start(this.getBlock(), 'saving page');
 		var data = this.getFormData();
 		data.fabrik_ajax = 1;
 		new Request({
@@ -487,7 +492,7 @@ var FbForm = new Class({
 				if (this.options.ajax) {
 					Fabrik.fireEvent('fabrik.form.groups.save.end', [this, r]);
 				}
-				Fabrik.loader.stop('form_' + this.id);
+				Fabrik.loader.stop(this.getBlock());
 			}.bind(this)
 		}).send();
 	},
@@ -512,6 +517,7 @@ var FbForm = new Class({
 		this._setMozBoxWidths();
 		this.hideOtherPages();
 		Fabrik.fireEvent('fabrik.form.page.chage.end', [this]);
+		Fabrik.fireEvent('fabrik.form.page.change.end', [this]);
 		if (this.result === false) {
 			this.result = true;
 			return;
@@ -569,12 +575,22 @@ var FbForm = new Class({
 			prev.setStyle('opacity', 1);
 		}
 	},
+	
+	destroyElements: function () {
+		this.formElements.each(function (el) {
+			el.destroy();
+		});
+	},
 
 	addElements: function (a) {
 		a = $H(a);
 		a.each(function (elements, gid) {
 			elements.each(function (el) {
-				if (typeOf(el) !== 'null') {
+				if (typeOf(el) === 'array') {
+					var oEl = new window[el[0]](el[1], el[2]);
+					this.addElement(oEl, el[1], gid);
+				}
+				else if (typeOf(el) !== 'null') {
 					this.addElement(el, el.options.element, gid);
 				}
 			}.bind(this));
@@ -582,8 +598,7 @@ var FbForm = new Class({
 		// $$$ hugh - moved attachedToForm calls out of addElement to separate loop, to fix forward reference issue,
 		// i.e. calc element adding events to other elements which come after itself, which won't be in formElements
 		// yet if we do it in the previous loop ('cos the previous loop is where elements get added to formElements)
-		a.each(function (elements) {
-			elements.each(function (el) {
+		this.formElements.each(function (el, elref) {
 				if (typeOf(el) !== 'null') {
 					try {
 						el.attachedToForm();
@@ -592,11 +607,12 @@ var FbForm = new Class({
 					}
 				}
 			}.bind(this));
-		}.bind(this));
 		Fabrik.fireEvent('fabrik.form.elements.added', [this]);
 	},
 
 	addElement: function (oEl, elId, gid) {
+		//var oEl = new window[element[0]](element[1], element[2]);
+		//elId = element[1];
 		elId = oEl.getFormElementsKey(elId);
 		elId = elId.replace('[]', '');
 		
@@ -605,18 +621,11 @@ var FbForm = new Class({
 		oEl.groupid = gid;
 		this.formElements.set(elId, oEl);
 		Fabrik.fireEvent('fabrik.form.element.added', [this, elId, oEl]);
-		// $$$ hugh - moved this to addElements, see comment above
-		/*
-		try {
-			oEl.attachedToForm();
-		} catch (err) {
-			fconsole(elId + ' attach to form:' + err );
-		}
-		*/
 		if (ro) {
 			elId = elId.substr(0, elId.length - 3);
 			this.formElements.set(elId, oEl);
 		}
+		return elId;
 	},
 
 	// we have to buffer the events in a pop up window as
@@ -757,8 +766,13 @@ var FbForm = new Class({
 		}).send();
 	},
 
-	_completeValidaton : function (r, id, origid) {
+	_completeValidaton: function (r, id, origid) {
 		r = JSON.decode(r);
+		if (typeOf(r) === 'null') {
+			this._showElementError(['Oups'], id);
+			this.result = true;
+			return;
+		}
 		this.formElements.each(function (el, key) {
 			el.afterAjaxValidation();
 		});
@@ -768,7 +782,7 @@ var FbForm = new Class({
 			return;
 		}
 		var el = this.formElements.get(id);
-		if ((r.modified[origid] !== undefined)) {
+		if ((typeOf(r.modified[origid]) !== 'null')) {
 			el.update(r.modified[origid]);
 		}
 		if (typeOf(r.errors[origid]) !== 'null') {
@@ -936,6 +950,9 @@ var FbForm = new Class({
 			e.stop();
 			// Update global status error
 			this.updateMainError();
+			
+			// Return otherwise ajax upload may still occur.
+			return;
 		}
 		// Insert a hidden element so we can reload the last page if validation vails
 		if (this.options.pages.getKeys().length > 1) {
@@ -944,7 +961,7 @@ var FbForm = new Class({
 		if (this.options.ajax) {
 			// Do ajax val only if onSubmit val ok
 			if (this.form) {
-				Fabrik.loader.start('form_' + this.id, Joomla.JText._('COM_FABRIK_LOADING'));
+				Fabrik.loader.start(this.getBlock(), Joomla.JText._('COM_FABRIK_LOADING'));
 				// $$$ hugh - we already did elementsBeforeSubmit() this at the start of this func?
 				// (and we're going to call it again in getFormData()!)
 				//this.elementsBeforeSubmit(e);
@@ -964,17 +981,17 @@ var FbForm = new Class({
 					onError: function (text, error) {
 						fconsole(text + ": " + error);
 						this.showMainError(error);
-						Fabrik.loader.stop('form_' + this.id, 'Error in returned JSON');
+						Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
 					}.bind(this),
 					
 					onFailure: function (xhr) {
 						fconsole(xhr);
-						Fabrik.loader.stop('form_' + this.id, 'Ajax failure');
+						Fabrik.loader.stop(this.getBlock(), 'Ajax failure');
 					}.bind(this),
 					onComplete : function (json, txt) {
 						if (typeOf(json) === 'null') {
-							// stop spinner
-							Fabrik.loader.stop('form_' + this.id, 'Error in returned JSON');
+							// Stop spinner
+							Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
 							fconsole('error in returned json', json, txt);
 							return;
 						}
@@ -1005,13 +1022,13 @@ var FbForm = new Class({
 								}
 							}.bind(this));
 						}
-						// update global status error
+						// Update global status error
 						this.updateMainError();
 
 						if (errfound === false) {
 							var clear_form = btn.name !== 'apply';
 							Fabrik.loader.stop('form_' + this.id);
-							var savedMsg = (json.msg !== undefined && json.msg !== '') ? json.msg :Joomla.JText._('COM_FABRIK_FORM_SAVED');
+							var savedMsg = (json.msg !== undefined && json.msg !== '') ? json.msg : Joomla.JText._('COM_FABRIK_FORM_SAVED');
 							if (json.baseRedirect !== true) {
 								clear_form = json.reset_form;
 								if (json.url !== undefined) {
@@ -1052,7 +1069,7 @@ var FbForm = new Class({
 						} else {
 							Fabrik.fireEvent('fabrik.form.submit.failed', [this, json]);
 							// Stop spinner
-							Fabrik.loader.stop('form_' + this.id, Joomla.JText._('COM_FABRIK_VALIDATION_ERROR'));
+							Fabrik.loader.stop(this.getBlock(), Joomla.JText._('COM_FABRIK_VALIDATION_ERROR'));
 						}
 					}.bind(this)
 				}).send();
@@ -1105,6 +1122,8 @@ var FbForm = new Class({
 			p = p.split('=');
 			var k = p[0];
 			// $$$ rob deal with checkboxes
+			// Ensure [] is not encoded
+			k = decodeURI(k);
 			if (k.substring(k.length - 2) === '[]') {
 				k = k.substring(0, k.length - 2);
 				if (!arrayCounters.has(k)) {
@@ -1164,11 +1183,11 @@ var FbForm = new Class({
 	},
 
 	watchGroupButtons : function () {
-		this.form.getElements('.deleteGroup').each(function (g, i) {
+		/*this.form.getElements('.deleteGroup').each(function (g, i) {
 			g.addEvent('click', function (e) {
 				this.deleteGroup(e);
 			}.bind(this));
-		}.bind(this));
+		}.bind(this));*/
 		
 		this.form.addEvent('click:relay(.deleteGroup)', function (e, target) {
 			e.preventDefault();
@@ -1200,6 +1219,9 @@ var FbForm = new Class({
 	duplicateGroupsToMin: function () {
 		// Check for new form
 		if (this.options.rowid.toInt() === 0) {
+			// $$$ hugh - added ability to override min count
+			// http://fabrikar.com/forums/index.php?threads/how-to-initially-show-repeat-group.32911/#post-170147
+			Fabrik.fireEvent('fabrik.form.group.duplicate.min', [this]);
 			Object.each(this.options.minRepeat, function (min, groupId) {
 				
 				// Create mock event

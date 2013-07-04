@@ -196,6 +196,10 @@ class FabrikFEModelFormsession extends FabModel
 
 	protected function getCrypt()
 	{
+		/**
+		 * $$$ hugh - might want to alter this to use FabrikWorker::getCrypt()
+		 * as we now use that everywhere else.
+		 */
 		if (!isset($this->crypt))
 		{
 			jimport('joomla.utilities.simplecrypt');
@@ -344,7 +348,7 @@ class FabrikFEModelFormsession extends FabModel
 		$db->setQuery($query);
 		$this->removeCookie();
 		$this->row = $row;
-		if ($db->query())
+		if ($db->execute())
 		{
 			return true;
 		}

@@ -5,7 +5,9 @@ AdminPackage = new Class({
 	Extends: Canvas,
 	
 	initialize: function (opts) {
-		opts.editable = true;
+		this.simpleUI();
+		return;
+		/*opts.editable = true;
 		this.parent(opts);
 		this.setup();
 		opts.editable = true;
@@ -14,12 +16,56 @@ AdminPackage = new Class({
 		// only used to store newly added blocks
 		this.blocks = this.options.blocks;//{'form':[], 'list':[], 'visualization':[]}; 
 		this.makeBlockMenu();
-		Fabrik.addEvent('fabrik.tab.add', this.setDrops.bindWithEvent(this));
+		Fabrik.addEvent('fabrik.tab.add', function (e) {
+			this.setDrops(e);
+		}.bind(this));
 		this.setDrops();
 		this.setDrags();
-		Fabrik.addEvent('fabrik.package.item.selected', this.addItem.bindWithEvent(this));
-		Fabrik.addEvent('fabrik.page.block.delete', this.deleteItem.bindWithEvent(this));
+		Fabrik.addEvent('fabrik.package.item.selected', function (e) {
+			this.addItem(e);
+		}.bind(this));
+		Fabrik.addEvent('fabrik.page.block.delete', function (e) {
+			this.deleteItem(e);
+		}.bind(this));*/
 		//this.history = new History('undo', 'redo');
+	},
+	
+	simpleUI: function () {
+		var source = document.id('list-pick');
+		var target = document.id('blockslist');
+		var addBtn = document.id('add-list');
+		var removeBtn = document.id('remove-list');
+		
+		this._swaplistIni(addBtn, removeBtn, source, target);
+		
+		source = document.id('form-pick');
+		target = document.id('blocksform');
+		addBtn = document.id('add-form');
+		removeBtn = document.id('remove-form');
+		this._swaplistIni(addBtn, removeBtn, source, target);
+		
+	},
+	
+	_swaplistIni: function (addBtn, removeBtn, source, target) {
+		addBtn.addEvent('click', function (e) {
+			e.stop();
+			this._swaplist(source, target);
+		}.bind(this));
+		
+		removeBtn.addEvent('click', function (e) {
+			e.stop();
+			this._swaplist(target, source);
+		}.bind(this));
+	},
+	
+	_swaplist: function (source, target) {
+		var sel = source.getElements('option').filter(function (o) {
+			return o.selected;
+		});
+		sel.each(function (o) {
+			o.clone().inject(target);
+			o.destroy();
+		});
 	},
 	
 	makeBlockMenu : function () {
@@ -54,10 +100,12 @@ AdminPackage = new Class({
 		dimensions['z-index'] = 100;
 		var c = new Element('div', {'id': id, 'class': 'fabrikWindow itemPlaceHolder itemPlaceHolder-' + type}).setStyles(dimensions);
 		if (page.editable) {
+			var delClick = function (e) {
+				page.removeItem(e, page, id);
+			}.bind(this);
 			art = this.iconGen.create(icon.cross);
-			del = new Element('a', {'href': '#', 'class': 'close', 'events': {
-				'click': page.removeItem.bindWithEvent(page, [id])
-			}});
+			var delopts = {'href': '#', 'class': 'close', 'events': {'click': delClick}};
+			del = new Element('a', delopts);
 			art.inject(del);
 		} else {
 			del = null;
@@ -131,7 +179,8 @@ AdminPackage = new Class({
 	},
 	
 	prepareSave: function () {
-		var o = {};
+		return;
+		/*var o = {};
 		o.layout = this.pages.toJSON();
 		o.blocks = this.blocks;
 		var t = [];
@@ -139,7 +188,7 @@ AdminPackage = new Class({
 			t.push(tab.get('text').trim());
 		});
 		o.tabs = t;
-		return o;
+		return o;*/
 	}
 	
 });

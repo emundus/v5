@@ -23,7 +23,7 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 <?php if ($this->params->get('show_page_heading')) : ?>
 	<h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
 <?php endif; ?>
-<h1><?php echo JText::_("CONTACT_US_FOR_TECHNICAL_ISSUES"); ?></h1>
+<p><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></p>
 	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register'); ?>" method="post" class="form-validate">
 <?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
 	<?php $fields = $this->form->getFieldset($fieldset->name);  ?>
@@ -61,6 +61,7 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 		</div>
 	</form>
 </div>
+<h1><?php echo JText::_("CONTACT_US_FOR_TECHNICAL_ISSUES"); ?></h1>
 <?php
 $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 //Detection du browser

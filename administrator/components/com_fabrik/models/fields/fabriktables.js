@@ -43,8 +43,15 @@ var fabriktablesElement = new Class({
 			return;
 		}
 		this.loader = document.id(this.el.id + '_loader');
-		this.cnn.addEvent('change', this.updateMe.bindWithEvent(this));
-		this.el.addEvent('change', this.updateElements.bindWithEvent(this));
+		
+		this.cnn.addEvent('change', function (e) {
+			this.updateMe(e);
+		}.bind(this));
+		
+		this.el.addEvent('change', function (e) {
+			this.updateElements(e);
+		}.bind(this));
+	
 		// see if there is a connection selected
 		var v = this.cnn.get('value');
 		if (v !== '' && v !== -1) {
@@ -124,7 +131,6 @@ var fabriktablesElement = new Class({
 	updateElements : function () {
 		this.elements.each(function (element) {
 			var opts = element.getOpts();
-			console.log(opts);
 			var table = this.el.get('value');
 			if (table === '') {
 				// $$$ rob dont empty as this messes up parameter saving in paypal
@@ -196,20 +202,28 @@ var fabriktablesElement = new Class({
 	},
 
 	updateElementOptions : function (r, element) {
+		var target;
 		if (r === '') {
 			return;
 		}
+		
 		var table = document.id(this.el).get('value');
 		var key = element.getOpts().getValues().toString() + ',' + table;
 		var opts = eval(r);
-		element.el.empty();
+		
+		if (element.el.get('tag') === 'textarea') {
+			target = element.el.getParent().getElement('select');
+		} else {
+			target = element.el;
+		}
+		target.empty();
 		var o = {
 			'value' : ''
 		};
 		if (element.options.value === '') {
 			o.selected = 'selected';
 		}
-		new Element('option', o).appendText('-').inject(element.el);
+		new Element('option', o).appendText('-').inject(target);
 		opts.each(function (opt) {
 			var v = opt.value.replace('[]', '');
 			var o = {
@@ -218,11 +232,12 @@ var fabriktablesElement = new Class({
 			if (v === element.options.value) {
 				o.selected = 'selected';
 			}
-			new Element('option', o).set('text', opt.label).inject(element.el);
+			new Element('option', o).set('text', opt.label).inject(target);
 		}.bind(this));
 		if (this.loader) {
 			this.loader.hide();
 		}
+		
 	},
 	// only called from repeat viz admin interface i think
 	cloned : function (newid, counter) {

@@ -19,7 +19,7 @@ defined('_JEXEC') or die();
  * @since       3.0
  */
 
-class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
+class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 {
 
 	/**
@@ -81,9 +81,9 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -99,9 +99,8 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
 		$opts->allowadd = (bool) $params->get('allow_frontend_addtocheckbox', false);
-		$opts = json_encode($opts);
 		JText::script('PLG_ELEMENT_CHECKBOX_ENTER_VALUE_LABEL');
-		return "new FbCheckBox('$id', $opts)";
+		return array('FbCheckBox', $id, $opts);
 	}
 
 	/**
@@ -122,8 +121,9 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 			$data[$element->name] = $params->get('sub_default_value');
 			$data[$element->name . '_raw'] = array($params->get('sub_default_value'));
 		}
-		// $$$ hugh - this is killing CSV imports, where data is already in JSON
-		// I don't think this is necessary anyway, so commenting it out for now.
+		/* $$$ hugh - this is killing CSV imports, where data is already in JSON
+		 * I don't think this is necessary anyway, so commenting it out for now.
+		 */
 		/*
 		else
 		{
@@ -250,10 +250,12 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 		}
 		else
 		{
-			// $$$ hugh - nastyish hack to try and make sure we consistently save as JSON,
-			// for instance in CSV import, if data is just a single option value like 2,
-			// instead of ["2"], we have been saving it as just that value, rather than a single
-			// item JSON array.
+			/*
+			 * $$$ hugh - nastyish hack to try and make sure we consistently save as JSON,
+			 * for instance in CSV import, if data is just a single option value like 2,
+			 * instead of ["2"], we have been saving it as just that value, rather than a single
+			 * item JSON array.
+			 */
 			if (isset($val))
 			{
 				// We know it's not an array or an object, so lets see if it's a string
@@ -270,7 +272,7 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 					}
 					else
 					{
-						// give up and just store whatever it was we got!
+						// Give up and just store whatever it was we got!
 						return $val;
 					}
 				}

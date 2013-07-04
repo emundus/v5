@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
  * @since       3.0
  */
 
-class plgFabrik_ElementLink extends plgFabrik_Element
+class PlgFabrik_ElementLink extends PlgFabrik_Element
 {
 
 	public $hasSubElements = true;
@@ -81,6 +81,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 
 	protected function _renderListData($data, $thisRow)
 	{
+		$w = new FabrikWorker;
 		if (is_string($data))
 		{
 			$data = FabrikWorker::JSONtoData($data, true);
@@ -95,6 +96,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 			}
 			$_lnk = trim($data['link']);
 			$_lbl = trim($data['label']);
+			$_lnk = $w->parseMessageForPlaceHolder(urldecode($_lnk), JArrayHelper::fromObject($thisRow));
 			if (JString::strtolower($_lnk) == 'http://' || JString::strtolower($_lnk) == 'https://')
 			{
 				// Treat some default values as empty
@@ -298,7 +300,6 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 					}
 					/*$return .= implode(GROUPSPLITTER2, $v);
 					$return .= GROUPSPLITTER;*/
-
 				}
 				else
 				{
@@ -332,9 +333,9 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -349,8 +350,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 		}
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts = json_encode($opts);
-		return "new FbLink('$id', $opts)";
+		return array('FbLink', $id, $opts);
 	}
 
 	/**
@@ -376,7 +376,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 				$values[$name]['data']['label'] = array();
 				$values[$name]['data']['link'] = array();
 			}
-			$values[$name]['data']['label'][$c] =  JArrayHelper::getValue($data, 'label');
+			$values[$name]['data']['label'][$c] = JArrayHelper::getValue($data, 'label');
 			$values[$name]['data']['link'][$c] = JArrayHelper::getValue($data, 'link');
 		}
 		else
@@ -415,7 +415,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 			$default = $w->parseMessageForPlaceHolder($element->default, $data);
 			if ($element->eval == "1")
 			{
-				$default = @eval(stripslashes($default));
+				$default = @eval((string) stripslashes($default));
 			}
 			$this->_default = array('label' => $default, 'link' => $link);
 		}
@@ -448,7 +448,6 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 
 			$default = $this->getDefaultOnACL($data, $opts);
 			$name = $this->getFullName(false, true, false);
-
 			if ($groupModel->isJoin())
 			{
 				if ($groupModel->canRepeat())
@@ -649,15 +648,11 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	}
 
 	/**
-	 * get the class to manage the form element
-	 * if a plugin class requires to load another elements class (eg user for dbjoin then it should
-	 * call FabrikModelElement::formJavascriptClass('plugins/fabrik_element/databasejoin/databasejoin.js', true);
+	 * Get the class to manage the form element
 	 * to ensure that the file is loaded only once
 	 *
-	 * @param   array   &$srcs   scripts previously loaded (load order is important as we are loading via head.js
-	 * and in ie these load async. So if you this class extends another you need to insert its location in $srcs above the
-	 * current file
-	 * @param   string  $script  script to load once class has loaded
+	 * @param   array   &$srcs   Scripts previously loaded
+	 * @param   string  $script  Script to load once class has loaded
 	 *
 	 * @return void
 	 */

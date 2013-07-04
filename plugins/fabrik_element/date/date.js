@@ -238,23 +238,36 @@ var FbDateTime = new Class({
 		this.element.setProperty('readonly', 'readonly');
 		this.element.getElements('.fabrikinput').each(function (f) {
 			f.addEvent('focus', function (e) {
-				if (typeOf(e) === 'null') {
-					return;
-				}
-				if (e.target.hasClass('timeField')) {
-					this.getContainer().getElement('.timeButton').fireEvent('click');
-				} else {
-					this.options.calendarSetup.inputField = e.target.id;
-					this.options.calendarSetup.button = this.element.id + "_img";
-					this.addEventToCalOpts();
-					
-				}
+				this._disabledShowCalTime(f, e);
+			}.bind(this));
+			f.addEvent('click', function (e) {
+				this._disabledShowCalTime(f, e);
 			}.bind(this));
 		}.bind(this));
 	},
+	
+	/**
+	 * Show either the calender or time picker, when input field activated
+	 * 
+	 * @param   DOM Node  f  Field
+	 * @param   Event     e  focus/click event
+	 */
+	_disabledShowCalTime: function (f, e) {
+		if (typeOf(e) === 'null') {
+			return;
+		}
+		if (e.target.hasClass('timeField')) {
+			this.getContainer().getElement('.timeButton').fireEvent('click');
+		} else {
+			this.options.calendarSetup.inputField = e.target.id;
+			this.options.calendarSetup.button = this.element.id + "_img";
+			//this.addEventToCalOpts();
+			this.cal.showAtElement(f, this.cal.params.align);
+		}
+	},
 
 	/** 
-	 * returns the date and time in mySQL formatted string
+	 * Returns the date and time in mySQL formatted string
 	 */
 	getValue: function () {
 		var v;
@@ -507,7 +520,7 @@ var FbDateTime = new Class({
 				'background-color' : '#333333'
 			},
 			'id' : this.startElement + '_handle'
-		}).appendText(this.options.timelabel);
+		}).set('html', this.options.timelabel + '<a href="#" style="color:#eee" class="close">[x]</a>');
 		var d = new Element('div', {
 			'className' : 'fbDateTime',
 			'styles' : {
@@ -605,14 +618,22 @@ var FbDateTime = new Class({
 			if (this.timeActive) {
 				var t = e.target;
 				if (t !== this.timeButton && t !== this.timeElement) {
-					if (!t.within(this.dropdown)) {
+					/*if (!t.within(this.dropdown)) {
 						this.hideTime();
-					}
+					}*/
 				}
 			}
 		}.bind(this));
-		d.injectInside(document.body);
+		d.inject(document.body);
 		var mydrag = new Drag.Move(d);
+		
+		var closeTime = handle.getElement('a.close');
+		if (typeOf(closeTime) !== 'null') {
+			closeTime.addEvent('click', function (e) {
+				e.stop();
+				this.hideTime();
+			}.bind(this));
+		}
 		return d;
 	},
 

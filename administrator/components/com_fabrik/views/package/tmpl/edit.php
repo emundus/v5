@@ -40,6 +40,13 @@ JHTML::stylesheet('media/com_fabrik/css/package.css');
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
 {
+	// Ensure that the multiselect lists options are selected
+	var multis = ['blockslist', 'blocksform'];
+	for (var i = 0; i < multis.length; i++) {
+		document.id(multis[i]).getElements('option').each(function (e) {
+			e.selected = true;
+		});
+	}
 	if (task == 'package.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
 		submitform(task);
 	}
@@ -71,10 +78,16 @@ submitform = function(task){
 
 				<?php foreach ($this->form->getFieldset('publishing') as $field) :?>
 				<li>
-					<?php echo $field->label; ?><?php echo $field->input; ?>
+					<?php echo $field->label; ?>
+					<?php echo $field->input; ?>
 				</li>
 				<?php endforeach; ?>
 
+				<?php foreach ($this->form->getFieldset('more') as $field): ?>
+				<li>
+					<?php echo $field->label . $field->input; ?>
+				</li>
+				<?php endforeach; ?>
 			</ul>
 			<div class="clr"> </div>
 
@@ -85,14 +98,49 @@ submitform = function(task){
 <!--<a id="undo" href="#">Undo</a> |
 <a id="redo" href="#">Redo</a> <br />
 -->
-<div class="adminform" style="margin:10px;background-color:#999;">
+	<fieldset class="adminform">
+	<legend><?php echo JText::_('COM_FABRIK_LISTS')?></legend>
+		<ul class="adminformlist">
+			<li>
+				<?php echo JHtml::_('select.genericlist', $this->listOpts, 'list-pick[]', 'multiple="true" size="10"');?>
+			</li>
+			<li>
+				<button id="add-list"><?php echo JText::_('COM_FABRIK_ADD')?> &gt;</button>
+				<button id="remove-list"><?php echo JText::_('COM_FABRIK_REMOVE')?> &lt;</button>
+			</li>
+			<li>
+				<?php echo JHtml::_('select.genericlist', $this->selListOpts, 'blocks[list][]', 'multiple="true" size="10"');?>
+			</li>
+		</ul>
+		<div class="clr"></div>
+	</fieldset>
+
+	<div class="clr"></div>
+
+	<fieldset class="adminform">
+		<legend><?php echo JText::_('COM_FABRIK_FORMS')?></legend>
+		<ul class="adminformlist">
+			<li>
+				<?php echo JHtml::_('select.genericlist', $this->formOpts, 'form-pick', 'multiple="true" size="10"')?>
+			</li>
+			<li>
+				<button id="add-form"><?php echo JText::_('COM_FABRIK_ADD')?> &gt;</button>
+				<button id="remove-form"><?php echo JText::_('COM_FABRIK_REMOVE')?> &lt;</button>
+			</li>
+			<li>
+				<?php echo JHtml::_('select.genericlist', $this->selFormOpts, 'blocks[form][]', 'multiple="true" size="10"')?>
+			</li>
+		</ul>
+	</fieldset>
+
+<!--  <div class="adminform" style="margin:10px;background-color:#999;">
 <ul id="packagemenu">
 
 </ul>
 <div id="packagepages" style="margin:10px;">
 
 </div>
-</div>
+</div> -->
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

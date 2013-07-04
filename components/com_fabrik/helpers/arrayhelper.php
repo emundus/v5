@@ -25,18 +25,23 @@ class FArrayHelper extends JArrayHelper
 	/**
 	 * Get a value from a nested array
 	 *
-	 * @param   array   $array    to search
-	 * @param   string  $key      search key, use key.dot.format to get nested value
-	 * @param   string  $default  default value if key not found
+	 * @param   array   $array         Data to search
+	 * @param   string  $key           Search key, use key.dot.format to get nested value
+	 * @param   string  $default       Default value if key not found
+	 * @param   bool    $allowObjects  Should objects found in $array be converted into arrays
 	 *
 	 *  @return  mixed
 	 */
 
-	public static function getNestedValue($array, $key, $default = null)
+	public static function getNestedValue($array, $key, $default = null, $allowObjects = false)
 	{
 		$keys = explode('.', $key);
 		foreach ($keys as $key)
 		{
+			if (is_object($array) && $allowObjects)
+			{
+				$array = JArrayHelper::fromObject($array);
+			}
 			if (!is_array($array))
 			{
 				return $default;
@@ -187,7 +192,7 @@ class FArrayHelper extends JArrayHelper
 	 * @return unknown_type
 	 */
 
-	public function filter(&$array, $key, $value)
+	public static function filter(&$array, $key, $value)
 	{
 		for ($i = count($array) - 1; $i >= 0; $i--)
 		{
@@ -229,7 +234,7 @@ class FArrayHelper extends JArrayHelper
 	 * @return  array of single key values
 	 */
 
-	public function extract($array, $key)
+	public static function extract($array, $key)
 	{
 		$return = array();
 		foreach ($array as $object)
@@ -250,7 +255,7 @@ class FArrayHelper extends JArrayHelper
 	 * @return  string  the first array key.
 	 */
 
-	public function firstKey($array)
+	public static function firstKey($array)
 	{
 		reset($array);
 		return key($array);

@@ -366,6 +366,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 	public function onAjax_rate()
 	{
 		$this->setId(JRequest::getInt('element_id'));
+		$this->loadMeForAjax();
 		$this->getElement();
 		$listModel = $this->getListModel();
 		$list = $listModel->getTable();
@@ -386,7 +387,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 			$query->update($list->db_table_name)
 			->set($element->name . '=' . $rating)->where($list->db_primary_key . ' = ' . $db->quote($row_id));
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 		$this->getRatingAverage('', $listid, $formid, $row_id);
 		echo $this->avg;
@@ -423,7 +424,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 	 			`user_id` , `listid` , `formid` , `row_id`, `element_id`
 	 		)
 		);");
-		$db->query();
+		$db->execute();
 	}
 
 	/**
@@ -450,7 +451,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 				"INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
 		values ($userid, $listid, $formid, $row_id, $rating, $strDate, $elementid)
 			ON DUPLICATE KEY UPDATE date_created = $strDate, rating = $rating");
-		$db->query();
+		$db->execute();
 	}
 
 	private function getStoreUserId($listid, $row_id)
@@ -471,9 +472,9 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -508,11 +509,9 @@ class plgFabrik_ElementRating extends plgFabrik_Element
 		$opts->canRate = (bool) $this->canRate();
 		$opts->mode = $params->get('rating-mode');
 		$opts->view = JRequest::getCmd('view');
-		$opts = json_encode($opts);
+		$opts->rating = $value;
 		JText::script('PLG_ELEMENT_RATING_NO_RATING');
-
-		$str = "new FbRating('$id', $opts, '$value')";
-		return $str;
+		return array('FbRating', $id, $opts);
 	}
 
 	/**

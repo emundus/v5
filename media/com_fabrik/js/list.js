@@ -4,7 +4,7 @@
 
 /* jshint mootools: true */
 /*
- * global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $A:true,
+ * global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true,
  * $H:true,unescape:true,head:true,FbListActions:true,FbGroupedToggler:true,FbListKeys:true
  */
 
@@ -124,11 +124,11 @@ var FbList = new Class({
 		'canEdit': true,
 		'canView': true,
 		'page': 'index.php',
-		'actionMethod': 'floating',
+		'actionMethod': 'floating', // deprecated in 3.1
 		'formels': [], // elements that only appear in the form
 		'data': [], // [{col:val, col:val},...] (depreciated)
 		'rowtemplate': '',
-		'floatPos': 'left',
+		'floatPos': 'left', // deprecated in 3.1
 		'csvChoose': false,
 		'csvOpts': {},
 		'popup_width': 300,
@@ -138,7 +138,8 @@ var FbList = new Class({
 		'groupByOpts': {},
 		'listRef': '', // e.g. '1_com_fabrik_1'
 		'fabrik_show_in_list': [],
-		'singleOrdering' : false
+		'singleOrdering' : false,
+		'tmpl': ''
 	},
 
 	initialize: function (id, options) {
@@ -148,10 +149,12 @@ var FbList = new Class({
 		this.result = true; //used with plugins to determine if list actions should be performed
 		this.plugins = [];
 		this.list = document.id('list_' + this.options.listRef);
-		this.actionManager = new FbListActions(this, {
-			'method': this.options.actionMethod,
-			'floatPos': this.options.floatPos
-		});
+		if (this.options.j3 === false) {
+			this.actionManager = new FbListActions(this, {
+				'method': this.options.actionMethod,
+				'floatPos': this.options.floatPos
+			});
+		}
 		this.groupToggle = new FbGroupedToggler(this.form, this.options.groupByOpts);
 		new FbListKeys(this);
 		if (this.list) {
@@ -174,13 +177,21 @@ var FbList = new Class({
 		
 		/**
 		 * once an ajax form has been submitted lets clear out any loose events and the form object itself
+		 * 
+		 * Commenting out as this causes issues for cdd after ajax form post
+		 * http://www.fabrikar.com/forums/index.php?threads/cdd-only-triggers-js-change-code-on-first-change.32793/
 		 */
-		Fabrik.addEvent('fabrik.form.ajax.submit.end', function (form) {
+		/*Fabrik.addEvent('fabrik.form.ajax.submit.end', function (form) {
 			form.formElements.each(function (el) {
 				el.removeCustomEvents();
 			});
 			delete Fabrik.blocks['form_' + form.id];
-		});
+		});*/
+		
+		// Reload state 
+		if (!!(window.history && history.pushState) && history.state && this.options.ajax) {
+			this._updateRows(history.state);
+		}
 	},
 
 	setRowTemplate: function () {
@@ -192,6 +203,25 @@ var FbList = new Class({
 				this.options.rowtemplate = r;
 			}
 		}
+	},
+	
+	/**
+	 * Used for db join select states.
+	 */
+	rowClicks: function () {
+		console.log('rowClicks', this.list);
+		this.list.addEvent('click:relay(.fabrik_row)', function (e, r) {
+			var d = Array.from(r.id.split('_')),
+			data = {};
+			data.rowid = d.getLast();
+			var json = {
+					'errors' : {},
+					'data' : data,
+					'rowid': d.getLast(),
+					listid: this.id
+				};
+			Fabrik.fireEvent('fabrik.list.row.selected', json);
+		}.bind(this));
 	},
 
 	watchAll: function (ajaxUpdate) {
@@ -214,10 +244,12 @@ var FbList = new Class({
 			minimizable: false,
 			width: 360,
 			height: 120,
-			content: ''
+			content: '',
+			bootstrap: this.options.j3
 		};
 		if (this.options.view === 'csv') {
-			//for csv links e.g. index.php?option=com_fabrik&view=csv&listid=10
+			
+			// For csv links e.g. index.php?option=com_fabrik&view=csv&listid=10
 			this.openCSVWindow();
 		} else {
 			if (this.form.getElements('.csvExportButton')) {
@@ -239,7 +271,7 @@ var FbList = new Class({
 		this.exportWindowOpts.onContentLoaded = function () {
 			this.fitToContent();
 		};
-		Fabrik.getWindow(this.exportWindowOpts);
+		this.csvWindow = Fabrik.getWindow(this.exportWindowOpts);
 	},
 
 	makeCSVExportForm: function () {
@@ -263,7 +295,7 @@ var FbList = new Class({
 	},
 	
 	_csvExportForm: function () {
-		// cant build via dom as ie7 doesn't accept checked status
+		// Can't build via dom as ie7 doesn't accept checked status
 		var rad = "<input type='radio' value='1' name='incfilters' checked='checked' />" + Joomla.JText._('JYES');
 		var rad2 = "<input type='radio' value='1' name='incraw' checked='checked' />" + Joomla.JText._('JYES');
 		var rad3 = "<input type='radio' value='1' name='inccalcs' checked='checked' />" + Joomla.JText._('JYES');
@@ -411,7 +443,7 @@ var FbList = new Class({
 			if (!opts) {
 				opts = {};
 				if (typeOf(document.id('exportcsv')) !== 'null') {
-					$A(['incfilters', 'inctabledata', 'incraw', 'inccalcs', 'excel']).each(function (v) {
+					['incfilters', 'inctabledata', 'incraw', 'inccalcs', 'excel'].each(function (v) {
 						var inputs = document.id('exportcsv').getElements('input[name=' + v + ']');
 						if (inputs.length > 0) {
 							opts[v] = inputs.filter(function (i) {
@@ -480,11 +512,12 @@ var FbList = new Class({
 						this.triggerCSVExport(res.count);
 					} else {
 						var finalurl = Fabrik.liveSite + 'index.php?option=com_fabrik&view=list&format=csv&listid=' + this.id + '&start=' + res.count + '&Itemid=' + this.options.Itemid;
-						var msg = Joomla.JText._('COM_FABRIK_CSV_COMPLETE');
-						msg += ' <a href="' + finalurl + '">' + Joomla.JText._('COM_FABRIK_CSV_DOWNLOAD_HERE') + '</a>';
+						var msg = '<div class="alert alert-success"><h3>' + Joomla.JText._('COM_FABRIK_CSV_COMPLETE');
+						msg += '</h3><p><a class="btn btn-success" href="' + finalurl + '"><i class="icon-download"></i> ' + Joomla.JText._('COM_FABRIK_CSV_DOWNLOAD_HERE') + '</a></p></div>';
 						if (typeOf(document.id('csvmsg')) !== 'null') {
 							document.id('csvmsg').set('html', msg);
 						}
+						this.csvWindow.fitToContent();
 						document.getElements('input.exportCSVButton').removeProperty('disabled');
 					}
 				}
@@ -498,6 +531,15 @@ var FbList = new Class({
 			p.list = this;
 		}.bind(this));
 		this.plugins = a;
+	},
+	
+	firePlugin: function (method) {
+		var args = Array.prototype.slice.call(arguments);
+		args = args.slice(1, args.length);
+		this.plugins.each(function (plugin) {
+			Fabrik.fireEvent(method, [this, args]);
+		}.bind(this));
+		return this.result === false ? false : true;
 	},
 
 	watchEmpty: function (e) {
@@ -514,7 +556,6 @@ var FbList = new Class({
 
 	watchOrder: function () {
 		var elementId = false;
-		
 		var hs = document.id(this.options.form).getElements('.fabrikorder, .fabrikorder-asc, .fabrikorder-desc');
 		hs.removeEvents('click');
 		hs.each(function (h) {
@@ -585,13 +626,12 @@ var FbList = new Class({
 
 	watchFilters: function () {
 		var e = '';
-		var submit = document.id(this.options.form).getElement('.fabrik_filter_submit');
+		var submit = document.id(this.options.form).getElements('.fabrik_filter_submit');
 		this.getFilters().each(function (f) {
 			e = f.get('tag') === 'select' ? 'change' : 'blur';
 			if (this.options.filterMethod !== 'submitform') {
 				f.removeEvent(e);
 				f.store('initialvalue', f.get('value'));
-				//document.getElement('.fabrik_filter_submit').highlight('#ffaa00');
 				f.addEvent(e, function (e) {
 					e.stop();
 					if (e.target.retrieve('initialvalue') !== e.target.get('value')) {
@@ -651,35 +691,7 @@ var FbList = new Class({
 		if (!this.list) {
 			return;
 		}
-		
-		if (this.options.ajax_links) {
-			
-			// $$$rob - HACKKKKK!!!!!! 
-			// not sure why but on ajax first load of xhr content the form object does not ini
-			// if we created the window, hidden from view, then this 'fixes' the issue. I'd really like to 
-			// find out what the problem is here but for now this band aid is a help
-			
-			// Didnt work in admin list view if list add acl was anything other than public
-			//var url = Fabrik.liveSite + "index.php?option=com_fabrik&view=form&formid=" + this.options.formid + '&rowid=0&tmpl=component&ajax=1';
-			var url = 'index.php?option=com_fabrik&task=form.view&formid=' + this.options.formid + '&rowid=0&tmpl=component&ajax=1';
-			var winOpts = {
-				'id': 'add.' + this.id,
-				'title': this.options.popup_edit_label,
-				'loadMethod': 'xhr',
-				'contentURL': url,
-				'visible': false,
-				'width': this.options.popup_width,
-				'height': this.options.popup_height,
-				'onContentLoaded': function () {}
-			};
-			if (typeOf(this.options.popup_offset_x) !== 'null') {
-				winOpts.offset_x = this.options.popup_offset_x;
-			}
-			if (typeOf(this.options.popup_offset_y) !== 'null') {
-				winOpts.offset_y = this.options.popup_offset_y;
-			}
-			var w = Fabrik.getWindow(winOpts);
-		}
+		this.rowClicks();
 	},
 	
 	getForm: function () {
@@ -687,6 +699,12 @@ var FbList = new Class({
 			this.form = document.id(this.options.form);
 		}
 		return this.form;
+	},
+	
+	uncheckAll: function () {
+		this.form.getElements('input[name^=ids]').each(function (c) {
+			c.checked = '';
+		});
 	},
 
 	submit: function (task) {
@@ -708,6 +726,7 @@ var FbList = new Class({
 			var delMsg = delCount === 1 ? Joomla.JText._('COM_FABRIK_CONFIRM_DELETE_1') : Joomla.JText._('COM_FABRIK_CONFIRM_DELETE').replace('%s', delCount); 
 			if (!confirm(delMsg)) {
 				Fabrik.loader.stop('listform_' + this.options.listRef);
+				this.uncheckAll();
 				return false;
 			}
 		}
@@ -766,6 +785,8 @@ var FbList = new Class({
 				this.request.options.data = data;
 			}
 			this.request.send();
+			
+			history.pushState(data, 'fabrik.list.submit');
 			Fabrik.fireEvent('fabrik.list.submit', [task, this.form.toQueryString().toObject()]);
 		} else {
 			this.form.submit();
@@ -872,6 +893,11 @@ var FbList = new Class({
 	},
 
 	_updateRows: function (data) {
+		var tbody;
+		if (typeOf(data) !== 'object') {
+			return;
+		}
+		history.pushState(data, 'fabrik.list.rows');
 		if (data.id === this.id && data.model === 'list') {
 			var header = document.id(this.options.form).getElements('.fabrik___heading').getLast();
 			var headings = new Hash(data.headings);
@@ -905,7 +931,7 @@ var FbList = new Class({
 			var gcounter = 0;
 			gdata.each(function (groupData, groupKey) {
 				var container, thisrowtemplate;
-				var tbody = this.options.isGrouped ? this.list.getElements('.fabrik_groupdata')[gcounter] : this.tbody;
+				tbody = this.options.isGrouped ? this.list.getElements('.fabrik_groupdata')[gcounter] : this.tbody;
 				
 				// Set the group by heading
 				if (this.options.isGrouped && tbody) {
@@ -962,9 +988,11 @@ var FbList = new Class({
 			tbodys.each(function (tbody) {
 				if (!tbody.hasClass('fabrik_groupdata')) {
 					var groupTbody = tbody.getNext();
-					if (groupTbody.getElements('.fabrik_row').length === 0) {
-						tbody.hide();
-						groupTbody.hide();
+					if (typeOf(groupTbody) !== 'null') {
+						if (groupTbody.getElements('.fabrik_row').length === 0) {
+							tbody.hide();
+							groupTbody.hide();
+						}
 					}
 				}
 			});
@@ -1208,7 +1236,7 @@ var FbListKeys = new Class({
 });
 
 /**
- * toggle grouped data by click on the grouped headings icon
+ * Toggle grouped data by click on the grouped headings icon
  */
 
 var FbGroupedToggler = new Class({
@@ -1216,10 +1244,12 @@ var FbGroupedToggler = new Class({
 	
 	options: {
 		collapseOthers: false,
-		startCollapsed: false
+		startCollapsed: false,
+		bootstrap: false
 	},
 	
 	initialize: function (container, options) {
+		var rows, h, img, state;
 		this.setOptions(options);
 		this.container = container;
 		this.toggleState = 'shown';
@@ -1236,10 +1266,16 @@ var FbGroupedToggler = new Class({
 			if (this.options.collapseOthers) {
 				this.collapse();
 			}
-			var h = e.target.getParent('.fabrik_groupheading');
-			var img = h.getElement('img');
-			var state = img.retrieve('showgroup', true);
-			var rows = h.getParent().getNext();
+			h = e.target.getParent('.fabrik_groupheading');
+			img = this.options.bootstrap ? h.getElement('i') : h.getElement('img');
+			state = img.retrieve('showgroup', true);
+			
+			if (h.getNext() && h.getNext().hasClass('fabrik_groupdata')) {
+				// For div tmpl
+				rows = h.getNext(); 
+			} else {
+				rows = h.getParent().getNext();
+			}
 			state ? rows.hide() : rows.show();
 			this.setIcon(img, state);
 			state = state ? false : true;
@@ -1288,11 +1324,13 @@ var FbGroupedToggler = new Class({
 
 /**
  * set up and show/hide list actions for each row
+ * Deprecated in 3.1
  */
 var FbListActions = new Class({
 
 	Implements: [Options],
 	options: {
+		'selector': 'ul.fabrik_action, .btn-group.fabrik_action',
 		'method': 'floating',
 		'floatPos': 'bottom'
 	},
@@ -1320,9 +1358,9 @@ var FbListActions = new Class({
 		if (!this.list.form) {
 			return;
 		}
-		this.actions = this.list.form.getElements('ul.fabrik_action');
+		this.actions = this.list.form.getElements(this.options.selector);
 		this.actions.each(function (ul) {
-			// sub menus ie group by options
+			// Sub menus ie group by options
 			if (ul.getElement('ul')) {
 				var el = ul.getElement('ul');
 				var c = new Element('div').adopt(el.clone());
@@ -1343,7 +1381,7 @@ var FbListActions = new Class({
 	},
 
 	setUpDefault: function () {
-		this.actions = this.list.form.getElements('ul.fabrik_action');
+		this.actions = this.list.form.getElements(this.options.selector);
 		this.actions.each(function (ul) {
 			if (ul.getParent().hasClass('fabrik_buttons')) {
 				return;
@@ -1366,7 +1404,7 @@ var FbListActions = new Class({
 	},
 
 	setUpFloating: function () {
-		this.list.form.getElements('ul.fabrik_action').each(function (ul) {
+		this.list.form.getElements(this.options.selector).each(function (ul) {
 			if (ul.getParent('.fabrik_row')) {
 				if (i = ul.getParent('.fabrik_row').getElement('input[type=checkbox]')) {
 					var hideFn = function (e, elem, leaving) {
@@ -1387,9 +1425,10 @@ var FbListActions = new Class({
 
 					var opts =  {
 							position: this.options.floatPos,
-							showOn: 'click',
+							showOn: 'change',
 							hideOn: 'click',
 							content: c,
+							'heading': 'Edit: ',
 							hideFn: function (e) {
 								return !e.target.checked;
 							},
@@ -1400,17 +1439,24 @@ var FbListActions = new Class({
 							}.bind(this.list)
 						};
 					
-					var tipOpts = Object.merge(Object.clone(Fabrik.tips.options), opts);
+					var tipOpts = Fabrik.tips ? Object.merge(Object.clone(Fabrik.tips.options), opts) : opts;
 					var tip = new FloatingTips(i, tipOpts);
 				}
 			}
 		}.bind(this));
 
+		this.list.form.getElements('.fabrik_select input[type=checkbox]').addEvent('click', function (e) {
+			Fabrik.activeRow = e.target.getParent('.fabrik_row');
+		});
 		// watch the top/master chxbox
 		var chxall = this.list.form.getElement('input[name=checkAll]');
+		if (typeOf(chxall) !== 'null') {
+			chxall.store('listid', this.list.id);
+		}
+		
 		var c = function (el) {
-			return el.getParent('.fabrik___heading').getElement('ul.fabrik_action');
-		};
+			return el.getParent('.fabrik___heading').getElement(this.options.selector);
+		}.bind(this);
 
 		var tipChxAllOpts = Object.merge(Object.clone(Fabrik.tips.options), {
 			position: this.options.floatPos,
@@ -1418,6 +1464,7 @@ var FbListActions = new Class({
 			showOn: 'click',
 			hideOn: 'click',
 			content: c,
+			'heading': 'Edit all: ',
 			hideFn: function (e) {
 				return !e.target.checked;
 			},

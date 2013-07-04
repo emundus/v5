@@ -26,7 +26,7 @@ define("FU_DOWNLOAD_SCRIPT_BOTH", '3');
  * @since       3.0
  */
 
-class plgFabrik_ElementFileupload extends plgFabrik_Element
+class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 {
 
 	/**
@@ -229,9 +229,9 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -382,7 +382,6 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		$opts->winHeight = (int) $params->get('win_height', 400);
 		$opts->elementShortName = $element->name;
 		$opts->listName = $this->getListModel()->getTable()->db_table_name;
-		$opts = json_encode($opts);
 		JText::script('PLG_ELEMENT_FILEUPLOAD_MAX_UPLOAD_REACHED');
 		JText::script('PLG_ELEMENT_FILEUPLOAD_DRAG_FILES_HERE');
 		JText::script('PLG_ELEMENT_FILEUPLOAD_UPLOAD_ALL_FILES');
@@ -391,7 +390,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		JText::script('PLG_ELEMENT_FILEUPLOAD_PREVIEW');
 		JText::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_SOFT_DELETE');
 		JText::script('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE');
-		return "new FbFileUpload('$id', $opts)";
+		return array('FbFileUpload', $id, $opts);
 	}
 
 	/**
@@ -1038,7 +1037,6 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			{
 				return true;
 			}
-			//echo "crop data = " ;print_r( ($cropData));exit;
 			$ids = array_values($ids);
 			$saveParams = array();
 			$files = array_keys($crop);
@@ -1471,7 +1469,6 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 				$file = $input->files->get($name, array(), 'array');
 				if ($groupModel->canRepeat())
 				{
-					// return JArrayHelper::getValue($file['name'], $repeatCounter, '') == '' ? true : false;
 					return $file[$repeatCounter]['name'] == '' ? true : false;
 				}
 			}
@@ -2309,7 +2306,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 								$query->delete($db->quoteName($join->table_join))
 									->where($db->quoteName('id') . ' IN (' . implode(', ', array_keys($imageRows)) . ')');
 								$db->setQuery($query);
-								$db->query();
+								$db->execute();
 							}
 						}
 						else
@@ -2650,7 +2647,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		{
 			$query->delete($db->quoteName($join->table_join))->where($db->quoteName('id') . ' = ' . $input->getInt('recordid'));
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 	}
 

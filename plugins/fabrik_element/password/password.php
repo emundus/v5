@@ -133,24 +133,44 @@ class plgFabrik_ElementPassword extends plgFabrik_Element
 
 	public function validate($data, $repeatCounter = 0)
 	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		$k = $this->getlistModel()->getTable()->db_primary_key;
 		$k = FabrikString::safeColNameToArrayKey($k);
-		$post = JRequest::get('post');
 		$this->defaults = null;
 		$element = $this->getElement();
 		$origname = $element->name;
-		$element->name = $element->name . "_check";
-		$checkvalue = $this->getValue($post, $repeatCounter);
+
+		/**
+		 * $$$ hugh - need to fetch the value for the main data, as well as the confirmatoin,
+		 * rather than using $data, to avoid issues with things like "foo%20bar" getting incorrectly
+		 * decoded as "foo bar" in $data.
+		 */
+		$value = urldecode($this->getValue($_REQUEST, $repeatCounter));
+		$name = $this->getFullName(false, true, false);
+		$check_name = str_replace($element->name, $element->name . '_check', $name);
+		$this->setFullName($check_name, false, true, false);
+		$checkvalue = urldecode($this->getValue($_REQUEST, $repeatCounter));
+		
 		$element->name = $origname;
-		if ($checkvalue != $data)
+		if ($checkvalue != $value)
 		{
 			$this->_validationErr = JText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_DOES_NOT_MATCH');
 			return false;
 		}
 		else
 		{
+			$rowId = $input->get('rowid', '', 'string');
+
+			// If its coming from an ajax form submit then the key is possibly an array.
+			$keyVal = JArrayHelper::getValue($_REQUEST, $k);
+			if (is_array($keyVal))
+			{
+				$keyVal = JArrayHelper::getValue($keyVal, 0);
+			}
+
 			// $$$ rob add rowid test as well as if using row=-1 and usekey=field $k may have a value
-			if (JRequest::getInt('rowid') === 0 && JRequest::getInt($k, 0, 'post') === 0 && $data === '')
+			if (($rowId === '' || empty($rowId)) && $keyVal === 0 && $value === '')
 			{
 				$this->_validationErr .= JText::_('PLG_ELEMENT_PASSWORD_PASSWORD_CONFIRMATION_EMPTY_NOT_ALLOWED');
 				return false;
@@ -162,9 +182,9 @@ class plgFabrik_ElementPassword extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -173,15 +193,13 @@ class plgFabrik_ElementPassword extends plgFabrik_Element
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$formparams = $this->getForm()->getParams();
 		$opts->ajax_validation = $formparams->get('ajax_validations') === '1';
-		$opts = json_encode($opts);
-		$lang = new stdClass;
 
 		JText::script('PLG_ELEMENT_PASSWORD_STRONG');
 		JText::script('PLG_ELEMENT_PASSWORD_MEDIUM');
 		JText::script('PLG_ELEMENT_PASSWORD_WEAK');
 		JText::script('PLG_ELEMENT_PASSWORD_TYPE_PASSWORD');
 		JText::script('PLG_ELEMENT_PASSWORD_MORE_CHARACTERS');
-		return "new FbPassword('$id', $opts)";
+		return array('FbPassword', $id, $opts);
 	}
 
 	/**

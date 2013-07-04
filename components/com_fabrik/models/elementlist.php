@@ -21,7 +21,7 @@ jimport('joomla.filesystem.file');
  * @since    3.0
  */
 
-class plgFabrik_ElementList extends plgFabrik_Element
+class PlgFabrik_ElementList extends PlgFabrik_Element
 {
 
 	/**
@@ -174,26 +174,27 @@ class plgFabrik_ElementList extends plgFabrik_Element
 		$htmlid = $this->getHTMLId() . 'value';
 		$listModel = $this->getListModel();
 		$params = $this->getParams();
+		$class = $this->filterClass();
 		$v = $this->filterName($counter, $normal);
-		if (in_array($element->filter_type, array('range', 'dropdown', '')))
+		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox', 'multiselect')))
 		{
 			$rows = $this->filterValueList($normal);
 			if ($params->get('filter_groupby') != -1)
 			{
 				JArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
 			}
-			if (!in_array('', $values))
+			if (!in_array('', $values) && !in_array($element->filter_type, array('checkbox', 'multiselect')))
 			{
 				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
 			}
 		}
 
-		$attribs = 'class="inputbox fabrik_filter" size="1" ';
+		$attribs = 'class="' . $class . '" size="1" ';
 		$size = $params->get('filter_length', 20);
 		$return = array();
 		switch ($element->filter_type)
 		{
-			case "range":
+			case 'range':
 				if (!is_array($default))
 				{
 					$default = array('', '');
@@ -203,28 +204,35 @@ class plgFabrik_ElementList extends plgFabrik_Element
 				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default[1],
 					$element->name . "_filter_range_1");
 				break;
-			case "dropdown":
+			case 'checkbox':
+				$return[] = $this->checkboxFilter($rows, $default, $v);
+				break;
+			case 'dropdown':
+			case 'multiselect':
 			default:
+				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="7"' : 'size="1"';
+				$attribs = 'class="inputbox fabrik_filter" ' . $size;
+				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
 				$return[] = JHTML::_('select.genericlist', $rows, $v, $attribs, 'value', 'text', $default, $htmlid);
 				break;
 
-			case "field":
+			case 'field':
 				if (get_magic_quotes_gpc())
 				{
 					$default = stripslashes($default);
 				}
 				$default = htmlspecialchars($default);
-				$return[] = '<input type="text" name="' . $v . '" class="inputbox fabrik_filter" size="' . $size . '" value="' . $default . '" id="'
+				$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
 					. $htmlid . '" />';
 				break;
 
-			case "hidden":
+			case 'hidden':
 				if (get_magic_quotes_gpc())
 				{
 					$default = stripslashes($default);
 				}
 				$default = htmlspecialchars($default);
-				$return[] = '<input type="hidden" name="' . $v . '" class="inputbox fabrik_filter" value="' . $default . '" id="' . $htmlid . '" />';
+				$return[] = '<input type="hidden" name="' . $v . '" class="' . $class . '" value="' . $default . '" id="' . $htmlid . '" />';
 				break;
 
 			case 'auto-complete':
@@ -331,26 +339,6 @@ class plgFabrik_ElementList extends plgFabrik_Element
 	}
 
 	/**
-	 * Ajax call to get auto complete options
-	 *
-	 * @return  string  json encoded options
-	 */
-
-	/* public function onAutocomplete_options()
-	{
-		// Needed for ajax update (since we are calling this method via dispatcher element is not set
-		$this->setId(JRequest::getInt('element_id'));
-		$this->getElement(true);
-
-		$cache = JCache::getInstance('callback',
-			array('defaultgroup' => 'com_fabrik', 'cachebase' => JPATH_BASE . '/cache/', 'lifetime' => ((float) 2 * 60 * 60), 'language' => 'en-GB',
-				'storage' => 'file'));
-		$cache->setCaching(true);
-		$search = JRequest::getVar('value');
-		echo $cache->call(array('plgFabrik_elementList', 'cacheAutoCompleteOptions'), $this, $search);
-	} */
-
-	/**
 	 * Cache method to populate autocomplete options
 	 *
 	 * @param   plgFabrik_Element  $elementModel  element model
@@ -364,10 +352,11 @@ class plgFabrik_ElementList extends plgFabrik_Element
 
 	public static function cacheAutoCompleteOptions($elementModel, $search, $opts = array())
 	{
+		$app = JFactory::getApplication();
 		$listModel = $elementModel->getListModel();
 		$label = JArrayHelper::getValue($opts, 'label', '');
 		$rows = $elementModel->filterValueList(true, '', $label);
-		$v = addslashes(JRequest::getVar('value'));
+		$v = addslashes($app->input->get('value'));
 		$start = count($rows) - 1;
 		for ($i = $start; $i >= 0; $i--)
 		{
@@ -422,7 +411,7 @@ class plgFabrik_ElementList extends plgFabrik_Element
 			$vals = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
 			foreach ($vals as $val)
 			{
-				$l = $useIcon ? $this->_replaceWithIcons($val, 'list', $listModel->getTmpl()) : $val;
+				$l = $useIcon ? $this->replaceWithIcons($val, 'list', $listModel->getTmpl()) : $val;
 				if (!$this->iconsSet == true)
 				{
 					if (!is_a($this, 'plgFabrik_ElementDatabasejoin'))
@@ -433,7 +422,7 @@ class plgFabrik_ElementList extends plgFabrik_Element
 					{
 						$l = $val;
 					}
-					$l = $this->_replaceWithIcons($l, 'list', $listModel->getTmpl());
+					$l = $this->replaceWithIcons($l, 'list', $listModel->getTmpl());
 				}
 				$l = $this->rollover($l, $thisRow, 'list');
 				$l = $listModel->_addLink($l, $this, $thisRow, $i);
@@ -481,6 +470,8 @@ class plgFabrik_ElementList extends plgFabrik_Element
 	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
@@ -547,11 +538,13 @@ class plgFabrik_ElementList extends plgFabrik_Element
 		$elBeforeLabel = (bool) $this->getParams()->get('element_before_label', true);
 
 		// Element_before_label
-		if (JRequest::getVar('format') == 'raw')
+		if ($input->get('format') == 'raw')
 		{
 			$optionsPerRow = 1;
 		}
-		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow);
+		$classes = $this->labelClasses();
+		$buttonGroup = $this->buttonGroup();
+		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow, $classes, $buttonGroup);
 
 		array_unshift($grid, '<div class="fabrikSubElementContainer" id="' . $id . '">');
 
@@ -562,6 +555,31 @@ class plgFabrik_ElementList extends plgFabrik_Element
 			$grid[] = $this->getAddOptionFields($repeatCounter, $onlylabel);
 		}
 		return implode("\n", $grid);
+	}
+
+	/**
+	 * Should the grid be rendered as a Bootstrap button-group
+	 *
+	 * @since 3.1
+	 *
+	 * @return  bool
+	 */
+
+	protected function buttonGroup()
+	{
+		$params = $this->getParams();
+		return FabrikWorker::j3() && $params->get('btnGroup', false);
+	}
+
+	/**
+	 * Get classes to assign to the label
+	 *
+	 * @return  array
+	 */
+
+	protected function labelClasses()
+	{
+		return array();
 	}
 
 	/**
@@ -755,7 +773,7 @@ class plgFabrik_ElementList extends plgFabrik_Element
 		$params = $this->getParams();
 		if ($params->get('icon_folder') != -1 && $params->get('icon_folder') != '')
 		{
-			$icon = $this->_replaceWithIcons($value);
+			$icon = $this->replaceWithIcons($value);
 			if ($this->iconsSet)
 			{
 				$label = $icon;
@@ -835,6 +853,68 @@ class plgFabrik_ElementList extends plgFabrik_Element
 			}
 		}
 		parent::formJavascriptClass($srcs, $script);
+	}
+
+	/**
+	* used by elements with suboptions
+	*
+	* $$$ hugh - started working on adding this to elementlist, as we need to handle
+	* JSON-ified options for multiselect elements, which the main element model getLabelForValue()
+	* doesn't do.  But I need to sort out how this gets handled in rendering as well.
+	*
+	* @param   string  $v             value
+	* @param   string  $defaultLabel  default label
+	*
+	* @return  string	label
+	*/
+
+	public function notreadyyet_getLabelForValue($v, $defaultLabel = '')
+	{
+		/**
+		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
+		 * which we should now be doing ... and getParent() causes an extra table lookup for every child
+		 * element on the form.
+		 * $element = $this->getParent();
+		 */
+		$element = $this->getElement();
+		$params = $this->getParams();
+		$values = $this->getSubOptionValues();
+		$labels = $this->getSubOptionLabels();
+		$multiple = $this->isMultiple();
+		$vals = is_array($v) ? $v : FabrikWorker::JSONtoData($v, true);
+		foreach ($vals as $val)
+		{
+			$l = JArrayHelper::getValue($labels, $val, $defaultLabel);
+			if (trim($l) !== '')
+			{
+				if ($multiple && $this->renderWithHTML)
+				{
+					$lis[] = '<li>' . $l . '</li>';
+				}
+				else
+				{
+					$lis[] = $l;
+				}
+			}
+		}
+		$return = '';
+		if (!empty($lis))
+		{
+			$return = ($multiple && $this->renderWithHTML) ? '<ul class="fabrikRepeatData">' . implode(' ', $lis) . '</ul>' : implode(' ', $lis);
+		}
+
+		/**
+		 * $$$ rob if we allow adding to the dropdown but not recording
+		 * then there will be no $key set to revert to the $val instead
+		 */
+		/*
+		if ($v === $params->get('sub_default_value'))
+		{
+			$v = $params->get('sub_default_label');
+		}
+		return ($key === false) ? $v : JArrayHelper::getValue($labels, $key, $defaultLabel);
+		*/
+		return $return;
 	}
 
 }

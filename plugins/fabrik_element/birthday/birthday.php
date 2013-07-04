@@ -177,7 +177,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 						}
 					}
 				}
-				$value = $this->_replaceWithIcons($detailvalue);
+				$value = $this->replaceWithIcons($detailvalue);
 				return ($element->hidden == '1') ? "<!-- " . $detailvalue . " -->" : $detailvalue;
 			}
 			else
@@ -446,9 +446,9 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
@@ -457,8 +457,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->separator = $params->get('birthday_separatorlabel', JText::_('/'));
-		$opts = json_encode($opts);
-		return "new FbBirthday('$id', $opts)";
+		return array('FbBirthday', $id, $opts);
 	}
 
 	/**

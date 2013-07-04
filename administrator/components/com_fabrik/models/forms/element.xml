@@ -69,10 +69,10 @@
 	<fieldset name="access">
 	
 		<field name="access" 
-				type="accesslevel"
-				default="1"
-				label="COM_FABRIK_ACCESS_EDITABLE_ELEMENT" 
-				description="COM_FABRIK_ACCESS_EDITABLE_ELEMENT_DESC" />
+			type="accesslevel"
+			default="1"
+			label="COM_FABRIK_ACCESS_EDITABLE_ELEMENT" 
+			description="COM_FABRIK_ACCESS_EDITABLE_ELEMENT_DESC" />
 				
 	</fieldset>
 	
@@ -86,6 +86,8 @@
 				<option value="dropdown">COM_FABRIK_DROPDOWN</option>
 				<option value="range">COM_FABRIK_RANGE</option>
 				<option value="auto-complete">COM_FABRIK_AUTOCOMPLETE</option>
+				<option value="checkbox">COM_FABRIK_CHECKBOX</option>
+				<option value="multiselect">COM_FABRIK_MULTISELECT</option>
 		</field>
 		
 		<field name="filter_exact_match"
@@ -580,12 +582,17 @@
 			</fieldset>
 			
 				<fieldset name="access2">
-	
+					
 					<field name="view_access" 
-							type="accesslevel" 
-							default="1" 
-							label="COM_FABRIK_ACCESS_VIEWABLE_ELEMENT" 
-							description="COM_FABRIK_ACCESS_VIEWABLE_ELEMENT_DESC" />
+						type="accesslevel" 
+						default="1" 
+						label="COM_FABRIK_ACCESS_VIEWABLE_ELEMENT" 
+						description="COM_FABRIK_ACCESS_VIEWABLE_ELEMENT_DESC" />
+					
+					<field name="view_access_user"
+						type="listfields"
+						label="COM_FABRIK_OR_USE_VALUE_LABEL"	
+						description="COM_FABRIK_OR_USE_VALUE_DESC" />
 							
 					<field name="list_view_access"
 						type="accesslevel"

@@ -2,10 +2,10 @@
 /**
  * Plugin element to render button
  *
- * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
- * @copyright	Copyright (C) 2005 Fabrik. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package     Joomla.Plugin
+ * @subpackage  Fabrik.element.button
+ * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // Check to ensure this file is included in Joomla!
@@ -14,11 +14,12 @@ defined('_JEXEC') or die();
 /**
  * Plugin element to render button
  *
- * @package		Joomla.Plugin
- * @subpackage	Fabrik.element.button
+ * @package     Joomla.Plugin
+ * @subpackage  Fabrik.element.button
+ * @since       3.0
  */
 
-class plgFabrik_ElementButton extends plgFabrik_Element
+class PlgFabrik_ElementButton extends PlgFabrik_Element
 {
 
 	/**
@@ -56,18 +57,16 @@ class plgFabrik_ElementButton extends plgFabrik_Element
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
-		$opts = json_encode($opts);
-		return "new FbButton('$id', $opts)";
-		return $str;
+		return array('FbButton', $id, $opts);
 	}
 
 	/**
