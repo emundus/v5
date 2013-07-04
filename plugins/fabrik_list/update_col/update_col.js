@@ -50,13 +50,13 @@ var FbListUpdateCol = new Class({
 	},
 	
 	makeUpdateColWindow: function () {
-		
 		this.windowopts = {
 			'id': 'update_col_win_' + this.options.ref,
 			title: Joomla.JText._('PLG_LIST_UPDATE_COL_UPDATE'),
 			loadMethod: 'html',
 			content: this.options.form,
 			width: 400,
+			destroy: false,
 			height: 300,
 			onContentLoaded: function (win) {
 				var form = document.id('update_col' + this.options.ref);
@@ -107,10 +107,18 @@ var FbListUpdateCol = new Class({
 					// It looks odd - but to get the element js code to load in correct we need to set the context to a visualization
 					new Request.HTML({'url': url, 
 						'update': update, 
-						'data': {'element': v, 'id': this.options.listid, 'elid': id, 'plugin': plugin, 'counter': counter,
-							'listref':  this.options.ref, 'context': 'visualization', 
+						'data': {
+							'element': v, 
+							'id': this.options.listid, 
+							'elid': id,
+							'plugin': plugin, 
+							'counter': counter,
+							'listref':  this.options.ref, 
+							'context': 'visualization', 
 							'parentView': 'update_col' + this.options.ref,
-							'fabrikIngoreDefaultFilterVal': 1},
+							'fabrikIngoreDefaultFilterVal': 1,
+							'filterOverride': 'field'
+						},
 						'onComplete': function () {
 							Fabrik.loader.stop(row);
 						}

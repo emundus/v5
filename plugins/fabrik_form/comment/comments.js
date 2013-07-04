@@ -20,7 +20,6 @@ var FabrikComment = new Class({
 		this.fx = {};
 		this.fx.toggleForms = $H();
 		this.spinner = new Spinner('fabrik-comments', {'message': 'loading'});
-		this.doAjaxDeleteComplete = this.deleteComplete.bindWithEvent(this);
 		this.ajax = {};
 		this.ajax.deleteComment = new Request({
 			'url': '', 
@@ -35,7 +34,9 @@ var FabrikComment = new Class({
 				'formid': this.options.formid,
 				'rowid': this.options.rowid
 			},
-			'onComplete': this.doAjaxDeleteComplete
+			'onComplete': function (e) {
+				this.deleteComplete(e);
+			}.bind(this)
 		});
 		this.ajax.updateComment = new Request({
 			'url': '', 
@@ -121,8 +122,13 @@ var FabrikComment = new Class({
 			if (!input) {
 				return;
 			}
-			f.getElement('input[type=button]').addEvent('click', this.doInput.bindWithEvent(this));
-			input.addEvent('click', this.testInput.bindWithEvent(this));
+			f.getElement('button.submit').addEvent('click', function (e) {
+				this.doInput(e);
+			}.bind(this));
+			
+			input.addEvent('click', function (e) {
+				this.testInput(e);
+			}.bind(this));
 
 		}.bind(this));
 	},
@@ -162,12 +168,13 @@ var FabrikComment = new Class({
 			}
 		}
 		var v = replyform.getElement('textarea').get('value');
+		e.stop();
 		if (v === '') {
 			this.spinner.hide();
 			alert(Joomla.JText._('PLG_FORM_COMMENT_PLEASE_ENTER_A_COMMENT_BEFORE_POSTING'));
 			return;
 		}
-		e.stop();
+		
 		var name = replyform.getElement('input[name=name]');
 		if (name) {
 			var namestr = name.get('value');
@@ -307,7 +314,7 @@ var FabrikComment = new Class({
 							c.getElements('.info').dispose();
 							new Element('span', {
 								'class' : 'info'
-							}).set('html', r).injectInside(c);
+							}).set('html', r).inject(c);
 						}.bind(this)
 					}).send();
 

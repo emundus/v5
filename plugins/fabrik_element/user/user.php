@@ -21,7 +21,7 @@ require_once JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php
  * @since       3.0
  */
 
-class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
+class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 {
 
 	/**
@@ -114,7 +114,6 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			// $$$ hugh ... what a mess ... of course if it's a new form, $data doesn't exist ...
 			if (empty($data))
 			{
-				// If $data is empty, we must (?) be a new row, so just grab logged on user
 				$user = JFactory::getUser();
 			}
 			else
@@ -143,7 +142,17 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					$id = $this->getValue($data, $repeatCounter);
 				}
 				$id = is_array($id) ? $id[0] : $id;
-				$user = $id === '' ? JFactory::getUser() : JFactory::getUser((int) $id);
+				/* $$$ hugh - hmmm, might not necessarily be a new row.  So corner case check for
+				 * editing a row, where user element is not set yet, and 'update on edit' is No.
+				 */
+				if ($rowid && empty($id) && !$params->get('update_on_edit'))
+				{
+					$user = JFactory::getUser(0);
+				}
+				else
+				{
+					$user = $id === '' ? JFactory::getUser() : JFactory::getUser((int) $id);
+				}
 			}
 		}
 
@@ -170,7 +179,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$displayParam = $this->getValColumn();
+			$displayParam = $this->getLabelOrConcatVal();
 			if (is_a($user, 'JUser'))
 			{
 				$str = $user->get($displayParam);
@@ -226,6 +235,8 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	public function preProcess($c)
 	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
 		$params = $this->getParams();
 
 		/**
@@ -300,6 +311,9 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	public function onStoreRow(&$data)
 	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
+
 		// $$$ hugh - special case, if we have just run the fabrikjuser plugin, we need to
 		// use the 'newuserid' as set by the plugin.
 		$newuserid = JRequest::getInt('newuserid', 0);
@@ -362,29 +376,45 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		// $$$ hugh - so how come we don't do the same thing on a new row?  Seems inconsistant to me?
 		else
 		{
-			$params = $this->getParams();
-			if ($params->get('update_on_edit', 0))
+			if ($this->updateOnEdit())
 			{
-				if (!$this->canUse() || $this->getElement()->hidden == 1)
-				{
-					$user = JFactory::getUser();
-					$data[$element->name] = $user->get('id');
-					$data[$element->name . '_raw'] = $data[$element->name];
+				$user = JFactory::getUser();
+				$data[$element->name] = $user->get('id');
+				$data[$element->name . '_raw'] = $data[$element->name];
 
-					// $$$ hugh - need to add to updatedByPlugin() in order to override write access settings.
-					// This allows us to still 'update on edit' when element is write access controlled.
-					if (!$this->canUse())
-					{
-						$this_fullname = $this->getFullName(false, true, false);
-						$this->getFormModel()->updatedByPlugin($this_fullname, $user->get('id'));
-					}
+				// $$$ hugh - need to add to updatedByPlugin() in order to override write access settings.
+				// This allows us to still 'update on edit' when element is write access controlled.
+				if (!$this->canUse())
+				{
+					$this_fullname = $this->getFullName(false, true, false);
+					$this->getFormModel()->updatedByPlugin($this_fullname, $user->get('id'));
 				}
 			}
 		}
 	}
 
 	/**
-	 * Check user can view the read only element & view in list view
+	 * Should the element's value be replaced with the current user's id
+	 *
+	 * @return  bool
+	 */
+	protected function updateOnEdit()
+	{
+		$params = $this->getParams();
+		$updaeOnEdit = $params->get('update_on_edit', 0);
+		if ($updaeOnEdit == 1)
+		{
+			$updaeOnEdit = !$this->canUse() || $this->getElement()->hidden == 1;
+		}
+		if ($updaeOnEdit == 2)
+		{
+			$updaeOnEdit = true;
+		}
+		return $updaeOnEdit;
+	}
+
+	/**
+	 * Check user can view the read only element OR view in list view
 	 *
 	 * When processing the form, we always want to store the current userid
 	 * (subject to save-on-edit, but that's done elsewhere), regardless of
@@ -396,43 +426,46 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	 * case allows addDefaultDataFromRO to do that, whilst still enforcing
 	 * Read Access settings for detail/list view
 	 *
+	 * @param   string  $view  View list/form @since 3.0.7
+	 *
 	 * @return  bool  can view or not
 	 */
 
-	public function canView()
+	public function canView($view = 'form')
 	{
-		if (JRequest::getVar('task', '') == 'processForm')
+		$app = JFactory::getApplication();
+		if ($app->input->get('task', '') == 'processForm')
 		{
 			return true;
 		}
-		return parent::canView();
+		return parent::canView($view);
 	}
 
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
-	 * @param   int  $repeatCounter  repeat group counter
+	 * @param   int  $repeatCounter  Repeat group counter
 	 *
-	 * @return  string
+	 * @return  array
 	 */
 
 	public function elementJavascript($repeatCounter)
 	{
 		$opts = parent::elementJavascriptOpts($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
-		return "new FbUser('$id', $opts)";
+		return array('FbUser', $id, $opts);
 	}
 
 	/**
-	 * get the class to manage the form element
+	 * Get the class to manage the form element
 	 * if a plugin class requires to load another elements class (eg user for dbjoin then it should
 	 * call FabrikModelElement::formJavascriptClass('plugins/fabrik_element/databasejoin/databasejoin.js', true);
 	 * to ensure that the file is loaded only once
 	 *
-	 * @param   array   &$srcs   scripts previously loaded (load order is important as we are loading via head.js
+	 * @param   array   &$srcs   Scripts previously loaded (load order is important as we are loading via head.js
 	 * and in ie these load async. So if you this class extends another you need to insert its location in $srcs above the
 	 * current file
-	 * @param   string  $script  script to load once class has loaded
+	 * @param   string  $script  Script to load once class has loaded
 	 *
 	 * @return void
 	 */
@@ -643,21 +676,27 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		// Corect default got
 		$default = $this->getDefaultFilterVal($normal, $counter);
 		$return = array();
-		$tabletype = $this->getValColumn();
+		$tabletype = $this->getLabelOrConcatVal();
 		$join = $this->getJoin();
 		$joinTableName = FabrikString::safeColName($join->table_join_alias);
 
 		// If filter type isn't set was blowing up in switch below 'cos no $rows
 		// so added '' to this test.  Should probably set $element->filter_type to a default somewhere.
-		if (in_array($element->filter_type, array('range', 'dropdown', '')))
+		if (in_array($element->filter_type, array('range', 'dropdown', '', 'checkbox')))
 		{
 			$rows = $this->filterValueList($normal, '', $joinTableName . '.' . $tabletype, '', false);
 			$rows = (array) $rows;
-			array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+			if ($element->filter_type !== 'checkbox')
+			{
+				array_unshift($rows, JHTML::_('select.option', '', $this->filterSelectLabel()));
+			}
 		}
 
 		switch ($element->filter_type)
 		{
+			case 'checkbox':
+				$return[] = $this->checkboxFilter($rows, $default, $v);
+				break;
 			case "range":
 				$attribs = 'class="inputbox fabrik_filter" size="1" ';
 				$default1 = is_array($default) ? $default[0] : '';
@@ -665,12 +704,16 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 				$default1 = is_array($default) ? $default[1] : '';
 				$return[] = JHTML::_('select.genericlist', $rows, $v . '[]', $attribs, 'value', 'text', $default1, $element->name . "_filter_range_1");
 				break;
-			case "dropdown":
+			case 'dropdown':
+			case 'multiselect':
 			default:
-				$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="inputbox fabrik_filter" size="1" ', 'value', 'text', $default, $htmlid);
+				$max = count($rows) < 7 ? count($rows) : 7;
+				$size = $element->filter_type === 'multiselect' ? 'multiple="multiple" size="' . $max . '"' : 'size="1"';
+				$v = $element->filter_type === 'multiselect' ? $v . '[]' : $v;
+				$return[] = JHTML::_('select.genericlist', $rows, $v, 'class="inputbox fabrik_filter" ' . $size, 'value', 'text', $default, $htmlid);
 				break;
 
-			case "field":
+			case 'field':
 				if (get_magic_quotes_gpc())
 				{
 					$default = stripslashes($default);
@@ -679,7 +722,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 				$return[] = '<input type="text" name="' . $v . '" class="inputbox fabrik_filter" value="' . $default . '" id="' . $htmlid . '" />';
 				break;
 
-			case "hidden":
+			case 'hidden':
 				if (get_magic_quotes_gpc())
 				{
 					$default = stripslashes($default);
@@ -688,7 +731,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 				$return[] = '<input type="hidden" name="' . $v . '" class="inputbox fabrik_filter" value="' . $default . '" id="' . $htmlid . '" />';
 				break;
 
-			case "auto-complete":
+			case 'auto-complete':
 				$defaultLabel = $this->getLabelForValue($default);
 				$autoComplete = $this->autoCompleteFilter($default, $v, $defaultLabel, $normal);
 				$return = array_merge($return, $autoComplete);
@@ -747,7 +790,10 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 		// $$$ hugh - we need to use the join alias, not hard code #__users
 		$join = $this->getJoin();
-		$joinTableName = $join->table_join_alias;
+		if (is_object($join))
+		{
+			$joinTableName = $join->table_join_alias;
+		}
 		if (empty($joinTableName))
 		{
 			$joinTableName = '#__users';
@@ -784,7 +830,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					break;
 				case 'field':
 				default:
-					$tabletype = $this->getValColumn();
+					$tabletype = $this->getLabelOrConcatVal();
 					break;
 			}
 			$k = $db->quoteName($joinTableName . '.' . $tabletype);
@@ -797,7 +843,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			}
 			else
 			{
-				$tabletype = $this->getValColumn();
+				$tabletype = $this->getLabelOrConcatVal();
 				$k = $db->quoteName($joinTableName . '.' . $tabletype);
 			}
 		}
@@ -852,7 +898,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	/**
 	 * Get the user's property to show, if gid raise warning and revert to username (no gid in J1.7)
 	 *
-	 * @param   object	$user  joomla user
+	 * @param   object  $user  Joomla user
 	 *
 	 * @since	3.0b
 	 *
@@ -863,7 +909,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	{
 		static $displayMessage;
 		$params = $this->getParams();
-		$displayParam = $this->getValColumn();
+		$displayParam = $this->getLabelOrConcatVal();
 		return is_a($user, 'JUser') ? $user->get($displayParam) : false;
 	}
 
@@ -939,7 +985,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	 * @return  string
 	 */
 
-	protected function getValColumn()
+	protected function getLabelOrConcatVal()
 	{
 		static $displayMessage;
 		$params = $this->getParams();

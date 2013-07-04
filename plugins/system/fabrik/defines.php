@@ -36,24 +36,22 @@ define("COM_FABRIK_EXCEL_CSV_DELIMITER", ";");
 /** @var string separator used in repeat elements/groups IS USED IN F3 */
 define("GROUPSPLITTER", "//..*..//");
 
-// Override JHTML -needed for framework overrde
+// Override JHTML -needed for framework override
 $version = new JVersion;
 JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version->RELEASE . '/');
 
 // Register the element class with the loader
 JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
 
-// $$$ rob 30/10/2011 commented out as we need to load these classes for the list menu form
-//if (JRequest::getCmd('option') != 'com_menus') {
-	JLoader::import('components.com_fabrik.classes.formfield', JPATH_SITE . '/administrator', 'administrator.');
-	JLoader::import('components.com_fabrik.classes.form', JPATH_SITE . '/administrator', 'administrator.');
-//}
+JLoader::import('components.com_fabrik.classes.field', JPATH_SITE . '/administrator', 'administrator.');
+JLoader::import('components.com_fabrik.classes.form', JPATH_SITE . '/administrator', 'administrator.');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 require_once COM_FABRIK_FRONTEND . '/models/fabrik.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/arrayhelper.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/html.php';
 require_once COM_FABRIK_FRONTEND . '/models/parent.php';
+
 require_once COM_FABRIK_FRONTEND . '/helpers/parent.php';
 require_once COM_FABRIK_FRONTEND . '/helpers/string.php';
 require_once COM_FABRIK_FRONTEND . '/models/plugin.php';

@@ -23,7 +23,7 @@ jimport('joomla.filesystem.file');
  * @since       3.0
  */
 
-class plgSystemFabrik extends JPlugin
+class PlgSystemFabrik extends JPlugin
 {
 
 	/**
@@ -57,7 +57,6 @@ class plgSystemFabrik extends JPlugin
 		jimport('joomla.filesystem.file');
 		$p = JPATH_SITE . '/plugins/system/fabrik/';
 		$defines = JFile::exists($p . 'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
-		$doc = JFactory::getDocument();
 		require_once $defines;
 		$this->setBigSelects();
 	}
@@ -78,7 +77,7 @@ class plgSystemFabrik extends JPlugin
 		if ($bigSelects)
 		{
 			$db->setQuery("SET OPTION SQL_BIG_SELECTS=1");
-			$db->query();
+			$db->execute();
 		}
 	}
 

@@ -289,7 +289,9 @@ var FbListInlineEdit = new Class({
 		if (cell.hasClass('fabrik_uneditable') || cell.hasClass('fabrik_ordercell') || cell.hasClass('fabrik_select') || cell.hasClass('fabrik_actions')) {
 			return false;
 		}
-		return true;
+		var rowid = this.getRowId(cell.getParent('.fabrik_row'));
+		res = this.getList().firePlugin('onCanEditRow', rowid);
+		return res;
 	},
 	
 	getPreviousEditable: function (active) {
@@ -413,9 +415,13 @@ var FbListInlineEdit = new Class({
 					//delay the script to allow time for the dom to be updated
 					(function () {
 						Browser.exec(this.javascript);
+						
+						Fabrik.tips.attach('.fabrikTip');
 					}.bind(this)).delay(1000);
 					td.empty().set('html', r);
-					this._animate(td, 'in');
+					
+					// IE selection wierdness
+					this.clearSelection();
 					r = r + '<script type="text/javascript">' + this.javascript + '</script>';
 					this.editors[opts.elid] = r;
 					this.watchControls(td);
@@ -447,6 +453,8 @@ var FbListInlineEdit = new Class({
 			
 			// Make a new instance of the element js class which will use the new html
 			eval(this.javascript);
+			this.clearSelection();
+			Fabrik.tips.attach('.fabrikTip');
 			
 			// Set some options for use in 'fabrik.list.inlineedit.setData'
 			this.editOpts = opts;
@@ -456,52 +464,12 @@ var FbListInlineEdit = new Class({
 		return true;
 	},
 	
-	_animate: function (cell, d) {
-		return;
-	/*	//needs more work!
-		var tip = cell.getChildren()[0];
-		this.options.showDelay  = 0;
-		this.options.hideDelay = 0;
-		this.options.motion = 6;
-		this.options.motionOnShow = true;
-		this.options.motionOnHide = true;
-		this.options.position = 'right';
-		tip.store('options', this.options);
-		
-		tip.store('position', tip.getPosition(cell));
-		
-		clearTimeout(tip.retrieve('timeout'));
-		tip.store('timeout', (function(t) { 
-			var o = tip.retrieve('options'), din = (d == 'in');
-			var m = { 'opacity': din ? 1 : 0 };
-			
-			if ((o.motionOnShow && din) || (o.motionOnHide && !din)) {
-				var pos =  t.retrieve('position');
-				if (!pos) return;
-				switch (o.position) {
-					case 'inside': 
-					case 'top':
-						m['top'] = din ? [pos.y - o.motion, pos.y] : pos.y - o.motion;
-						break;
-					case 'right':
-						m['left'] = din ? [pos.x + o.motion, pos.x] : pos.x + o.motion;
-						break;
-					case 'bottom':
-						m['top'] = din ? [pos.y + o.motion, pos.y] : pos.y + o.motion;
-						break;
-					case 'left':
-						m['left'] = din ? [pos.x - o.motion, pos.x] : pos.x - o.motion;
-						break;
-				}
-			}
-			
-			t.morph(m);
-			if (!din) t.get('morph').chain(function () { this.dispose(); }.bind(t)); 
-			
-		}).delay((d == 'in') ? this.options.showDelay : this.options.hideDelay, this, tip));
-		
-		return this;
-		*/
+	clearSelection: function () {
+		if (document.selection) {
+			document.selection.empty();
+		} else {
+			window.getSelection().removeAllRanges();
+		}
 	},
 	
 	getDataFromTable: function (td) {
@@ -555,8 +523,19 @@ var FbListInlineEdit = new Class({
 	},
 	
 	setFocus : function (td) {
-		if (typeOf(td.getElement('.fabrikinput')) !== 'null') {
-			td.getElement('.fabrikinput').focus();
+		
+		// See http://www.fabrikar.com/forums/index.php?threads/inline-edit-dialog-window-shows-highlight-in-ie.31732/page-2#post-167922
+		if (Browser.ie) {
+			return;
+		}
+		var el = td.getElement('.fabrikinput');
+		if (typeOf(el) !== 'null') {
+			var fn = function () {
+				if (typeOf(el) !== 'null') {
+					el.focus();
+				}
+			};
+			fn.delay(1000);
 		}
 	},
 	
@@ -691,7 +670,6 @@ var FbListInlineEdit = new Class({
 		if (td !== false) {
 			td.removeClass(this.options.focusClass);
 		}
-		//this._animate(td, 'out');
 		this.editing = null;
 		this.inedit = false;
 	},
