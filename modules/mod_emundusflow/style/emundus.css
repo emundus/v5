@@ -44,7 +44,7 @@
 }
 #emundusflow_new div {
 	float : left;
-	display: inline !important;
+	display: inline;
 }
 .progression{
 	height: 20px !important;
@@ -63,7 +63,7 @@
 }
 .bar{
 	background:transparent;
-	border:1px solid black;
+	border:1px solid #D4D5D5;
 	margin:0 0 0 5px!important;
 	padding:0 !important;
 	height:20px;
@@ -81,7 +81,7 @@
 	margin-left:10px;
 }
 
-.em_progress {
+.progress {
 	background:#D4D5D5;
 	width:90%;
 	margin-left:2px;
@@ -89,8 +89,17 @@
 	-webkit-border-radius: 15px;
 	-o-border-radius: 15px;
 	border-radius: 15px;
+	z-index:10;
 }
 
 .status {
 	margin:0 0 0 2px;
+}
+
+.emflow_legend {
+	position:absolute;
+	color:black;
+	z-index:1;
+	display:block !important;
+	padding-left:30px;
 }
