@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
+	<fieldset addfieldpath="/plugins/user/emundus_profile/fields"
+	/>
 	<fields name="emundus_profile">
 		<fieldset name="default"
 			label="PLG_USER_EMUNDUS_PROFILE_SLIDER_LABEL"
@@ -37,7 +39,7 @@
 		/>
 		<field 
 			name="campaign" 
-			type="sql"
+			type="campaign"
 			query="SELECT id, CONCAT(label,' (',year,')') AS label FROM #__emundus_setup_campaigns WHERE published=1 AND NOW() >= start_date AND end_date >= NOW() ORDER BY label"
 			key_field="id"
 			value_field="label"
@@ -45,6 +47,16 @@
 			filter="string"
 			label="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_LABEL"
 			message="PLG_USER_EMUNDUS_PROFILE_FIELD_CAMPAIGN_MESSAGE"
+		/>
+		<field
+			name="course"
+			type="text"
+			id="course"
+			description="PLG_USER_EMUNDUS_PROFILE_FIELD_COURSE_DESC"
+			filter="string"
+			label="PLG_USER_EMUNDUS_PROFILE_FIELD_COURSE_LABEL"
+			message="PLG_USER_EMUNDUS_PROFILE_FIELD_COURSE_MESSAGE"
+			size="10"
 		/>
 		<field
 			name="newsletter"
@@ -56,7 +68,6 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-			
 		</fieldset>
 	</fields>
 </form>

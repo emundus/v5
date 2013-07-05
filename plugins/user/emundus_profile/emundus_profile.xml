@@ -18,6 +18,8 @@
 		<language tag="en-GB">en-GB.plg_user_emundus_profile.sys.ini</language>
 	</languages>
 	<config>
+		<fieldset addfieldpath="/administrator/components/com_emundus/models/fields"
+	/>
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="register-user" type="spacer"

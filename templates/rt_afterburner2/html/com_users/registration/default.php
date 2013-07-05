@@ -13,20 +13,36 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.noframes');
-$template = JFactory::getApplication()->getTemplate();
+
+$app	= JFactory::getApplication();
+$template = $app->getTemplate();
 $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 //$this->form->reset( true );
-$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
+$this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); 
+
+$jform = $app->getUserState('com_users.registration.data');
+var_dump($jform);
+$course = JRequest::getVar('course', null, 'GET', null, 0);
+
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+$campaign = new EmundusModelCampaign;
+$campaigns = $campaign->getCampaignsByCourse($course);
+$campaign_id = $campaigns['id'];
+
+?>
 <style> #jform_name {border:solid 0px #FFF;} </style>
+<br />
+<h4><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></h4>
+<br />
 
 <div class="registration<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading')) : ?>
 	<h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
 <?php endif; ?>
-<p><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></p>
-	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register'); ?>" method="post" class="form-validate">
+
+	<form id="member-registration" action="<?php echo JRoute::_('index.php?option=com_users&task=registration.register&course='.$course); ?>" method="post" class="form-validate">
 <?php foreach ($this->form->getFieldsets() as $fieldset): // Iterate through the form fieldsets and display each one.?>
-	<?php $fields = $this->form->getFieldset($fieldset->name);  ?>
+	<?php $fields = $this->form->getFieldset($fieldset->name); ?>
 	<?php if (count($fields)):?>
 		<fieldset>
 		<?php if (isset($fieldset->label)):// If the fieldset has a label set, display it as the legend.
@@ -44,7 +60,7 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 						<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
 					<?php endif; ?>
 				</dt>
-				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;"; ?></dd>
+				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, "rr"); ?></dd>
 			<?php endif;?>
 		<?php endforeach;?>
 			</dl>
@@ -54,8 +70,9 @@ $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); ?>
 		<div>
 			<button type="submit" class="validate"><?php echo JText::_('JREGISTER');?></button>
 			<?php echo JText::_('COM_USERS_OR');?>
-			<a href="<?php echo JRoute::_('');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
+			<a href="<?php echo JRoute::_('index.php');?>" title="<?php echo JText::_('JCANCEL');?>"><?php echo JText::_('JCANCEL');?></a>
 			<input type="hidden" name="option" value="com_users" />
+			<input type="hidden" name="course" value="<?php echo $course; ?>" />
 			<input type="hidden" name="task" value="registration.register" />
 			<?php echo JHtml::_('form.token');?>
 		</div>
@@ -77,39 +94,28 @@ else {
 	$browser=$HTTP_USER_AGENT;
 }
 
-/*db =& JFactory::getDBO();
-$query = 'SELECT esc.id FROM #__emundus_setup_campaigns AS esc WHERE esc.id='.$campaign_id;
-$db->setQuery( $query );
-$db->loadAssoc();*/
-$course = JRequest::getVar('course', null, 'GET', null, 0);
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-$campaign = new EmundusModelCampaign;
-$campaigns = $campaign->getCampaignsByCourse($course);
-$campaign_id = $campaigns['id'];
 ?>
 
 <script>
 function check_field(){
 	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
-	if(campaign_id != "") {
+	if(campaign_id != "") { 
 		for (var i=0; i<campaign.options.length; ++i) {
 			if(campaign.options[i].value == campaign_id)
 				campaign.options[i].selected=true;
 		}
-	} else {
-		var opt = document.createElement("option");  
-		campaign.options.add(opt);
-		opt.text = "<?php echo JText::_('PLEASE_SELECT'); ?>";
-		opt.value = "";
-		campaign.options[campaign.options.length-1].selected=true;
-	}
+	} else { campaign.options[0].selected=true; }
 
     <?php $i=0; foreach($fields as $field){ ?>
 		firstname = document.getElementById("jform_emundus_profile_firstname");
 		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
-		if (field[0] != undefined) {
+		if (field[0] != undefined) { 
+			//group = "<?php echo $field->group; ?>";
+			//if(group != "") 
+				//field_value = "";
+			//field[0].value = field_value;
 			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#F7F2B2'});
 			field[0].onblur = function() {
