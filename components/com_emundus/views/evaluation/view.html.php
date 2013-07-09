@@ -167,7 +167,7 @@ class EmundusViewEvaluation extends JView
 		if($this->_user->profile==16)
 			$options = array('view');
 		else
-			$options = array('view', 'add', 'edit', 'delete', 'letter');
+			$options = array('view', 'add', 'edit', 'delete');
 
 		$evaluation = EmundusHelperList::createEvaluationBlock($users, $options);
 		$this->assignRef('evaluation', $evaluation);
@@ -179,7 +179,7 @@ class EmundusViewEvaluation extends JView
 		$users_groups = EmundusHelperList::getUsersGroups();
 		$this->assignRef('users_groups', $users_groups);
 
-		$options = array('checkbox', 'gender', 'details', 'evaluation', 'letter');
+		//$options = array('checkbox', 'gender', 'details', 'evaluation', 'letter');
 		$options = explode(',', $menu_params->get('em_actions'));
 		$actions = EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);

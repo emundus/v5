@@ -403,10 +403,16 @@ class EmundusHelperList{
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
 				}
 				if(in_array('letter',$params)){ 
-					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
-					if(!empty($this->letter[$user['user_id']][$user['user']])) 
-						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $this->letter[$user['user_id']][$user['user']][$user['campaign_id']]; 
-					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
+					if (!empty($user['final_grade'])) { 
+						$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $letter; 
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
+					} else {
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= JText::_("UPDATE_EVALUATION"); 
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
+					}
 				}
 				if(in_array('selection_outcome',$params)){ 
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_selection_outcome" id="em_selection_outcome_'.$user['user_id'].'_'.$user['campaign_id'].'">';
@@ -521,7 +527,7 @@ class EmundusHelperList{
 				
 				$delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['evaluation_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 				
-				$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';
+				/*$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';*/
 				
 				//$allowed = array("Super Users", "Administrator", "Editor");
 				if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->eval_access > 1 ) {
@@ -539,7 +545,7 @@ class EmundusHelperList{
 					$candelete = true;
 				}else{
 					$candelete = false;
-					$letter = '';
+					//$letter = '';
 				}
 				
 				if(count($evaluation) > 0) {
@@ -569,8 +575,8 @@ class EmundusHelperList{
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
 						}
 					}
-						if(in_array('letter',$params))
-							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $letter;
+						/*if(in_array('letter',$params))
+							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $letter;*/
 				} else {
 					if(in_array('add',$params))
 						@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
