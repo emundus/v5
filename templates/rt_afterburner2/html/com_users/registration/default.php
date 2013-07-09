@@ -21,7 +21,7 @@ $lang->load('tpl_'.$template, JPATH_THEMES.DS.$template);
 $this->form->loadFile( dirname(__FILE__) . DS . "registration.xml"); 
 
 $jform = $app->getUserState('com_users.registration.data');
-var_dump($jform);
+
 $course = JRequest::getVar('course', null, 'GET', null, 0);
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
@@ -107,15 +107,25 @@ function check_field(){
 		}
 	} else { campaign.options[0].selected=true; }
 
+	var form_values = new Array();
+	<?php 
+	foreach($jform as $key => $value) { 
+	 	if(is_array($value)) {
+	 		foreach($value as $k => $v)
+	 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; '; 
+		} else {
+	 	echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
+		} 
+	} 
+	?>
+
+	firstname = document.getElementById("jform_emundus_profile_firstname");
+	lastname = document.getElementById("jform_emundus_profile_lastname");
+
     <?php $i=0; foreach($fields as $field){ ?>
-		firstname = document.getElementById("jform_emundus_profile_firstname");
-		lastname = document.getElementById("jform_emundus_profile_lastname");
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) { 
-			//group = "<?php echo $field->group; ?>";
-			//if(group != "") 
-				//field_value = "";
-			//field[0].value = field_value;
+			field[0].value = form_values[field[0].id]
 			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#F7F2B2'});
 			field[0].onblur = function() {
