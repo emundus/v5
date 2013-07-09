@@ -16,7 +16,7 @@
 			<field name="em_filters_values" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_VALUES" description="COM_EMUNDUS_FILTERS_VALUES_DESC"/>
 			<field name="em_filters_options" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_FILTERS_OPTIONS" description="COM_EMUNDUS_FILTERS_OPTIONS_DESC"/>
 			<field name="em_blocks_names" value="evaluator,email_evaluator,incomplete,complete,batch,email_applicant" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_BLOCKS_LIST" description="COM_EMUNDUS_BLOCKS_LIST_DESC"/>
-			<field name="em_actions" value="checkbox,photo,gender,details,upload,attachments,forms" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC"/>
+			<field name="em_actions" value="checkbox,photo,gender,details,upload,attachments,forms,letter" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ACTIONS" description="COM_EMUNDUS_ACTIONS_DESC"/>
 		</fieldset>
 	</fields>
 	

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version		$Id: application_form.php 750 2012-01-23 22:29:38Z brivalland $
+ * @version		$Id: application.php 750 2012-01-23 22:29:38Z brivalland $
  * @package		Joomla
- * @copyright	(C) 2005 - 2008 JXtended LLC. All rights reserved.
+ * @copyright	(C) 2008 - 2013 eMundus LLC. All rights reserved.
  * @license		GNU General Public License
  */
 
