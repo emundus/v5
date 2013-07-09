@@ -143,7 +143,7 @@ function age($naiss) {
 
 <div id="accordion">
 	<h2 onClick="setCookie('current_display',0,20);"><?php echo JText::_('ACCOUNT'); ?></h2>
-	<div id="em_application_forms" class="content">
+	<div id="em_application_connexion" class="content">
 	<table class="adminlist">
 			<thead>
 				<tr>
