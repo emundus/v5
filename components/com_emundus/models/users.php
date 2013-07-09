@@ -586,7 +586,7 @@ class EmundusModelUsers extends JModel
 			$lastname=$other_params['lastname'];
 			$profile=$other_params['profile'];
 			$groups=$other_params['groups'];
-			$univ_id=$other_param['univ_id'];
+			$univ_id=$other_params['univ_id'];
 			
 			if(empty($univ_id)){
 				$query="INSERT INTO `#__emundus_users` VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
