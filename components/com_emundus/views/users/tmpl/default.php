@@ -76,7 +76,30 @@ if(!empty($this->users)) {
 </div>
 <fieldset>
   <legend>
-  <?php if(!empty($current_p) && isset($this->profiles[$current_p]->label)) echo $this->profiles[$current_p]->label; else echo JText::_('ALL');?>
+  <?php //if(!empty($current_p) && isset($this->profiles[$current_p]->label)) echo $this->profiles[$current_p]->label; else echo JText::_('ALL');?>
+    <?php
+	if(isset($schoolyears)){
+		$nb = 1;
+		foreach ($schoolyears as $schoolyear){
+			if(in_array($schoolyear,$this->schoolyears)){
+				if(count($schoolyears)==$nb){
+					echo $schoolyear;
+				}else{
+					echo $schoolyear.', ';
+				}
+			}else{
+				if(count($schoolyears)==$nb){
+					echo JText::_('ALL');
+				}else{
+					echo JText::_('ALL').', ';
+				}
+			}
+			$nb++;
+		}
+	}else{ 
+		echo JText::_('ALL'); 
+	} 
+	?>
   </legend>
   <table id="userlist">
     <thead>
