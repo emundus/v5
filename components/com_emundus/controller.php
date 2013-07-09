@@ -803,7 +803,7 @@ function updateprofile() {
 		$email = $model->setResultLetterSent($sid, $campaign_id);
 		
 
-		$this->setRedirect('index.php?option=com_emundus&view=application_form&Itemid='.$itemid.'&sid='.$sid.'&tmpl=component');
+		$this->setRedirect('index.php?option=com_emundus&view=application&Itemid='.$itemid.'&sid='.$sid.'&tmpl=component');
 	}
 	
 	/*

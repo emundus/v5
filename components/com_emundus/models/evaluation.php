@@ -233,7 +233,7 @@ class EmundusModelEvaluation extends JModel
 				$cols = implode(', ',$cols);
 		}
 		
-		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent ';
+		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent, efg.final_grade ';
 		if(!empty($cols)) 
 			$query .= ', '.$cols;
 		if(!empty($eval_columns)) 
@@ -446,6 +446,7 @@ class EmundusModelEvaluation extends JModel
 				$eval_list['campaign']=$applicant->campaign;
 				$eval_list['campaign_id']=$applicant->campaign_id;
 				$eval_list['evaluation_id'] = $applicant->evaluation_id;
+				$eval_list['final_grade'] = $applicant->final_grade;
 				$eval_list['date_result_sent'] = !empty($applicant->date_result_sent) ? date(JText::_('DATE_FORMAT_LC'), strtotime($applicant->date_result_sent)) : JText::_('NOT_SENT');
 				
 				if(!empty($search)){

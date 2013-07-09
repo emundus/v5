@@ -16,7 +16,9 @@ defined( '_JEXEC' ) or die();
 $user =& JFactory::getUser();
 
 $student_id = !empty($_REQUEST['jos_emundus_evaluations___student_id']) ? $_REQUEST['jos_emundus_evaluations___student_id'] : $_REQUEST['jos_emundus_evaluations___student_id'][0];
-$aid = & JUser::getInstance($student_id);
+$sid = is_array($student_id) ? $student_id[0] : $student_id;
+
+$aid = & JUser::getInstance($sid);
 $result = $_REQUEST['jos_emundus_evaluations___result'][0];
 $campaign_id = $_REQUEST['jos_emundus_evaluations___campaign_id'][0];
 

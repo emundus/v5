@@ -74,7 +74,7 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 					foreach($this->users as $evalu){ ?>
                         <tr class="row<?php echo $j++%2; ?>" id="<?php echo 'em_line_'.$i.'_'.$evalu['user_id']; ?>"><?php
                             foreach ($evalu as $key=>$value){
-								if($key != 'user' && $key != 'campaign_id' && $key != 'evaluation_id') {
+								if($key != 'user' && $key != 'campaign_id' && $key != 'evaluation_id' && $key != 'final_grade') {
                                 if($key=='user_id'){ ?>
                                     <td> 
 										<?php 

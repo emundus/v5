@@ -68,8 +68,11 @@ class EmundusViewEvaluation extends JView
 		$profiles_label = $this->get('Profiles');
 		$this->assignRef( 'profiles_label', $profiles_label );
 
-		$menu = JSite::getMenu()->getActive();
-		$access =! empty($menu)?$menu->access : 0;
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$menu_params = $menu->getParams($current_menu->id);
+
+		$access =! empty($current_menu)?$current_menu->access : 0;
 		$state	= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access) ? '' : NULL;
 		$filts_details	= array(//'profile' => $state,
 			'evaluator'	=> $state,
@@ -165,6 +168,7 @@ class EmundusViewEvaluation extends JView
 			$options = array('view');
 		else
 			$options = array('view', 'add', 'edit', 'delete', 'letter');
+
 		$evaluation = EmundusHelperList::createEvaluationBlock($users, $options);
 		$this->assignRef('evaluation', $evaluation);
 		unset($options);
@@ -175,7 +179,8 @@ class EmundusViewEvaluation extends JView
 		$users_groups = EmundusHelperList::getUsersGroups();
 		$this->assignRef('users_groups', $users_groups);
 
-		$options = array('checkbox', 'gender', 'details', 'evaluation');
+		$options = array('checkbox', 'gender', 'details', 'evaluation', 'letter');
+		$options = explode(',', $menu_params->get('em_actions'));
 		$actions = EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
 		unset($options);

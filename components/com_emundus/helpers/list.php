@@ -408,7 +408,7 @@ class EmundusHelperList{
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $this->letter[$user['user_id']][$user['user']][$user['campaign_id']]; 
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
 				}
-				if(in_array('selection_outcome',$params)){
+				if(in_array('selection_outcome',$params)){ 
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_selection_outcome" id="em_selection_outcome_'.$user['user_id'].'_'.$user['campaign_id'].'">';
 					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= $this->selection[$user['user_id']][@$user['campaign_id']];
 					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</div>';
