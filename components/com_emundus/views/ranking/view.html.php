@@ -154,6 +154,9 @@ class EmundusViewRanking extends JView
 		$this->assignRef('actions', $actions);
 		unset($options);
 		
+		// Schoolyears 
+		$schoolyears = EmundusHelperFilters::getSchoolyears();
+		$this->assignRef('schoolyears', $schoolyears);
 		
 		//Profile
 		$profile = EmundusHelperList::createProfileBlock($users, 'profile');
