@@ -109,14 +109,16 @@ function check_field(){
 
 	var form_values = new Array();
 	<?php 
-	foreach($jform as $key => $value) { 
-	 	if(is_array($value)) {
-	 		foreach($value as $k => $v)
-	 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; '; 
-		} else {
-	 	echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
+	if(!empty($jform)) {
+		foreach($jform as $key => $value) { 
+		 	if(is_array($value)) {
+		 		foreach($value as $k => $v)
+		 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; '; 
+			} else {
+		 	echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
+			} 
 		} 
-	} 
+	}
 	?>
 
 	firstname = document.getElementById("jform_emundus_profile_firstname");
@@ -125,7 +127,8 @@ function check_field(){
     <?php $i=0; foreach($fields as $field){ ?>
 		field = document.getElementsByName("<?php echo $field->name; ?>");
 		if (field[0] != undefined) { 
-			field[0].value = form_values[field[0].id]
+			if (form_values[field[0].id] != undefined)
+				field[0].value = form_values[field[0].id];
 			if (field[0].value == "" && "<?php echo $browser; ?>" != "IE")
 				field[0].setStyles({backgroundColor: '#F7F2B2'});
 			field[0].onblur = function() {
