@@ -669,7 +669,7 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
 																  <div class="em_filtersElement">';
 			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$schoolyear .= 'onChange="document.adminForm.task.value=\'\';getLegend(); javascript:submit()" multiple="multiple" size="6">';
+			$schoolyear .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
 			$schoolyear .= '<option value="%" ';
 			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
 			$schoolyear .= '>'.JText::_('ALL').'</option>';

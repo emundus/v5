@@ -591,7 +591,7 @@ function OnSubmitForm() {
 		
 		window.onload=function() {
 			$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
-			getLegend();
+			/* getLegend();*/
 		}
 		';
 		return $script;
