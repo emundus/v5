@@ -200,6 +200,10 @@ class EmundusViewEvaluation extends JView
 		$comment = EmundusHelperList::createCommentBlock($users);
 		$this->assignRef('comment', $comment);
 
+		// Schoolyears 
+		$schoolyears = EmundusHelperFilters::getSchoolyears();
+		$this->assignRef('schoolyears', $schoolyears);
+		
 		//Export
 		$options = array('zip', 'xls');
 		if($this->_user->profile!=16)

@@ -6,6 +6,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 $v = JRequest::getVar('view', null, 'GET', 'none',0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 
 ?>
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
@@ -28,7 +29,29 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 			$document = JFactory::getDocument();
 			$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundusraw.css" );
 		}else
-			echo '<fieldset><legend id="legend"><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : <div id="lschoolyears"></div></legend>';
+			echo '<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('EVALUATION').'"/>'.JText::_('EVALUATION').' : <div id="lschoolyears">';
+				if(isset($schoolyears)){
+					$nb = 1;
+					foreach ($schoolyears as $schoolyear){
+						if(in_array($schoolyear,$this->schoolyears)){
+							if(count($schoolyears)==$nb){
+								echo $schoolyear;
+							}else{
+								echo $schoolyear.', ';
+							}
+						}else{
+							if(count($schoolyears)==$nb){
+								echo JText::_('ALL');
+							}else{
+								echo JText::_('ALL').', ';
+							}
+						}
+						$nb++;
+					}
+				}else{ 
+					echo JText::_('ALL'); 
+				} 
+	echo'</div></legend>';
 		?>
 		<div class="evaluation_users"><?php 
 			if(isset($this->users) && !empty($this->users)){ ?>
