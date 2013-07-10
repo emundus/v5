@@ -539,6 +539,7 @@ $htmldata .= '
 	}
 	$db->setQuery( $query );
 	$tableuser = $db->loadObjectList();
+	// var_dump($tableuser);
 	if(isset($tableuser)) {
 		foreach($tableuser as $key => $itemt) {
 			if($current_user->usertype != $registered || ($output == false && !empty($item->user))){
@@ -639,7 +640,8 @@ $htmldata .= '
 						ORDER BY ff.ordering';
 			$db->setQuery( $query );
 			$groups = $db->loadObjectList();
-//echo str_replace('#_','jos',$query); die();
+			// echo str_replace('#_','jos',$query).'<BR /><BR />';
+
 			/*-- Liste des groupes -- */
 			foreach($groups as $keyg => $itemg) {
 				// liste des items par groupe
@@ -703,8 +705,13 @@ $htmldata .= '
 							}
 						 }
 				// TABLEAU DE PLUSIEURS LIGNES
-					} elseif ($itemg->repeated>0){ 
-						$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
+					} elseif ($itemg->repeated>0){
+						unset($col); unset($j);
+						foreach($elements as &$element) {
+							$col[] = $element->name;
+						}
+						
+						$query = 'SELECT '.implode(", ",$col).' FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
 								WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$item->user_id.')';
 						$db->setQuery($query);
 						$repeated_elements = $db->loadObjectList();
@@ -713,29 +720,34 @@ $htmldata .= '
 							$j = 0;
 							foreach ($r_element as $key => $r_elt) {  
 								if ($key != 'id' && $key != 'parent_id' && $key != 'applicant_id' && $key != 'campaign_id' && $key != 'time_date') {
-									if ($elements[$j - 2]->plugin=='date') {
-										$date_params = json_decode($elements[$j - 2]->params);
-										$elt = strftime($date_params->date_form_format, strtotime($r_elt));
-									} elseif($elements[$j - 2]->plugin=='databasejoin') {
-										$params = json_decode($elements[$j-2]->params);
-										$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-										$from = $params->join_db_name;
-										$where = $params->join_key_column.'='.$db->Quote($r_elt);
-										$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-										$query = preg_replace('#{thistable}#', $from, $query);
-										$query = preg_replace('#{my->id}#', $item->user_id, $query);
-										$db->setQuery( $query );
-										$elt = $db->loadResult();
-									} else 
-										$elt = $r_elt;
-									$htmldata .= '<b>'.$elements[$j - 2]->label.': </b>'.$elt.'<br/>';
+									if(in_array($key,$col)){
+										$j=array_search($key,$col);
+									}
+									if(@$elements[$j]->name==$key){
+										if ($elements[$j]->plugin=='date') {
+											$date_params = json_decode($elements[$j]->params);
+											$elt = strftime($date_params->date_form_format, strtotime($r_elt));
+										} elseif($elements[$j]->plugin=='databasejoin') {
+											$params = json_decode($elements[$j]->params);
+											$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+											$from = $params->join_db_name;
+											$where = $params->join_key_column.'='.$db->Quote($r_elt);
+											$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+											$query = preg_replace('#{thistable}#', $from, $query);
+											$query = preg_replace('#{my->id}#', $item->user_id, $query);
+											$db->setQuery( $query );
+											$elt = $db->loadResult();
+										} else
+											$elt = $r_elt;
+										$htmldata .= '<b>'.$elements[$j]->label.': </b>'.$elt.'<br/>';
+									}
 								}
-								$j++;
+								// $j++;
 							}
 							$htmldata .= '____<br/>';
 						}
 					// AFFICHAGE EN LIGNE
-					} else { 
+					} else {  
 						foreach($elements as &$element) {
 							if(!empty($element->label) && $element->label!=' ') {
 								if ($element->plugin=='date' && $element->content>0) {
@@ -817,7 +829,7 @@ $htmldata .= '
 		}
 		$htmldata = '';
 	}
-	
+	// die('ok');
 	@chdir('tmp');
 	if($output){
 		if($current_user->usertype != $registered){
