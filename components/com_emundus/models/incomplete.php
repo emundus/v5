@@ -335,7 +335,7 @@ class EmundusModelIncomplete extends JModel
 			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
 
 
-		if($campaigns[0] == "%")
+		if(@$campaigns[0] == "%" || empty($campaigns[0]))
 			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
 		elseif(!empty($campaigns)) 
 			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
