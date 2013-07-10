@@ -138,7 +138,7 @@ class EmundusHelperFilters {
 
 	function getCampaigns() {
 		$db =& JFactory::getDBO();
-		$query = 'SELECT id, label FROM #__emundus_setup_campaigns WHERE published=1 ORDER BY year DESC';
+		$query = 'SELECT id, label, year  FROM #__emundus_setup_campaigns WHERE published=1 ORDER BY year DESC';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
@@ -698,7 +698,7 @@ class EmundusHelperFilters {
 			foreach($campaignList as $c) { 
 				$campaign .= '<option value="'.$c->id.'"';
 				if(!empty($current_campaign) && in_array($c->id, $current_campaign)) $campaign .= ' selected';
-				$campaign .= '>'.$c->label.'</option>'; 
+				$campaign .= '>'.$c->label.' - '.$c->year.'</option>'; 
 			}
 			$campaign .= '</select>';
 			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
