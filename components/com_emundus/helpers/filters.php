@@ -692,7 +692,7 @@ class EmundusHelperFilters {
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
 			$campaign .= '<option value="%" ';
-			if($current_campaign[0] == "%") $campaign .= ' selected';
+			if(@$current_campaign[0] == "%" || empty($current_campaign[0])) $campaign .= ' selected';
 			$campaign .= '>'.JText::_('ALL').'</option>';
 			
 			foreach($campaignList as $c) { 
