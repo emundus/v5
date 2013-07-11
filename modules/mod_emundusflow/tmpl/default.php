@@ -92,7 +92,6 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusflow/style/' 
 						<div class="progress">
 							<div class="progression gf-menu" style="width: 0%">
 								<div title="0%" class="precent">
-									'.JText::_('APPLICATION_NOT_SENT').'
 								</div>
 							</div>
 						</div>
