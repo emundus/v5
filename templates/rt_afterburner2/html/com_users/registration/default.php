@@ -31,9 +31,9 @@ $campaign_id = $campaigns['id'];
 
 ?>
 <style> #jform_name {border:solid 0px #FFF;} </style>
-<br />
-<h4><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></h4>
-<br />
+<div class="box">
+	<div class="box_content"><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></div>
+</div>
 
 <div class="registration<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading')) : ?>
@@ -78,7 +78,12 @@ $campaign_id = $campaigns['id'];
 		</div>
 	</form>
 </div>
-<h1><?php echo JText::_("CONTACT_US_FOR_TECHNICAL_ISSUES"); ?></h1>
+
+<div class="box">
+	<h2><?php echo JText::_("CONTACT_US_FOR_TECHNICAL_ISSUES"); ?></h2>
+	<div class="box_content"></div>
+</div>
+
 <?php
 $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 //Detection du browser
