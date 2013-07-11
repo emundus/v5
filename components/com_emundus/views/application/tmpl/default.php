@@ -187,15 +187,17 @@ function age($naiss) {
 	</h2>	
 	
 	<div id="em_application_attachments" class="content">
-		<div class="actions">
+				<div class="actions">
 			<input type="image" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('DELETE_SELECTED_ATTACHMENTS')."</div>"; ?>');" onClick="document.pressed=this.name" name="delete_attachments" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/delete_attachments2.png" />
-			<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
 			<?php
-				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
-					echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">
-						<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
-						</a> ';
-				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
+			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id)) {
+			?>
+				<a onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('UPLOAD_FILE_FOR_STUDENT')."</div><BR />".JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>');"
+				<?php
+						echo 'class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]='. $this->student->id.'&student_id='. $this->student->id.'&tmpl=component&iframe=1">
+							<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/attachment.png" alt="'.JText::_('UPLOAD').'" title="'.JText::_('UPLOAD').'" width="30px"/>
+							</a> ';
+			}
 			?>
 		</div>
 		
