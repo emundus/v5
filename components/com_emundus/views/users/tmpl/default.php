@@ -245,7 +245,17 @@ foreach ($this->users as $user) { ?>
 <form action="index.php?option=com_emundus&task=<?php echo $edit==1?'edit':'add'; ?>user" method="POST" name="adduser"/>
 
 <fieldset>
-  <legend><?php echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; echo JText::_('ADD_USER'); ?></legend>
+  <legend>
+  <?php
+    if($edit==1){
+	echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/edit_user.png" alt="'.JText::_('EDIT_USER').'" width="40" align="bottom" />'; 
+	echo JText::_('EDIT_USER');  
+  }else{
+	echo'<img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="40" align="bottom" />'; 
+	echo JText::_('ADD_USER'); 
+  }
+  ?>
+  </legend>
   <input type="hidden" name="user_id" value="<?php if($edit==1) echo $this->users[0]->id; ?>"/>
   <input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
   <table>
