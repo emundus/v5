@@ -114,7 +114,7 @@ foreach ($evaluators as $evaluator) {
 	$from = $email->emailfrom;
 	$from_id = 62;
 	$fromname =$email->name;
-	$recipient[] = $eval_user->email;
+	$recipient = $eval_user->email;
 	$subject = $email->subject;
 	//$body = preg_replace($patterns, $replacements, $email->message);
 	$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
