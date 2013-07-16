@@ -49,8 +49,11 @@ class EmundusViewEvaluation extends JView
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$eval_access = $eMConfig->get('can_evaluators_see_all_applicants', '0');
-		$this->assignRef( 'eval_access', $eval_access );
+		$evaluators_can_see = $eMConfig->get('evaluators_can_see', '0');
+		$this->assignRef( 'evaluators_can_see', $evaluators_can_see );
+		
+		$evaluators_can_evaluate = $eMConfig->get('evaluators_can_evaluate', '0');
+		$this->assignRef( 'evaluators_can_evaluate', $evaluators_can_evaluate );
 
 		$multi_eval = $eMConfig->get('multi_eval', '0');
 		$this->assignRef( 'multi_eval', $multi_eval );

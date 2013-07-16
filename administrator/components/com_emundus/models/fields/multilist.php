@@ -1,6 +1,6 @@
 <?php
 /**
-* @version		$Id: list.php 14401 2010-01-26 14:10:00Z louis $
+* @version		$Id: list.php 14401 2013-01-26 14:10:00Z brivalland $
 * @package		Joomla.Framework
 * @subpackage	Parameter
 * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
@@ -31,11 +31,11 @@ class JFormFieldMultilist extends JElement
 	 * @access	protected
 	 * @var		string
 	 */
-	var $_name = 'Multilist';
-	protected $type = 'Multilist';
+	var $_name = 'multilist';
+	protected $type = 'multilist';
 
 	function fetchElement($name, $value, &$node, $control_name)
-	{
+	{ 
 		$class = '';
 		$options = array ();
 		$db	= & JFactory::getDBO();

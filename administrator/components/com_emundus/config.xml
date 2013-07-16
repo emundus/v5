@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields"
-	/>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
-		<field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
+		<!-- <field name="can_evaluators_see_all_applicants" menu="hide" type="list" default="0" label="CAN_EVALUATORS_SEE_ALL_APPLICANTS" description="CAN_EVALUATORS_SEE_ALL_APPLICANTS_DESC">
 			<option value="0">No</option>
 			<option value="1">Can see all applicants</option>
 			<option value="2">Can see and evaluate all applicants</option>
+		</field> -->
+		<field name="evaluators_can_see" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_DESC">
+			<option value="0">COM_EMUNDUS_NONE</option>
+			<option value="1">COM_EMUNDUS_AFFECTED</option>
+			<option value="2">COM_EMUNDUS_LINKED</option>
+			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
+			<option value="4">COM_EMUNDUS_ALL</option>
+		</field>
+		<field name="evaluators_can_evaluate" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_EVALUATE" description="COM_EMUNDUS_EVALUATORS_CAN_EVALUATE_DESC">
+			<option value="0">COM_EMUNDUS_NONE</option>
+			<option value="1">COM_EMUNDUS_AFFECTED</option>
+			<option value="2">COM_EMUNDUS_LINKED</option>
+			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
+			<option value="4">COM_EMUNDUS_ALL</option>
 		</field> 
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
@@ -44,7 +56,8 @@
 			/>
 		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />        
     </fieldset>
-	<fieldset label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
-        <field name="export_pdf" type="multilist" default="" label="Select items for the pdf export"/>
+
+	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
+        <field name="export_pdf" type="text" default="" label="Select items for the pdf export"/>
 	</fieldset>
 </config>

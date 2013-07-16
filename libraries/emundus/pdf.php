@@ -120,8 +120,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
 		$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
 
-		
-
 		//get title
 	/*	$config =& JFactory::getConfig(); 
 		$title = $config->getValue('config.sitename');
@@ -185,7 +183,9 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 						'TRAINING_PROGRAMME' => $campaign['label'],
 						'REASON' => $result, 
 						'TRAINING_FEE' => $courses_fee, 
-						'TRAINING_PERIODE' => $courses_list );
+						'TRAINING_PERIODE' => $courses_list,
+						'USER_NAME' => $current_user->name, 
+						'USER_EMAIL' => $current_user->email );
 
 		$tags = $emails->setTags($user_id, $post);
 
