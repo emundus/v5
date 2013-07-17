@@ -138,7 +138,7 @@ class EmundusViewEvaluation extends JView
 		$eval_cols = $this->get('EvalColumns');
 		$eval_cols['evaluator'] = array('name' =>'evaluator', 'label'=>JText::_('EVALUATOR'));
 
-		$rank_cols = $this->get('RankingColumns');
+		//$rank_cols = $this->get('RankingColumns');
 
 
 		if ( EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id) )

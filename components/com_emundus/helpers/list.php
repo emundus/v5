@@ -410,7 +410,7 @@ class EmundusHelperList{
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
 					} else {
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
-						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= JText::_("UPDATE_EVALUATION"); 
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= ''; //JText::_("UPDATE_EVALUATION"); 
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
 					}
 				}

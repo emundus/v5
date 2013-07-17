@@ -99,7 +99,7 @@ class EmundusModelEvaluation extends JModel
 		$can_be_ordering = array();
 		foreach($this->getEvalColumns() as $eval_col) $can_be_ordering[] = $eval_col['name'];
 		foreach($this->getApplicantColumns() as $info_col) $can_be_ordering[] = $info_col['name'];
-		foreach($this->getRankingColumns() as $rank_col) $can_be_ordering[] = $rank_col['name'];
+		//foreach($this->getRankingColumns() as $rank_col) $can_be_ordering[] = $rank_col['name'];
 		
 		$select_list = $this->getSelectList();
 		if(!empty($select_list))

@@ -97,7 +97,6 @@ if(!empty($this->users)) { ?>
         <?php echo JHTML::_('grid.sort', JText::_('#'), 'user_id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
         <th><?php echo JHTML::_('grid.sort', JText::_('NAME'), 'jos_emundus_personal_detail__last_name', $this->lists['order_Dir'], $this->lists['order']); ?></th>
-		<th><?php echo JHTML::_('grid.sort', JText::_('NATIONALITY'), 'jos_emundus_personal_detail__nationality', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 		<th><?php 
 		echo JHTML::_('grid.sort', JText::_('CAMPAIGN'), 'label', $this->lists['order_Dir'], $this->lists['order']);
 		echo ' | '; 
@@ -136,7 +135,6 @@ foreach ($this->users as $user) { ?>
 				echo '<span class="hasTip" title="'.JText::_('USER_MODIFIED_ALERT').'"><font color="red">'.$user['name'].'</font></span>'; 
 			?>
 		</td>
-      <td><?php echo @$user['jos_emundus_personal_detail__nationality']; ?></td>
       <td><?php echo $this->campaigns[$user['user_id']][$user['user_id']][@$user->campaign_id]; ?></td>
 	  <td><?php echo $this->validate[$user['user_id']]; ?></td>	
 	</tr>
