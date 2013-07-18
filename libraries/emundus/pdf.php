@@ -47,9 +47,10 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$courses_list = '<ul>';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
-		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
-		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
+		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+		//$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
+		$courses_list .= '<li>'.$ds.'</li>';
 		$courses_fee  .= 'Euro '.$c['price'].',-- ';
 	}
 	$courses_list .= '</ul>';
@@ -264,10 +265,11 @@ function letter_pdf_template ($user_id, $letter_id) {
 	$courses_list = '<ul>';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
-		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
-		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_fee  .= $c['price'].' &euro; <br>';
+		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+		//$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
+		$courses_list .= '<li>'.$ds.'</li>';
+		$courses_fee  .= 'Euro '.$c['price'].'<br>';
 		$programme = $c['label'];
 	}
 	$courses_list .= '</ul>';

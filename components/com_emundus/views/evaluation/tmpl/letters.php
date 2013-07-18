@@ -99,7 +99,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		return true;
 	}
 
-	$('mail_body').value = "<?php echo $email->message; ?>";
+	$('mail_body').value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
 	$('mail_subject').value = "<?php echo $campaign['label']; ?>";
 	$('mail_attachments').value = "<?php echo $files_path; ?>";
 
