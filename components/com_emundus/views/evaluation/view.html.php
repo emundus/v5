@@ -141,9 +141,11 @@ class EmundusViewEvaluation extends JView
 		//$rank_cols = $this->get('RankingColumns');
 
 
-		if ( EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id) )
+		if ( EmundusHelperAccess::isAdministrator($this->_user->id) || EmundusHelperAccess::isCoordinator($this->_user->id) ){
 			$rank_cols[] = array('name' =>'assoc_evaluators', 'label'=>JText::_('ASSOCIATED_EVAL'));
-
+		}else{
+			$rank_cols = array();
+		}
 		$header_values = EmundusHelperList::aggregation($appl_cols, $filter_cols, $eval_cols, $rank_cols);
 		$this->assignRef( 'header_values', $header_values );
 
