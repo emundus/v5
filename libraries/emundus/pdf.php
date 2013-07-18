@@ -426,11 +426,13 @@ function application_form_pdf($user_id, $output = true) {
 	$item = $db->loadObject();
 
 	//get logo
-	$query = 'SELECT m.content FROM #__modules m WHERE m.id = 90';
+	$query='SELECT params FROM #__template_styles WHERE id="16"';
 	$db->setQuery($query);
-	$logo = $db->loadResult();
-	preg_match('#src="(.*?)"#i', $logo, $tab);
-	$logo = JPATH_BASE.DS.$tab[1];
+	$params = $db->loadResult();
+	$tab=json_decode($params);var_dump($tab->logo->custom->image);
+	$path=preg_match_all("/'([^']*)'/",$tab->logo->custom->image,$matches);
+	$logo=JPATH_BASE.DS.substr($matches[0][1],1,-1);
+	
 	//get title
 	$config =& JFactory::getConfig(); 
 	$title = $config->getValue('config.sitename');
