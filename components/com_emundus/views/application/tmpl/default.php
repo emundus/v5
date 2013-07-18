@@ -238,7 +238,7 @@ function age($naiss) {
 		?>
 	</div>
 	
-	<h2><?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
+	<h2  onClick="setCookie('current_display',2,20);"><?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?>
 	</h2>
 	
 	<div id="em_application_forms" class="content">
@@ -254,7 +254,7 @@ function age($naiss) {
 		<?php echo $this->forms; ?>
 	</div>
 		
-	<h2 id="em_application_forms_title"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>-->
+	<h2 id="em_application_forms_title" onClick="setCookie('current_display',3,20);"><!--<input type="checkbox" name="comments" id="checkall2" onClick="check_all(this.id)"/>-->
 		<?php echo JText::_('COMMENTS'); ?>
 	</h2>
 	
@@ -290,7 +290,74 @@ function age($naiss) {
 		} else echo JText::_('NO_COMMENT');
 		?>
 	</div>
-
+	
+	<h2 onClick="setCookie('current_display',4,20);"><?php echo JText::_('EMAIL_HISTORY'); ?></h2>
+	<div id="em_application_email" class="content">
+	<?php
+		if(!empty($this->emailFrom)){
+			echo'
+			<div id="email_sent">
+				<div class="email_title">'.JText::_('EMAIL_SENT').'</div>
+			';
+			foreach($this->emailFrom as $email){
+					echo'
+					<div class="email">
+						<div class="email_to">
+							<div class="email_legend">'.JText::_('EMAIL_TO').' : </div>
+							'.strtoupper($email->lastname).' '.strtolower($email->firstname).'
+						</div>
+						<div class="email_subject">
+							<div class="email_legend">'.JText::_('EMAIL_SUBJECT').' : </div>
+							'.$email->subject.'
+						</div>
+						<div class="email_date">
+							<div class="email_legend">'.JText::_('DATE').' : </div>
+							'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+						</div>
+						<div class="email_message">
+							<div class="email_legend">'.JText::_('MESSAGE').' : </div>
+							'.$email->message.'
+						</div>
+					</div>
+					';
+			}
+			echo'
+			</div>
+			';
+		}
+		if(!empty($this->emailTo)){
+			echo'
+			<div id="email_received">
+				<div class="email_title">'.JText::_('EMAIL_RECEIVED').'</div>
+			';
+			foreach($this->emailTo as $email){
+					echo'
+					<div class="email">
+						<div class="email_from">							
+							<div class="email_legend">'.JText::_('EMAIL_FROM').' : </div>
+							'.strtoupper($email->lastname).' '.strtolower($email->firstname).'
+						</div>
+						<div class="email_subject">
+							<div class="email_legend">'.JText::_('EMAIL_SUBJECT').' : </div>
+							'.$email->subject.'
+						</div>
+						<div class="email_date">
+							<div class="email_legend">'.JText::_('DATE').' : </div>
+							'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+						</div>
+						<div class="email_message">
+							<div class="email_legend">'.JText::_('MESSAGE').' : </div>
+							'.$email->message.'
+						</div>
+					</div>
+					';
+			}
+			echo'
+			</div>
+			';
+		}
+	?>
+	</div>
 </div>
 <input type="hidden" name="sid" value="<?php echo $this->student->id; ?>" />
 <input type="hidden" value="" name="task">

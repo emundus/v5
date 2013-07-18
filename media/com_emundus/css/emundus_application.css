@@ -180,3 +180,79 @@ div#tooltip li {
     padding-right: 0px;
     padding-top: 0px;
 }*/
+
+/* email */
+.email_legend {
+	font-size:14px;
+	font-weight:bold;
+}
+#email_sent {
+	padding:10px 10px 10px 10px;
+	margin-bottom:10px;
+}
+#email_sent .email_title {
+	text-align:center;
+	background-color:#ADDE71;
+	font-size:16px;
+	font-weight:bold;
+	border-radius:10px;
+	margin-bottom:5px;
+}
+#email_sent .email {
+	border:1px solid #B1FC55;
+	border-radius:10px;
+	padding:5px 5px 5px 5px;
+	margin-bottom:10px;
+}
+#email_sent .email_to {
+	border-bottom:1px solid #B1FC55;
+	margin-bottom:5px;
+}
+#email_sent .email_subject{
+	border-bottom:1px solid #B1FC55;
+	margin-bottom:5px;
+}
+#email_sent .email_date{
+	border-bottom:1px solid #B1FC55;
+	margin-bottom:10px;
+}
+#email_sent .email_message{
+	margin-bottom:5px;
+	margin-top:20px;
+}
+
+
+#email_received {
+	padding:10px 10px 10px 10px;
+	margin-bottom:10px;
+}
+#email_received .email_title {
+	text-align:center;
+	background-color:#C3D2F7;
+	font-size:16px;
+	font-weight:bold;
+	border-radius:10px;
+	margin-bottom:5px;
+}
+#email_received .email {
+	border:1px solid #34B6F2;
+	border-radius:10px;
+	padding:5px 5px 5px 5px;
+	margin-bottom:10px;
+}
+#email_received .email_from {
+	border-bottom:1px solid #C3D2F7;
+	margin-bottom:5px;
+}
+#email_received .email_subject{
+	border-bottom:1px solid #C3D2F7;
+	margin-bottom:5px;
+}
+#email_received .email_date{
+	border-bottom:1px solid #C3D2F7;
+	margin-bottom:10px;
+}
+#email_received .email_message{
+	margin-bottom:5px;
+	margin-top:20px;
+}
