@@ -41,14 +41,14 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$chemin = EMUNDUS_PATH_REL;
 
 	// Get email 
-	if($result_id == 4)
+	/*if($result_id == 4)
 		$email_lb = "candidature_accepted";
 	elseif($result_id == 3)
 		$email_lb = "candidature_waiting_list";
 	elseif($result_id == 2)
 		$email_lb = "candidature_rejected";
-
-	$email = $emails->getEmail($email_lb);
+	*/
+	$email = $emails->getEmail("candidature_decision");
 
 	?>
 	<!--

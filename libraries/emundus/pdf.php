@@ -40,7 +40,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($training). "AND date_start > NOW() ORDER BY date_start ASC";
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.")";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	
@@ -50,7 +50,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
 		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_fee  .= $c['price'].' &euro; <br>';
+		$courses_fee  .= 'Euro '.$c['price'].',-- ';
 	}
 	$courses_list .= '</ul>';
 
@@ -268,6 +268,7 @@ function letter_pdf_template ($user_id, $letter_id) {
 		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
 		$courses_fee  .= $c['price'].' &euro; <br>';
+		$programme = $c['label'];
 	}
 	$courses_list .= '</ul>';
 
@@ -333,8 +334,6 @@ function letter_pdf_template ($user_id, $letter_id) {
 		preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
 		$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
 
-		
-
 		//get title
 	/*	$config =& JFactory::getConfig(); 
 		$title = $config->getValue('config.sitename');
@@ -355,9 +354,9 @@ function letter_pdf_template ($user_id, $letter_id) {
 		//
 		// Replacement
 		//
-		$post = array(  'TRAINING_CODE' => @$training, 
-						'TRAINING_PROGRAMME' => @$campaign['label'],
-						'REASON' => @$result, 
+		$post = array(  'TRAINING_CODE' => @$letters[0]['training'], 
+						'TRAINING_PROGRAMME' => @$programme,
+						'REASON' => JText::_("DEPEND_OF_EVALUATION"), 
 						'TRAINING_FEE' => @$courses_fee, 
 						'TRAINING_PERIODE' => @$courses_list );
 

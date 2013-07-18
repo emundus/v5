@@ -526,10 +526,7 @@ class EmundusHelperList{
 				$view = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=details&fabrik='.$form_eval.'&random=0&rowid='.@$user['evaluation_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'VIEW_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/zoom_application.png" /></a>';
 				
 				$delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['evaluation_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
-				
-				/*$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';*/
-				
-				//$allowed = array("Super Users", "Administrator", "Editor");
+
 				if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->evaluators_can_see > 1 ) {
 					$canview = true;
 					$canedit = true;
@@ -545,7 +542,6 @@ class EmundusHelperList{
 					$candelete = true;
 				}else{
 					$candelete = false;
-					//$letter = '';
 				}
 				
 				if(count($evaluation) > 0) {
@@ -575,8 +571,6 @@ class EmundusHelperList{
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
 						}
 					}
-						/*if(in_array('letter',$params))
-							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $letter;*/
 				} else {
 					if(in_array('add',$params))
 						@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
@@ -672,37 +666,6 @@ class EmundusHelperList{
 	return ($arr);
 	}	
 	
-/*	//get the engagaed column
-	function getEngaged($users){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$view = JRequest::getVar('view', null, 'GET', 'none',0);
-		$engaged = array();
-		foreach($users as $user){
-			@$engaged[$user['user_id']][$user['campaign_id']] .= '';
-			if ($user['final_grade'] == 4) {
-				$state = $user['profile']==7?'disabled="disabled"':'';
-				$engaged[$user['user_id']][$user['campaign_id']] .= '<input name="checkbox" type="checkbox" '.$state.' id="engaged-'.$user['user_id'].'" ';
-				if ($user['engaged']==1){
-					$engaged[$user['user_id']][$user['campaign_id']] .= 'checked="checked"';
-					$set=0;
-				} else $set=1;
-				$engaged[$user['user_id']][$user['campaign_id']] .= ' />';
-				$engaged[$user['user_id']][$user['campaign_id']] .= '<div id="e-'.$user['user_id'].'"></div>';
-				$url = 'index.php?option=com_emundus&controller='.$view.'&format=raw&task=set_engaged&sid='.$user['user_id'].'&set='.$set.'&Itemid='.$itemid;
-				
-				$engaged[$user['user_id']][$user['campaign_id']] .= '<script>window.addEvent( \'domready\', function() {$(\'engaged-'.$user['user_id'].'\').addEvent( \'click\', function() {
-				$(\'e-'.$user['user_id'].'\').empty().addClass(\'ajax-loading\');
-				var a = new Ajax( \''.$url.'\', {
-				method: \'get\',
-				update: $(\'e-'.$user['user_id'].'\')
-				}).request();
-				}); });</script>';
-			} else @$engaged[$user['user_id']][$user['campaign_id']] .= '';
-		}
-		return $engaged;
-	}
-*/
-
 	//get the Confirm by applicant column
 	function getEngaged($users){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);

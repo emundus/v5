@@ -141,7 +141,7 @@ if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
 	/**
 	 * image logo
 	 */
-	define ('PDF_HEADER_LOGO', 'tcpdf_signature.png');
+	define ('PDF_HEADER_LOGO', 'logo_example.png');
 
 	/**
 	 * header logo image width [mm]
