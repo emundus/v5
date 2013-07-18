@@ -527,13 +527,7 @@ function updateprofile() {
 		$db->setQuery('SELECT COUNT(*) FROM #__emundus_users WHERE user_id = '.mysql_real_escape_string($newuser['id']));
 		$compte = $db->loadResultArray();
 		$compte = $compte[0];
-		// $db->setQuery('UPDATE #__users SET name = "'.mysql_real_escape_string($newuser['name']).'", 
-											// email = "'.mysql_real_escape_string($newuser['email']).'", 
-											// usertype = "'.$newuser['usertype'].'", 
-											// username = "'.$newuser['username'].'",
-											// gid = '.$newuser['gid'].'
-								// WHERE id = '.mysql_real_escape_string($newuser['id']));
-		// $db->Query();
+		
 		if($compte>0) {
 			$db->setQuery('UPDATE #__emundus_users SET firstname = "'.mysql_real_escape_string($newuser['firstname']).'", 
 														lastname = "'.mysql_real_escape_string($newuser['lastname']).'", 
@@ -555,7 +549,7 @@ function updateprofile() {
 		}
 		//
 		// Affectation a/aux groupe(s)
-		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array', 0);
+		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array', 0);		
 			$db->setQuery('DELETE FROM `#__emundus_groups` WHERE user_id='.mysql_real_escape_string($newuser['id']));
 			$db->Query() or die($db->getErrorMsg());
 			foreach($groups as $grp) {
@@ -564,14 +558,13 @@ function updateprofile() {
 				$db->setQuery($query);
 				$db->Query() or die($db->getErrorMsg());
 			}
-/*		//
-		// Affectation à une Université
-		$university_id = JRequest::getVar('university_id', null, 'POST', null, 0);
-		$db->setQuery('UPDATE `#__emundus_users` SET university_id='.$university_id.' WHERE user_id='.mysql_real_escape_string($newuser['id']));
-		$db->Query() or die($db->getErrorMsg());*/
+
 		if($user->profile == 999) {
 			$this->_blockuser($user->id);
+		}else{
+			$this->affectGroup($user->id,$user->profile);
 		}
+		
 		
 		//
 		// Affectation a/aux profil(s) secondaires
@@ -592,6 +585,19 @@ function updateprofile() {
 		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$newuser['id'].'&edit=1&tmpl=component&Itemid='.$Itemid, JText::_('Users successfully updated'), 'message');
 	}
 	
+	function affectGroup($user_id,$profile_id){
+		$db = JFactory::getDBO();
+		$query='SELECT acl_aro_groups FROM #__emundus_setup_profiles WHERE id='.$profile_id;
+		$db->setQuery($query);
+		$group_id = $db->loadResult();
+		
+		$query1 = 'UPDATE #__user_usergroup_map 
+		SET group_id='.$group_id.'  
+		WHERE user_id='.$user_id;
+		$db->setQuery($query1);
+		$db->Query() or die($db->getErrorMsg());
+	}
+		
 	function get_id(){
 		$db = JFactory::getDBO();
 		$value = $_GET['link'];

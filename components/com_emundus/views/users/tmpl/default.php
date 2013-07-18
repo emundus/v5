@@ -346,7 +346,22 @@ function hidden_tr(div1,div2, profile)
 		document.getElementById(div2).style.visibility = "visible";
 	}
 	else
-	{
+	{		
+		
+		if(div2.indexOf("group")!=-1){
+			check = document.getElementById(div2).getElementsByTagName("input");
+			  for(i=0 ; i<check.length ; i++){
+				 if(check[i].type=="checkbox" && check[i].checked==true){
+						check[i].checked=false;
+				}
+			}
+		}
+		if(div1.indexOf("univ")!=-1){
+			select = document.getElementById(div1).getElementsByTagName("select");alert(select.length);
+			 for(i=0 ; i<select.length ; i++){
+				select[i].selectedIndex=0;
+			}
+		}
 		document.getElementById(div1).style.visibility = "hidden";
 		document.getElementById(div2).style.visibility = "hidden";
 	}
