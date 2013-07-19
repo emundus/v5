@@ -318,12 +318,15 @@ function age($naiss) {
 	
 	</div>
 	<?php
-		if(!empty($this->emailFrom)){
+		// var_dump($this->email['to']);
+	?>
+	<?php
+		if(!empty($this->email['from'])){
 			echo'
 			<div id="email_sent">
 				<div class="email_title">'.JText::_('EMAIL_SENT').'</div>
 			';
-			foreach($this->emailFrom as $email){
+			foreach($this->email['from'] as $email){
 					echo'
 					<div class="email">
 						<div class="email_subject">
@@ -349,12 +352,12 @@ function age($naiss) {
 			</div>
 			';
 		}
-		if(!empty($this->emailTo)){
+		if(!empty($this->email['to'])){
 			echo'
 			<div id="email_received">
 				<div class="email_title">'.JText::_('EMAIL_RECEIVED').'</div>
 			';
-			foreach($this->emailTo as $email){
+			foreach($this->email['to'] as $email){
 					echo'
 					<div class="email">
 						<div class="email_subject">

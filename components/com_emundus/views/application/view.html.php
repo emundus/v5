@@ -89,11 +89,8 @@ class EmundusViewApplication extends JView{
 		$forms = $application->getforms($aid);
 		$this->assignRef('forms', $forms);
 		
-		$emailFrom = $application->getEmailFrom($aid);
-		$this->assignRef('emailFrom', $emailFrom);
-		
-		$emailTo = $application->getEmailTo($aid);
-		$this->assignRef('emailTo', $emailTo);
+		$email = $application->getEmail($aid);
+		$this->assignRef('email', $email);
 
 		//var_dump($logged);
         parent::display($tpl);

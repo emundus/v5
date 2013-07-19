@@ -315,25 +315,23 @@ class EmundusModelApplication extends JModel
 	return $forms;
 	}
 	
-	function getEmailFrom($user_id){
+	function getEmail($user_id){
+		$query = 'SELECT *
+		FROM #__messages as email
+		LEFT JOIN #__users as user ON user.id=email.user_id_from 
+		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id
+		WHERE email.user_id_to ='.$user_id;
+		$this->_db->setQuery($query);
+		$results['to'] = $this->_db->loadObjectList('message_id');
+		
 		$query = 'SELECT * 
 		FROM #__messages as email
 		LEFT JOIN #__users as user ON user.id=email.user_id_to 
 		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id 
 		WHERE email.user_id_from ='.$user_id;
-		$this->_db->setQuery($query);
-		$results = $this->_db->loadObjectList();
-		return $results;
-	}
-	
-	function getEmailTo($user_id){
-		$query = 'SELECT *
-		FROM #__messages as email
-		LEFT JOIN #__users as user ON user.id=email.user_id_from 
-		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id 
-		WHERE email.user_id_to ='.$user_id;
-		$this->_db->setQuery($query);
-		$results = $this->_db->loadObjectList();
+		$this->_db->setQuery($query);		
+		$results['from'] = $this->_db->loadObjectList('message_id');
+		
 		return $results;
 	}
 
