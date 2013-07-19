@@ -34,7 +34,7 @@ class EmundusHelperEmails{
 						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
 					</span>
 				</legend>
-				<input type="submit" class="blue" name="default_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" >
+				<div><input type="submit" class="blue" name="default_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
 		if(in_array('custom',$params)){
@@ -80,7 +80,7 @@ class EmundusHelperEmails{
 					<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>
 					<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
 				</div>
-				<input type="submit" name="custom_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+				<div><input type="submit" name="custom_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
 		if(in_array('applicants', $params)){
@@ -102,7 +102,7 @@ class EmundusHelperEmails{
 				</div>
 				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>
 				<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
-				<input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
 		if(in_array('evaluation_result', $params)){
@@ -131,7 +131,7 @@ class EmundusHelperEmails{
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
 				<br><br>
-				<p><input type="submit" name="evaluation_result_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+				<p><div><input type="submit" name="evaluation_result_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 				</p>
 			</fieldset>';
 		}

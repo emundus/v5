@@ -78,7 +78,7 @@ class EmundusModelApplication extends JModel
 	
 	function getUserCampaigns($id){
 		
-		$query = 'SELECT esc.label, esc.year, ecc.date_submitted, ecc.submitted, efg.result_sent, efg.date_result_sent 
+		$query = 'SELECT esc.label, esc.year, ecc.date_submitted, ecc.submitted, efg.result_sent, efg.date_result_sent, efg.final_grade
 			FROM #__emundus_users eu
 			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
 			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id

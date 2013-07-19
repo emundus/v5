@@ -26,6 +26,7 @@
 		float:left;
 		display:inline;
 		margin-right:5px;
+		width:10%;
 	}
 	
 	.actions {
@@ -205,15 +206,25 @@ div#tooltip li {
 	margin-bottom:10px;
 }
 #email_sent .email_to {
-	border-bottom:1px solid #B1FC55;
 	margin-bottom:5px;
+	width:30%;
+	float: left;
+}
+#email_sent .email_to_text {
+	color:black;
 }
 #email_sent .email_subject{
-	border-bottom:1px solid #B1FC55;
 	margin-bottom:5px;
+	font-size:18px;
+	font-weight:bold;
+	margin-top:5px;
 }
 #email_sent .email_date{
-	border-bottom:1px solid #B1FC55;
+	width:70%;
+	float: right;
+	height:50px;
+}
+#email_sent .email_details{
 	margin-bottom:10px;
 }
 #email_sent .email_message{
@@ -241,15 +252,23 @@ div#tooltip li {
 	margin-bottom:10px;
 }
 #email_received .email_from {
-	border-bottom:1px solid #C3D2F7;
 	margin-bottom:5px;
+	color:black;
+	width:30%;
+	float: left;
 }
 #email_received .email_subject{
-	border-bottom:1px solid #C3D2F7;
 	margin-bottom:5px;
+	font-size:18px;
+	font-weight:bold;
+	margin-top:5px;
 }
 #email_received .email_date{
-	border-bottom:1px solid #C3D2F7;
+	width:70%;
+	float: right;
+	height:50px;
+}
+#email_received .email_details{
 	margin-bottom:10px;
 }
 #email_received .email_message{

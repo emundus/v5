@@ -95,7 +95,7 @@ function age($naiss) {
 				
 				echo'<div class="icon">';
 					if($campaign->submitted==0){
-						$contenu ='<div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
+						$contenu ='<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JNO').'</li>';
 						?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 						<?php
@@ -103,31 +103,48 @@ function age($naiss) {
 						echo '</a>';
 					}else{
 						if($campaign->result_sent==0){
-							$contenu ='<div class="sub_title">'.JText::_("SUBMITTED").'</div> : '.JText::_("JYES").'</li>';
+							$contenu ='<div class="sub_title">'.JText::_("SUBMITTED").'</div> : '.JText::_("JYES");
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
 								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
-							$contenu ='<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JNO").'</li>';
+							$contenu ='<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JNO");
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
 								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_not_send.png" />
 							</a>';
 						}else if($campaign->result_sent==1){
-							$contenu = '<div class="sub_title">'.JText::_("SUBMITTED").'</div> : '.JText::_("JYES").'</li>';
+							$contenu = '<div class="sub_title">'.JText::_("SUBMITTED").'</div> : '.JText::_("JYES");
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
 								echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/tick.png" />
 							</a>';
-							$contenu = '<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JYES").'</li>';
+							$contenu = '<div class="sub_title">'.JText::_("RESULT_SENT").'</div> : '.JText::_("JYES");
 							?>
 							<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 							<?php
-							echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />';
+							echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />
+							</a>';
 						}
+					}
+					$tab = array (2,3,4);
+					if(!empty($campaign->final_grade) && in_array($campaign->final_grade,$tab)){
+						$contenu = '<div class="sub_title">'.JText::_("FINAL_GRADE").'</div> : ';
+						if($campaign->final_grade==4){
+							$contenu.=JText::_("ACCEPTED");
+						}else if($campaign->final_grade==3){
+							$contenu.=JText::_("WAITING_LIST");
+						}else if($campaign->final_grade==2){
+							$contenu.=JText::_("REJECTED");
+						}
+						?>
+						<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
+						<?php
+						echo '<img width="30%" style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'.png" />
+						</a>';					
 					}
 				echo'</div>';
 				?>
@@ -293,6 +310,13 @@ function age($naiss) {
 	
 	<h2 onClick="setCookie('current_display',4,20);"><?php echo JText::_('EMAIL_HISTORY'); ?></h2>
 	<div id="em_application_email" class="content">
+	<div class="actions">
+	<?php
+	echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'index.php?option=com_emundus&view=email&tmpl=component">'; ?>
+		<img style="border:0;" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('SEND_EMAIL')."</div>"; ?>');" onClick="setCookie('current_display',4,20); document.pressed=this.name" name="send_email" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/send.png" width="30px" />
+	</a>
+	
+	</div>
 	<?php
 		if(!empty($this->emailFrom)){
 			echo'
@@ -302,17 +326,17 @@ function age($naiss) {
 			foreach($this->emailFrom as $email){
 					echo'
 					<div class="email">
-						<div class="email_to">
-							<div class="email_legend">'.JText::_('EMAIL_TO').' : </div>
-							'.strtoupper($email->lastname).' '.strtolower($email->firstname).'
-						</div>
 						<div class="email_subject">
-							<div class="email_legend">'.JText::_('EMAIL_SUBJECT').' : </div>
 							'.$email->subject.'
 						</div>
-						<div class="email_date">
-							<div class="email_legend">'.JText::_('DATE').' : </div>
-							'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+						<div class="email_details">
+							<div class="email_to">
+								<div class="email_legend">'.JText::_('TO').' : </div>
+								<div class="email_to_text">'.strtoupper($email->lastname).' '.strtolower($email->firstname).' ('.$email->email.') </div>
+							</div>
+							<div class="email_date">
+								'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+							</div>
 						</div>
 						<div class="email_message">
 							<div class="email_legend">'.JText::_('MESSAGE').' : </div>
@@ -333,17 +357,16 @@ function age($naiss) {
 			foreach($this->emailTo as $email){
 					echo'
 					<div class="email">
-						<div class="email_from">							
-							<div class="email_legend">'.JText::_('EMAIL_FROM').' : </div>
-							'.strtoupper($email->lastname).' '.strtolower($email->firstname).'
-						</div>
 						<div class="email_subject">
-							<div class="email_legend">'.JText::_('EMAIL_SUBJECT').' : </div>
 							'.$email->subject.'
 						</div>
-						<div class="email_date">
-							<div class="email_legend">'.JText::_('DATE').' : </div>
-							'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+						<div class="email_details">
+							<div class="email_from">
+								'.strtoupper($email->lastname).' '.strtolower($email->firstname).' ('.$email->email.') 
+							</div>
+							<div class="email_date">
+								'.JHtml::_('date', $email->date_time, JText::_('DATE_FORMAT_LC2')).'
+							</div>
 						</div>
 						<div class="email_message">
 							<div class="email_legend">'.JText::_('MESSAGE').' : </div>
