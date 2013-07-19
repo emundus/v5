@@ -53,7 +53,7 @@ class EmundusViewEmail extends JView{
 
 		if(EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
 			if($this->_user->profile!=16){
-				$options = array('applicants');
+				$options = array('this_applicant');
 				$email_applicant = EmundusHelperEmails::createEmailBlock($options);
 				unset($options);
 			}

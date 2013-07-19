@@ -135,6 +135,33 @@ class EmundusHelperEmails{
 				</p>
 			</fieldset>';
 		}
+		if(in_array('this_applicant', $params)){
+			$email_to = JRequest::getVar('sid', null, 'GET', 'none',0);
+			$student = JFactory::getUser($email_to);
+			$email.= '<fieldset>
+				<legend> 
+					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP').'">
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_SELECTED_APPLICANTS').'"/> '.JText::_( 'EMAIL_SELECTED_APPLICANTS' ).'
+					</span>
+				</legend>
+				<div>
+					<p>
+					<dd>
+					[NAME] : '.JText::_('TAG_NAME_TIP').'<br />
+					[SITE_URL] : '.JText::_('SITE_URL_TIP').'<br />
+					</dd>
+					</p><br />
+					<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
+					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" /><br />
+					<label for="mail_to">'.JText::_( 'APPLICANT' ).' </label><br/>
+					<input name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$student->username.'" size="80" disabled/>
+					<input type="hidden" name="ud[]" value="'.$email_to.'" >
+				</div>
+				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>
+				<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
+				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
+			</fieldset>';
+		}
 		$email .= '</div>';
 		return $email;
 	}
