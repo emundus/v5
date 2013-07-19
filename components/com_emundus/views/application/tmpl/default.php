@@ -312,7 +312,7 @@ function age($naiss) {
 	<div id="em_application_email" class="content">
 	<div class="actions">
 	<?php
-	echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'index.php?option=com_emundus&view=email&tmpl=component">'; ?>
+	echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8},onClose:function(){delayAct('.$this->student->id.');}}" href="'.JURI::Base().'index.php?option=com_emundus&view=email&template=component">'; ?>
 		<img style="border:0;" onMouseOver="tooltip(this, '<?php echo "<div id=title>".JText::_('SEND_EMAIL')."</div>"; ?>');" onClick="setCookie('current_display',4,20); document.pressed=this.name" name="send_email" src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/send.png" width="30px" />
 	</a>
 	
