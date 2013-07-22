@@ -32,7 +32,7 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusflow/style/' 
 			</div>
 			<div class="status">
 				<?php 
-					if($attachments=="100"){
+					if($attachments>="100"){
 						echo'<img src="'.JURI::Base().'media/com_emundus/images/icones/green.png" align="middle" />'; 
 					}else{
 						echo'<img src="'.JURI::Base().'media/com_emundus/images/icones/red.png" align="middle" />'; 
