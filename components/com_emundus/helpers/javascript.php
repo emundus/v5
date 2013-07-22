@@ -590,7 +590,9 @@ function OnSubmitForm() {
 		}
 		
 		window.onload=function() {
-			$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
+			if('.$mainframe->getUserState($option.'select_id', 'select_id').'!=NULL){
+				$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
+			}
 			/* getLegend();*/
 		}
 		';
