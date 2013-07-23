@@ -432,7 +432,7 @@ function application_form_pdf($user_id, $output = true) {
 	$tab=json_decode($params);
 	// var_dump($tab->logo->custom->image);
 	$path=preg_match_all("/'([^']*)'/",$tab->logo->custom->image,$matches);
-	$logo=JPATH_BASE.DS.substr($matches[0][1],1,-1);
+	$logo=JURI::Base().DS.substr($matches[0][1],1,-1);
 	
 	//get title
 	$config =& JFactory::getConfig(); 
