@@ -175,7 +175,7 @@ class EmundusController extends JController {
 
 		for($i = 0; $i<count($files['name']);$i++) {
 			if (empty($files['name'][$i])) continue;
-			$test = 'SELECT UPPER(allowed_types) FROM #__emundus_setup_attachments WHERE id = '.mysql_real_escape_string($attachments[$i]);
+			$test = 'SELECT UPPER(allowed_types) FROM #__emundus_setup_attachments WHERE id = '.$attachments[$i];
 			$db->setQuery( $test );
 			$ext = $db->loadResult() or die($db->getErrorMsg());
 			if (strpos($ext, strtoupper(end(explode(".", $files['name'][$i]))))===FALSE) {
@@ -211,7 +211,7 @@ class EmundusController extends JController {
 				if (move_uploaded_file(	$files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
 					$can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
 					$can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
-					$query .= '('.mysql_real_escape_string($user->id).', '.mysql_real_escape_string($attachments[$i]).', \''.mysql_real_escape_string($paths).'\', \''.mysql_real_escape_string($descriptions[$i]).'\', '.mysql_real_escape_string($can_be_deleted).', '.mysql_real_escape_string($can_be_viewed).', '.$user->campaign_id.'),';
+					$query .= '('.$user->id.', '.$attachments[$i].', \''.$paths.'\', \''.$descriptions[$i].'\', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.'),';
 					$nb++;
 				}
 				if ($labels[$i]=="_photo") {
@@ -296,13 +296,13 @@ function updateprofile() {
 
 		$db = JFactory::getDBO();
 // ATTACHMENTS
-		$db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.mysql_real_escape_string($profile_id));
+		$db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
 		$db->Query() or die($db->getErrorMsg());
 		if(isset($attachments)) {
 			$query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
 			foreach($attachments as $id => $attachment) {
 				if(!$attachment->selected) continue;
-				$query .= '('.mysql_real_escape_string($profile_id).', '.mysql_real_escape_string($id).', ';
+				$query .= '('.$profile_id.', '.$id.', ';
 				$query .= $attachment->displayed?'1':'0';
 				$query .= ', ';
 				$query .= $attachment->required?'1':'0';
@@ -726,8 +726,8 @@ function updateprofile() {
 		} else {
 			$file = JPATH_BASE.DS.$url;
 			if (file_exists($file)) {
-				
-				header('Content-type: application/'.mime_content_type($url));
+				$mime_type = $this->get_mime_type($file);
+				header('Content-type: application/'.$mime_type);
 				header('Content-Disposition: inline; filename='.basename($file));
 				header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
 				header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -749,6 +749,20 @@ function updateprofile() {
 			}
 		}
 	}
+
+	function get_mime_type($filename, $mimePath = '../etc') {
+	   $fileext = substr(strrchr($filename, '.'), 1);
+	   if (empty($fileext)) return (false);
+	   $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
+	   $lines = file("$mimePath/mime.types");
+	   foreach($lines as $line) {
+	      if (substr($line, 0, 1) == '#') continue; // skip comments
+	      $line = rtrim($line) . " ";
+	      if (!preg_match($regex, $line, $matches)) continue; // no match to the extension
+	      return ($matches[1]);
+	   }
+	   return (false); // no match at all
+	} 
 	
 	function sendmail($nb_email_per_batch = null){
 		$app = JFactory::getApplication();
