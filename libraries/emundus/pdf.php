@@ -387,7 +387,7 @@ function application_form_pdf($user_id, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 
-	$current_user = & JFactory::getUser();
+	$current_user =  JFactory::getUser();
 	// --- CONFIGURATION --- //
 	$group_personal_infos = 14;
 	$str_repeat = '//..*..//';
@@ -426,13 +426,14 @@ function application_form_pdf($user_id, $output = true) {
 	$item = $db->loadObject();
 
 	//get logo
-	$query='SELECT params FROM #__template_styles WHERE id="16"';
-	$db->setQuery($query);
-	$params = $db->loadResult();
-	$tab=json_decode($params);
-	// var_dump($tab->logo->custom->image);
-	$path=preg_match_all("/'([^']*)'/",$tab->logo->custom->image,$matches);
-	$logo=JURI::Base().DS.substr($matches[0][1],1,-1);
+	$app 		= JFactory::getApplication();
+	$template 	= $app->getTemplate(true);
+	$params     = $template->params;
+	$image   	= $params->get('logo')->custom->image; 
+	$logo 		= preg_match_all("/'([^']*)'/", $image, $matches);
+	$logo 		= !empty($matches[1][1]) ? JPATH_ROOT.DS.$matches[1][1] : preg_match_all('/"([^"]*)"/', $image, $matches);
+	$logo 		= !empty($logo) ? JPATH_ROOT.DS.$matches[1][1] : "";
+	
 	
 	//get title
 	$config =& JFactory::getConfig(); 
