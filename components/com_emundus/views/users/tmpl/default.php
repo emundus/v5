@@ -187,7 +187,7 @@ foreach ($this->users as $user) { ?>
         <td align="center"><?php
 			foreach($this->campaigns as $campaign){ 
 				if($campaign->applicant_id==$user->id){
-					$campaign_date = JText::_('CAMPAIG_DATE');
+					$campaign_date = JText::_('CAMPAIGN_DATE');
 					$campaign_end_date = JText::_('CAMPAIGN_END_DATE');
 					$campaign_start_date = JText::_('CAMPAIGN_START_DATE');
 					$year = JText::_('ACADEMIC_YEAR');
