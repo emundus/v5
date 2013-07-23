@@ -25,7 +25,7 @@ class EmundusViewEmail extends JView{
 	var $_db = null;
 	
 	function __construct($config = array()){
-		// require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -60,6 +60,7 @@ class EmundusViewEmail extends JView{
 		}
 		else $email_applicant = '';
 		$this->assignRef('email', $email_applicant);
+		
 
 		//var_dump($logged);
         parent::display($tpl);
