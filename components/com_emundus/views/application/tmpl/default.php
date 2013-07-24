@@ -143,7 +143,7 @@ function age($naiss) {
 						?>
 						<a onMouseOver="tooltip(this, '<?php echo htmlentities($contenu); ?>');" href="#" title="" >
 						<?php
-						echo '<img width="30%" style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'.png" />
+						echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'_16x16.png" />
 						</a>';					
 					}
 				echo'</div>';
