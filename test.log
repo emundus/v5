@@ -1,11 +1,11 @@
 <pre class='xdebug-var-dump' dir='ltr'>
-<b>object</b>(<i>PHPExcel</i>)[<i>425</i>]
+<b>object</b>(<i>PHPExcel</i>)[<i>493</i>]
   <i>private</i> '_properties' <font color='#888a85'>=&gt;</font> 
-    <b>object</b>(<i>PHPExcel_DocumentProperties</i>)[<i>470</i>]
+    <b>object</b>(<i>PHPExcel_DocumentProperties</i>)[<i>546</i>]
       <i>private</i> '_creator' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Décision Publique : http://www.decisionpublique.fr/'</font> <i>(length=52)</i>
       <i>private</i> '_lastModifiedBy' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Décision Publique'</font> <i>(length=18)</i>
-      <i>private</i> '_created' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>1370879530</font>
-      <i>private</i> '_modified' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>1370879530</font>
+      <i>private</i> '_created' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>1374663950</font>
+      <i>private</i> '_modified' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>1374663950</font>
       <i>private</i> '_title' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'eMmundus® Report'</font> <i>(length=17)</i>
       <i>private</i> '_description' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Report from open source eMundus® plateform : http://www.emundus.fr/'</font> <i>(length=68)</i>
       <i>private</i> '_subject' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'eMmundus® Report'</font> <i>(length=17)</i>
@@ -13,68 +13,68 @@
       <i>private</i> '_category' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>''</font> <i>(length=0)</i>
       <i>private</i> '_company' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Microsoft Corporation'</font> <i>(length=21)</i>
   <i>private</i> '_security' <font color='#888a85'>=&gt;</font> 
-    <b>object</b>(<i>PHPExcel_DocumentSecurity</i>)[<i>469</i>]
+    <b>object</b>(<i>PHPExcel_DocumentSecurity</i>)[<i>545</i>]
       <i>private</i> '_lockRevision' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
       <i>private</i> '_lockStructure' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
       <i>private</i> '_lockWindows' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
       <i>private</i> '_revisionsPassword' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>''</font> <i>(length=0)</i>
       <i>private</i> '_workbookPassword' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>''</font> <i>(length=0)</i>
   <i>private</i> '_workSheetCollection' <font color='#888a85'>=&gt;</font> 
-    <b>array</b>
+    <b>array</b> <i>(size=1)</i>
       0 <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Worksheet</i>)[<i>479</i>]
+        <b>object</b>(<i>PHPExcel_Worksheet</i>)[<i>555</i>]
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel</i>)[<i>425</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel</i>)[<i>493</i>]
           <i>private</i> '_cellCollection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_CachedObjectStorage_Memory</i>)[<i>474</i>]
+            <b>object</b>(<i>PHPExcel_CachedObjectStorage_Memory</i>)[<i>550</i>]
               ...
           <i>private</i> '_rowDimensions' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_defaultRowDimension' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_RowDimension</i>)[<i>472</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_RowDimension</i>)[<i>548</i>]
               ...
           <i>private</i> '_columnDimensions' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=57)</i>
               ...
           <i>private</i> '_defaultColumnDimension' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_ColumnDimension</i>)[<i>471</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_ColumnDimension</i>)[<i>547</i>]
               ...
           <i>private</i> '_drawingCollection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>ArrayObject</i>)[<i>198</i>]
+            <b>object</b>(<i>ArrayObject</i>)[<i>286</i>]
               ...
           <i>private</i> '_title' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Incomplete application forms'</font> <i>(length=28)</i>
           <i>private</i> '_sheetState' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'visible'</font> <i>(length=7)</i>
           <i>private</i> '_pageSetup' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_PageSetup</i>)[<i>475</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_PageSetup</i>)[<i>551</i>]
               ...
           <i>private</i> '_pageMargins' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_PageMargins</i>)[<i>477</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_PageMargins</i>)[<i>553</i>]
               ...
           <i>private</i> '_headerFooter' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_HeaderFooter</i>)[<i>478</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_HeaderFooter</i>)[<i>554</i>]
               ...
           <i>private</i> '_sheetView' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_SheetView</i>)[<i>424</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_SheetView</i>)[<i>492</i>]
               ...
           <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Worksheet_Protection</i>)[<i>473</i>]
+            <b>object</b>(<i>PHPExcel_Worksheet_Protection</i>)[<i>549</i>]
               ...
           <i>private</i> '_styles' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_conditionalStylesCollection' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_cellCollectionIsSorted' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_breaks' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_mergeCells' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_protectedCells' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_autoFilter' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>''</font> <i>(length=0)</i>
           <i>private</i> '_freezePane' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'B2'</font> <i>(length=2)</i>
@@ -84,28 +84,28 @@
           <i>private</i> '_showSummaryBelow' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_showSummaryRight' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_comments' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
-          <i>private</i> '_activeCell' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'G6'</font> <i>(length=2)</i>
-          <i>private</i> '_selectedCells' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'G6'</font> <i>(length=2)</i>
-          <i>private</i> '_cachedHighestColumn' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'P'</font> <i>(length=1)</i>
-          <i>private</i> '_cachedHighestRow' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'6'</font> <i>(length=1)</i>
+          <i>private</i> '_activeCell' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'G8'</font> <i>(length=2)</i>
+          <i>private</i> '_selectedCells' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'G8'</font> <i>(length=2)</i>
+          <i>private</i> '_cachedHighestColumn' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'BG'</font> <i>(length=2)</i>
+          <i>private</i> '_cachedHighestRow' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'8'</font> <i>(length=1)</i>
           <i>private</i> '_rightToLeft' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_hyperlinkCollection' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=14)</i>
               ...
           <i>private</i> '_dataValidationCollection' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_tabColor' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
   <i>private</i> '_activeSheetIndex' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
   <i>private</i> '_namedRanges' <font color='#888a85'>=&gt;</font> 
-    <b>array</b>
+    <b>array</b> <i>(size=0)</i>
       <i><font color='#888a85'>empty</font></i>
   <i>private</i> '_cellXfSupervisor' <font color='#888a85'>=&gt;</font> 
-    <b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+    <b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_font' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>467</i>]
+        <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>543</i>]
           <i>private</i> '_name' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'Calibri'</font> <i>(length=7)</i>
           <i>private</i> '_bold' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_italic' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
@@ -114,66 +114,66 @@
           <i>private</i> '_underline' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'none'</font> <i>(length=4)</i>
           <i>private</i> '_strikethrough' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_color' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>466</i>]
+            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>542</i>]
               ...
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
           <i>public</i> '_size' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>11</font>
       <i>private</i> '_fill' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>465</i>]
+        <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>541</i>]
           <i>private</i> '_fillType' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'none'</font> <i>(length=4)</i>
           <i>private</i> '_rotation' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
           <i>private</i> '_startColor' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>464</i>]
+            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>540</i>]
               ...
           <i>private</i> '_endColor' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>463</i>]
+            <b>object</b>(<i>PHPExcel_Style_Color</i>)[<i>539</i>]
               ...
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_borders' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>462</i>]
+        <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>538</i>]
           <i>private</i> '_left' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>461</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>537</i>]
               ...
           <i>private</i> '_right' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>459</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>535</i>]
               ...
           <i>private</i> '_top' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>457</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>509</i>]
               ...
           <i>private</i> '_bottom' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>455</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>512</i>]
               ...
           <i>private</i> '_diagonal' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>453</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>514</i>]
               ...
           <i>private</i> '_diagonalDirection' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
           <i>private</i> '_allBorders' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>451</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>515</i>]
               ...
           <i>private</i> '_outline' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>449</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>518</i>]
               ...
           <i>private</i> '_inside' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>447</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>521</i>]
               ...
           <i>private</i> '_vertical' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>445</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>495</i>]
               ...
           <i>private</i> '_horizontal' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>443</i>]
+            <b>object</b>(<i>PHPExcel_Style_Border</i>)[<i>496</i>]
               ...
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_alignment' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>441</i>]
+        <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>499</i>]
           <i>private</i> '_horizontal' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'general'</font> <i>(length=7)</i>
           <i>private</i> '_vertical' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'bottom'</font> <i>(length=6)</i>
           <i>private</i> '_textRotation' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
@@ -183,134 +183,134 @@
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_numberFormat' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>440</i>]
+        <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>498</i>]
           <i>private</i> '_formatCode' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'General'</font> <i>(length=7)</i>
           <i>private</i> '_builtInFormatCode' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_conditionalStyles' <font color='#888a85'>=&gt;</font> 
-        <b>array</b>
+        <b>array</b> <i>(size=0)</i>
           <i><font color='#888a85'>empty</font></i>
       <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>439</i>]
+        <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>491</i>]
           <i>private</i> '_locked' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'inherit'</font> <i>(length=7)</i>
           <i>private</i> '_hidden' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'inherit'</font> <i>(length=7)</i>
           <i>private</i> '_parentPropertyName' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>468</i>]
+            <i>&</i><b>object</b>(<i>PHPExcel_Style</i>)[<i>544</i>]
       <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>true</font>
       <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> 
-        <i>&</i><b>object</b>(<i>PHPExcel</i>)[<i>425</i>]
+        <i>&</i><b>object</b>(<i>PHPExcel</i>)[<i>493</i>]
       <i>private</i> '_index' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
   <i>private</i> '_cellXfCollection' <font color='#888a85'>=&gt;</font> 
-    <b>array</b>
+    <b>array</b> <i>(size=3)</i>
       0 <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style</i>)[<i>438</i>]
+        <b>object</b>(<i>PHPExcel_Style</i>)[<i>501</i>]
           <i>private</i> '_font' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>437</i>]
+            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>500</i>]
               ...
           <i>private</i> '_fill' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>436</i>]
+            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>503</i>]
               ...
           <i>private</i> '_borders' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>419</i>]
+            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>505</i>]
               ...
           <i>private</i> '_alignment' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>484</i>]
+            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>565</i>]
               ...
           <i>private</i> '_numberFormat' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>485</i>]
+            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>566</i>]
               ...
           <i>private</i> '_conditionalStyles' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>486</i>]
+            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>567</i>]
               ...
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_index' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>0</font>
       1 <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style</i>)[<i>557</i>]
+        <b>object</b>(<i>PHPExcel_Style</i>)[<i>732</i>]
           <i>private</i> '_font' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>558</i>]
+            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>733</i>]
               ...
           <i>private</i> '_fill' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>560</i>]
+            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>735</i>]
               ...
           <i>private</i> '_borders' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>563</i>]
+            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>738</i>]
               ...
           <i>private</i> '_alignment' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>574</i>]
+            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>749</i>]
               ...
           <i>private</i> '_numberFormat' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>575</i>]
+            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>750</i>]
               ...
           <i>private</i> '_conditionalStyles' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>576</i>]
+            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>751</i>]
               ...
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_index' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>1</font>
       2 <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style</i>)[<i>581</i>]
+        <b>object</b>(<i>PHPExcel_Style</i>)[<i>756</i>]
           <i>private</i> '_font' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>582</i>]
+            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>757</i>]
               ...
           <i>private</i> '_fill' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>584</i>]
+            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>759</i>]
               ...
           <i>private</i> '_borders' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>587</i>]
+            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>762</i>]
               ...
           <i>private</i> '_alignment' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>598</i>]
+            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>773</i>]
               ...
           <i>private</i> '_numberFormat' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>599</i>]
+            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>774</i>]
               ...
           <i>private</i> '_conditionalStyles' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>600</i>]
+            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>775</i>]
               ...
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
           <i>private</i> '_index' <font color='#888a85'>=&gt;</font> <small>int</small> <font color='#4e9a06'>2</font>
   <i>private</i> '_cellStyleXfCollection' <font color='#888a85'>=&gt;</font> 
-    <b>array</b>
+    <b>array</b> <i>(size=1)</i>
       0 <font color='#888a85'>=&gt;</font> 
-        <b>object</b>(<i>PHPExcel_Style</i>)[<i>487</i>]
+        <b>object</b>(<i>PHPExcel_Style</i>)[<i>568</i>]
           <i>private</i> '_font' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>488</i>]
+            <b>object</b>(<i>PHPExcel_Style_Font</i>)[<i>569</i>]
               ...
           <i>private</i> '_fill' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>490</i>]
+            <b>object</b>(<i>PHPExcel_Style_Fill</i>)[<i>571</i>]
               ...
           <i>private</i> '_borders' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>493</i>]
+            <b>object</b>(<i>PHPExcel_Style_Borders</i>)[<i>574</i>]
               ...
           <i>private</i> '_alignment' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>504</i>]
+            <b>object</b>(<i>PHPExcel_Style_Alignment</i>)[<i>585</i>]
               ...
           <i>private</i> '_numberFormat' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>505</i>]
+            <b>object</b>(<i>PHPExcel_Style_NumberFormat</i>)[<i>586</i>]
               ...
           <i>private</i> '_conditionalStyles' <font color='#888a85'>=&gt;</font> 
-            <b>array</b>
+            <b>array</b> <i>(size=0)</i>
               ...
           <i>private</i> '_protection' <font color='#888a85'>=&gt;</font> 
-            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>506</i>]
+            <b>object</b>(<i>PHPExcel_Style_Protection</i>)[<i>587</i>]
               ...
           <i>private</i> '_isSupervisor' <font color='#888a85'>=&gt;</font> <small>boolean</small> <font color='#75507b'>false</font>
           <i>private</i> '_parent' <font color='#888a85'>=&gt;</font> <font color='#3465a4'>null</font>
