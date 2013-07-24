@@ -420,7 +420,6 @@ class EmundusModelUsers extends JModel
 				LEFT JOIN #__users as u on u.id=eu.user_id
 				WHERE esg.published=1';
 		$db->setQuery( $query );
-		// echo str_replace('#_','jos',$query);
 		return $db->loadObjectList();
 	}
 	

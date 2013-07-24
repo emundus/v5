@@ -97,9 +97,8 @@ function export_xls($uids, $element_id) {
 		$mod2 = new EmundusModelCampaign;
 		$campaigns = $mod2->getCampaignsXLS();
 		
-		$mod2 = new EmundusModelUsers;
-		$groupEval = $mod->getGroupEval();
-		
+		$mod3 = new EmundusModelUsers;
+		$groupEval = $mod3->getGroupEval();
 		
 			/// ****************************** ///
 			// Elements selected by administrator
