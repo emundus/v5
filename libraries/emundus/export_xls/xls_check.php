@@ -35,6 +35,7 @@ function sortObjectByArray($object,$orderArray) {
 }
 
 	function export_xls($uids, $element_id) {
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 			$current_user =& JFactory::getUser();
 			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
 			if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
@@ -202,24 +203,22 @@ function sortObjectByArray($object,$orderArray) {
 				$user0['GROUP_EVAL'] = '';
 				$user0['CAMPAIGNS'] = '';
 				$order = array('id','user_id','user','name','CAMPAIGNS','GROUP_EVAL','jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
-				$entete=sortArrayByArray($user0,$order);
+				$entete=sortArrayByArray($user0, $order);
 			}else{
 				$user0->GROUP_EVAL = '';
 				$user0->CAMPAIGNS = '';
 				$order = array('id','user_id','user','name','CAMPAIGNS','GROUP_EVAL','jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
-				$entete=sortObjectByArray($user0,$order);
+				$entete=sortObjectByArray($user0, $order);
 			}
-			
+	
 			foreach($entete as $key=>$value){
 				if($key != 'id' && $key != 'user' && $key != 'block' && $key != 'usertype' && $key!='validated' && $key !='schoolyear'){
-					if($key=='jos_emundus_declaration__time_date' || $key=='jos_emundus_declaration__validated' || $key=='certified_copies_received' || $key=='languages_result_received'){
+					if($key=='jos_emundus_declaration__time_date' || $key=='jos_emundus_declaration__validated' || $key=='jos_emundus_declaration__certified_copies_received' || $key=='jos_emundus_declaration__languages_result_received'){
+						$column = EmundusHelperList::getElementsDetailsByFullName($key); 
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $column[0]->element_label);
+						$colonne++;
+					} else {
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_(strtoupper($key)));
-						$colonne++;
-					}elseif($key=='FORMS_FILLED' || $key=='ATTACHMENTS_SENT' || $key=='CAMPAIGNS' || $key=='GROUP_EVAL'){
-						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_($key));
-						$colonne++;
-					}else{
-						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
 						$colonne++;
 					}
 				}
