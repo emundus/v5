@@ -209,6 +209,9 @@ function sortObjectByArray($object,$orderArray) {
 					if($key=='jos_emundus_declaration__time_date' || $key=='jos_emundus_declaration__validated' || $key=='certified_copies_received' || $key=='languages_result_received'){
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_(strtoupper($key)));
 						$colonne++;
+					}elseif($key=='FORMS_FILLED' || $key=='ATTACHMENTS_SENT' || $key=='CAMPAIGNS' || $key=='GROUP_EVAL'){
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_($key));
+						$colonne++;
 					}else{
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
 						$colonne++;

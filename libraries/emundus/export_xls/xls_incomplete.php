@@ -203,9 +203,14 @@ function export_xls($uids, $element_id) {
 			$order = array('id','user_id','user','lastname','firstname', 'FORMS_FILLED','ATTACHMENTS_SENT','CAMPAIGNS','GROUP_EVAL','email','registerDate','profile','block','usertype','validated','schoolyear');
 			$entete=sortObjectByArray($user0,$order);
 			foreach($entete as $key=>$value){
-				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'user' && $key != 'schoolyear'){
-					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
-					$colonne++;
+				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'user' && $key != 'schoolyear' && $key != 'date_time' && $key!='campaign_id'  && $key!='year' && $key!='label'){
+					if($key=='FORMS_FILLED' || $key=='ATTACHMENTS_SENT' || $key=='CAMPAIGNS' || $key=='GROUP_EVAL'){
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_($key));
+						$colonne++;
+					}else{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
+						$colonne++;
+					}
 				}
 			}
 			$tab_com = '';
@@ -324,8 +329,8 @@ function export_xls($uids, $element_id) {
 					}elseif($key == 'profile'){
 						$value = $profile[$user["profile"]]->label;
 					}
-					if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar' && $key != 'user' && $key != 'schoolyear'){
-						if($key == JText::_('FORMS_FILLED')){
+					if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar' && $key != 'user' && $key != 'schoolyear'  && $key != 'date_time' && $key!='campaign_id' && $key!='year' && $key!='label'){
+						if($key == 'FORMS_FILLED'){
 							$forms = $value;
 							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
 							if($forms == 0) {
@@ -346,7 +351,7 @@ function export_xls($uids, $element_id) {
 							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $forms.'%');
 							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 							$colonne++;
-						}elseif($key == JText::_('ATTACHMENTS_SENT')){
+						}elseif($key == 'ATTACHMENTS_SENT'){
 							$attachments=$value;
 							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
 							if($attachments == 0) {
