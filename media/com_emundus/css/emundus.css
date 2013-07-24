@@ -536,3 +536,90 @@ input.btnhov {
 #checkall-attachment label{
 	display : inline-block !important;
 }
+
+
+
+
+
+/* template rt_afterburner 2  */
+	/* joomla-core.less */
+		.component-content legend {
+			border : 1px solid #d5d5d5;
+			padding : 5px 5px 5px 5px;
+			margin-left:-6px;
+			border-radius:5px 5px 5px 5px;
+			color: #777777;
+			font-weight: bold;
+			text-shadow: 0 1px 0 #FFFFFF;
+			background-color: #c0c0c0;
+			border-bottom: 1px solid #B7B7B7;
+			background: linear-gradient(to left top,#F3F3F3,#D7D7D7);
+			background: -webkit-gradient(linear, left top, left bottom, from(#F3F3F3), to(#D7D7D7) );
+			background: -moz-linear-gradient(left top, left bottom, #F3F3F3,#D7D7D7);
+		}
+		.component-content legend img {
+			padding-right:10px;
+		}
+		.component-content .need_ok {
+			background-image: url(../images/emundus/tick.png);
+			background-repeat:no-repeat;
+			background-position:left center;
+			padding:0 0 0 20px;
+			width:98%;
+		}
+		.component-content .need_missing_fac {
+			background-image: url(../images/emundus/publish_x-grey.png);
+			background-repeat:no-repeat;
+			background-position:left center;
+			padding:0 0 0 20px;
+			width:98%;
+		}
+		.component-content .need_missing {
+			background-image: url(../images/emundus/publish_x.png);
+			background-repeat:no-repeat;
+			background-position:left center;
+			padding:0 0 0 20px;
+			width:98%;
+		}
+
+		.component-content .checklist-content {
+			max-width:300px;
+		}
+
+		.component-content fieldset {
+			border : 1px solid #d5d5d5;
+			padding : 5px 5px 5px 5px;
+			margin-top:10px;
+			margin-bottom:10px;
+			border-radius:5px 5px 5px 5px;
+			background:#FCFCFD;
+		}
+
+		#em_application_attachments input[type="image"] {
+			width:30px !important;
+		}
+
+		fieldset {
+			border: 1px solid #d5d5d5;
+			padding: 5px 5px 5px 20px;
+			margin-top:10px;
+			margin-bottom: 10px;
+			border-radius: 5px 5px 5px 5px;
+			background: #FCFCFD;
+		}
+	/* end */
+	/* menu.less */
+	#em_user_menu li {
+		background:#74D0FD !important;
+	}
+	#em_user_menu li:hover{
+		background:#FEAA3F !important;
+	}
+	#em_user_menu .dropdown li {
+		background:#F7C07A !important;
+	}
+	#em_user_menu .dropdown li:hover {
+		background:none !important;
+	}
+	/* end */
+/* end template afterburner 2*/
