@@ -28,6 +28,12 @@ function sortArrayByArray($array,$orderArray) {
     return $ordered + $array;
 }
 
+function sortObjectByArray($object,$orderArray) {
+    $ordered = array();
+	$properties=get_object_vars($object);
+    return sortArrayByArray($properties,$orderArray);
+}
+
 	function export_xls($uids, $element_id) {
 			$current_user =& JFactory::getUser();
 			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
@@ -186,10 +192,17 @@ function sortArrayByArray($array,$orderArray) {
 		
 			$colonne=0;
 			$user0 = $users[0];
-			$user0[JText::_('GROUP_EVAL')] = JText::_('GROUP_EVAL');
-			$user0[JText::_('CAMPAIGNS')] = JText::_('CAMPAIGNS');
-			$order = array('id','user_id','user','name',JText::_('CAMPAIGNS'),JText::_('GROUP_EVAL'),'jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
-			$entete=sortArrayByArray($user0,$order);
+			if(is_array($user0)){
+				$user0['GROUP_EVAL'] = '';
+				$user0['CAMPAIGNS'] = '';
+				$order = array('id','user_id','user','name','CAMPAIGNS','GROUP_EVAL','jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
+				$entete=sortArrayByArray($user0,$order);
+			}else{
+				$user0->GROUP_EVAL = '';
+				$user0->CAMPAIGNS = '';
+				$order = array('id','user_id','user','name','CAMPAIGNS','GROUP_EVAL','jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
+				$entete=sortObjectByArray($user0,$order);
+			}
 			
 			foreach($entete as $key=>$value){
 				if($key != 'id' && $key != 'user' && $key != 'block' && $key != 'usertype' && $key!='validated' && $key !='schoolyear'){
@@ -241,30 +254,46 @@ function sortArrayByArray($array,$orderArray) {
 						}
 						if($campaign->applicant_id == $user_id){
 							$lfcr = chr(10);
-							$campaign_list .= JText::_('CAMPAIGN').' : '.$campaign->label.' - '.JText::_('SCHOOLYEARS').' : '.$campaign->year.' '.$lfcr.' ';
+							$campaign_list .= $campaign->label.' - '.JText::_('SCHOOLYEARS').' : '.$campaign->year.' '.$lfcr.' ';
 						}
 					}
 					
-					if(!empty($campaign_list)){
-						$user[JText::_('CAMPAIGNS')]=$campaign_list;
+					if(is_array($user)){
+						if(!empty($campaign_list)){
+							$user['CAMPAIGNS']=$campaign_list;
+						}else{
+							$user['CAMPAIGNS']='';
+						}
 					}else{
-						$user[JText::_('CAMPAIGNS')]='';
+						if(!empty($campaign_list)){
+							$user->CAMPAIGNS=$campaign_list;
+						}else{
+							$user->CAMPAIGNS='';
+						}
 					}
 					
 					if(is_array($user)){
 						$group_eval = $groupEval[$user['user']];
+						if(!empty($group_eval)){
+							$user['GROUP_EVAL'] = $group_eval->label;
+						}else{
+							$user['GROUP_EVAL'] = '';
+						}
 					}else{
 						$group_eval = $groupEval[$user->user];
-					}
-					// die(var_dump($group_eval->label));
-					if($group_eval){
-						$user[JText::_('GROUP_EVAL')] = $group_eval->label;
-					}else{
-						$user[JText::_('GROUP_EVAL')] = '';
+						if(!empty($group_eval)){
+							$user->GROUP_EVAL = $group_eval->label;
+						}else{
+							$user->GROUP_EVAL = '';
+						}
 					}
 					
-					$order = array('id','user_id','user','name',JText::_('CAMPAIGNS'),JText::_('GROUP_EVAL'),'jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
-					$user=sortArrayByArray($user,$order);
+					$order = array('id','user_id','user','name','CAMPAIGNS','GROUP_EVAL','jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
+					if(is_array($user)){
+						$user=sortArrayByArray($user,$order);
+					}else{
+						$user=sortObjectByArray($user,$order);
+					}
 					
 					foreach($user as $key=>$value) {
 						if(is_array($user)){

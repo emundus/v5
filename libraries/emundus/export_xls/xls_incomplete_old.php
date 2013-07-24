@@ -16,24 +16,7 @@ function return_bytes($val) {
     return $val;
 }
 
-function sortArrayByArray($array,$orderArray) {
-    $ordered = array();
-    foreach($orderArray as $key) {
-    	if(array_key_exists($key,$array)) {
-    		$ordered[$key] = $array[$key];
-    		unset($array[$key]);
-    	}
-    }
-    return $ordered + $array;
-}
-
-function sortObjectByArray($object,$orderArray) {
-    $ordered = array();
-	$properties=get_object_vars($object);
-    return sortArrayByArray($properties,$orderArray);
-}
-
-function export_xls($uids, $element_id) {
+	function export_xls($uids, $element_id) {
 		$current_user =& JFactory::getUser();
 		
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) 
@@ -90,9 +73,8 @@ function export_xls($uids, $element_id) {
 		$model = $mod->_buildQuery();
 		$db->setQuery($model);
 		$users = $db->loadObjectList();
+		
 		$profile = $mod->getProfiles();
-		$groupEval = $mod->getGroupEval();
-		$campaigns = $mod->getCampaigns();
 		
 			/// ****************************** ///
 			// Elements selected by administrator
@@ -195,19 +177,20 @@ function export_xls($uids, $element_id) {
 		// ********************************************
 		
 			$colonne=0;
-			$user0 = $users[0];
-			$user0->GROUP_EVAL = '';
-			$user0->CAMPAIGNS = '';
-			$user0->FORMS_FILLED = '';
-			$user0->ATTACHMENTS_SENT = '';
-			$order = array('id','user_id','user','lastname','firstname', 'FORMS_FILLED','ATTACHMENTS_SENT','CAMPAIGNS','GROUP_EVAL','email','registerDate','profile','block','usertype','validated','schoolyear');
-			$entete=sortObjectByArray($user0,$order);
-			foreach($entete as $key=>$value){
-				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'user' && $key != 'schoolyear'){
+			foreach($users[0] as $key=>$value){
+				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype'){
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
 					$colonne++;
 				}
 			}
+			
+			//Forms filled
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, 'Forms filled');
+			$colonne++;
+			//Attachments sent
+			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, 'Attachments sent');
+			$colonne++;
+			
 			$tab_com = '';
 			$count = 0;
 			foreach($elements as $element) {
@@ -235,84 +218,21 @@ function export_xls($uids, $element_id) {
 			
 			foreach ($users as $user){
 				$colonne = 0;
-				$campaign_list="";	
-				foreach($campaigns as $campaign){
-					$user_id=$user->user;
-					if($campaign->applicant_id == $user_id){
-						$lfcr = chr(10);
-						$campaign_list .= $campaign->label.' - '.JText::_('SCHOOLYEARS').' : '.$campaign->year.' '.$lfcr.' ';
-					}
-				}
-				if(!empty($campaign_list)){
-					$user->CAMPAIGNS=$campaign_list;
-				}else{
-					$user->CAMPAIGNS='';
-				}
-				
-				$group_eval = $groupEval[$user->user];
-				// die(var_dump($group_eval->label));
-				if(!empty($group_eval)){
-					$user->GROUP_EVAL = $group_eval->label;
-				}else{
-					$user->GROUP_EVAL = '';
-				}
-				
-					// ***************************************
-					// Avancement de la saisie des formulaires
-							
-						$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
-									FROM #__fabrik_lists AS fbtables 
-									INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
-									INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$user->profile.' 
-									WHERE fbtables.published = 1 AND fbtables.created_by_alias = "form" 
-								ORDER BY menu.ordering';
-						// die(str_replace('#_','jos',$query));
-						$db->setQuery($query);
-						$forms = $db->loadObjectList();
-						$nb = 0;
-						$formLst = array();
-						foreach ($forms as $form) {
-							$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->user;
-							$db->setQuery( $query );
-							$cpt = $db->loadResult();
-							if ($cpt==1) {
-								$nb++;
-							} else {
-								$formLst[] = $form->label;
-							}
-						}
-						$forms = @floor(100*$nb/count($forms));
-						$user->FORMS_FILLED=$forms;
-					// **********************************
-					// Avancement des upload de documents
-							
-						$query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id)
-						FROM #__emundus_setup_attachment_profiles AS profiles 
-						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$user->user.'
-						WHERE profiles.profile_id = '.$user->profile.' AND profiles.displayed = 1 AND profiles.mandatory = 1 ';
-						// die(str_replace('#_','jos',$query));
-						$db->setQuery($query);
-						$attachments = floor($db->loadResult());
-						$user->ATTACHMENTS_SENT=$attachments;
-					
-				$order = array('id','user_id','user','lastname','firstname', 'FORMS_FILLED','ATTACHMENTS_SENT','CAMPAIGNS','GROUP_EVAL','email','registerDate','profile','block','usertype','validated','schoolyear');
-				$user=sortObjectByArray($user,$order);
-				
 				foreach($user as $key=>$value) {
 					if($key == 'avatar') {
 						$photo = isset($value)?$value:'';
-						if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user['user'].DS.'tn_'.$photo)){
+						if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo)){
 							$colonne++;
 							continue;
 						}
-						$objDrawing[$user['user']] = new PHPExcel_Worksheet_Drawing();
-						$objDrawing[$user['user']]->setWorksheet($objPHPExcel->getActiveSheet());
-						$objDrawing[$user['user']]->setName("Photo");
-						$objDrawing[$user['user']]->setDescription("Photo");
-						$objDrawing[$user['user']]->setPath(EMUNDUS_PATH_ABS.$user['user'].DS.'tn_'.$photo);
-						$objDrawing[$user['user']]->setWidth(60);
-						$objDrawing[$user['user']]->setCoordinates($colonne_by_id[$colonne].$i);
-						$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user['user']]->getHeight());
+						$objDrawing[$user->user] = new PHPExcel_Worksheet_Drawing();
+						$objDrawing[$user->user]->setWorksheet($objPHPExcel->getActiveSheet());
+						$objDrawing[$user->user]->setName("Photo");
+						$objDrawing[$user->user]->setDescription("Photo");
+						$objDrawing[$user->user]->setPath(EMUNDUS_PATH_ABS.$user->user.DS.'tn_'.$photo);
+						$objDrawing[$user->user]->setWidth(60);
+						$objDrawing[$user->user]->setCoordinates($colonne_by_id[$colonne].$i);
+						$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user->user]->getHeight());
 						$colonne++;
 					}elseif($key == 'user'){
 						$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
@@ -322,60 +242,90 @@ function export_xls($uids, $element_id) {
 						$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
 						
 					}elseif($key == 'profile'){
-						$value = $profile[$user["profile"]]->label;
+						$value = $profile[$user->profile]->label;
 					}
-					if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar' && $key != 'user' && $key != 'schoolyear'){
-						if($key == JText::_('FORMS_FILLED')){
-							$forms = $value;
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
-							if($forms == 0) {
-							$rgb='FF6600';
-							} elseif($forms == 100) {
-								$rgb='66FF66';
-							} elseif($forms == 50) {
-								$rgb='FFFF00';
-							} else {
-								$rgb='FFFFFF';
-							}
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
-								array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-														'color'		=> array('argb' => 'FF'.$rgb)
-													),
-								 )
-							);
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $forms.'%');
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}elseif($key == JText::_('ATTACHMENTS_SENT')){
-							$attachments=$value;
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
-							if($attachments == 0) {
-								$rgb='FF6600';
-							} elseif($attachments == 100) {
-								$rgb='66FF66';
-							} elseif($attachments == 50) {
-								$rgb='FFFF00';
-							} else {
-								$rgb='FFFFFF';
-							}
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
-									array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-															'color'		=> array('argb' => 'FF'.$rgb)
-														),
-									 )
-							);
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $attachments.'%');
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}else{
-							$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-							$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-							$colonne++;
-						}						
+					if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+						$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+						$colonne++;
 					}
 				}
-			
-			
+			// ***************************************
+			// Avancement de la saisie des formulaires
+			/*		
+				$query = 'SELECT fbtables.db_table_name, fbtables.id, fbtables.label
+							FROM #__fabrik_lists AS fbtables 
+							INNER JOIN #__menu AS menu ON fbtables.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+							INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$user->profile.' 
+							WHERE fbtables.published = 1 AND fbtables.created_by_alias = "form" 
+						ORDER BY menu.ordering';
+				// die(str_replace('#_','jos',$query));
+				$db->setQuery($query);
+				$forms = $db->loadObjectList();
+				$nb = 0;
+				$formLst = array();
+				foreach ($forms as $form) {
+					$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->user;
+					$db->setQuery( $query );
+					$cpt = $db->loadResult();
+					if ($cpt==1) {
+						$nb++;
+					} else {
+						$formLst[] = $form->label;
+					}
+				}
+				$forms = @floor(100*$nb/count($forms));
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
+				
+				if($forms == 0) {
+					$rgb='FF6600';
+				} elseif($forms == 100) {
+					$rgb='66FF66';
+				} elseif($forms == 50) {
+					$rgb='FFFF00';
+				} else {
+					$rgb='FFFFFF';
+				}
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+					array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+											'color'		=> array('argb' => 'FF'.$rgb)
+										),
+					 )
+				);
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $forms.'%');
+				$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+				$colonne++;
+			// **********************************
+			// Avancement des upload de documents
+					
+				$query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id)
+				FROM #__emundus_setup_attachment_profiles AS profiles 
+				LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$user->user.'
+				WHERE profiles.profile_id = '.$user->profile.' AND profiles.displayed = 1 AND profiles.mandatory = 1 ';
+				// die(str_replace('#_','jos',$query));
+				$db->setQuery($query);
+				$attachments = floor($db->loadResult());
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].':'.$colonne_by_id[$colonne])->getAlignment()->setWrapText(true);
+				
+				if($attachments == 0) {
+					$rgb='FF6600';
+				} elseif($attachments == 100) {
+					$rgb='66FF66';
+				} elseif($attachments == 50) {
+					$rgb='FFFF00';
+				} else {
+					$rgb='FFFFFF';
+				}
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+						array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+												'color'		=> array('argb' => 'FF'.$rgb)
+											),
+						 )
+				);
+				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $attachments.'%');
+				$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+				$colonne++;
+			*/
 			// ********************************************
 			//				Application form
 			// ********************************************
@@ -385,16 +335,16 @@ function export_xls($uids, $element_id) {
 				foreach($elements as $element){
 					if(!array_key_exists($element->element_name,$users[0]))	{
 						$el = $element->element_name;
-						if($element->table_name != 'jos_emundus_comments') $value = $valeurs[$user['user']]->$el;
+						if($element->table_name != 'jos_emundus_comments') $value = $valeurs[$user->user]->$el;
 						if ($element->group_repeated>0) 
-							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user['user']]->$el);
+							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user->user]->$el);
 						if($element->element_label == "Telephone" || $element->element_label == "Zip code" || $element->element_label == "Fax number") 
 							$value =" ".$value;
 						//have comment, date and reason in the same square (many rows of comments)
 						if($element->table_name == 'jos_emundus_comments'){
 							$c++;
 							foreach($comments as $comment){
-								if($comment->user == $user['user']) {
+								if($comment->user == $user->user) {
 									if($element->element_name == 'user_id'){
 										//die(print_r($comment->$el));
 										$query = 'SELECT name FROM #__users WHERE id ='.$comment->$el;
@@ -432,7 +382,7 @@ function export_xls($uids, $element_id) {
 				$i++;	
 			}
 			
-			/*// debug file
+			// debug file
 			ob_start(); 
 			var_export(var_dump($objPHPExcel)); 
 
@@ -443,7 +393,7 @@ function export_xls($uids, $element_id) {
 			fwrite($fichier,$tab_debug); 
 			fclose($fichier);
 			// end debug file
-			*/
+			
 			$lastRow = $objPHPExcel->getActiveSheet()->getHighestRow();
 			$lastColumn = $objPHPExcel->getActiveSheet()->getHighestColumn();
 			$lastColumn++;
