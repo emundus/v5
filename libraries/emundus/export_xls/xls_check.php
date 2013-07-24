@@ -85,13 +85,19 @@ function sortObjectByArray($object,$orderArray) {
 			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 			
 			$mod = new EmundusModelCheck;
 			$mod->getUsers();
 			$users = $mod->_applicants;
 			$profile = $mod->getProfiles();
+			
+			$mod2 = new EmundusModelCampaign;
+			$campaigns = $mod2->getCampaignsXLS();
+			
+			$mod2 = new EmundusModelUsers;
 			$groupEval = $mod->getGroupEval();
-			$campaigns = $mod->getCampaigns();
 			
 			/// ****************************** ///
 			// Elements selected by administrator

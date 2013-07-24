@@ -193,5 +193,17 @@ class EmundusModelCampaign extends JModel
 		}
 		return $this->_total;
 	}
+	
+	function getCampaignsXLS()
+	{
+		$db = JFactory::getDBO();
+		$query = 'SELECT sc.id, cc.applicant_id, sc.start_date, sc.end_date, sc.label, sc.year
+		FROM #__emundus_setup_campaigns AS sc 
+		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
+		WHERE sc.published=1';
+		//echo str_replace('#_','jos',$query);
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
 }
 ?>

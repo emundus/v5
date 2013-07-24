@@ -85,14 +85,21 @@ function export_xls($uids, $element_id) {
 		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		
 		$mod = new EmundusModelIncomplete;
 		$model = $mod->_buildQuery();
 		$db->setQuery($model);
 		$users = $db->loadObjectList();
 		$profile = $mod->getProfiles();
+		
+		$mod2 = new EmundusModelCampaign;
+		$campaigns = $mod2->getCampaignsXLS();
+		
+		$mod2 = new EmundusModelUsers;
 		$groupEval = $mod->getGroupEval();
-		$campaigns = $mod->getCampaigns();
+		
 		
 			/// ****************************** ///
 			// Elements selected by administrator

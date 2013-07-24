@@ -748,31 +748,5 @@ class EmundusModelCheck extends JModel
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}
-	
-	function getGroupEval()
-	{
-		$db = JFactory::getDBO();
-		$query = 'SELECT esg.id, eu.user_id, eu.firstname, eu.lastname, u.email, esg.label 
-				FROM #__emundus_setup_groups as esg
-				LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
-				LEFT JOIN #__emundus_users as eu on eu.user_id=eg.user_id
-				LEFT JOIN #__users as u on u.id=eu.user_id
-				WHERE esg.published=1';
-		$db->setQuery( $query );
-		// echo str_replace('#_','jos',$query);
-		return $db->loadObjectList();
-	}
-	
-	function getCampaigns()
-	{
-		$db = JFactory::getDBO();
-		$query = 'SELECT sc.id, cc.applicant_id, sc.start_date, sc.end_date, sc.label, sc.year
-		FROM #__emundus_setup_campaigns AS sc 
-		LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = sc.id
-		WHERE sc.published=1';
-		//echo str_replace('#_','jos',$query);
-		$db->setQuery( $query );
-		return $db->loadObjectList();
-	}
 }
 ?>
