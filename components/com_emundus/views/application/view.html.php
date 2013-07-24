@@ -42,6 +42,7 @@ class EmundusViewApplication extends JView{
 	
         $document = JFactory::getDocument();
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+        $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;

@@ -1,5 +1,4 @@
-﻿<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().'media/com_emundus/css/emundus_application.css'; ?>" media="screen"/>
-<?php
+﻿<?php
 defined('_JEXEC') or die('Restricted access'); 
 
 $itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
