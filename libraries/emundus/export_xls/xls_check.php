@@ -17,6 +17,17 @@ function return_bytes($val) {
     return $val;
 }
 
+function sortArrayByArray($array,$orderArray) {
+    $ordered = array();
+    foreach($orderArray as $key) {
+    	if(array_key_exists($key,$array)) {
+    		$ordered[$key] = $array[$key];
+    		unset($array[$key]);
+    	}
+    }
+    return $ordered + $array;
+}
+
 	function export_xls($uids, $element_id) {
 			$current_user =& JFactory::getUser();
 			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
@@ -72,12 +83,9 @@ function return_bytes($val) {
 			$mod = new EmundusModelCheck;
 			$mod->getUsers();
 			$users = $mod->_applicants;
-			/*$model = $mod->_buildQuery();
-			$db->setQuery( $model );
-			$users = $db->loadObjectList();*/
-			
-			$p = new $mod;
-			$profile = $p->getProfiles();
+			$profile = $mod->getProfiles();
+			$groupEval = $mod->getGroupEval();
+			$campaigns = $mod->getCampaigns();
 			
 			/// ****************************** ///
 			// Elements selected by administrator
@@ -177,10 +185,21 @@ function return_bytes($val) {
 		// ********************************************
 		
 			$colonne=0;
-			foreach($users[0] as $key=>$value){
-				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype'){
-					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
-					$colonne++;
+			$user0 = $users[0];
+			$user0[JText::_('GROUP_EVAL')] = JText::_('GROUP_EVAL');
+			$user0[JText::_('CAMPAIGNS')] = JText::_('CAMPAIGNS');
+			$order = array('id','user_id','user','name',JText::_('CAMPAIGNS'),JText::_('GROUP_EVAL'),'jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
+			$entete=sortArrayByArray($user0,$order);
+			
+			foreach($entete as $key=>$value){
+				if($key != 'id' && $key != 'user' && $key != 'block' && $key != 'usertype' && $key!='validated' && $key !='schoolyear'){
+					if($key=='jos_emundus_declaration__time_date' || $key=='jos_emundus_declaration__validated' || $key=='certified_copies_received' || $key=='languages_result_received'){
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_(strtoupper($key)));
+						$colonne++;
+					}else{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
+						$colonne++;
+					}
 				}
 			}
 			
@@ -210,12 +229,46 @@ function return_bytes($val) {
 			// ********************************************
 			
 			// If export selected users
-			// die(var_dump($users));
+			
 				foreach ($users as $user){
-					$colonne = 0;
+					$colonne = 0; 
+					$campaign_list="";	
+					foreach($campaigns as $campaign){
+						if(is_array($user)){
+							$user_id=$user['user'];
+						}else{
+							$user_id=$user->user;
+						}
+						if($campaign->applicant_id == $user_id){
+							$lfcr = chr(10);
+							$campaign_list .= JText::_('CAMPAIGN').' : '.$campaign->label.' - '.JText::_('SCHOOLYEARS').' : '.$campaign->year.' '.$lfcr.' ';
+						}
+					}
+					
+					if(!empty($campaign_list)){
+						$user[JText::_('CAMPAIGNS')]=$campaign_list;
+					}else{
+						$user[JText::_('CAMPAIGNS')]='';
+					}
+					
+					if(is_array($user)){
+						$group_eval = $groupEval[$user['user']];
+					}else{
+						$group_eval = $groupEval[$user->user];
+					}
+					// die(var_dump($group_eval->label));
+					if($group_eval){
+						$user[JText::_('GROUP_EVAL')] = $group_eval->label;
+					}else{
+						$user[JText::_('GROUP_EVAL')] = '';
+					}
+					
+					$order = array('id','user_id','user','name',JText::_('CAMPAIGNS'),JText::_('GROUP_EVAL'),'jos_emundus_declaration__validated','jos_emundus_declaration__time_date','email','registerDate','profile','block','usertype','validated','schoolyear');
+					$user=sortArrayByArray($user,$order);
+					
 					foreach($user as $key=>$value) {
 						if(is_array($user)){
-														if($key == 'avatar') {
+							if($key == 'avatar') {
 								$colonne_photo = $colonne;
 								$photo = isset($value)?$value:'';
 								if(empty($photo) or !file_exists(EMUNDUS_PATH_ABS.$user['user'].DS.'tn_'.$photo)){
@@ -231,12 +284,6 @@ function return_bytes($val) {
 								$objDrawing[$user['user']]->setCoordinates($colonne_by_id[$colonne].$i);
 								$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user['user']]->getHeight());
 								$colonne++;
-							}elseif($key == 'user'){
-								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
-								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
-								$colonne++;
 							}elseif($key == 'profile'){
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$profile[$user['profile']]->label);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
@@ -247,7 +294,7 @@ function return_bytes($val) {
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
-							}elseif($key == 'validated'){
+							}elseif($key == "jos_emundus_declaration__validated"){
 							
 							// ***************************************
 							// Validated or not	
@@ -259,6 +306,7 @@ function return_bytes($val) {
 															),
 										 )
 									);
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JYES'));
 								}else{
 									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
 										array('fill' 	=> array(
@@ -267,11 +315,19 @@ function return_bytes($val) {
 															),
 										 )
 									);
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JNO'));
 								}
-								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;						
+							}elseif($key=='certified_copies_received' || $key=='languages_result_received'){
+								if($value==1){
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JYES'));
+								}else{
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JNO'));
+								}
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
-							}elseif($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
+							}elseif($key != 'id'  && $key != 'user' && $key != 'block' && $key != 'usertype' && $key != 'avatar' && $key != 'validated' && $key !='schoolyear'){
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
@@ -293,12 +349,6 @@ function return_bytes($val) {
 								$objDrawing[$user->user]->setCoordinates($colonne_by_id[$colonne].$i);
 								$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight($objDrawing[$user->user]->getHeight());
 								$colonne++;
-							}elseif($key == 'user'){
-								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
-								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
-								$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
-								$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
-								$colonne++;
 							}elseif($key == 'profile'){
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$profile[$user->profile]->label);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
@@ -309,7 +359,7 @@ function return_bytes($val) {
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
-							}elseif($key == 'validated'){
+							}elseif($key == "jos_emundus_declaration__validated"){
 							
 							// ***************************************
 							// Validated or not	
@@ -321,6 +371,7 @@ function return_bytes($val) {
 															),
 										 )
 									);
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JYES'));
 								}else{
 									$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
 										array('fill' 	=> array(
@@ -329,17 +380,26 @@ function return_bytes($val) {
 															),
 										 )
 									);
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JNO'));
 								}
-								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
-							}elseif($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'avatar'){
+							}elseif($key=='certified_copies_received' || $key=='languages_result_received'){
+								if($value==1){
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JYES'));
+								}else{
+									$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,JText::_('JNO'));
+								}
+								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
+								$colonne++;
+							}elseif($key != 'id' && $key != 'user' && $key != 'block' && $key != 'usertype' && $key != 'avatar' && $key != 'validated' && $key !='schoolyear'){
 								$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 								$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 								$colonne++;
 							}
 						}
 					}
+					
 				
 				// ********************************************
 				//				Application form
@@ -351,16 +411,21 @@ function return_bytes($val) {
 				foreach($elements as $element){
 					if(!array_key_exists($element->element_name,$users[0]))	{
 						$el = $element->element_name;
-						if($element->table_name != 'jos_emundus_comments') $value = $valeurs[$user->user]->$el;
+						if(is_array($user)){
+							$user_id=$user['user'];
+						}else{
+							$user_id=$user->user;
+						}
+						if($element->table_name != 'jos_emundus_comments'){ $value = $valeurs[$user_id]->$el; }
 						if ($element->group_repeated>0) 
-							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user->user]->$el);
+							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user_id]->$el);
 						if($element->element_label == "Telephone" || $element->element_label == "Zip code" || $element->element_label == "Fax number") 
 							$value =" ".$value;
 						//have comment, date and reason in the same square (many rows of comments)
 						if($element->table_name == 'jos_emundus_comments'){
 							$c++;
 							foreach($comments as $comment){
-								if($comment->user == $user->user) {
+								if($comment->user == $user_id) {
 									if($element->element_name == 'user_id'){
 										//die(print_r($comment->$el));
 										$query = 'SELECT name FROM #__users WHERE id ='.$comment->$el;
@@ -396,6 +461,8 @@ function return_bytes($val) {
 				}				
 				$i++;	
 			}
+			// die();
+			
 			// debug file
 			/*ob_start(); 
 			var_export(var_dump($objPHPExcel)); 

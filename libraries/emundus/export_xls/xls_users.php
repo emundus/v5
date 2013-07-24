@@ -75,7 +75,7 @@ function return_bytes($val) {
 			
 			$profile = $mod->getProfiles();
 			
-			$groupsEval = $mod->getGroupsEval();
+			$groupEval = $mod->getGroupEval();
 			
 			$campaigns = $mod->getCampaigns();
 			
@@ -332,7 +332,7 @@ function return_bytes($val) {
 					}
 					
 				
-					$group_eval = $groupsEval[$user->id];
+					$group_eval = $groupEval[$user->id];
 					// die(var_dump($group_eval->label));
 					if($group_eval){
 						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, $i, $group_eval->label);

@@ -191,7 +191,7 @@ class EmundusControllerCheck extends JController {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view=check&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			exit;
-		} 
+		)
 		export_complete($cid);
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE'), 'message');
 	}
@@ -219,7 +219,7 @@ class EmundusControllerCheck extends JController {
 		$cid = $db->loadResultArray();
 
 		export_complete($cid);
-
+		
 		if (count($cid)>1)
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').count($ids), 'message');
 		else
