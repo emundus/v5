@@ -112,7 +112,12 @@ class EmundusControllerCheck extends JController {
 			die(JText::_('ACCESS_DENIED'));
 		}
 		$db = JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$uids = JRequest::getVar('ud', array(), 'POST', 'array');
+		foreach ($uids as $uid){
+			$params=explode('|',$uid);
+			$users_id[] = intval($params[0]);
+		}
+		
 		$validation_list = JRequest::getVar('validation_list', null, 'POST', 'none',0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
@@ -124,20 +129,20 @@ class EmundusControllerCheck extends JController {
 		$session->set('s_elements', $elements_items);
 		$session->set('s_elements_values', $elements_values);
 		
-		if(empty($ids) && !empty($reqids)) {
-			$ids = $reqids;
+		if(empty($users_id) && !empty($reqids)) {
+			$users_id = $reqids;
 		}
-		JArrayHelper::toInteger( $ids, null );
-		if(!empty($ids)) {
-			foreach ($ids as $id) {
+		
+		if(!empty($users_id)) {
+			foreach ($users_id as $id) {
 				$db->setQuery('UPDATE #__emundus_declaration SET validated = '.$validation_list.' WHERE user = '.mysql_real_escape_string($id));
 				$db->Query() or die($db->getErrorMsg());
 			}
 		}
-		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($ids), 'message');
+		if (count($users_id)>1)
+			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($users_id), 'message');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ), JText::_('ACTION_DONE').' : '.count($users_id), 'message');
 	}
 
 	
@@ -146,14 +151,18 @@ class EmundusControllerCheck extends JController {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$uids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		foreach ($uids as $uid){
+			$params=explode('|',$uid);
+			$users_id[] = $params[0];
+		}
 		$comment = JRequest::getVar('comments', null, 'POST');
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		
 		$model = $this->getModel('profile');
 		
-		foreach ($ids as $id) {
+		foreach ($users_id as $id) {
 			if(!empty($comment)) {
 				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
 						VALUES('.$id.','.$this->_user->id.',"Consider application form as incomplete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
@@ -170,7 +179,7 @@ class EmundusControllerCheck extends JController {
 			
 			unlink(JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.$id.DS."application.pdf");
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=check&limitstart='.$limitstart.'&Itemid='.$itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=check&limitstart='.$limitstart.'&Itemid='.$itemid, JText::_('ACTION_DONE').' : '.count($users_id), 'message');
 	}
 	
 	

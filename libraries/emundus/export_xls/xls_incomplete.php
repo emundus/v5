@@ -121,23 +121,28 @@ function export_xls($uids, $element_id) {
 			// die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 
-			// @TODO : gÃ©nÃ©rer une chaine de caractÃ¨re avec tous les user_id
+			// @TODO : générer une chaine de caractère avec tous les user_id
 			
+			foreach($uids as $uid){
+				$params=explode('|',$uid);
+				$usersid[]=intval($params[0]);
+				$campaignsid[]=intval($params[1]);
+			}
 			
 			// Starting a session.
 			$session =& JFactory::getSession();
-			if($uids != ''){
+			if($usersid != ''){
 				foreach($users as $key=>$value){
-					if(in_array($value->user,$uids)){
+					if(in_array($value['user_id'],$usersid) && in_array($value['campaign_id'],$campaignsid)){
 						$us[] = $users[$key];
 					}
 				}
-				$user_id = $uids;
+				$user_id = $usersid;
 				$users = $us;
 				$session->clear( 'uid' );
-			}else{		
+			}else{
 				foreach($users as $user){
-					$user_id[] = $user->user;
+					$user_id[] = $user['user_id'];
 				}
 			}
 			// die(var_dump($users));

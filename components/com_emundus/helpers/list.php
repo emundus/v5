@@ -324,7 +324,7 @@ class EmundusHelperList{
 				$avatar = EmundusHelperList::getAvatar($user['user_id']);
 				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_actions" id="em_actions_'.$user['user_id'].'">';
 				if(in_array('checkbox',$params)){
-					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'"/></div>';
+					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'|'.$user['campaign_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'|'.$user['campaign_id'].'"/></div>';
 				}
 				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'">#'.$user['user_id'].'</div>';
 				if(in_array('gender',$params)){

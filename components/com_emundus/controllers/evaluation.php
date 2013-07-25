@@ -72,7 +72,6 @@ class EmundusControllerEvaluation extends JController {
 		}
 
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		JArrayHelper::toInteger( $cid, 0 );
 
 		EmundusHelperExport::export_zip($cid);
 
@@ -100,34 +99,38 @@ class EmundusControllerEvaluation extends JController {
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
 		}
-		JArrayHelper::toInteger( $ids, null );
 		if(!empty($ids)) {
-			foreach ($ids as $id) {				
+			foreach ($ids as $id) {
+				$params=explode('|',$id);
+				$applicant_id = $params[0];
+				$campaign_id = $params[1];
+				$applicant_id=intval($applicant_id);
+				$campaign_id=intval($campaign_id);
 				if(!empty($ag_id) && isset($ag_id)) {
-					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id='.$ag_id);
+					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND group_id='.$ag_id);
 					$cpt = $db->loadResultArray();
 					
 					//** Delete members of group to add **/
-					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
+					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
 					$db->setQuery($query);
 					$db->Query() or die($db->getErrorMsg());
 					
 					if (count($cpt)==0)
-						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$id.','.$ag_id.',null)');
+						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$applicant_id.','.$ag_id.',null)');
 					
 				}
 				elseif(!empty($au_id) && isset($au_id)) {
-					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id='.$au_id);
+					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND user_id='.$au_id);
 					$cpt = $db->loadResultArray();
 					
-					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id IN (select group_id from #__emundus_groups where user_id='.$au_id.')');
+					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND group_id IN (select group_id from #__emundus_groups where user_id='.$au_id.')');
 					$cpt_grp = $db->loadResultArray();
 					
 					if (count($cpt)==0 && count($cpt_grp)==0)
-						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$id.',null,'.$au_id.')');
+						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id,campaign_id) VALUES ('.$applicant_id.',null,'.$au_id.','.$campaign_id.')');
 				}
 				else {
-					$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id);
+					$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id);
 				}
 				$db->Query() or die($db->getErrorMsg());
 			}
@@ -189,16 +192,21 @@ class EmundusControllerEvaluation extends JController {
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
 		}
-		JArrayHelper::toInteger( $ids, null );
+		
 		if(!empty($ids)) {
-			foreach ($ids as $id) {				
+			foreach ($ids as $id) {
+				$params=explode('|',$id);
+				$applicant_id = $params[0];
+				$campaign_id = $params[1];
+				$applicant_id=intval($applicant_id);
+				$campaign_id=intval($campaign_id);
 				if(!empty($ag_id) && isset($ag_id)) {
-					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id='.$ag_id;
+					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND group_id='.$ag_id;
 					$db->setQuery($query);
 					$db->Query() or die($db->getErrorMsg());
 				}
 				elseif(!empty($au_id) && isset($au_id)) {
-					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id='.$au_id;
+					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND user_id='.$au_id;
 					$db->setQuery($query);
 					$db->Query() or die($db->getErrorMsg());
 				}

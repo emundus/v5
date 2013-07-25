@@ -195,14 +195,18 @@ class EmundusControllerIncomplete extends JController {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();
-		$ids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		$uids = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		foreach ($uids as $uid){
+			$params=explode('|',$uid);
+			$users_id[] = $params[0];
+		}
 		$comment = JRequest::getVar('comments', null, 'POST');
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		
 		$model = $this->getModel('profile');
 
-		foreach ($ids as $id) {
+		foreach ($users_id as $id) {
 			if(!empty($comment)) {
 				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment) 
 						VALUES('.$id.','.$user->id.',"Consider application form as complete","'.date("Y.m.d H:i:s").'",'.$db->quote($comment).')';
@@ -220,7 +224,7 @@ class EmundusControllerIncomplete extends JController {
 			$db->Query() or die($db->getErrorMsg());
 		}
 		$Itemid=JSite::getMenu()->getActive()->id;
-		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($ids), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=incomplete&limitstart='.$limitstart.'&Itemid='.$Itemid, JText::_('ACTION_DONE').' : '.count($users_id), 'message');
 	}
 	
 	/**

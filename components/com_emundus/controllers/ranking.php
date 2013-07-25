@@ -642,5 +642,11 @@ class EmundusControllerRanking extends JController {
 		$this->setRedirect('index.php?option=com_emundus&view=ranking_auto&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
 	}
 	
+	////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
+	function applicantEmail() {
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		EmundusHelperEmails::sendApplicantEmail();
+	}
+	
 } //END CLASS
 ?>

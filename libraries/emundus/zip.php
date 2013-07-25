@@ -17,13 +17,17 @@ function return_bytes($val) {
     return $val;
 }
 
-function zip_file($users) {
+function zip_file($cids) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 	//clearstatcache();
 	$current_user =& JFactory::getUser();
 	//$allowed = array("Super Administrator", "Administrator", "Editor", "Author");
 	$view = JRequest::getCmd( 'view' );
 	
+	foreach($cids as $cid){
+		$params=explode('|',$cid);
+		$users[]=$params[0];
+	}
 	//JRequest::getVar('view', null, 'GET', 'none',0);
 	if ((!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id)) && $view != 'renew_application') die( JText::_('RESTRICTED_ACCESS') );
 	

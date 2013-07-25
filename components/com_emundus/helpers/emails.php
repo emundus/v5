@@ -454,7 +454,12 @@ class EmundusHelperEmails{
 		$db	= JFactory::getDBO();
 		$current_user = JFactory::getUser();
 
-		$cid		= JRequest::getVar( 'ud', array(), 'post', 'array' );
+		$cids = JRequest::getVar( 'ud', array(), 'post', 'array' );
+		foreach ($cids as $cid){
+			$params=explode('|',$cid);
+			$users_id[] = intval($params[0]);
+		}
+		
 		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
 
 		$subject	= JRequest::getVar( 'mail_subject', null, 'post' );
@@ -465,7 +470,7 @@ class EmundusHelperEmails{
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
 		}
-		if (count( $cid ) == 0) {
+		if (count( $users_id ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			return;
@@ -481,12 +486,10 @@ class EmundusHelperEmails{
 			return;
 		}
 
-		JArrayHelper::toInteger( $cid, 0 );
-
 
 		$query = 'SELECT u.id, u.name, u.email' .
 					' FROM #__users AS u' .
-					' WHERE u.id IN ('.implode( ',', $cid ).')';
+					' WHERE u.id IN ('.implode( ',', $users_id ).')';
 		$db->setQuery( $query );
 		$users = $db->loadObjectList();
 

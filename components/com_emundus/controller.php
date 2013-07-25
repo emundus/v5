@@ -682,6 +682,11 @@ function updateprofile() {
 		$complete = JRequest::getVar('complete', null, 'POST', 'none',0);
 		$validate = JRequest::getVar('validate', null, 'POST', 'none',0);
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		/*
+		foreach($cids_params as $cid_params){
+			$params=explode('|',$cid_params);
+			$cid[]=$params[0];
+		}*/
 		
 		// Starting a session.
 		$session = JFactory::getSession();

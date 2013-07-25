@@ -29,7 +29,7 @@ class EmundusHelperExport{
 	
 	function export_zip($cid){ 
 		require_once('libraries/emundus/zip.php');
-
+		
 		if (count( $cid ) == 0) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));

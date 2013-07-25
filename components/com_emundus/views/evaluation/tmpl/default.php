@@ -123,7 +123,7 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 function check_all() {
  var checked = document.getElementById('checkall').checked;
 <?php foreach ($this->users as $user) { ?>
-  document.getElementById('cb<?php echo $user['user_id']; ?>').checked = checked;
+  document.getElementById('cb<?php echo $user['user_id']; ?>|<?php echo $user['campaign_id']; ?>').checked = checked;
 <?php } ?>
 }
 
