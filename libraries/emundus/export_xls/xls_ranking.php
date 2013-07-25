@@ -17,6 +17,23 @@ function return_bytes($val) {
     return $val;
 }
 
+function sortArrayByArray($array,$orderArray) {
+    $ordered = array();
+    foreach($orderArray as $key) {
+    	if(array_key_exists($key,$array)) {
+    		$ordered[$key] = $array[$key];
+    		unset($array[$key]);
+    	}
+    }
+    return $ordered + $array;
+}
+
+function sortObjectByArray($object,$orderArray) {
+    $ordered = array();
+	$properties=get_object_vars($object);
+    return sortArrayByArray($properties,$orderArray);
+}
+
 function export_xls($uids, $element_id) {
 		$current_user =& JFactory::getUser();
 		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
@@ -182,16 +199,19 @@ function export_xls($uids, $element_id) {
 	// ********************************************
 	
 		$colonne=0;
-		foreach($users[0] as $key=>$value){
+		$user0=$users[0];
+		$order = array('user_id','name','profile','campaign_id','campaign', 'engaged','final_grade','scholarship','ranking');
+		$entete=sortArrayByArray($user0,$order);
+		
+		foreach($entete as $key=>$value){
 			if($column[$key]){
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,1,$column[$key]->name);
 				$colonne++;
-			}elseif($key != 'final_grade' && $key != 'row_id'){
+			}elseif($key != 'row_id'){
 				$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, $key);
 				$colonne++;
 			}
 		}
-		
 		$tab_com = '';
 		$count = 0;
 		foreach($elements as $element) {
@@ -219,6 +239,9 @@ function export_xls($uids, $element_id) {
 		// ********************************************
 		//		Colonnes correspondants au model
 		// ********************************************
+			$order = array('user_id','name','profile','campaign_id','campaign', 'engaged','final_grade','scholarship','ranking');
+			$user=sortArrayByArray($user,$order);
+				
 			foreach($user as $key=>$value) {
 				if($key == 'user_id'){
 					$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
@@ -232,9 +255,35 @@ function export_xls($uids, $element_id) {
 					$value = $profile[$user['result_for']]->label;
 				}elseif($key == 'Name'){
 					$value = preg_replace('/<[^>]+>/', '', $value);
+				}elseif($key == 'final_grade'){
+					if($value==2){
+						$value = JText::_('REJECTED');
+						$rgb='FF6600';
+					}elseif($value==3){
+						$value = JText::_('WAITING_LIST');
+						$rgb='FFFF00';
+					}elseif($value==4){
+						$value = JText::_('ACCEPTED');
+						$rgb='66FF66';
+					}else{
+						$value =  JText::_('NO_GRADE');
+						$rgb='FFFFFF';
+					}
+				}elseif($key=='engaged'){
+					if($value==1){
+						$value =  JText::_('JYES');
+					}
 				}
-				if($key != 'final_grade' && $key != 'row_id'){
+				if($key != 'row_id'){
 					$value = !empty($value)?$value:'';
+					if($key=='final_grade'){
+						$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->applyFromArray(
+								array('fill' 	=> array('type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+														'color'		=> array('argb' => 'FF'.$rgb)
+													),
+								 )
+							);
+					}
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,$i,$value);
 					$objPHPExcel->getActiveSheet()->getColumnDimension($colonne_by_id[$colonne])->setAutoSize(true);
 					$colonne++;
