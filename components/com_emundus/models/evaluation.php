@@ -392,13 +392,13 @@ class EmundusModelEvaluation extends JModel
 	
 	function _buildQuery_myAffect(){
 		$query = $this->_buildSelect();
-		$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user';
+		$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user AND ege.campaign_id = ecc.campaign_id';
 		$query .= ' WHERE ed.validated=1';
 		$pa = $this->getProfileAcces($this->_user->id);
 		$query .= ' AND (ege.user_id='.$this->_user->id.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$this->_user->id.'))';
 		$query .= $this->_buildFilters();
 		$this->_db->setQuery($query);
-//echo str_replace('#_','jos',$query);
+// echo str_replace('#_','jos',$query);
 		$applicants=$this->_db->loadObjectlist();
 		return $applicants;
 	}
@@ -414,7 +414,7 @@ class EmundusModelEvaluation extends JModel
 		
 		$query = $this->_buildSelect();
 		if(isset($gid) && !empty($gid) || (isset($uid) && !empty($uid))) 
-			$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user ';
+			$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user';
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
 //echo str_replace('#_', "jos", $query);
