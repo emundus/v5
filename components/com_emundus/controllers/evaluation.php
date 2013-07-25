@@ -152,6 +152,7 @@ class EmundusControllerEvaluation extends JController {
 			die("ACCESS_DENIED");
 		}
 		$uid = JRequest::getVar('uid', null, 'GET', null, 0);
+		$cid = JRequest::getVar('cid', null, 'GET', null, 0);
 		$aid = JRequest::getVar('aid', null, 'GET', null, 0);
 		$pid = JRequest::getVar('pid', null, 'GET', null, 0);
 		$limitstart = JRequest::getVar('limitstart', null, 'GET', null, 0);
@@ -159,9 +160,9 @@ class EmundusControllerEvaluation extends JController {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'GET', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
 
-		if(!empty($aid) && is_numeric($aid)) {
+		if(!empty($aid) && is_numeric($aid) && !empty($cid) && is_numeric($cid)) {
 			$db = JFactory::getDBO();
-			$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.mysql_real_escape_string($aid);
+			$query = 'DELETE FROM #__emundus_groups_eval WHERE campaign_id ='.mysql_real_escape_string($cid).' AND applicant_id='.mysql_real_escape_string($aid);
 			if(!empty($pid) && is_numeric($pid))
 				$query .= ' AND group_id='.mysql_real_escape_string($pid);
 			if(!empty($uid) && is_numeric($uid))

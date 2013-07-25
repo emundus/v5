@@ -95,7 +95,7 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
                             } //end foreach($evalu)
                             if ( EmundusHelperAccess::isAdministrator($this->_user->id) ||  EmundusHelperAccess::isCoordinator($this->_user->id)  
 								)
-                           		echo '<td>'.$this->evaluator[$evalu['user_id']].'</td>'; 
+                           		echo '<td>'.$this->evaluator[$evalu['user_id']][$evalu['campaign_id']].'</td>'; 
 						?> 
                         </tr>
 					<?php } //end foreach($this->users)?>
