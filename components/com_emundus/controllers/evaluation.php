@@ -107,16 +107,16 @@ class EmundusControllerEvaluation extends JController {
 				$applicant_id=intval($applicant_id);
 				$campaign_id=intval($campaign_id);
 				if(!empty($ag_id) && isset($ag_id)) {
-					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND group_id='.$ag_id);
+					$db->setQuery('SELECT * FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND group_id='.$ag_id);
 					$cpt = $db->loadResultArray();
 					
 					//** Delete members of group to add **/
-					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
+					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
 					$db->setQuery($query);
 					$db->Query() or die($db->getErrorMsg());
 					
 					if (count($cpt)==0)
-						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$applicant_id.','.$ag_id.',null)');
+						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id,campaign_id) VALUES ('.$applicant_id.','.$ag_id.',null,'.$campaign_id.')');
 					
 				}
 				elseif(!empty($au_id) && isset($au_id)) {
@@ -201,7 +201,7 @@ class EmundusControllerEvaluation extends JController {
 				$applicant_id=intval($applicant_id);
 				$campaign_id=intval($campaign_id);
 				if(!empty($ag_id) && isset($ag_id)) {
-					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND group_id='.$ag_id;
+					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id.' AND group_id='.$ag_id;
 					$db->setQuery($query);
 					$db->Query() or die($db->getErrorMsg());
 				}
