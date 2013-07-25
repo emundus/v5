@@ -698,5 +698,13 @@ class EmundusModelEvaluation extends JModel
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}
+	
+	function is_evaluator_of_this($evaluation){
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
+		$query='SELECT COUNT(*) FROM #__emundus_evaluations WHERE id='.$evaluation.' AND user='.$user->id;
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
 }
 ?>

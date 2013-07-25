@@ -229,13 +229,18 @@ class EmundusControllerEvaluation extends JController {
 
 		$db = JFactory::getDBO();
 		
-		if( EmundusHelperAccess::asEvaluatorAccessLevel($user->id) ) {
-			$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
-			$db->setQuery($query);
-			$db->query();
-		}
+		$model = $this->getModel($view);
 		
-		$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'#cb'.$sids[0]);
+		if( EmundusHelperAccess::asEvaluatorAccessLevel($user->id) ) {
+			if( (EmundusHelperAccess::isEvaluator($user->id) && $model->is_evaluator_of_this($sids[0])>0) || EmundusHelperAccess::isCoordinator($user->id) ){
+				$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
+				$db->setQuery($query);
+				$db->query();
+			}else{
+				$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'#cb'.$sids[0], JText::_('MESSAGE_IS_NOT_YOUR_EVALUATION'), 'message');
+			}
+			$this->setRedirect('index.php?option=com_emundus&view='.$view.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'#cb'.$sids[0]);
+		}
 	}
 	
 	
