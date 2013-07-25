@@ -123,27 +123,41 @@ function export_xls($uids, $element_id) {
 
 			// @TODO : générer une chaine de caractère avec tous les user_id
 			
-			foreach($uids as $uid){
-				$params=explode('|',$uid);
-				$usersid[]=intval($params[0]);
-				$campaignsid[]=intval($params[1]);
+			if($uids != null){
+				foreach($uids as $uid){
+					$params=explode('|',$uid);
+					$usersid[]=intval($params[0]);
+					$campaignsid[]=intval($params[1]);
+				}
 			}
 			
 			// Starting a session.
 			$session =& JFactory::getSession();
-			if($usersid != ''){
-				foreach($users as $key=>$value){
+			if($usersid != null){
+				/*foreach($users as $key=>$value){
 					if(in_array($value['user_id'],$usersid) && in_array($value['campaign_id'],$campaignsid)){
 						$us[] = $users[$key];
+					}
+				}*/
+				$k=0;
+				foreach($users as $user){
+					$keys=get_object_vars($user);
+					if(in_array($user->user_id,$usersid) && in_array($user->campaign_id,$campaignsid)){
+						foreach($keys as $key=>$value){
+							$us[$k]->$key = $value;
+						}
+						$k++;
 					}
 				}
 				$user_id = $usersid;
 				$users = $us;
+				// die(var_dump($users));
 				$session->clear( 'uid' );
 			}else{
 				foreach($users as $user){
-					$user_id[] = $user['user_id'];
+					$user_id[] = $user->user_id;
 				}
+				// die(var_dump($users));
 			}
 			// die(var_dump($users));
 			$session->clear( 'profile' );
@@ -213,6 +227,7 @@ function export_xls($uids, $element_id) {
 			$user0->ATTACHMENTS_SENT = '';
 			$order = array('id','user_id','user','lastname','firstname', 'FORMS_FILLED','ATTACHMENTS_SENT','CAMPAIGNS','GROUP_EVAL','email','registerDate','profile','block','usertype','validated','schoolyear');
 			$entete=sortObjectByArray($user0,$order);
+			
 			foreach($entete as $key=>$value){
 				if($key != 'id' && $key != 'name' && $key != 'block' && $key != 'usertype' && $key != 'user' && $key != 'schoolyear' && $key != 'date_time' && $key!='campaign_id'  && $key!='year' && $key!='label'){
 					if($key=='FORMS_FILLED' || $key=='ATTACHMENTS_SENT' || $key=='CAMPAIGNS' || $key=='GROUP_EVAL'){
