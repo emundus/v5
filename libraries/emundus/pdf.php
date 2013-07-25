@@ -40,20 +40,20 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.")";
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.") ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	
-	$courses_list = '<ul>';
+	$courses_list = '';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
 		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-		//$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_list .= '<li>'.$ds.'</li>';
+		$courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+		$courses_list .= $ds.' - '.$de.'<br />';
 		$courses_fee  .= 'Euro '.$c['price'].',-- ';
 	}
-	$courses_list .= '</ul>';
 
 	$campaigns = new EmundusModelCampaign;
 	$campaign = $campaigns->getCampaignByID($campaign_id);
@@ -191,7 +191,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$tags = $emails->setTags($user_id, $post);
 
 		//$htmldata .= $letter["header"];
-		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], $letter["body"]); 
+		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
 		//$htmldata .= $letter["footer"];
 //die($htmldata);
 		$pdf->AddPage();
@@ -258,21 +258,21 @@ function letter_pdf_template ($user_id, $letter_id) {
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 //print_r($letters);
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($letters[0]['training']). " ORDER BY date_start DESC";
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($letters[0]['training']). " ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
 	
-	$courses_list = '<ul>';
+	$courses_list = '';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
 		$ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-		//$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+		$de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
 		//$courses_list .= '<li>'.$ds.' - '.$de.'</li>';
-		$courses_list .= '<li>'.$ds.'</li>';
+		$courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+		$courses_list .= $ds.' - '.$de.'<br />';
 		$courses_fee  .= 'Euro '.$c['price'].'<br>';
 		$programme = $c['label'];
 	}
-	$courses_list .= '</ul>';
 
 	// Extend the TCPDF class to create custom Header and Footer
 	class MYPDF extends TCPDF {
@@ -365,7 +365,8 @@ function letter_pdf_template ($user_id, $letter_id) {
 		$tags = $emails->setTags($user_id, $post);
 
 		//$htmldata .= $letter["header"];
-		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], $letter["body"]); 
+		;
+		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
 		//$htmldata .= $letter["footer"];
 //die($htmldata);
 		$pdf->AddPage();
