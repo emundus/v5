@@ -17,6 +17,23 @@ function return_bytes($val) {
     return $val;
 }
 
+function sortArrayByArray($array,$orderArray) {
+    $ordered = array();
+    foreach($orderArray as $key) {
+    	if(array_key_exists($key,$array)) {
+    		$ordered[$key] = $array[$key];
+    		unset($array[$key]);
+    	}
+    }
+    return $ordered + $array;
+}
+
+function sortObjectByArray($object,$orderArray) {
+    $ordered = array();
+	$properties=get_object_vars($object);
+    return sortArrayByArray($properties,$orderArray);
+}
+
 	function export_xls($uids, $element_id) {
 			$current_user =& JFactory::getUser();
 			//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
@@ -192,8 +209,11 @@ function return_bytes($val) {
 		// ********************************************
 		
 			$colonne=0;
+			$user0=$users[0];
+			$order = array('user_id','name','campaign_id','campaign', 'evaluation_id','date_result_sent','result','comment','user_name');
+			$entete=sortArrayByArray($user0,$order);
 			
-			foreach($users[0] as $key=>$value){
+			foreach($entete as $key=>$value){
 			if($column[$key]){
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,1,$column[$key]['label']);
 					$colonne++;
@@ -235,7 +255,10 @@ function return_bytes($val) {
 		// ********************************************
 		//		Colonnes correspondants au model
 		// ********************************************
-		
+				
+				$order = array('user_id','name','campaign_id','campaign', 'evaluation_id','date_result_sent','result','comment','user_name');
+				$user=sortArrayByArray($user,$order);
+				
 				foreach($user as $key=>$value) {
 					if($key == 'user_id'){
 						$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl($baseurl.'/index.php?option=com_emundus&view=application_form&sid='.$value);
