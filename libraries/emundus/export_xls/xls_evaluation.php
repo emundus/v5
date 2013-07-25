@@ -192,13 +192,19 @@ function return_bytes($val) {
 		// ********************************************
 		
 			$colonne=0;
+			
 			foreach($users[0] as $key=>$value){
 			if($column[$key]){
 					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne,1,$column[$key]['label']);
 					$colonne++;
 				}elseif($key != 'final_grade' && $key != 'row_id' && $key != 'user'){
-					$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, ucfirst($key));
-					$colonne++;
+					if($key=='user_name'){
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, JText::_('EVALUATOR'));
+						$colonne++;
+					}else{
+						$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($colonne, 1, ucfirst($key));
+						$colonne++;
+					}
 				}
 			}
 			
