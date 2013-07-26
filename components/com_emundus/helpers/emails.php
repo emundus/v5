@@ -57,7 +57,7 @@ class EmundusHelperEmails{
 					[EVAL_PERIOD] : '.JText::_('EVAL_PERIOD_TIP').'<br />
 					</dd></p><br />
 					<label for="mail_subject"> '.JText::_( 'SUBJECT' ).' </label><br/>
-					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
+					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$email_template->subject.'" size="80" />
 				</div><br/>
 				<div>
 					<select name="mail_group">
@@ -188,6 +188,7 @@ class EmundusHelperEmails{
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
+		$select_id = JRequest::getVar('ud', array(), 'POST', 'array');
 		
 		// List of evaluators
 		$query = 'SELECT eg.user_id 
@@ -267,49 +268,104 @@ class EmundusHelperEmails{
 		foreach ($users as $uid) {
 			$user = JFactory::getUser($uid);
 			
-			
-			$query = 'SELECT ee.student_id, ee.campaign_id
-						FROM #__emundus_evaluations as ee
-						WHERE ee.user <>'.$user->id;
-			$db->setQuery( $query );
-			$db->query();
-			$evaluated_applicant=$db->loadObjectList();
-						
-			$query = 'SELECT ege.applicant_id, ege.campaign_id
-						FROM #__emundus_groups_eval as ege
-						WHERE (ege.user_id='.$user->id.' 
-						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
-			$db->setQuery( $query );
-			$db->query();
-			$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
-			
-			foreach($applicants as $ap) {
-				$bool[$ap->applicant_id][$ap->campaign_id] = false;
+			if(empty($select_id)){
+				$query = 'SELECT ee.student_id, ee.campaign_id
+							FROM #__emundus_evaluations as ee
+							WHERE ee.user <>'.$user->id;
+				$db->setQuery( $query );
+				$db->query();
+				$evaluated_applicant=$db->loadObjectList();
+							
+				$query = 'SELECT ege.applicant_id, ege.campaign_id
+							FROM #__emundus_groups_eval as ege
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
+				$db->setQuery( $query );
+				$db->query();
+				$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
+				
+				foreach($applicants as $ap) {
+					$bool[$ap->applicant_id][$ap->campaign_id] = false;
+				}
+				
+				$query = 'SELECT ege.applicant_id
+							FROM #__emundus_groups_eval as ege
+							LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
+				$db->setQuery( $query );
+				$db->query();
+				$non_evaluated_applicant=$db->loadResultArray();
+				
+				$model=$this->getModel('campaign');
+				
+				$list = '<ul>';
+				foreach($applicants as $ap) {
+					foreach($evaluated_applicant as $e_applicant){
+						if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+							$bool[$ap->applicant_id][$ap->campaign_id] = true;
+							$app = JFactory::getUser($ap->applicant_id);		
+							$campaign=$model->getCampaignByID($ap->campaign_id);
+							$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+						}
+					}	
+				}
+				if($list=='<ul>'){
+					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
+				}
+				$list .= '</ul>';
+			}else{
+				foreach ($select_id as $select){
+					$params=explode('|',$select);
+					$selected[$params[0]][$params[1]]=true;
+				}
+				$query = 'SELECT ee.student_id, ee.campaign_id
+							FROM #__emundus_evaluations as ee
+							WHERE ee.user <>'.$user->id;
+				$db->setQuery( $query );
+				$db->query();
+				$evaluated_applicant=$db->loadObjectList();
+							
+				$query = 'SELECT ege.applicant_id, ege.campaign_id
+							FROM #__emundus_groups_eval as ege
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
+				$db->setQuery( $query );
+				$db->query();
+				$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
+				
+				foreach($applicants as $ap) {
+					$bool[$ap->applicant_id][$ap->campaign_id] = false;
+				}
+				
+				$query = 'SELECT ege.applicant_id
+							FROM #__emundus_groups_eval as ege
+							LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
+				$db->setQuery( $query );
+				$db->query();
+				$non_evaluated_applicant=$db->loadResultArray();
+				
+				$model=$this->getModel('campaign');
+				$list = '<ul>';
+				foreach(@$applicants as $ap) {
+					foreach(@$evaluated_applicant as $e_applicant){
+						if(!empty($selected[$ap->applicant_id][$ap->campaign_id])){
+							if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+								$bool[$ap->applicant_id][$ap->campaign_id] = true;
+								$app = JFactory::getUser($ap->applicant_id);		
+								$campaign=$model->getCampaignByID($ap->campaign_id);
+								$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+							}
+						}
+					}	
+				}
+				if($list=='<ul>'){
+					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
+				}
+				$list .= '</ul>';
 			}
-			
-			$query = 'SELECT ege.applicant_id
-						FROM #__emundus_groups_eval as ege
-						LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
-						WHERE (ege.user_id='.$user->id.' 
-						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
-			$db->setQuery( $query );
-			$db->query();
-			$non_evaluated_applicant=$db->loadResultArray();
-			
-			$model=$this->getModel('campaign');
-			
-			$list = '<ul>';
-			foreach($applicants as $ap) {
-				foreach($evaluated_applicant as $e_applicant){
-					if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
-						$bool[$ap->applicant_id][$ap->campaign_id] = true;
-						$app = JFactory::getUser($ap->applicant_id);		
-						$campaign=$model->getCampaignByID($ap->campaign_id);
-						$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
-					}
-				}	
-			}
-			$list .= '</ul>';
 			
 			$query = 'SELECT esp.evaluation_start, esp.evaluation_end 
 					FROM #__emundus_setup_profiles AS esp 
@@ -368,6 +424,8 @@ class EmundusHelperEmails{
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
+		$select_id = JRequest::getVar('ud', array(), 'POST', 'array');
+
 		
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
@@ -438,49 +496,104 @@ class EmundusHelperEmails{
 		foreach ($users as $uid) {
 			$user = JFactory::getUser($uid);
 			
-			$query = 'SELECT ee.student_id, ee.campaign_id
-						FROM #__emundus_evaluations as ee
-						WHERE ee.user <>'.$user->id;
-			$db->setQuery( $query );
-			$db->query();
-			$evaluated_applicant=$db->loadObjectList();
-						
-			$query = 'SELECT ege.applicant_id, ege.campaign_id
-						FROM #__emundus_groups_eval as ege
-						WHERE (ege.user_id='.$user->id.' 
-						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
-			$db->setQuery( $query );
-			$db->query();
-			$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
-			
-			foreach($applicants as $ap) {
-				$bool[$ap->applicant_id][$ap->campaign_id] = false;
+			if(empty($select_id)){
+				$query = 'SELECT ee.student_id, ee.campaign_id
+							FROM #__emundus_evaluations as ee
+							WHERE ee.user <>'.$user->id;
+				$db->setQuery( $query );
+				$db->query();
+				$evaluated_applicant=$db->loadObjectList();
+							
+				$query = 'SELECT ege.applicant_id, ege.campaign_id
+							FROM #__emundus_groups_eval as ege
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
+				$db->setQuery( $query );
+				$db->query();
+				$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
+				
+				foreach($applicants as $ap) {
+					$bool[$ap->applicant_id][$ap->campaign_id] = false;
+				}
+				
+				$query = 'SELECT ege.applicant_id
+							FROM #__emundus_groups_eval as ege
+							LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
+				$db->setQuery( $query );
+				$db->query();
+				$non_evaluated_applicant=$db->loadResultArray();
+				
+				$model=$this->getModel('campaign');
+				
+				$list = '<ul>';
+				foreach($applicants as $ap) {
+					foreach($evaluated_applicant as $e_applicant){
+						if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+							$bool[$ap->applicant_id][$ap->campaign_id] = true;
+							$app = JFactory::getUser($ap->applicant_id);		
+							$campaign=$model->getCampaignByID($ap->campaign_id);
+							$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+						}
+					}	
+				}
+				if($list=='<ul>'){
+					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
+				}
+				$list .= '</ul>';
+			}else{
+				foreach ($select_id as $select){
+					$params=explode('|',$select);
+					$selected[$params[0]][$params[1]]=true;
+				}
+				$query = 'SELECT ee.student_id, ee.campaign_id
+							FROM #__emundus_evaluations as ee
+							WHERE ee.user <>'.$user->id;
+				$db->setQuery( $query );
+				$db->query();
+				$evaluated_applicant=$db->loadObjectList();
+							
+				$query = 'SELECT ege.applicant_id, ege.campaign_id
+							FROM #__emundus_groups_eval as ege
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
+				$db->setQuery( $query );
+				$db->query();
+				$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
+				
+				foreach($applicants as $ap) {
+					$bool[$ap->applicant_id][$ap->campaign_id] = false;
+				}
+				
+				$query = 'SELECT ege.applicant_id
+							FROM #__emundus_groups_eval as ege
+							LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
+							WHERE (ege.user_id='.$user->id.' 
+							OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
+				$db->setQuery( $query );
+				$db->query();
+				$non_evaluated_applicant=$db->loadResultArray();
+				
+				$model=$this->getModel('campaign');
+				$list = '<ul>';
+				foreach(@$applicants as $ap) {
+					foreach(@$evaluated_applicant as $e_applicant){
+						if(!empty($selected[$ap->applicant_id][$ap->campaign_id])){
+							if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+								$bool[$ap->applicant_id][$ap->campaign_id] = true;
+								$app = JFactory::getUser($ap->applicant_id);		
+								$campaign=$model->getCampaignByID($ap->campaign_id);
+								$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+							}
+						}
+					}	
+				}
+				if($list=='<ul>'){
+					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
+				}
+				$list .= '</ul>';
 			}
-			
-			$query = 'SELECT ege.applicant_id
-						FROM #__emundus_groups_eval as ege
-						LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
-						WHERE (ege.user_id='.$user->id.' 
-						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
-			$db->setQuery( $query );
-			$db->query();
-			$non_evaluated_applicant=$db->loadResultArray();
-			
-			$model=$this->getModel('campaign');
-			
-			$list = '<ul>';
-			foreach($applicants as $ap) {
-				foreach($evaluated_applicant as $e_applicant){
-					if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
-						$bool[$ap->applicant_id][$ap->campaign_id] = true;
-						$app = JFactory::getUser($ap->applicant_id);		
-						$campaign=$model->getCampaignByID($ap->campaign_id);
-						$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
-					}
-				}	
-			}
-			$list .= '</ul>';
-			
 			
 			$query = 'SELECT esp.evaluation_start, esp.evaluation_end 
 						FROM #__emundus_setup_profiles AS esp 
