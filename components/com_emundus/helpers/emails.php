@@ -189,6 +189,11 @@ class EmundusHelperEmails{
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
 		$select_id = JRequest::getVar('ud', array(), 'POST', 'array');
+		$filters_users = JRequest::getVar('filters_users', null, 'POST', 'none', 0);
+		$filters_users  = explode(', ',$filters_users);	
+		
+		global $option;
+		$campaigns = $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns");
 		
 		// List of evaluators
 		$query = 'SELECT eg.user_id 
@@ -302,11 +307,13 @@ class EmundusHelperEmails{
 				$list = '<ul>';
 				foreach($applicants as $ap) {
 					foreach($evaluated_applicant as $e_applicant){
-						if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
-							$bool[$ap->applicant_id][$ap->campaign_id] = true;
-							$app = JFactory::getUser($ap->applicant_id);		
-							$campaign=$model->getCampaignByID($ap->campaign_id);
-							$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+						if(!empty($filters_users) && in_array($ap->applicant_id,$filters_users)){
+							if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+								$bool[$ap->applicant_id][$ap->campaign_id] = true;
+								$app = JFactory::getUser($ap->applicant_id);		
+								$campaign=$model->getCampaignByID($ap->campaign_id);
+								$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+							}
 						}
 					}	
 				}
@@ -352,11 +359,13 @@ class EmundusHelperEmails{
 				foreach(@$applicants as $ap) {
 					foreach(@$evaluated_applicant as $e_applicant){
 						if(!empty($selected[$ap->applicant_id][$ap->campaign_id])){
-							if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
-								$bool[$ap->applicant_id][$ap->campaign_id] = true;
-								$app = JFactory::getUser($ap->applicant_id);		
-								$campaign=$model->getCampaignByID($ap->campaign_id);
-								$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+							if(!empty($campaigns) && in_array($ap->campaign_id,$campaigns)){
+								if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+									$bool[$ap->applicant_id][$ap->campaign_id] = true;
+									$app = JFactory::getUser($ap->applicant_id);		
+									$campaign=$model->getCampaignByID($ap->campaign_id);
+									$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+								}
 							}
 						}
 					}	
@@ -425,7 +434,12 @@ class EmundusHelperEmails{
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
 		$select_id = JRequest::getVar('ud', array(), 'POST', 'array');
+		$filters_users = JRequest::getVar('filters_users', null, 'POST', 'none', 0);
+		$filters_users  = explode(', ',$filters_users);
 
+		global $option;
+		$campaigns = $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns");
+		
 		
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
@@ -530,11 +544,15 @@ class EmundusHelperEmails{
 				$list = '<ul>';
 				foreach($applicants as $ap) {
 					foreach($evaluated_applicant as $e_applicant){
-						if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
-							$bool[$ap->applicant_id][$ap->campaign_id] = true;
-							$app = JFactory::getUser($ap->applicant_id);		
-							$campaign=$model->getCampaignByID($ap->campaign_id);
-							$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+						if(!empty($filters_users) && in_array($ap->applicant_id,$filters_users)){
+							if(!empty($campaigns) && in_array($ap->campaign_id,$campaigns)){
+								if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+									$bool[$ap->applicant_id][$ap->campaign_id] = true;
+									$app = JFactory::getUser($ap->applicant_id);		
+									$campaign=$model->getCampaignByID($ap->campaign_id);
+									$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+								}
+							}
 						}
 					}	
 				}

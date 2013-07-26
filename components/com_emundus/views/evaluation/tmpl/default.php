@@ -71,8 +71,11 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
                 </thead>
                 <tbody><?php 
 					$i=1; $j=0;
-					foreach($this->users as $evalu){ ?>
+					$users_id=array();
+					foreach($this->users as $evalu){ 
+						?>
                         <tr class="row<?php echo $j++%2; ?>" id="<?php echo 'em_line_'.$i.'_'.$evalu['user_id']; ?>"><?php
+							$users_id[] = $evalu['user_id'];
                             foreach ($evalu as $key=>$value){
 								if($key != 'user' && $key != 'campaign_id' && $key != 'evaluation_id' && $key != 'final_grade' && $key != 'ranking') {
                                 if($key=='user_id'){ ?>
@@ -116,8 +119,12 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 		</div><?php   
 	//end of !empty($this->users)
 	} else echo '<h2>'.JText::_('NO_RESULT').'</h2>';
- ?>
-    
+if(!empty($users_id)){
+	 ?>
+	<input type="hidden" name="filters_users" value="<?php echo implode(', ',$users_id); ?>" />
+	<?php
+}
+?>
 </form>
 <script type="text/javascript">
 function check_all() {
