@@ -268,19 +268,46 @@ class EmundusHelperEmails{
 			$user = JFactory::getUser($uid);
 			
 			
+			$query = 'SELECT ee.student_id, ee.campaign_id
+						FROM #__emundus_evaluations as ee
+						WHERE ee.user <>'.$user->id;
+			$db->setQuery( $query );
+			$db->query();
+			$evaluated_applicant=$db->loadObjectList();
+						
+			$query = 'SELECT ege.applicant_id, ege.campaign_id
+						FROM #__emundus_groups_eval as ege
+						WHERE (ege.user_id='.$user->id.' 
+						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') )';
+			$db->setQuery( $query );
+			$db->query();
+			$applicants=$db->loadObjectList(); // [APPLICANTS_LIST]
+			
+			foreach($applicants as $ap) {
+				$bool[$ap->applicant_id][$ap->campaign_id] = false;
+			}
+			
 			$query = 'SELECT ege.applicant_id
 						FROM #__emundus_groups_eval as ege
-						WHERE ege.user_id='.$user->id.' 
-						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ';
+						LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id 
+						WHERE (ege.user_id='.$user->id.' 
+						OR ege.group_id IN (SELECT group_id FROM #__emundus_groups WHERE user_id='.$user->id.') ) AND ee.student_id IS NULL';
 			$db->setQuery( $query );
-			// echo str_replace("#_", "jos", $query);
 			$db->query();
-			$applicants=$db->loadResultArray(); // [APPLICANTS_LIST]
+			$non_evaluated_applicant=$db->loadResultArray();
+			
+			$model=$this->getModel('campaign');
 			
 			$list = '<ul>';
 			foreach($applicants as $ap) {
-				$app = JFactory::getUser($ap);
-				$list .= '<li>'.$app->name.' ['.$app->id.']</li>';
+				foreach($evaluated_applicant as $e_applicant){
+					if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
+						$bool[$ap->applicant_id][$ap->campaign_id] = true;
+						$app = JFactory::getUser($ap->applicant_id);		
+						$campaign=$model->getCampaignByID($ap->campaign_id);
+						$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
+					}
+				}	
 			}
 			$list .= '</ul>';
 			
