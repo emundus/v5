@@ -439,13 +439,16 @@ class EmundusHelperEmails{
 			$db->query();
 			$non_evaluated_applicant=$db->loadResultArray();
 			
+			$model=$this->getModel('campaign');
+			
 			$list = '<ul>';
 			foreach($applicants as $ap) {
 				foreach($evaluated_applicant as $e_applicant){
 					if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
 						$bool[$ap->applicant_id][$ap->campaign_id] = true;
-						$app = JFactory::getUser($ap->applicant_id);
-						$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$ap->campaign_id.'</li>';
+						$app = JFactory::getUser($ap->applicant_id);		
+						$campaign=$model->getCampaignByID($ap->campaign_id);
+						$list .= '<li>'.$app->name.' ['.$app->id.'] - '.$campaign["label"].' ['.$campaign["year"].']</li>';
 					}
 				}	
 			}
