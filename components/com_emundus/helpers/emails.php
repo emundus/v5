@@ -561,7 +561,7 @@ class EmundusHelperEmails{
 				$list = '<ul>';
 				foreach($applicants as $ap) {
 					foreach($evaluated_applicant as $e_applicant){
-						if(!empty($filters_users) && in_array($ap->applicant_id,$filters_users)){
+						if(empty($filters_users) || !empty($filters_users) && in_array($ap->applicant_id,$filters_users)){
 							if(empty($campaigns) || (!empty($campaigns) && in_array($ap->campaign_id,$campaigns))){
 								if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
 									$bool[$ap->applicant_id][$ap->campaign_id] = true;
