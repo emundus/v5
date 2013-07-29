@@ -76,7 +76,7 @@ class EmundusHelperEmails{
 					'.JText::_('OR').'
 					<select name="mail_user">
 						<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>
-						<option value="0">'.JText::_('ALL_EVALUATOR').'</option>' ;
+						<option value="0">'.JText::_('ALL_EVALUATORS').'</option>' ;
 						foreach($evaluators as $eval_users) { 
 							$email .= '<option value="'.$eval_users->id.'"';
 							if($current_eval==$eval_users->id) $email .= ' selected';
