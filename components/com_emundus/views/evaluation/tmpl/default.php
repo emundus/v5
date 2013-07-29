@@ -119,11 +119,11 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 		</div><?php   
 	//end of !empty($this->users)
 	} else echo '<h2>'.JText::_('NO_RESULT').'</h2>';
-if(!empty($users_id)){
-	 ?>
-	<input type="hidden" name="filters_users" value="<?php echo implode(', ',$users_id); ?>" />
+/*if(!empty($users_id)){
+	?>
+	 <input type="hidden" name="filters_users" value="<?php echo implode(', ',$users_id); ?>" />
 	<?php
-}
+}*/
 ?>
 </form>
 <script type="text/javascript">
@@ -152,6 +152,10 @@ function is_check() {
 window.onload=function(){
 	document.getElementById('hidden_addressee_group').style.visibility = "hidden";
 	document.getElementById('hidden_addressee_evaluator').style.visibility = "hidden";
+	var group = document.getElementById('hidden_assessor_group');
+	var eval = document.getElementById('hidden_assessor_user');
+	group.style.visibility = "hidden";
+	eval.style.visibility = "visible";
 }
 
 function hidden_addressee(addressee_radiobutton)

@@ -69,11 +69,8 @@ class EmundusHelperList{
 		 $affect = '
 		 	<fieldset>
 				<legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
-				<div id="assessor_all">
-					<label for="a3"><input type="radio" name="group" id="a3" onclick="hidden_affect(this);" value="3" checked="yes" >'.JText::_('SEE_ALL').'</label>
-				</div>
 				<div id="assessor_group">
-					<label for="a1"><input type="radio" name="group" id="a1" onclick="hidden_affect(this);" value="1">'.JText::_('ASSESSOR_GROUP_FILTER').'</label>
+					<label for="ass1"><input type="radio" name="assessor" id="ass1" onclick="hidden_affect(this);" value="1">'.JText::_('ASSESSOR_GROUP_FILTER').'</label>
 					<div id="hidden_assessor_group">
 						<select name="assessor_group">
 							<option value="">'.JText::_('NONE').'</option>'; 
@@ -87,7 +84,7 @@ class EmundusHelperList{
 				</div>
 
 				<div id="assessor_user">
-					<label for="a2"><input type="radio" name="group" id="a2" onclick="hidden_affect(this);" value="2">'.JText::_('ASSESSOR_USER_FILTER').'</label>
+					<label for="ass2"><input type="radio" name="assessor" id="ass2" onclick="hidden_affect(this);" value="2" checked="yes">'.JText::_('ASSESSOR_USER_FILTER').'</label>
 					<div id="hidden_assessor_user">
 						<select name="assessor_user" onchange="hidden_affect(this);">
 							<option value="">'.JText::_('NONE').'</option> ';
