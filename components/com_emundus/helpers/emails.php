@@ -593,9 +593,6 @@ class EmundusHelperEmails{
 						}
 					}	
 				}
-				if($list=='<ul>'){
-					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
-				}
 				$list .= '</ul>';
 				
 				
@@ -646,9 +643,6 @@ class EmundusHelperEmails{
 						}
 					}	
 				}
-				if($list=='<ul>'){
-					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
-				}
 				$list .= '</ul>';
 			}
 			
@@ -661,22 +655,27 @@ class EmundusHelperEmails{
 			$period=$db->loadRow();
 				
 			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
-				
-			$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
-			// template replacements
-			$body = preg_replace($patterns, $replacements, $message);
 			
-			// mail function
-			if(JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)){
-				usleep(1000);
-				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-					VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
-				$db->setQuery( $sql );
-				$db->query();
+			if($list=='<ul></ul>'){
+					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$user->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
+			}else{
+				$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
+				// template replacements
+				$body = preg_replace($patterns, $replacements, $message);
+				
+				// mail function
+				if(JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)){
+					usleep(1000);
+					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+						VALUES ('".$from_id."', '".$user->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+					$db->setQuery( $sql );
+					$db->query();
+				}
+				unset($replacements);
+				JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$user->name);
 			}
-			unset($replacements);
 		}			
-		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
 	
 	function sendApplicantEmail() {
