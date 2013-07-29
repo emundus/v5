@@ -649,3 +649,16 @@ float : left;
 display:inline;
 width: 20%;
 }
+
+/* helper list : affect to evaluator(s) */
+#assessor_group {
+float : left;
+width: 25%;
+display:inline;
+}
+
+#assessor_user {
+float : left;
+width: 25%;
+display:inline;
+}

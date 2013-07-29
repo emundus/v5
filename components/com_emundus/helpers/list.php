@@ -67,44 +67,38 @@ class EmundusHelperList{
 		$current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
 		$current_group = JRequest::getVar('groups', null, 'POST', 'none',0);
 		 $affect = '
-		 	<fieldset><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
-				<table width="100%">
-					<tr>
-						<th>'.JText::_('ASSESSOR_GROUP_FILTER').'</th>
-						<th>'.JText::_('ASSESSOR_USER_FILTER').'</th>
-						<th>&nbsp;</th>
-					</tr>
-					<tr>
-						<td>
-							<div id="assessor_group">
-								<select name="assessor_group" onchange="hidden_affect(this);">
-									<option value="">'.JText::_('NONE').'</option>'; 
-									foreach($this->groups as $groups) { 
-										$affect .= '<option value="'.$groups->id.'"';
-										if($current_group == $groups->id) $affect .= ' selected';
-										$affect .= '>'.$groups->label.'</option>'; 
-									}
-								$affect .= '</select>
-							</div>
-						</td>
-						<td>
-							<div id="assessor_user">
-								<select name="assessor_user" onchange="hidden_affect(this);">
-									<option value="">'.JText::_('NONE').'</option> ';
-									foreach($this->evaluators as $eval_users) { 
-										$affect .= '<option value="'.$eval_users->id.'"';
-										if($current_eval==$eval_users->id) $affect .= ' selected';
-										$affect .= '>'.$eval_users->name.'</option>'; 
-									}
-								$affect .= '</select>
-							</div>
-						</td>
-						<td>
-							<input type="submit" name="affect" class="green" onclick="document.pressed=this.name" value="'.JText::_('AFFECT_SELECTED').'" />
-							<input type="submit" name="unaffect" class="red" onclick="document.pressed=this.name" value="'.JText::_('UNAFFECT_SELECTED').'" />
-						</td>
-					</tr>
-				</table>
+		 	<fieldset>
+				<legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
+				<div id="assessor_group">
+					<label for="a1"><input type="radio" name="group" id="a1" onclick="hidden_affect(this);" value="1">'.JText::_('ASSESSOR_GROUP_FILTER').'</label>
+					<div id="hidden_assessor_group">
+						<select name="assessor_group">
+							<option value="">'.JText::_('NONE').'</option>'; 
+							foreach($this->groups as $groups) { 
+								$affect .= '<option value="'.$groups->id.'"';
+								if($current_group == $groups->id) $affect .= ' selected';
+								$affect .= '>'.$groups->label.'</option>'; 
+							}
+						$affect .= '</select>
+					</div>
+				</div>
+
+				<div id="assessor_user">
+					<label for="a2"><input type="radio" name="group" id="a2" onclick="hidden_affect(this);" value="2">'.JText::_('ASSESSOR_USER_FILTER').'</label>
+					<div id="hidden_assessor_user">
+						<select name="assessor_user" onchange="hidden_affect(this);">
+							<option value="">'.JText::_('NONE').'</option> ';
+							foreach($this->evaluators as $eval_users) { 
+								$affect .= '<option value="'.$eval_users->id.'"';
+								if($current_eval==$eval_users->id) $affect .= ' selected';
+								$affect .= '>'.$eval_users->name.'</option>'; 
+							}
+						$affect .= '</select>
+					</div>
+				</div>
+				<input type="submit" name="affect" class="green" onclick="document.pressed=this.name" value="'.JText::_('AFFECT_SELECTED').'" />
+				<input type="submit" name="unaffect" class="red" onclick="document.pressed=this.name" value="'.JText::_('UNAFFECT_SELECTED').'" />
+
             </fieldset>';
 		return $affect;
 	}

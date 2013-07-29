@@ -190,29 +190,17 @@ function set_default(selectElement)
 
 function hidden_affect(affect)
 {
-	var group = document.getElementById('assessor_group');
-	var eval = document.getElementById('assessor_user');
+	var group = document.getElementById('hidden_assessor_group');
+	var eval = document.getElementById('hidden_assessor_user');
 
-	if(affect.name=="assessor_group"){
-		if(affect.value==''){
-			group.style.visibility = "hidden";
-			set_default(group);
-			eval.style.visibility = "visible";
-		}else{
-			group.style.visibility = "visible";
-			eval.style.visibility = "hidden";
-			set_default(eval);
-		}
-	}else if(affect.name=="assessor_user"){
-		if(affect.value==''){
-			group.style.visibility = "visible";
-			eval.style.visibility = "hidden";
-			set_default(eval);
-		}else{
-			group.style.visibility = "hidden";
-			set_default(group);
-			eval.style.visibility = "visible";
-		}
+	if(affect.value==1){
+		group.style.visibility = "visible";
+		set_default(group);
+		eval.style.visibility = "hidden";
+	}else if(affect.value==2){
+		group.style.visibility = "hidden";
+		eval.style.visibility = "visible";
+		set_default(eval);
 	}
 }
 
