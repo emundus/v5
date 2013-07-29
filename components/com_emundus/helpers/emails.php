@@ -82,10 +82,11 @@ class EmundusHelperEmails{
 							if($current_eval==$eval_users->id) $email .= ' selected';
 							$email .= '>'.$eval_users->name.'</option>'; 
 						}
+					$editor = &JFactory::getEditor();
+					$mail_body = $editor->display( 'mail_body', $email_template->message, '99%', '400', '20', '20', false, 'mail_body', null, null );
 					$email .= ' </select>
 					<br/><br/>
-					<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>
-					<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">'.$email_template->message.'</textarea>
+					<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
 				</div>
 				<div><input type="submit" name="custom_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
