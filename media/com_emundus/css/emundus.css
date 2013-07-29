@@ -623,3 +623,29 @@ input.btnhov {
 	}
 	/* end */
 /* end template afterburner 2*/
+
+/* helper email */
+#addressee{
+height: 100%;
+width:100%;
+}
+#addressee_title {
+float : left;
+width: 3%;
+display:inline;
+}
+#addressee_left {
+float : left;
+width: 15%;
+display:inline;
+}
+#addressee_center {
+float : left;
+display:inline;
+width: 20%;
+}
+#addressee_right{
+float : left;
+display:inline;
+width: 20%;
+}

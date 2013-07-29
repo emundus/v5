@@ -65,29 +65,48 @@ class EmundusHelperEmails{
 					</div>
 				</div><br/>
 				<div id="addressee">
-					'.JText::_('TO').'
-					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="1">'.JText::_('ALL_EVALUATORS').'
-					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="2">'.JText::_('SELECTED_GROUP').'
-					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="3">'.JText::_('SELECTED_EVALUATOR').'
-					<div id="hidden_addressee_group">
-						<select name="mail_group">
-							<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
-								foreach($all_groups as $groups) { 
-									$email .= '<option value="'.$groups->id.'"';
-									if($current_group==$groups->id) $email .= ' selected';
-									$email .= '>'.$groups->label.'</option>'; 
-								}
-						$email .= '</select>
+					<div id="addressee_title">'.JText::_('TO').'</div>
+					<div id="addressee_left">
+						<label for="a1">
+							<input type="radio" name="addressee" id="a1" onclick="hidden_addressee(this);" value="1" checked="yes">
+							'.JText::_('ALL_EVALUATORS').'
+						</label>
 					</div>
-					<div id="hidden_addressee_evaluator">
-						<select name="mail_user">
-							<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>' ;
-							foreach($evaluators as $eval_users) { 
-								$email .= '<option value="'.$eval_users->id.'"';
-								if($current_eval==$eval_users->id) $email .= ' selected';
-								$email .= '>'.$eval_users->name.'</option>'; 
-							}
-						$email .= ' </select>
+					<div id="addressee_center">
+						<div>
+							<label for="a2">
+								<input type="radio" name="addressee" id="a2" onclick="hidden_addressee(this);" value="2">
+								'.JText::_('SELECTED_GROUP').'
+							</label>
+						</div>
+						<div id="hidden_addressee_group">
+							<select name="mail_group">
+								<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
+									foreach($all_groups as $groups) { 
+										$email .= '<option value="'.$groups->id.'"';
+										if($current_group==$groups->id) $email .= ' selected';
+										$email .= '>'.$groups->label.'</option>'; 
+									}
+							$email .= '</select>
+						</div>
+					</div>
+					<div id="addressee_right">
+						<div>
+							<label for="a3">
+								<input type="radio" name="addressee" id="a3" onclick="hidden_addressee(this);" value="3">
+								'.JText::_('SELECTED_EVALUATOR').'
+							</label>
+						</div>
+						<div id="hidden_addressee_evaluator">
+							<select name="mail_user">
+								<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>' ;
+								foreach($evaluators as $eval_users) { 
+									$email .= '<option value="'.$eval_users->id.'"';
+									if($current_eval==$eval_users->id) $email .= ' selected';
+									$email .= '>'.$eval_users->name.'</option>'; 
+								}
+							$email .= ' </select>
+						</div>
 					</div>
 				</div>';
 				$editor = &JFactory::getEditor();

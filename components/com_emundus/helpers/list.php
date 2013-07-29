@@ -76,24 +76,28 @@ class EmundusHelperList{
 					</tr>
 					<tr>
 						<td>
-							<select name="assessor_group">
-								<option value="">'.JText::_('NONE').'</option>'; 
-								foreach($this->groups as $groups) { 
-									$affect .= '<option value="'.$groups->id.'"';
-									if($current_group == $groups->id) $affect .= ' selected';
-									$affect .= '>'.$groups->label.'</option>'; 
-								}
-							$affect .= '</select>
+							<div id="assessor_group">
+								<select name="assessor_group" onchange="hidden_affect(this);">
+									<option value="">'.JText::_('NONE').'</option>'; 
+									foreach($this->groups as $groups) { 
+										$affect .= '<option value="'.$groups->id.'"';
+										if($current_group == $groups->id) $affect .= ' selected';
+										$affect .= '>'.$groups->label.'</option>'; 
+									}
+								$affect .= '</select>
+							</div>
 						</td>
 						<td>
-							<select name="assessor_user">
-								<option value="">'.JText::_('NONE').'</option> ';
-								foreach($this->evaluators as $eval_users) { 
-									$affect .= '<option value="'.$eval_users->id.'"';
-									if($current_eval==$eval_users->id) $affect .= ' selected';
-									$affect .= '>'.$eval_users->name.'</option>'; 
-								}
-							$affect .= '</select>
+							<div id="assessor_user">
+								<select name="assessor_user" onchange="hidden_affect(this);">
+									<option value="">'.JText::_('NONE').'</option> ';
+									foreach($this->evaluators as $eval_users) { 
+										$affect .= '<option value="'.$eval_users->id.'"';
+										if($current_eval==$eval_users->id) $affect .= ' selected';
+										$affect .= '>'.$eval_users->name.'</option>'; 
+									}
+								$affect .= '</select>
+							</div>
 						</td>
 						<td>
 							<input type="submit" name="affect" class="green" onclick="document.pressed=this.name" value="'.JText::_('AFFECT_SELECTED').'" />
