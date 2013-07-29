@@ -472,7 +472,7 @@ class EmundusHelperEmails{
 		} elseif (isset($ae_id) && $ae_id > 0){
 			$users[] = $ae_id;
 		}elseif (isset($ae_id) && $ae_id==0){
-			$query = 'SELECT id
+			$query = 'SELECT user_id
 				FROM #__emundus_users
 				WHERE profile=6';
 			$db->setQuery( $query );
