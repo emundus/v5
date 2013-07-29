@@ -49,17 +49,22 @@ class EmundusHelperEmails{
 							<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/> '.JText::_( 'EMAIL_SELECTED_ASSESSORS' ).'
 						</span>
 					</legend>
-				<div><p><dd>
-					[NAME] : '.JText::_('TAG_NAME_TIP').'<br />
-					[APPLICANTS_LIST] : '.JText::_('TAG_APPLICANTS_LIST_TIP').'<br />
-					[SITE_URL] : '.JText::_('SITE_URL_TIP').'<br />
-					[EVAL_CRITERIAS] : '.JText::_('EVAL_CRITERIAS_TIP').'<br />
-					[EVAL_PERIOD] : '.JText::_('EVAL_PERIOD_TIP').'<br />
-					</dd></p><br />
-					<label for="mail_subject"> '.JText::_( 'SUBJECT' ).' </label><br/>
+				<div><p>
+						<dd>
+							[NAME] : '.JText::_('TAG_NAME_TIP').'<br />
+							[APPLICANTS_LIST] : '.JText::_('TAG_APPLICANTS_LIST_TIP').'<br />
+							[SITE_URL] : '.JText::_('SITE_URL_TIP').'<br />
+							[EVAL_CRITERIAS] : '.JText::_('EVAL_CRITERIAS_TIP').'<br />
+							[EVAL_PERIOD] : '.JText::_('EVAL_PERIOD_TIP').'<br />
+						</dd>
+					</p>
+					<div>
+					 '.JText::_( 'SUBJECT' ).'
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$email_template->subject.'" size="80" />
+					</div>
 				</div><br/>
 				<div>
+					'.JText::_('TO').'
 					<select name="mail_group">
 						<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
 							foreach($all_groups as $groups) { 
@@ -70,7 +75,8 @@ class EmundusHelperEmails{
 					$email .= '</select>
 					'.JText::_('OR').'
 					<select name="mail_user">
-						<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>' ;
+						<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>
+						<option value="0">'.JText::_('ALL_EVALUATOR').'</option>' ;
 						foreach($evaluators as $eval_users) { 
 							$email .= '<option value="'.$eval_users->id.'"';
 							if($current_eval==$eval_users->id) $email .= ' selected';
@@ -173,7 +179,7 @@ class EmundusHelperEmails{
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
-	
+	/*
 	function sendDefaultEmail(){
 		$current_user = JFactory::getUser();
 		//$allowed = array("Super Users", "Administrator", "Editor");
@@ -225,7 +231,7 @@ class EmundusHelperEmails{
 		}
 		*/
 		// Récupération des données du mail
-		$query = 'SELECT id, subject, emailfrom, name, message
+		/*$query = 'SELECT id, subject, emailfrom, name, message
 						FROM #__emundus_setup_emails
 						WHERE lbl="assessors_set"';
 		$db->setQuery( $query );
@@ -233,7 +239,7 @@ class EmundusHelperEmails{
 		$obj=$db->loadObjectList();
 		
 		// setup mail
-		if (isset($current_user->email)) {
+		/*if (isset($current_user->email)) {
 			$from = $current_user->email;
 			$from_id = $current_user->id;
 			$fromname=$current_user->name;
@@ -412,7 +418,7 @@ class EmundusHelperEmails{
 		else 
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid, $sent.JText::_('ACTION_DONE'), 'message');
 	
-	}
+	}*/
 	
 	function sendCustomEmail(){
 		//$allowed = array("Super Users", "Administrator", "Editor");
@@ -439,7 +445,11 @@ class EmundusHelperEmails{
 
 		global $option;
 		$campaigns = $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns");
-		
+		for($i=0; $i<count($campaigns); $i++){
+			if($campaigns[$i]=='%'){
+				unset($campaigns[$i]);
+			}
+		}
 		
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
@@ -459,9 +469,15 @@ class EmundusHelperEmails{
 						WHERE eg.group_id='.$ag_id;
 			$db->setQuery( $query );
 			$users = $db->loadResultArray();
-		} elseif (isset($ae_id) && $ae_id > 0)
+		} elseif (isset($ae_id) && $ae_id > 0){
 			$users[] = $ae_id;
-		else {
+		}elseif (isset($ae_id) && $ae_id==0){
+			$query = 'SELECT id
+				FROM #__emundus_users
+				WHERE profile=6';
+			$db->setQuery( $query );
+			$users = $db->loadResultArray();
+		}else{
 			JError::raiseWarning( 500, JText::_('ERROR_YOU_MUST_SELECT_AN_EVALUATOR') );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 			return;
@@ -510,7 +526,7 @@ class EmundusHelperEmails{
 		foreach ($users as $uid) {
 			$user = JFactory::getUser($uid);
 			
-			if(empty($select_id)){
+			if(empty($select_id)){ // if !checkbox
 				$query = 'SELECT ee.student_id, ee.campaign_id
 							FROM #__emundus_evaluations as ee
 							WHERE ee.user <>'.$user->id;
@@ -541,11 +557,12 @@ class EmundusHelperEmails{
 				
 				$model=$this->getModel('campaign');
 				
+				
 				$list = '<ul>';
 				foreach($applicants as $ap) {
 					foreach($evaluated_applicant as $e_applicant){
 						if(!empty($filters_users) && in_array($ap->applicant_id,$filters_users)){
-							if(!empty($campaigns) && in_array($ap->campaign_id,$campaigns)){
+							if(empty($campaigns) || (!empty($campaigns) && in_array($ap->campaign_id,$campaigns))){
 								if( (($ap->applicant_id==$e_applicant->student_id) && ($ap->campaign_id==$e_applicant->campaign_id)) || (in_array($ap->applicant_id,$non_evaluated_applicant)) && $bool[$ap->applicant_id][$ap->campaign_id]==false){
 									$bool[$ap->applicant_id][$ap->campaign_id] = true;
 									$app = JFactory::getUser($ap->applicant_id);		
@@ -560,7 +577,9 @@ class EmundusHelperEmails{
 					$list.='<li>'.JText::_('NO_APPLICANT').'</li>';
 				}
 				$list .= '</ul>';
-			}else{
+				
+				
+			}else{ // if checkbox
 				foreach ($select_id as $select){
 					$params=explode('|',$select);
 					$selected[$params[0]][$params[1]]=true;

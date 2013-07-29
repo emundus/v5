@@ -224,7 +224,7 @@ class EmundusViewEvaluation extends JView
 		//Emails
 		if ( EmundusHelperAccess::isAdministrator($this->_user->id) ||
 			EmundusHelperAccess::isCoordinator($this->_user->id) ) {
-			$options = array('default', 'custom');
+			$options = array('custom');
 		$email = EmundusHelperEmails::createEmailBlock($options);
 		unset($options);
 
