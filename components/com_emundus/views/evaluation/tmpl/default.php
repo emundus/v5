@@ -148,4 +148,44 @@ function is_check() {
 	echo $this->onSubmitForm; 
 	echo $this->delayAct;
 	JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );?>
+	
+window.onload=function(){
+	document.getElementById('hidden_addressee_group').style.visibility = "hidden";
+	document.getElementById('hidden_addressee_evaluator').style.visibility = "hidden";
+}
+
+function hidden_tr(addressee_radiobutton)
+{
+	var group = document.getElementById('hidden_addressee_group');
+	var eval = document.getElementById('hidden_addressee_evaluator');
+	if(addressee_radiobutton.value==1){
+		group.style.visibility = "hidden";
+		set_default(group);
+		eval.style.visibility = "hidden";
+		set_default(eval);
+	}else if(addressee_radiobutton.value==2){
+		group.style.visibility = "visible";
+		eval.style.visibility = "hidden";
+		set_default(eval);
+	}else if(addressee_radiobutton.value==3){
+		group.style.visibility = "hidden";
+		set_default(group);
+		eval.style.visibility = "visible";
+	}
+}
+
+function set_default(selectElement)
+{
+	var inputs = selectElement.getElementsByTagName('select');
+	for (j = 0; j < inputs.length; ++j) {
+		var options = inputs[j].options;
+		for (var i=0, iLength=options.length; i<iLength; i++) {
+			if (options[i].selected) {
+				options[i].selected = false;
+			}
+		}
+	}
+	return;
+}
+
 </script>

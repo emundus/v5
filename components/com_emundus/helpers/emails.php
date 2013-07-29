@@ -49,7 +49,8 @@ class EmundusHelperEmails{
 							<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/> '.JText::_( 'EMAIL_SELECTED_ASSESSORS' ).'
 						</span>
 					</legend>
-				<div><p>
+				<div>
+					<div>
 						<dd>
 							[NAME] : '.JText::_('TAG_NAME_TIP').'<br />
 							[APPLICANTS_LIST] : '.JText::_('TAG_APPLICANTS_LIST_TIP').'<br />
@@ -57,37 +58,41 @@ class EmundusHelperEmails{
 							[EVAL_CRITERIAS] : '.JText::_('EVAL_CRITERIAS_TIP').'<br />
 							[EVAL_PERIOD] : '.JText::_('EVAL_PERIOD_TIP').'<br />
 						</dd>
-					</p>
+					</div><BR />
 					<div>
-					 '.JText::_( 'SUBJECT' ).'
-					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$email_template->subject.'" size="80" />
+						'.JText::_( 'SUBJECT' ).'
+						<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$email_template->subject.'" size="80" />
 					</div>
 				</div><br/>
-				<div>
+				<div id="addressee">
 					'.JText::_('TO').'
-					<select name="mail_group">
-						<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
-							foreach($all_groups as $groups) { 
-								$email .= '<option value="'.$groups->id.'"';
-								if($current_group==$groups->id) $email .= ' selected';
-								$email .= '>'.$groups->label.'</option>'; 
+					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="1">'.JText::_('ALL_EVALUATORS').'
+					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="2">'.JText::_('SELECTED_GROUP').'
+					<input type="radio" name="addressee" onclick="hidden_tr(this);" value="3">'.JText::_('SELECTED_EVALUATOR').'
+					<div id="hidden_addressee_group">
+						<select name="mail_group">
+							<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
+								foreach($all_groups as $groups) { 
+									$email .= '<option value="'.$groups->id.'"';
+									if($current_group==$groups->id) $email .= ' selected';
+									$email .= '>'.$groups->label.'</option>'; 
+								}
+						$email .= '</select>
+					</div>
+					<div id="hidden_addressee_evaluator">
+						<select name="mail_user">
+							<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>' ;
+							foreach($evaluators as $eval_users) { 
+								$email .= '<option value="'.$eval_users->id.'"';
+								if($current_eval==$eval_users->id) $email .= ' selected';
+								$email .= '>'.$eval_users->name.'</option>'; 
 							}
-					$email .= '</select>
-					'.JText::_('OR').'
-					<select name="mail_user">
-						<option value="">'.JText::_('PLEASE_SELECT_ASSESSOR').' </option>
-						<option value="0">'.JText::_('ALL_EVALUATORS').'</option>' ;
-						foreach($evaluators as $eval_users) { 
-							$email .= '<option value="'.$eval_users->id.'"';
-							if($current_eval==$eval_users->id) $email .= ' selected';
-							$email .= '>'.$eval_users->name.'</option>'; 
-						}
-					$editor = &JFactory::getEditor();
-					$mail_body = $editor->display( 'mail_body', $email_template->message, '99%', '400', '20', '20', false, 'mail_body', null, null );
-					$email .= ' </select>
-					<br/><br/>
-					<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
-				</div>
+						$email .= ' </select>
+					</div>
+				</div>';
+				$editor = &JFactory::getEditor();
+				$mail_body = $editor->display( 'mail_body', $email_template->message, '99%', '400', '20', '20', false, 'mail_body', null, null );
+				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
 				<div><input type="submit" name="custom_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
@@ -443,6 +448,8 @@ class EmundusHelperEmails{
 		$select_id = JRequest::getVar('ud', array(), 'POST', 'array');
 		$filters_users = JRequest::getVar('filters_users', null, 'POST', 'none', 0);
 		$filters_users  = explode(', ',$filters_users);
+		$addressee = JRequest::getVar('addressee', null, 'POST', 'none',0);
+		
 
 		global $option;
 		$campaigns = $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns");
@@ -464,20 +471,32 @@ class EmundusHelperEmails{
 		}
 		
 		// List of evaluators
-		if (isset($ag_id) && $ag_id > 0) {
-			$query = 'SELECT eg.user_id 
-						FROM `#__emundus_groups` as eg 
-						WHERE eg.group_id='.$ag_id;
-			$db->setQuery( $query );
-			$users = $db->loadResultArray();
-		} elseif (isset($ae_id) && $ae_id > 0){
-			$users[] = $ae_id;
-		}elseif (isset($ae_id) && $ae_id==0){
+		if(isset($addressee) && $addressee==1){
 			$query = 'SELECT user_id
-				FROM #__emundus_users
-				WHERE profile=6';
+					FROM #__emundus_users
+					WHERE profile=6';
 			$db->setQuery( $query );
 			$users = $db->loadResultArray();
+		}else if(isset($addressee) && $addressee==2){
+			if (isset($ag_id) && $ag_id > 0) {
+				$query = 'SELECT eg.user_id 
+							FROM `#__emundus_groups` as eg 
+							WHERE eg.group_id='.$ag_id;
+				$db->setQuery( $query );
+				$users = $db->loadResultArray();
+			}else{
+				JError::raiseWarning( 500, JText::_('ERROR_YOU_MUST_SELECT_AN_EVALUATOR') );
+				$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+				return;
+			}
+		}elseif(isset($addressee) && $addressee==3){
+			if (isset($ae_id) && $ae_id > 0){
+				$users[] = $ae_id;
+			}else{
+				JError::raiseWarning( 500, JText::_('ERROR_YOU_MUST_SELECT_AN_EVALUATOR') );
+				$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
+				return;
+			}
 		}else{
 			JError::raiseWarning( 500, JText::_('ERROR_YOU_MUST_SELECT_AN_EVALUATOR') );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
