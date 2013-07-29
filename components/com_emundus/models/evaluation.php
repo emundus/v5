@@ -414,7 +414,7 @@ class EmundusModelEvaluation extends JModel
 		
 		$query = $this->_buildSelect();
 		if(isset($gid) && !empty($gid) || (isset($uid) && !empty($uid))) 
-			$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user';
+			$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user AND ege.campaign_id = ecc.campaign_id';
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
 //echo str_replace('#_', "jos", $query);
