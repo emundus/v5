@@ -69,6 +69,9 @@ class EmundusHelperList{
 		 $affect = '
 		 	<fieldset>
 				<legend><img src="'.JURI::Base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('BATCH').'"/> '.JText::_('AFFECT_TO_ASSESSORS').'</legend>
+				<div id="assessor_all">
+					<label for="a3"><input type="radio" name="group" id="a3" onclick="hidden_affect(this);" value="3" checked="yes" >'.JText::_('SEE_ALL').'</label>
+				</div>
 				<div id="assessor_group">
 					<label for="a1"><input type="radio" name="group" id="a1" onclick="hidden_affect(this);" value="1">'.JText::_('ASSESSOR_GROUP_FILTER').'</label>
 					<div id="hidden_assessor_group">

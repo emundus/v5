@@ -201,6 +201,11 @@ function hidden_affect(affect)
 		group.style.visibility = "hidden";
 		eval.style.visibility = "visible";
 		set_default(eval);
+	}else if(affect.value==3){
+		group.style.visibility = "visible";
+		set_default(group);
+		eval.style.visibility = "visible";
+		set_default(eval);
 	}
 }
 

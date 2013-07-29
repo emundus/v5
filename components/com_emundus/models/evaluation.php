@@ -394,7 +394,7 @@ class EmundusModelEvaluation extends JModel
 		$query = $this->_buildSelect();
 		$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user AND ege.campaign_id = ecc.campaign_id';
 		$query .= ' WHERE ed.validated=1';
-		$pa = $this->getProfileAcces($this->_user->id);
+		//$pa = $this->getProfileAcces($this->_user->id);
 		$query .= ' AND (ege.user_id='.$this->_user->id.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$this->_user->id.'))';
 		$query .= $this->_buildFilters();
 		$this->_db->setQuery($query);
@@ -405,19 +405,20 @@ class EmundusModelEvaluation extends JModel
 	
 	function _buildQuery_all(){
 		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
-		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
-		
+		$uid = $this->getState('user');
+
 		// Starting a session.
 		$session = JFactory::getSession();
-		if(empty($gid) && $session->has( 'groups' )) $gid = $session->get( 'groups' );
 		if(empty($uid) && $session->has( 'evaluator' )) $uid = $session->get( 'evaluator' );
+		if(empty($gid) && $session->has( 'groups' )) $gid = $session->get( 'groups' );
 		
 		$query = $this->_buildSelect();
-		if(isset($gid) && !empty($gid) || (isset($uid) && !empty($uid))) 
+		if((isset($gid) && !empty($gid)) || (isset($uid) && !empty($uid))) {
 			$query .= ' LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user AND ege.campaign_id = ecc.campaign_id';
+		}
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
-//echo str_replace('#_', "jos", $query);
+// echo str_replace('#_', "jos", $query);
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectlist();
 	}
@@ -535,7 +536,7 @@ class EmundusModelEvaluation extends JModel
 				$this->_applicants=$eval_lists;	
 		} else
 			$this->_applicants=$applicants;
-		//die(print_r($this->_applicants));
+		// var_dump($this->_applicants);
 	}
 	
 	function getUsers(){
