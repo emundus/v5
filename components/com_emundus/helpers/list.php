@@ -600,8 +600,8 @@ class EmundusHelperList{
 						
 			foreach($assessors as $ass) {
 				if(!empty($ass->group_id) && isset($ass->group_id)) { // if group
-					if(!isset($group[$user['user_id']][$ass->group_id])){
-						$group[$user['user_id']][$ass->group_id]=true;
+					if(!isset($group[$user['user_id']][$user['campaign_id']][$ass->group_id])){
+						$group[$user['user_id']][$user['campaign_id']][$ass->group_id]=true;
 						$uList = '<ul>';
 						foreach($this->users_groups as $ug) {
 							if ($ug->group_id == $ass->group_id) {
@@ -619,8 +619,8 @@ class EmundusHelperList{
 						unset($uList);
 					}
 				}elseif(!empty($ass->user_id) && isset($ass->user_id)) { // if evaluator
-					if(!isset($eval[$user['user_id']][$ass->user_id])){
-						$eval[$user['user_id']][$ass->user_id]=true;
+					if(!isset($eval[$user['user_id']][$user['campaign_id']][$ass->user_id])){
+						$eval[$user['user_id']][$user['campaign_id']][$ass->user_id]=true;
 						$usr = JUser::getInstance($ass->user_id); 
 						if(in_array('delete',$params)){
 							$img = '<span class="editlinktip hasTip" title="'.JText::_('DELETE_ASSESSOR').' : '.$this->evaluators[$ass->user_id]->name.'::'.JText::_('DELETE_ASSESSOR_TXT').'"><a href="index.php?option=com_emundus&controller=evaluation&task=delassessor&aid='.$user['user_id'].'&pid='.$ass->group_id.'&uid='.$ass->user_id.'&cid='.$ass->campaign_id.'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid.'"><img src="'.JURI::Base().'media/com_emundus/images/icones/clear_left_16x16.png" alt="'.JText::_('DEL_ASSESSOR').'" align="absbottom" /></a></span> ';
@@ -631,7 +631,6 @@ class EmundusHelperList{
 					}
 				}
 			}
-			
 			if (count($assessors)==0)
 				@$evaluator[$user['user_id']][$user['campaign_id']] .= '<span class="hasTip" title="'.JText::_('ASSESSOR_FILTER_ALERT').'"><font color="red">'.JText::_('NO_ASSESSOR').'</font></span>';  
 		}
