@@ -104,21 +104,21 @@ class EmundusHelperList{
 	}
 	
 	//check if an applicant is evaluated
-	function getEvaluation($user_id,$eval_id){
-		$query = 'SELECT id,user FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id;
+	function getEvaluation($user_id, $campaign_id, $eval_id){
+		$query = 'SELECT id,user FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id.' AND campaign_id='.$campaign_id;
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
 	
 	//check if an applicant is evaluated
-	function isEvaluatedBy($user_id,$eval_id){
-		$query = 'SELECT id,user FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id;
+	function isEvaluatedBy($user_id, $campaign_id, $eval_id){
+		$query = 'SELECT id,user FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id.' AND campaign_id='.$campaign_id;
 		$this->_db->setQuery( $query );
 		return count($this->_db->loadObject())>0?true:false;
 	}
 	
 	//check if the applicant is affected to the evaluator to be evaluated
-	function isAffectedToMe($user_id,$campaign_id,$user_eval){
+	function isAffectedToMe($user_id, $campaign_id, $user_eval){
 		$query = 'SELECT id FROM #__emundus_groups_eval ege WHERE ege.applicant_id  = '.$user_id.' AND ege.campaign_id='.$campaign_id.'  AND (ege.user_id='.$user_eval.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$user_eval.'))';
 		$this->_db->setQuery( $query );
 		return count($this->_db->loadObject())>0?true:false;
@@ -505,15 +505,15 @@ class EmundusHelperList{
 		$eval = array();
 		$current_user = JFactory::getUser();
 		$ids = array(); 
-		//print_r($users);
+		//die(print_r($users));
 		//echo '<hr>';
 		foreach($users as $user) {
 			$val = $user['user_id'].",".@$user['user'].",".@$user['campaign_id'];
 			
 			if( !in_array($val, $ids) ) {
 				$ids[] = $val;
-				$evaluation = EmundusHelperList::getEvaluation($user['user_id'], $user['user']);
-				$isEvalByMe = EmundusHelperList::isEvaluatedBy($user['user_id'], $current_user->id);
+				$evaluation = (!empty($user['user']) && !empty($user['campaign_id']))?EmundusHelperList::getEvaluation($user['user_id'], $user['campaign_id'], $user['user']):array();
+				$isEvalByMe = EmundusHelperList::isEvaluatedBy($user['user_id'], $user['campaign_id'], $current_user->id);
 				$myAffect = EmundusHelperList::isAffectedToMe($user['user_id'],$user['campaign_id'], $current_user->id); 
 				$pid = EmundusHelperList::getProfile($user['user_id']);
 				$profile = EmundusHelperList::getProfileDetails($pid);
@@ -647,7 +647,7 @@ class EmundusHelperList{
 			//if( !in_array($val, $ids) ){
 				//$ids[] = $val;
 
-				$com = EmundusHelperList::getComment($user['user_id'], $user['user'], $user['campaign_id']);
+				$com = (!empty($user['user']) && !empty($user['campaign_id']))?EmundusHelperList::getComment($user['user_id'], $user['user'], $user['campaign_id']):'';
 
 				if(!empty($com)) 
 					@$comment[$user['user_id']][$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_(' '.$com.' ').'"><a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.6,y:window.getHeight()*0.6}}" href="index.php?option=com_emundus&view=evaluation&layout=detail&tmpl=component&iframe=1&sid='.$user['user_id'].'&uid='.$user["user"].'&cid='.$user["campaign_id"].'&Itemid='.$itemid.'&iframe=1"><img height="25" width="25" align="bottom" src="'.$this->baseurl.'/media/com_emundus/images/icones/comments.png"/></a></span>';
