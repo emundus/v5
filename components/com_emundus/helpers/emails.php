@@ -486,6 +486,7 @@ class EmundusHelperEmails{
 					}else{
 						$WHERE .= '(applicant_id='.$params[0].' AND campaign_id='.$params[1].')';
 					}
+					$i++;
 				}
 				
 				$query='SELECT user_id
@@ -590,7 +591,6 @@ class EmundusHelperEmails{
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 			return;
 		}
-		
 		// VARIABLE : $evaluator_list - $select_id (Checkbox) - $applicants (Filters)
 		
 		// Model for GetCampaignWithID()
