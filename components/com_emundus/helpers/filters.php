@@ -343,6 +343,8 @@ class EmundusHelperFilters {
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
 			elseif($element_name == 'campaign_id')
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name;
+			elseif($element_name=='training_id')
+				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.$params->join_db_name.'.date_start ';
 			else
 				$query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.$params->database_join_where_sql;
 			$db->setQuery($query);
@@ -401,10 +403,12 @@ class EmundusHelperFilters {
 				$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
-				foreach($option_list as $value){
-					$current_filter .= '<option value="'.$value->elt_key.'"';
-					if ($value->elt_key == $search_value) $current_filter .= ' selected';
-					$current_filter .= '>'.$value->elt_val.'</option>';
+				if(!empty($option_list)){
+					foreach($option_list as $value){
+						$current_filter .= '<option value="'.$value->elt_key.'"';
+						if ($value->elt_key == $search_value) $current_filter .= ' selected';
+						$current_filter .= '>'.$value->elt_val.'</option>';
+					}
 				}
 				$current_filter .= '</select>';
 			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton" || $selected->element_plugin == "dropdown"){
@@ -414,10 +418,12 @@ class EmundusHelperFilters {
 				$option_list =  EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
-				foreach($option_list as $value){
-					$current_filter .= '<option value="'.$value->elt_key.'"';
-					if ($value->elt_key == $search_value) $current_filter .= ' selected';
-					$current_filter .= '>'.$value->elt_val.'</option>';
+				if(!empty($option_list)){
+					foreach($option_list as $value){
+						$current_filter .= '<option value="'.$value->elt_key.'"';
+						if ($value->elt_key == $search_value) $current_filter .= ' selected';
+						$current_filter .= '>'.$value->elt_val.'</option>';
+					}
 				}
 				$current_filter .= '</select>';
 			} else
