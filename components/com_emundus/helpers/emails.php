@@ -691,6 +691,7 @@ class EmundusHelperEmails{
 						
 						if(!empty($evaluated_applicant_list)){
 							foreach($evaluated_applicant_list as $evaluated){
+								
 								if(!isset($bool[$applicant->applicant_id][$applicant->campaign_id]) ){
 									if($applicant->applicant_id==$evaluated->applicant_id && $applicant->campaign_id==$evaluated->campaign_id){
 										$bool[$applicant->applicant_id][$applicant->campaign_id]=true;
@@ -789,6 +790,7 @@ class EmundusHelperEmails{
 						
 						if(!empty($evaluated_applicant_list)){
 							foreach($evaluated_applicant_list as $evaluated){
+								
 								if(!isset($bool[$applicant->applicant_id][$applicant->campaign_id]) ){
 									if($applicant->applicant_id==$evaluated->applicant_id && $applicant->campaign_id==$evaluated->campaign_id){
 										$bool[$applicant->applicant_id][$applicant->campaign_id]=true;
