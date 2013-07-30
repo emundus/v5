@@ -611,26 +611,9 @@ class EmundusHelperEmails{
 		}
 		
 		// setup mail
-		if (isset($current_user->email)) {
-			$from = $current_user->email;
-			$from_id = $current_user->id;
-			$fromname=$current_user->name;
-		} elseif ($mainframe->getCfg( 'mailfrom' ) != '' && $mainframe->getCfg( 'fromname' ) != '') {
-			$from = $mainframe->getCfg( 'mailfrom' );
-			$fromname = $mainframe->getCfg( 'fromname' );
-			$from_id = 62;
-
-		} else {
-			$query = 'SELECT id, name, email' .
-				' FROM #__users' .
-				// administrator
-				' WHERE gid = 25 LIMIT 1';
-			$db->setQuery( $query );
-			$admin = $db->loadObject();
-			$from = $admin->email;
-			$from_id = $admin->id;
-			$fromname = $admin->name;
-		}
+		$from = $user->email;
+		$from_id = $user->id;
+		$fromname=$user->name;
 				
 		// Evaluations criterias [EVAL_CRITERIAS]
 		$query = 'SELECT id, label, params
@@ -727,9 +710,9 @@ class EmundusHelperEmails{
 				$period_str = JHtml::_('date', $period[0], JText::_('DATE_FORMAT_LC2')).' '.JText::_('TO').' '.JHtml::_('date', $period[1], JText::_('DATE_FORMAT_LC2'));
 				
 				// SEND EMAIL
-				if($list=='<ul></ul>'){
+				if(empty($applicant_list)){
 					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$evaluator->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
-				}else{
+				} else {
 					
 					// template replacements (patterns)
 					$post = array(	'EVAL_PERIOD' => $period_str,
@@ -755,7 +738,7 @@ class EmundusHelperEmails{
 					JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$evaluator->name);
 				}
 				
-			}else{ // FILTERS
+			} else { // FILTERS
 			
 				// list of evaluation concerned by the filter
 				foreach($applicants as $applicant){
@@ -826,7 +809,7 @@ class EmundusHelperEmails{
 				$period_str = JHtml::_('date', $period[0], JText::_('DATE_FORMAT_LC2')).' '.JText::_('TO').' '.JHtml::_('date', $period[1], JText::_('DATE_FORMAT_LC2'));
 				
 				// SEND EMAIL
-				if($list=='<ul></ul>'){
+				if(empty($applicant_list)){
 					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$evaluator->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
 				}else{
 					// template replacements (patterns)
