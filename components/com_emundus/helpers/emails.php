@@ -711,7 +711,7 @@ class EmundusHelperEmails{
 				FROM #__emundus_groups_eval as ege
 				WHERE ege.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
-				//var_dump(str_replace('#__','jos_',$query));
+				// var_dump(str_replace('#__','jos_',$query));
 				$applicant_list = $db->loadObjectList();
 				
 				// All Applicant assigned to the group of this evaluator
@@ -720,7 +720,7 @@ class EmundusHelperEmails{
 				LEFT JOIN #__emundus_groups as eg ON eg.group_id=ege.group_id
 				WHERE eg.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
-				//var_dump(str_replace('#__','jos_',$query));
+				// var_dump(str_replace('#__','jos_',$query));
 				$object=$db->loadObject();
 				if(!empty($object)){
 					$applicant_list[] = $object;
@@ -750,11 +750,6 @@ class EmundusHelperEmails{
 									}
 								}
 								
-							}
-						}else{
-							if(!isset($bool[$applicant->applicant_id][$applicant->campaign_id]) ){
-								$bool[$applicant->applicant_id][$applicant->campaign_id]=true;
-								unset($applicant_list[$i]);
 							}
 						}
 						$i++;
