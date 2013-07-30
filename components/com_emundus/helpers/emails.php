@@ -655,7 +655,7 @@ class EmundusHelperEmails{
 		
 		// SEND EMAIL TO THE EVALUATORS
 		foreach($evaluator_list as $eval){
-			$eval = JFactory::getUser($eval['user_id']);
+			$evaluator = JFactory::getUser($eval);
 			if(!empty($select_id)){ // CHECKBOX
 				
 				// list of evaluation concerned by the selection
@@ -665,13 +665,13 @@ class EmundusHelperEmails{
 					FROM #__emundus_groups_eval
 					WHERE applicant_id='.$params[0].' AND campaign_id='.$params[1];
 					$db->setQuery( $query );
-					$evaluation_list[]=$db->loadResultArray();
+					$evaluation_list[]=$db->loadResult();
 				}
 				
 				// All Applicant assigned to this evaluator
 				$query='SELECT ege.applicant_id, ege.campaign_id
 				FROM #__emundus_groups_eval as ege
-				WHERE ege.user_id='.$eval->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
+				WHERE ege.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
 				$applicant_list = $db->loadObjectList();
 				
@@ -679,27 +679,36 @@ class EmundusHelperEmails{
 				$query='SELECT ege.applicant_id, ege.campaign_id
 				FROM #__emundus_groups_eval as ege
 				LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id
-				WHERE ege.user_id='.$eval->id.' AND ee.user='.$eval->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
+				WHERE ege.user_id='.$evaluator->id.' AND ee.user='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
 				$evaluated_applicant_list = $db->loadObjectList();
 				
 				// create list of all Applicant hasn't been evaluated
 				$i=0;
-				foreach($applicant_list as $applicant){
-					foreach($evaluated_applicant_list as $evaluated){
-						if($applicant->applicant_id!=$evaluated->applicant_id && $applicant->campaign_id!=$evaluated->applicant_id){
-							$display_list[$i]->applicant_id=$applicant->applicant_id;
-							$display_list[$i]->campaign_id=$applicant->campaign_id;
-							$i++;
+				$bool=array();
+				if(!empty($applicant_list)){
+					foreach($applicant_list as $applicant){
+						
+						if(!empty($evaluated_applicant_list)){
+							foreach($evaluated_applicant_list as $evaluated){
+								if(!isset($bool[$applicant->applicant_id][$applicant->campaign_id]) ){
+									if($applicant->applicant_id==$evaluated->applicant_id && $applicant->campaign_id==$evaluated->campaign_id){
+										$bool[$applicant->applicant_id][$applicant->campaign_id]=true;
+										unset($applicant_list[$i]);
+									}
+								}
+								
+							}
 						}
+						$i++;
 					}
 				}
 				
 				// [APPLICANTS_LIST]
 				$list = '<ul>';
-				foreach($display_list as $applicant){
-					$student = JFactory::getUser($applicant->id);
-					$campaign = $model->getCampaignByID($applicant->campaign_id);
+				foreach($applicant_list as $applicant){
+					$student = JFactory::getUser($applicant->applicant_id);
+					$campaign=$model->getCampaignByID($applicant->campaign_id);
 					$list .= '<li>'.$student->name.' ['.$student->id.'] - '.$campaign["label"].' ['.$campaign["year"].'] </li>';
 				}
 				$list .= '</ul>';
@@ -708,16 +717,17 @@ class EmundusHelperEmails{
 				$query = 'SELECT esp.evaluation_start, esp.evaluation_end 
 				FROM #__emundus_setup_profiles AS esp 
 				LEFT JOIN #__emundus_users AS eu ON eu.profile=esp.id  
-				WHERE user_id='.$eval->id;
+				WHERE user_id='.$evaluator->id;
 				$db->setQuery( $query );
 				$db->query();
 				$period=$db->loadRow();
 						
-				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				//$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				$period_str = JHtml::_('date', $period[0], JText::_('DATE_FORMAT_LC2')).' '.JText::_('TO').' '.JHtml::_('date', $period[1], JText::_('DATE_FORMAT_LC2'));
 				
 				// SEND EMAIL
 				if($list=='<ul></ul>'){
-					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$eval->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
+					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$evaluator->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
 				}else{
 					
 					// template replacements (patterns)
@@ -725,23 +735,23 @@ class EmundusHelperEmails{
 									'EVAL_CRITERIAS' => $evaluation, 
 									'SITE_URL' => JURI::base(), 
 									'APPLICANTS_LIST' => $list,
-									'NAME' => $eval->name, 
-									'EMAIL' => $eval->email );
+									'NAME' => $evaluator->name, 
+									'EMAIL' => $evaluator->email );
 
 					$tags = $emails->setTags($user->id, $post);
 					
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 					
 					// mail function
-					if(JUtility::sendMail($from, $fromname, $eval->email, $subject, $body, 1)){
+					if(JUtility::sendMail($from, $fromname, $evaluator->email, $subject, $body, 1)){
 						usleep(1000);
 						$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-							VALUES ('".$from_id."', '".$eval->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+							VALUES ('".$from_id."', '".$evaluator->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 						$db->setQuery( $sql );
 						$db->query();
 					}
 					unset($replacements);
-					JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$eval->name);
+					JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$evaluator->name);
 				}
 				
 			}else{ // FILTERS
@@ -752,13 +762,13 @@ class EmundusHelperEmails{
 					FROM #__emundus_groups_eval
 					WHERE applicant_id='.$applicant["user_id"].' AND campaign_id='.$applicant["campaign_id"];
 					$db->setQuery( $query );
-					$evaluation_list[]=$db->loadResultArray();
+					$evaluation_list[]=$db->loadResult();
 				}
 				
 				// All Applicant assigned to this evaluator
 				$query='SELECT ege.applicant_id, ege.campaign_id
 				FROM #__emundus_groups_eval as ege
-				WHERE ege.user_id='.$eval->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
+				WHERE ege.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
 				$applicant_list = $db->loadObjectList();
 				
@@ -766,27 +776,37 @@ class EmundusHelperEmails{
 				$query='SELECT ege.applicant_id, ege.campaign_id
 				FROM #__emundus_groups_eval as ege
 				LEFT JOIN #__emundus_evaluations as ee ON ee.student_id=ege.applicant_id AND ee.campaign_id=ege.campaign_id
-				WHERE ege.user_id='.$eval->id.' AND ee.user='.$eval->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
+				WHERE ege.user_id='.$evaluator->id.' AND ee.user='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
 				$evaluated_applicant_list = $db->loadObjectList();
 				
 				// create list of all Applicant hasn't been evaluated
 				$i=0;
-				foreach($applicant_list as $applicant){
-					foreach($evaluated_applicant_list as $evaluated){
-						if($applicant->applicant_id!=$evaluated->applicant_id && $applicant->campaign_id!=$evaluated->applicant_id){
-							$display_list[$i]->applicant_id=$applicant->applicant_id;
-							$display_list[$i]->campaign_id=$applicant->campaign_id;
-							$i++;
+				$bool=array();	
+				
+				if(!empty($applicant_list)){
+					foreach($applicant_list as $applicant){
+						
+						if(!empty($evaluated_applicant_list)){
+							foreach($evaluated_applicant_list as $evaluated){
+								if(!isset($bool[$applicant->applicant_id][$applicant->campaign_id]) ){
+									if($applicant->applicant_id==$evaluated->applicant_id && $applicant->campaign_id==$evaluated->campaign_id){
+										$bool[$applicant->applicant_id][$applicant->campaign_id]=true;
+										unset($applicant_list[$i]);
+									}
+								}
+								
+							}
 						}
+						$i++;
 					}
 				}
 				
 				// [APPLICANTS_LIST]
 				$list = '<ul>';	
-				foreach($display_list as $applicant){
-					$student = JFactory::getUser($applicant['user_id']);
-					$campaign=$model->getCampaignByID($applicant['campaign_id']);
+				foreach($applicant_list as $applicant){
+					$student = JFactory::getUser($applicant->applicant_id);
+					$campaign=$model->getCampaignByID($applicant->campaign_id);
 					$list .= '<li>'.$student->name.' ['.$student->id.'] - '.$campaign["label"].' ['.$campaign["year"].'] </li>';
 				}
 				$list .= '</ul>';
@@ -795,43 +815,43 @@ class EmundusHelperEmails{
 				$query = 'SELECT esp.evaluation_start, esp.evaluation_end 
 				FROM #__emundus_setup_profiles AS esp 
 				LEFT JOIN #__emundus_users AS eu ON eu.profile=esp.id  
-				WHERE user_id='.$eval->id;
+				WHERE user_id='.$evaluator->id;
 				$db->setQuery( $query );
 				$db->query();
 				$period=$db->loadRow();
-						
-				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				
+				//$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				$period_str = JHtml::_('date', $period[0], JText::_('DATE_FORMAT_LC2')).' '.JText::_('TO').' '.JHtml::_('date', $period[1], JText::_('DATE_FORMAT_LC2'));
 				
 				// SEND EMAIL
 				if($list=='<ul></ul>'){
-					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$eval->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
+					JError::raiseNotice( 100, JText::_('EMPTY_EVAL_LIST').' : '.$evaluator->name.'<BR />'.JText::_('EMAIL_TO_EVAL_NOT_SEND') );
 				}else{
 					// template replacements (patterns)
 					$post = array(	'EVAL_PERIOD' => $period_str,
 									'EVAL_CRITERIAS' => $evaluation, 
 									'SITE_URL' => JURI::base(), 
 									'APPLICANTS_LIST' => $list,
-									'NAME' => $eval->name, 
-									'EMAIL' => $eval->email );
+									'NAME' => $evaluator->name, 
+									'EMAIL' => $evaluator->email );
 
-					$tags = $emails->setTags($user->id, $post);
+					$tags = $emails->setTags($evaluator->id, $post);
 					
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 					
 					// mail function
-					if(JUtility::sendMail($from, $fromname, $eval->email, $subject, $body, 1)){
+					if(JUtility::sendMail($from, $fromname, $evaluator->email, $subject, $body, 1)){
 						usleep(1000);
 						$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-							VALUES ('".$from_id."', '".$eval->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+							VALUES ('".$from_id."', '".$evaluator->id."', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
 						$db->setQuery( $sql );
 						$db->query();
 					}
 					unset($replacements);
-					JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$eval->name);
+					JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_TO_EVAL_SEND').' : '.$evaluator->name);
 				}
 			}
 		}
-		die();
 		
 		$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
 	}
