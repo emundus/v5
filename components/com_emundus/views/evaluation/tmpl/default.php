@@ -119,11 +119,6 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 		</div><?php   
 	//end of !empty($this->users)
 	} else echo '<h2>'.JText::_('NO_RESULT').'</h2>';
-/*if(!empty($users_id)){
-	?>
-	 <input type="hidden" name="filters_users" value="<?php echo implode(', ',$users_id); ?>" />
-	<?php
-}*/
 ?>
 </form>
 <script type="text/javascript">

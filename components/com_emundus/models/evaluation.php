@@ -52,6 +52,7 @@ class EmundusModelEvaluation extends JModel
 		$finalgrade				= $mainframe->getUserStateFromRequest( $option.'finalgrade', 'finalgrade', @$filts_details['finalgrade'] );
 		$s						= $mainframe->getUserStateFromRequest( $option.'s', 's' );
 		$groups					= $mainframe->getUserStateFromRequest( $option.'groups', 'groups', @$filts_details['evaluator_group'] );
+		$evaluator_group		= $mainframe->getUserStateFromRequest( $option.'evaluator_group', 'evaluator_group', @$filts_details['evaluator_group'] );
 		$user					= $mainframe->getUserStateFromRequest( $option.'user', 'user', @$filts_details['evaluator'] );
 		$profile				= $mainframe->getUserStateFromRequest( $option.'profile', 'profile', @$filts_details['profile'] );
 		$missing_doc			= $mainframe->getUserStateFromRequest( $option.'missing_doc', 'missing_doc', @$filts_details['missing_doc'] );
@@ -73,6 +74,7 @@ class EmundusModelEvaluation extends JModel
 		$this->setState('finalgrade', $finalgrade);
 		$this->setState('s', $s);
 		$this->setState('groups', $groups);
+		$this->setState('evaluator_group', $evaluator_group);
 		$this->setState('user', $user);
 		$this->setState('profile', $profile);
 		$this->setState('missing_doc', $missing_doc);
@@ -201,10 +203,10 @@ class EmundusModelEvaluation extends JModel
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
 		$gid					= $this->getState('groups');
+		if(empty($gid)) $gid=$this->getState('evaluator_group'); 
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
-
 		$this->_eval_elements = $this->getElementsByGroups(41);
 		
 		foreach ($this->_eval_elements as $eval) {
@@ -279,6 +281,7 @@ class EmundusModelEvaluation extends JModel
 		$schoolyears			= $this->getState('schoolyears');
 		$campaigns				= $this->getState('campaigns');
 		$gid					= $this->getState('groups');
+		if(empty($gid)) $gid=$this->getState('evaluator_group'); 
 		$uid					= $this->getState('user');
 		$profile				= $this->getState('profile');
 		$miss_doc				= $this->getState('missing_doc');
@@ -405,6 +408,7 @@ class EmundusModelEvaluation extends JModel
 	
 	function _buildQuery_all(){
 		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
+		if(empty($gid)) $gid = JRequest::getVar('evaluator_group', null, 'POST', 'none', 0);
 		$uid = $this->getState('user');
 
 		// Starting a session.
@@ -428,6 +432,7 @@ class EmundusModelEvaluation extends JModel
 		$evaluators_can_see = $eMConfig->get('evaluators_can_see', '0');
 		$search = JRequest::getVar('elements', null, 'POST', 'array', 0);
 		$gid = JRequest::getVar('groups', null, 'POST', 'none', 0);
+		if(empty($gid)) $gid = JRequest::getVar('evaluator_group', null, 'POST', 'none', 0);
 		$uid = JRequest::getVar('user', null, 'POST', 'none', 0);
 		
 		// Starting a session.
