@@ -134,5 +134,6 @@ class EmundusModelEmails extends JModel
 		}
 		return true;
 	}
+	
 }
 ?>

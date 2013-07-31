@@ -26,7 +26,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperEmails{
 	function createEmailBlock($params){
 		$current_user = JFactory::getUser();
-		$email = '<div class="em_email_block">';
+		$email = '<div class="em_email_block" id="em_email_block">';
 		if(in_array('default',$params)){
 			$email .= '<fieldset>
 				<legend> 
@@ -131,12 +131,23 @@ class EmundusHelperEmails{
 					</p><br />
 					<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
-				</div>';
+				</div>
+				<label for="select_template">'.JText::_( 'TEMPLATE' ).'</label>';
+				$AllEmail_template = EmundusHelperEmails::getAllEmail();
+				$email.='<select name="select_template" onChange="getTemplate(this);">
+				<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
+				foreach ($AllEmail_template as $email_template){
+					$email.='<option value="'.$email_template->id.'">'.$email_template->lbl.'</option>';
+				}
+				$email.='</select>';
 				$editor = &JFactory::getEditor();
 				$mail_body = $editor->display( 'mail_body', '[NAME], ', '99%', '400', '20', '20', false, 'mail_body', null, null );
 				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'<BR />
 				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
-			</fieldset>';
+			</fieldset>
+			<script>
+			'.EmundusHelperJavascript::getTemplate().'
+			</script>';
 		}
 		if(in_array('evaluation_result', $params)){
 			$editor = &JFactory::getEditor();
@@ -205,6 +216,24 @@ class EmundusHelperEmails{
 		$query = 'SELECT * FROM #__emundus_setup_emails WHERE lbl="'.mysql_real_escape_string($lbl).'"';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
+	}
+	
+	function getAllEmail()
+	{
+		$query = 'SELECT * FROM #__emundus_setup_emails ';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadObjectList();
+	}
+	
+	function getTemplate(){
+		$db = &JFactory::getDBO();
+		$select = JRequest::getVar('select', null, 'POST', 'none', 0);
+		$query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
+		$db->setQuery($query);
+		$email = $db->loadObject();
+		$return = $email->subject.'(***)'.$email->message;
+		echo $return;
+		die();
 	}
 	/*
 	function sendDefaultEmail(){

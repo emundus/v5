@@ -684,5 +684,52 @@ function OnSubmitForm() {
 		}';
 		return $script;
 	}
+	
+	function getTemplate(){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$script = '
+		function getXMLHttpRequest() {
+			var xhr = null;
+			 
+			if (window.XMLHttpRequest || window.ActiveXObject) {
+				if (window.ActiveXObject) {
+					try {
+						xhr = new ActiveXObject("Msxml2.XMLHTTP");
+					} catch(e) {
+						xhr = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+				} else {
+					xhr = new XMLHttpRequest();
+				}
+			} else {
+				alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+				return null;
+			}
+			 
+			return xhr;
+		}
+		
+		function getTemplate(select){
+			var xhr = getXMLHttpRequest();
+			var email= [];
+			var tab= [];
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+				{
+					email = xhr.responseText;
+					tab = email.split("(***)");
+					var email_block = document.getElementById("em_email_block");
+					email_block.getElementById("mail_subject").value=tab[0];
+					email_block.getElementById("mail_body").value=tab[1];
+					
+				}
+			};
+			xhr.open("POST", "index.php?option=com_emundus&controller=email&view=email&task=getTemplate", true);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.send("&select="+select.value);
+		}';
+		return $script;
+	}
 }
 ?>

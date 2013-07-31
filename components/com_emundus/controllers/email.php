@@ -85,5 +85,10 @@ class EmundusControllerEmail extends JController {
 		EmundusHelperEmails::sendApplicantEmail();
 	}
 	
+	function getTemplate(){
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		EmundusHelperEmails::getTemplate();
+	}
+	
 } //END CLASS
 ?>
