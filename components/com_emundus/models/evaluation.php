@@ -265,15 +265,17 @@ class EmundusModelEvaluation extends JModel
 
 		if(!empty($search)) {
 			$i = 0;
+			$column=array();
 			foreach ($search as $s) {
 				if(!empty($s)){
 					$tab = explode('.', $s);
-					if (count($tab)>1) {
+					if (count($tab)>1 && !in_array($tab[0],$column)) {
 						if($tab[0]=='jos_emundus_training'){
 							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training';
 						}else{
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=ed.user ';
 						}
+						$column[]=$tab[0];
 						$i++;
 					}
 				}
