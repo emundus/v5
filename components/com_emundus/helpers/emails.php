@@ -132,8 +132,10 @@ class EmundusHelperEmails{
 					<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
 				</div>
-				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>
-				<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
+				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
+				$editor = &JFactory::getEditor();
+				$mail_body = $editor->display( 'mail_body', '[NAME], ', '99%', '400', '20', '20', false, 'mail_body', null, null );
+				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
 				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
@@ -188,9 +190,10 @@ class EmundusHelperEmails{
 					<label for="mail_to">'.JText::_( 'APPLICANT' ).' </label><br/>
 					<input name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$student->username.'" size="80" disabled/>
 					<input type="hidden" name="ud[]" value="'.$email_to.'" >
-				</div>
-				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>
-				<textarea name="mail_body" id="mail_body" rows="10" cols="80" class="inputbox">[NAME], </textarea>
+				</div>';
+				$editor = &JFactory::getEditor();
+				$mail_body = $editor->display( 'mail_body', '[NAME], ', '99%', '400', '20', '20', false, 'mail_body', null, null );
+				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'<br />
 				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
