@@ -722,13 +722,15 @@ function OnSubmitForm() {
 					var email_block = document.getElementById("em_email_block");
 					email_block.getElementById("mail_subject").value=tab[0];
 					email_block.getElementById("mail_body").value=tab[1];
-					
+					var content = email_block.getElementById("mail_body_ifr").contentWindow ? email_block.getElementById("mail_body_ifr").contentWindow.document : email_block.getElementById("mail_body_ifr").contentDocument;
+					content.getElementById("tinymce").innerText=tab[1];
 				}
 			};
 			xhr.open("POST", "index.php?option=com_emundus&controller=email&view=email&task=getTemplate", true);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			xhr.send("&select="+select.value);
-		}';
+		}
+		';
 		return $script;
 	}
 }
