@@ -590,7 +590,7 @@ function OnSubmitForm() {
 		}
 		
 		window.onload=function() {
-			if('.$mainframe->getUserState($option.'select_id', 'select_id').'!=NULL){
+			if("'.$mainframe->getUserState($option.'select_id', 'select_id').'"!="select_id"){
 				$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
 			}
 			/* getLegend();*/
@@ -604,62 +604,66 @@ function OnSubmitForm() {
 		$script = '
 		function clearAdvanceFilter(filter){	
 		
-			var adv_filters = document.getElementById("em_adv_filters");	
-			var filters = "";
-			var mydiv = adv_filters.getElementById("myDiv");
-			var searchElementAdv = mydiv.children;
-			for(var i = 0; i < searchElementAdv.length; i++) {
-				if(searchElementAdv[i].id==filter){
-					selects_object = searchElementAdv[i].getElementsByTagName("select");
-					var selects = makeArray(selects_object);
-					inputs_object = searchElementAdv[i].getElementsByTagName("input");
-					var inputs = makeArray(inputs_object);
-					if(typeOf(selects)=="array"){
-						for(var j=0; j<selects.length; j++){
-							if(filters!=""){
-								filters+="|"+selects[j].value;
-							}else{
-								filters+=selects[j].value;
+			if(typeOf(document.getElementById("em_adv_filters"))!="null"){
+				var adv_filters = document.getElementById("em_adv_filters");	
+				var filters = "";
+				var mydiv = adv_filters.getElementById("myDiv");
+				var searchElementAdv = mydiv.children;
+				for(var i = 0; i < searchElementAdv.length; i++) {
+					if(searchElementAdv[i].id==filter){
+						selects_object = searchElementAdv[i].getElementsByTagName("select");
+						var selects = makeArray(selects_object);
+						inputs_object = searchElementAdv[i].getElementsByTagName("input");
+						var inputs = makeArray(inputs_object);
+						if(typeOf(selects)=="array"){
+							for(var j=0; j<selects.length; j++){
+								if(filters!=""){
+									filters+="|"+selects[j].value;
+								}else{
+									filters+=selects[j].value;
+								}
 							}
 						}
-					}
-					if(typeOf(inputs)=="array"){
-						for(var k=0; k<inputs.length; k++){
-							if(filters!=""){
-								filters+="|"+inputs[k].value;
-							}else{
-								filters+=inputs[k].value;
+						if(typeOf(inputs)=="array"){
+							for(var k=0; k<inputs.length; k++){
+								if(filters!=""){
+									filters+="|"+inputs[k].value;
+								}else{
+									filters+=inputs[k].value;
+								}
 							}
 						}
 					}
 				}
 			}
 			
-			var other_filters = document.getElementById("em_other_filters");
-			var otherDiv = other_filters.getElementById("otherDiv");
-			var filters_other = "";
-			var searchElementOther = otherDiv.children;
-			for(var i = 0; i < searchElementOther.length; i++) {
-				if(searchElementOther[i].id==filter){
-					selects_object = searchElementOther[i].getElementsByTagName("select");
-					var selects = makeArray(selects_object);
-					inputs_object = searchElementOther[i].getElementsByTagName("input");
-					var inputs = makeArray(inputs_object);
-					if(typeOf(selects)=="array"){
-						for(var j=0; j<selects.length; j++){
-							if(filters_other!=""){
-								filters_other+="|"+selects[j].value;
-							}else{
-								filters_other+=selects[j].value;
+			if(typeOf(document.getElementById("em_other_filters"))!="null"){
+				var other_filters = document.getElementById("em_other_filters");
+				var otherDiv = other_filters.getElementById("otherDiv");
+				var filters_other = "";
+				var searchElementOther = otherDiv.children;
+				for(var i = 0; i < searchElementOther.length; i++) {
+					if(searchElementOther[i].id==filter){
+						selects_object = searchElementOther[i].getElementsByTagName("select");
+						var selects = makeArray(selects_object);
+						inputs_object = searchElementOther[i].getElementsByTagName("input");
+						var inputs = makeArray(inputs_object);
+						if(typeOf(selects)=="array"){
+							for(var j=0; j<selects.length; j++){
+								if(filters_other!=""){
+									filters_other+="|"+selects[j].value;
+								}else{
+									filters_other+=selects[j].value;
+								}
 							}
 						}
-					}
-					if(typeOf(inputs)=="array"){
-						for(var k=0; k<inputs.length; k++){
-							if(filters_other!=""){
-								filters_other+="|"+inputs[k].value;
-							}else{
-								filters_other+=inputs[k].value;
+						if(typeOf(inputs)=="array"){
+							for(var k=0; k<inputs.length; k++){
+								if(filters_other!=""){
+									filters_other+="|"+inputs[k].value;
+								}else{
+									filters_other+=inputs[k].value;
+								}
 							}
 						}
 					}
