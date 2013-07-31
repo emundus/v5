@@ -927,7 +927,7 @@ function updateprofile() {
 		$mainframe->setUserState( $option."elements_values", $elements_values );
 		$mainframe->setUserState( $option."elements_other", $elements_other	);
 		$mainframe->setUserState( $option."elements_values_other", $elements_values_other );
-		
+		echo true;
 	}
 }
 ?>

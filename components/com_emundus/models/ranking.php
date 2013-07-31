@@ -150,12 +150,14 @@ class EmundusModelRanking extends JModel
 		$tmp = array();
 		$filter_order     = $this->getState('filter_order');
 		$filter_order_Dir = $this->getState('filter_order_Dir');
+		$search					= $this->getState('elements');
+		$search_other			= $this->getState('elements_other');
 
 		$sort=($filter_order_Dir=='desc')?SORT_DESC:SORT_ASC;
  		$can_be_ordering = array();
 		foreach($this->getEvalColumns() as $eval_col)
 			$can_be_ordering[] = $eval_col['name'];	
-		foreach($this->getApplicantColumns() as $appli_col)
+		foreach($this->getApplicantColumns($search) as $appli_col)
 			$can_be_ordering[] = $appli_col['name'];
 		foreach($this->getRankingColumns() as $appli_col)
 			$can_be_ordering[] = $appli_col['name'];
@@ -535,8 +537,10 @@ class EmundusModelRanking extends JModel
 	}
 
 	function _buildQuery(){
-		$search = $this->getState('elements');
-		$search_other = $this->getState('elements_other');
+		$search					= $this->getState('elements');
+		$search_values			= $this->getState('elements_values');
+		$search_other			= $this->getState('elements_other');
+		$search_values_other	= $this->getState('elements_values_other');
 		
 		$tables_list = array();
 		$tables_list_other = array();
@@ -547,7 +551,7 @@ class EmundusModelRanking extends JModel
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
 
-//echo str_replace("#_", "jos", $query);
+// echo str_replace("#_", "jos", $query);
 		$this->_db->setQuery($query);
 		$applicants = $this->_db->loadObjectlist();
 
@@ -729,6 +733,9 @@ str_replace("#_", "jos", $query);
 		$cols[] = array('name' =>'final_grade', 'label'=>'FINAL_GRADE');
 		$cols[] = array('name' =>'scholarship', 'label'=>'SCHOLARSHIP');
 		
+		if(empty($search)){
+			$search	= $this->getState('elements');
+		}
 		foreach ($search as $c){
 			if(!empty($c)){
 				$tab = explode('.', $c);	
@@ -739,7 +746,7 @@ str_replace("#_", "jos", $query);
 				}
 			}
 		}
-			
+			// var_dump($cols);
 		return $cols;
 	}
 	
