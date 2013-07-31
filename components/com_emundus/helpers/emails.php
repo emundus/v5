@@ -137,7 +137,7 @@ class EmundusHelperEmails{
 				$email.='<select name="select_template" onChange="getTemplate(this);">
 				<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
 				foreach ($AllEmail_template as $email_template){
-					$email.='<option value="'.$email_template->id.'">'.$email_template->lbl.'</option>';
+					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 				}
 				$email.='</select>';
 				$editor = &JFactory::getEditor();
