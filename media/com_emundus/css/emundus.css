@@ -537,9 +537,11 @@ input.btnhov {
 	display : inline-block !important;
 }
 
-
-
-
+/*** view export_select_column ***/
+#emundus_elements  label {
+    display: inline;
+    margin: 0 10px 5px 0px !important;
+}
 
 /* template rt_afterburner 2  */
 	/* joomla-core.less */
