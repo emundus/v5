@@ -131,11 +131,10 @@ class EmundusHelperEmails{
 					</p><br />
 					<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
-				</div>
-				<label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
+				</div>';
 				$editor = &JFactory::getEditor();
 				$mail_body = $editor->display( 'mail_body', '[NAME], ', '99%', '400', '20', '20', false, 'mail_body', null, null );
-				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
+				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'<BR />
 				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
