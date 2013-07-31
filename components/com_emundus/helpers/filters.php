@@ -516,7 +516,7 @@ class EmundusHelperFilters {
 		</table>
 		<div id="emundus_filters_response"></div>
 		</div>
-		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().'</script>';
+		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().''.EmundusHelperJavascript::clearAdvanceFilter().'</script>';
 		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
 		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
 		$filters .= $quick;
@@ -754,7 +754,7 @@ class EmundusHelperFilters {
 					if(!isset($search_values[$i])) $search_values[$i] = "";
 					if($selected_adv != "")
 						$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
-					$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
+					$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1); javascript:clearAdvanceFilter();"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
 					$i++; 
 					$adv_filter .= '</div>';
 				} 
@@ -807,7 +807,7 @@ class EmundusHelperFilters {
 					//echo'<BR />';
 					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
-					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2)"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2); javascript:clearAdvanceFilter();"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 					$i++; 
 					$other_filter .= '</div>';
 				} 

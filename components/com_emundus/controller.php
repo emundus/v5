@@ -872,5 +872,23 @@ function updateprofile() {
 		
 	}
 	
+	function clearAdvanceFilter()
+	{
+		global $option;
+
+		$mainframe = JFactory::getApplication();
+		
+		$current_user = JFactory::getUser();
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+
+		$mainframe->setUserState( $option."filter_order", "" );
+		$mainframe->setUserState( $option."filter_order_Dir", "" );
+		$mainframe->setUserState( $option."elements", array() );
+		$mainframe->setUserState( $option."elements_values", array() );
+		$mainframe->setUserState( $option."elements_other", array() );
+		$mainframe->setUserState( $option."elements_values_other", array() );
+		
+	}
 }
 ?>

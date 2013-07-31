@@ -351,19 +351,16 @@ class EmundusModelEvaluation extends JModel
 			foreach ($search as $s) {
 				if(!empty($s)){
 					$tab = explode('.', $s);
-					if($tab[0]=='jos_emundus_training'){
-						if (count($tab)>1) {
+					if (count($tab)>1 && !empty($search_values[$i])) {
+						if($tab[0]=='jos_emundus_training'){
 							$query .= ' AND ';
 							$query .= 'search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
-							$i++;
-						}
-					}else{
-						if (count($tab)>1) {
+						}else{
 							$query .= ' AND ';
 							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-							$i++;
 						}
 					}
+					$i++;
 				}
 			}
 		}
