@@ -228,14 +228,14 @@ class EmundusModelEvaluation extends JModel
 						if (count($tab)>=1) {
 							if($tab[0] != $old_table)
 								$i++;
-							$cols[] = 'j'.$i.'.id as training_id';
+							$cols[] = 'search_'.$tab[0].'.label as '.$tab[1].' ';
 							$old_table = $tab[0];
 						}
 					}else{
 						if (count($tab)>=1) {
 							if($tab[0] != $old_table)
 								$i++;
-							$cols[] = 'j'.$i.'.'.$tab[1];
+							$cols[] = $tab[0].'.'.$tab[1];
 							$old_table = $tab[0];
 						}
 					}
@@ -270,9 +270,9 @@ class EmundusModelEvaluation extends JModel
 					$tab = explode('.', $s);
 					if (count($tab)>1) {
 						if($tab[0]=='jos_emundus_training'){
-							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training';
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training';
 						}else{
-							$query .= ' LEFT JOIN '.$tab[0].' AS j'.$i.' ON j'.$i.'.user=ed.user ';
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=ed.user ';
 						}
 						$i++;
 					}
@@ -352,13 +352,13 @@ class EmundusModelEvaluation extends JModel
 					if($tab[0]=='jos_emundus_training'){
 						if (count($tab)>1) {
 							$query .= ' AND ';
-							$query .= 'j'.$i.'.id like "%'.$search_values[$i].'%"';
+							$query .= 'search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
 							$i++;
 						}
 					}else{
 						if (count($tab)>1) {
 							$query .= ' AND ';
-							$query .= 'j'.$i.'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
 							$i++;
 						}
 					}

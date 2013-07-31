@@ -375,7 +375,7 @@ class EmundusHelperFilters {
 					if (count($tab)>1) {
 						if($tab[0]=='jos_emundus_training'){
 							$query .= ' AND ';
-							$query .= 'j'.$i.'.id like "%'.$search_values[$i].'%"';
+							$query .= ' search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
 						}else{
 							$query .= ' AND ';
 							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';

@@ -877,9 +877,10 @@ class EmundusHelperList{
 	** @param	string	$name	nom de l'élément.
 	*/
 	function getBoxValue($details, $default, $name) { 
-		if ($details['plugin'] == "fabrikfield" || $details['plugin'] == "fabriktextarea" || $details['plugin'] == "fabrikcalc") return $default;
+
+		if ($details['plugin'] == "field" || $details['plugin'] == "textarea" || $details['plugin'] == "calc") return $default;
 		/*elseif ($details['plugin'] == "fabrikuser")*/
-		elseif ($details['plugin'] == "fabrikdatabasejoin") {
+		elseif ($details['plugin'] == "databasejoin") {
 			if (!empty($details['option_list']))
 				foreach($details['option_list'] as $value){
 					if ($value->elt_key == $default) return $value->elt_val;

@@ -306,7 +306,7 @@ class EmundusModelRanking extends JModel
 				if(!empty($c)){
 					$tab = explode('.', $c);
 					if($tab[0]=='jos_emundus_training'){
-						$cols[] = ' j'.$i.'.id as '.$tab[1].' ';
+						$cols[] = ' search_'.$tab[0].'.label as '.$tab[1].' ';
 					}else{
 						if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
 							$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
@@ -315,6 +315,7 @@ class EmundusModelRanking extends JModel
 				}
 				$i++;
 			}
+			// var_dump($cols);
 			if(count($cols > 0) && !empty($cols))
 				$cols = implode(', ',$cols);
 		}
@@ -342,7 +343,7 @@ class EmundusModelRanking extends JModel
 								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
 						elseif($tab[0]=="jos_emundus_training")
-							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training ';
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training ';
 						else
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
 						$joined[] = $tab[0];
@@ -520,7 +521,7 @@ class EmundusModelRanking extends JModel
 						if ($this->details->{$name[0].'__'.$name[1]}['group_by']
 							&& array_key_exists($name[0].'__'.$name[1], $this->subquery)
 							&& array_key_exists($applicant->user_id, $this->subquery[$name[0].'__'.$name[1]])){
-							$$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
 						} elseif($name[0]=='jos_emundus_training'){
 							$eval_list[$name[1]] = $applicant->{$name[1]};
 						} elseif (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
@@ -550,7 +551,7 @@ class EmundusModelRanking extends JModel
 		$this->_db->setQuery($query);
 		$applicants = $this->_db->loadObjectlist();
 
-		$head_values = $this->getApplicantColumns();
+		$head_values = $this->getApplicantColumns($search);
 
 		if(!empty($applicants)){
 			foreach($applicants as $applicant){
@@ -717,7 +718,7 @@ str_replace("#_", "jos", $query);
 	}
 	
 	// get applicant columns
-	function getApplicantColumns(){
+	function getApplicantColumns($search=array()){
 		$cols = array();
 		$cols[] = array('name' =>'user_id', 'label'=>'USER_ID');
 		$cols[] = array('name' =>'name', 'label'=>'NAME'); 
@@ -727,6 +728,18 @@ str_replace("#_", "jos", $query);
 		$cols[] = array('name' =>'engaged', 'label'=>'ENGAGED'); 
 		$cols[] = array('name' =>'final_grade', 'label'=>'FINAL_GRADE');
 		$cols[] = array('name' =>'scholarship', 'label'=>'SCHOLARSHIP');
+		
+		foreach ($search as $c){
+			if(!empty($c)){
+				$tab = explode('.', $c);	
+				if($tab[0]=='jos_emundus_training'){
+					$cols[] = array('name' =>$tab[1], 'label'=>strtoupper($tab[1]));
+				}else{
+					$cols[] = array('name' =>$tab[0].'__'.$tab[1], 'label'=>strtoupper($tab[1]));		
+				}
+			}
+		}
+			
 		return $cols;
 	}
 	
