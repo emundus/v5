@@ -668,8 +668,10 @@ str_replace("#_", "jos", $query);
 	
 	function getSelectList(){
 		
-		$col_elt = JRequest::getVar('elements', null, 'POST', 'array', 0);
-		$col_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
+		//$col_elt = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		$col_elt = $this->getState('elements');
+		//$col_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
+		$col_other = $this->getState('elements_other');
 
 		if (count($col_elt)==0) $col_elt = array();
 		if (count($col_other)==0) $col_other = array();
