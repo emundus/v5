@@ -373,8 +373,13 @@ class EmundusHelperFilters {
 				if( (!empty($search_values[$i]) || isset($search_values[$i])) && $search_values[$i]!="" ){
 					$tab = explode('.', $s);
 					if (count($tab)>1) {
-						$query .= ' AND ';
-						$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+						if($tab[0]=='jos_emundus_training'){
+							$query .= ' AND ';
+							$query .= 'j'.$i.'.id like "%'.$search_values[$i].'%"';
+						}else{
+							$query .= ' AND ';
+							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+						}
 					}
 				}
 				$i++;
