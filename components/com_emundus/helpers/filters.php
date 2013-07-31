@@ -754,7 +754,7 @@ class EmundusHelperFilters {
 					if(!isset($search_values[$i])) $search_values[$i] = "";
 					if($selected_adv != "")
 						$adv_filter .= EmundusHelperFilters::setSearchBox($selected_adv, $search_values[$i], "elements_values");
-					$adv_filter .= '<a href="javascript:removeElement(\'filter'.$i.'\', 1); javascript:clearAdvanceFilter();"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
+					$adv_filter .= '<a href="javascript:clearAdvanceFilter(\'filter'.$i.'\'); javascript:removeElement(\'filter'.$i.'\', 1);"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>'; 
 					$i++; 
 					$adv_filter .= '</div>';
 				} 
@@ -807,7 +807,7 @@ class EmundusHelperFilters {
 					//echo'<BR />';
 					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
-					$other_filter .= '<a href="javascript:removeElement(\'filter_other'.$i.'\', 2); javascript:clearAdvanceFilter();"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
+					$other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 					$i++; 
 					$other_filter .= '</div>';
 				} 

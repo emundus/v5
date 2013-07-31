@@ -872,7 +872,7 @@ function updateprofile() {
 		
 	}
 	
-	function clearAdvanceFilter()
+	function clearadvancefilter()
 	{
 		global $option;
 
@@ -881,13 +881,52 @@ function updateprofile() {
 		$current_user = JFactory::getUser();
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
-
+		
+		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
+		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
+		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
+		$elements_values_other	= $mainframe->getUserStateFromRequest( $option.'elements_values_other', 'elements_values_other' );
+		
+		$filters = JRequest::getVar('filters', null, 'POST', 'none',0);
+		$tab_filters=explode("|", $filters);
+		$i=0;
+		foreach ($elements as $element){
+			if(in_array($element,$tab_filters)){
+				unset($elements[$i]);
+			}
+			$i++;
+		}
+		$i=0;
+		foreach ($elements_values as $value){
+			if(in_array($value,$tab_filters)){
+				unset($elements_values[$i]);
+			}
+			$i++;
+		}
+		
+		$filters_other = JRequest::getVar('filters_other', null, 'POST', 'none',0);
+		$tab_filters_other=explode("|", $filters_other);
+		$i=0;
+		foreach ($elements_other as $element){
+			if(in_array($element,$tab_filters_other)){
+				unset($elements_other[$i]);
+			}
+			$i++;
+		}
+		$i=0;
+		foreach ($elements_values_other as $value){
+			if(in_array($value,$tab_filters_other)){
+				unset($elements_values_other[$i]);
+			}
+			$i++;
+		}
+		
 		$mainframe->setUserState( $option."filter_order", "" );
 		$mainframe->setUserState( $option."filter_order_Dir", "" );
-		$mainframe->setUserState( $option."elements", array() );
-		$mainframe->setUserState( $option."elements_values", array() );
-		$mainframe->setUserState( $option."elements_other", array() );
-		$mainframe->setUserState( $option."elements_values_other", array() );
+		$mainframe->setUserState( $option."elements", $elements );
+		$mainframe->setUserState( $option."elements_values", $elements_values );
+		$mainframe->setUserState( $option."elements_other", $elements_other	);
+		$mainframe->setUserState( $option."elements_values_other", $elements_values_other );
 		
 	}
 }

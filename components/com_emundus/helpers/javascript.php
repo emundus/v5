@@ -601,29 +601,71 @@ function OnSubmitForm() {
 	
 	function clearAdvanceFilter(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-		$script = 
-		'function getXMLHttpRequest() {
-			var xhr = null;
-			 
-			if (window.XMLHttpRequest || window.ActiveXObject) {
-				if (window.ActiveXObject) {
-					try {
-						xhr = new ActiveXObject("Msxml2.XMLHTTP");
-					} catch(e) {
-						xhr = new ActiveXObject("Microsoft.XMLHTTP");
-					}
-				} else {
-					xhr = new XMLHttpRequest();
-				}
-			} else {
-				alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
-				return null;
-			}
-			 
-			return xhr;
-		}
+		$script = '
+		function clearAdvanceFilter(filter){	
 		
-		function clearAdvanceFilter(){
+			var adv_filters = document.getElementById("em_adv_filters");	
+			var filters = "";
+			var mydiv = adv_filters.getElementById("myDiv");
+			var searchElementAdv = mydiv.children;
+			for(var i = 0; i < searchElementAdv.length; i++) {
+				if(searchElementAdv[i].id==filter){
+					selects_object = searchElementAdv[i].getElementsByTagName("select");
+					var selects = makeArray(selects_object);
+					inputs_object = searchElementAdv[i].getElementsByTagName("input");
+					var inputs = makeArray(inputs_object);
+					if(typeOf(selects)=="array"){
+						for(var j=0; j<selects.length; j++){
+							if(filters!=""){
+								filters+="|"+selects[j].value;
+							}else{
+								filters+=selects[j].value;
+							}
+						}
+					}
+					if(typeOf(inputs)=="array"){
+						for(var k=0; k<inputs.length; k++){
+							if(filters!=""){
+								filters+="|"+inputs[k].value;
+							}else{
+								filters+=inputs[k].value;
+							}
+						}
+					}
+				}
+			}
+			
+			var other_filters = document.getElementById("em_other_filters");
+			var otherDiv = other_filters.getElementById("otherDiv");
+			var filters_other = "";
+			var searchElementOther = otherDiv.children;
+			for(var i = 0; i < searchElementOther.length; i++) {
+				if(searchElementOther[i].id==filter){
+					selects_object = searchElementOther[i].getElementsByTagName("select");
+					var selects = makeArray(selects_object);
+					inputs_object = searchElementOther[i].getElementsByTagName("input");
+					var inputs = makeArray(inputs_object);
+					if(typeOf(selects)=="array"){
+						for(var j=0; j<selects.length; j++){
+							if(filters_other!=""){
+								filters_other+="|"+selects[j].value;
+							}else{
+								filters_other+=selects[j].value;
+							}
+						}
+					}
+					if(typeOf(inputs)=="array"){
+						for(var k=0; k<inputs.length; k++){
+							if(filters_other!=""){
+								filters_other+="|"+inputs[k].value;
+							}else{
+								filters_other+=inputs[k].value;
+							}
+						}
+					}
+				}
+			}
+			
 			var xhr = getXMLHttpRequest();
 				xhr.onreadystatechange = function()
 				{
@@ -632,9 +674,9 @@ function OnSubmitForm() {
 						
 					}
 				};
-				xhr.open("GET", "index.php?option=com_emundus&task=clearAdvanceFilter", true);
+				xhr.open("POST", "index.php?option=com_emundus&task=clearadvancefilter", true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				xhr.send("&Itemid="+'.$itemid.');				
+				xhr.send("&filters="+filters+"&filters_other="+filters_other);				
 		}';
 		return $script;
 	}
