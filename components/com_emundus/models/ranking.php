@@ -342,7 +342,7 @@ class EmundusModelRanking extends JModel
 								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
 						elseif($tab[0]=="jos_emundus_training")
-							$query .= 'LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training ';
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training ';
 						else
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
 						$joined[] = $tab[0];

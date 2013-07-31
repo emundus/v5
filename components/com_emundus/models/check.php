@@ -260,15 +260,21 @@ class EmundusModelCheck extends JModel
 		$cols = array();
 		if(!empty($search)) {
 			asort($search);
-			$i = -1;
+			$i = 0;
 			$old_table = '';
-			foreach ($search as $c)
+			foreach ($search as $c){
 				if(!empty($c)){
 					$tab = explode('.', $c);
-					if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
-						$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-					else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+					if($tab[0]=='jos_emundus_training'){
+						$cols[] = ' j'.$i.'.id as '.$tab[1].' ';
+					}else{
+						if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
+							$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
+						else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+					}
 				}
+				$i++;
+			}
 			if(count($cols > 0) && !empty($cols))
 				$cols = implode(', ',$cols);
 		}
@@ -285,6 +291,7 @@ class EmundusModelCheck extends JModel
 		$tables_list = array();
 		if(!empty($search)) {
 			$old_table = '';
+			$i=0;
 			foreach ($search as $s) {
 				$tab = explode('.', $s);
 				if (count($tab) > 1) {
@@ -294,12 +301,15 @@ class EmundusModelCheck extends JModel
 						elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' || $tab[0] == 'jos_emundus_academic_transcript'
 								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
+						elseif($tab[0]=="jos_emundus_training")
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training ';
 						else
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
 						$joined[] = $tab[0];
 					}
 					$old_table = $tab[0];
 				}
+				$i++;
 			}
 		}
 		return $tables_list;
@@ -496,10 +506,12 @@ class EmundusModelCheck extends JModel
 							&& array_key_exists($name[0].'__'.$name[1], $this->subquery)
 							&& array_key_exists($applicant->user_id, $this->subquery[$name[0].'__'.$name[1]])){
 							$$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+						} elseif($name[0]=='jos_emundus_training'){
+							$eval_list[$name[1]] = $applicant->{$name[1]};
 						} elseif (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
 							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
-						}
-						$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
+						} else
+							$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
 					}
 				}
 			}
@@ -520,7 +532,7 @@ class EmundusModelCheck extends JModel
 		/** add filters to the query **/
 		$query .= $this->_buildFilters($tables_list, $tables_list_other, $tables_list_default);
 
-//echo str_replace("#_", "jos", $query);
+// echo str_replace("#_", "jos", $query);
 		$this->_db->setQuery($query);
 		$applicants = $this->_db->loadObjectlist();
 

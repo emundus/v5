@@ -195,15 +195,21 @@ class EmundusModelIncomplete extends JModel
 		$cols = array();
 		if(!empty($search)) {
 			asort($search);
-			$i = -1;
+			$i = 0;
 			$old_table = '';
-			foreach ($search as $c)
+			foreach ($search as $c){
 				if(!empty($c)){
 					$tab = explode('.', $c);
-					if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
-						$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-					else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+					if($tab[0]=='jos_emundus_training'){
+						$cols[] = ' j'.$i.'.id as '.$tab[1].' ';
+					}else{
+						if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
+							$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
+						else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+					}
 				}
+				$i++;
+			}
 			if(count($cols > 0) && !empty($cols))
 				$cols = implode(', ',$cols);
 		}
@@ -220,6 +226,7 @@ class EmundusModelIncomplete extends JModel
 		$tables_list = array();
 		if(!empty($search)) {
 			$old_table = '';
+			$i=0;
 			foreach ($search as $s) {
 				$tab = explode('.', $s);
 				if (count($tab) > 1) {
@@ -229,12 +236,15 @@ class EmundusModelIncomplete extends JModel
 						elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' || $tab[0] == 'jos_emundus_academic_transcript'
 								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
+						elseif($tab[0]=="jos_emundus_training")
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS j'.$i.' ON j'.$i.'.code=#__emundus_setup_campaigns.training ';
 						else
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
 						$joined[] = $tab[0];
 					}
 					$old_table = $tab[0];
 				}
+				$i++;
 			}
 		}
 		return $tables_list;
@@ -420,7 +430,7 @@ class EmundusModelIncomplete extends JModel
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-//echo str_replace('#_', 'jos',$query).'<br /><br />';
+// echo str_replace('#_', 'jos',$query).'<br /><br />';
 		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
 	} 
 
