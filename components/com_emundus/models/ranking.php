@@ -733,9 +733,6 @@ str_replace("#_", "jos", $query);
 		$cols[] = array('name' =>'final_grade', 'label'=>'FINAL_GRADE');
 		$cols[] = array('name' =>'scholarship', 'label'=>'SCHOLARSHIP');
 		
-		if(empty($search)){
-			$search	= $this->getState('elements');
-		}
 		foreach ($search as $c){
 			if(!empty($c)){
 				$tab = explode('.', $c);	
