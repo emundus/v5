@@ -60,7 +60,10 @@ $campaign_id = $campaigns['id'];
 						<span class="optional"><?php echo JText::_('COM_USERS_OPTIONAL'); ?></span>
 					<?php endif; ?>
 				</dt>
-				<dd><?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, "rr"); ?></dd>
+				<dd>
+					<?php echo ($field->type!='Spacer') ? $field->input : "&#160;";  $this->form->setValue($field->name, $field->group, "rr"); ?>
+					<div class="em_msg" id="em_msg_<?php echo $field->name; ?>" style="display: inline; border-width: 2px; border-color: #FF0000; color:#FF0000; padding: 5px"></div>
+				</dd>
 			<?php endif;?>
 		<?php endforeach;?>
 			</dl>
@@ -99,6 +102,7 @@ else {
 	$browser=$HTTP_USER_AGENT;
 }
 
+//var_dump($jform);
 ?>
 
 <script>
@@ -106,7 +110,7 @@ function check_field(){
 	campaign_id = "<?php echo $campaign_id ?>";
 	campaign = $('jform_emundus_profile_campaign');
 	if(campaign_id != "") { 
-		for (var i=0; i<campaign.options.length; ++i) {
+		for (var i=0 ; i<campaign.options.length ; ++i) {
 			if(campaign.options[i].value == campaign_id)
 				campaign.options[i].selected=true;
 		}
@@ -116,11 +120,11 @@ function check_field(){
 	<?php 
 	if(!empty($jform)) {
 		foreach($jform as $key => $value) { 
-		 	if(is_array($value)) {
+		 	if( is_array($value) ) {
 		 		foreach($value as $k => $v)
 		 			echo 'form_values["jform_'.$key.'_'.$k.'"] = "'.$v.'"; '; 
 			} else {
-		 	echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
+		 		echo 'form_values["jform_'.$key.'"] = "'.$value.'"; ';
 			} 
 		} 
 	}
@@ -147,6 +151,12 @@ function check_field(){
 			}
 		}
 	<?php } ?>
+	passwd1 = document.getElementById("jform_password1");
+	passwd2 = document.getElementById("jform_password2");
+	passwd2.onkeyup = function() { if(passwd1.value != this.value) $('em_msg_jform[password2]').innerHTML = "<?php echo JText::_('COM_USERS_FIELD_RESET_PASSWORD1_MESSAGE');?>"; else $('em_msg_jform[password2]').innerHTML = ""; };
+	email1 = document.getElementById("jform_email1");
+	email2 = document.getElementById("jform_email2");
+	email2.onkeyup = function() { if(jform_email1.value != this.value) $('em_msg_jform[email2]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_EMAIL2_MESSAGE');?>"; else $('em_msg_jform[email2]').innerHTML = ""; };
 }
 check_field();
 
