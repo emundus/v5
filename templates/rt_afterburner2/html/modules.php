@@ -35,7 +35,7 @@ function modChrome_basic($module, &$params, &$attribs)
 
 function modChrome_standard($module, &$params, &$attribs)
 {
- 	if (!empty ($module->content) && $module->title!="Top Menu") : ?>
+ 	if (!empty ($module->content)) : ?>
            <div class="rt-block <?php if ($params->get('moduleclass_sfx')!='') : ?><?php echo $params->get('moduleclass_sfx'); ?><?php endif; ?>">
            	<div class="module-surround">
 	           	<?php if ($module->showtitle != 0) : ?>

@@ -35,15 +35,6 @@ $gantry_presets = array(
 		    'linkcolor' => '#ED6F6D',
 			'accentcolor' => '#ED6F6D',
 		    'font-family' => 's:helvetica'
-		),
-		'preset4' => array(
-		    'name' => 'eMundus',
-		    'headerstyle' => 'em_color',
-		    'footerstyle' => 'em_color',
-		    'menustyle' => 'em_color',
-		    'linkcolor' => '#4f95ab',
-			'accentcolor' => '#f7c07a',
-		    'font-family' => 's:helvetica'
 		)
 	)
 );
