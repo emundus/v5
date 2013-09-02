@@ -9,8 +9,6 @@
 defined('_JEXEC') or die;
 
 $cparams = JComponentHelper::getParams ('com_media');
-
-jimport('joomla.html.html.bootstrap');
 ?>
 <div class="contact<?php echo $this->pageclass_sfx?>">
 <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -42,13 +40,6 @@ jimport('joomla.html.html.bootstrap');
 			<?php echo JHtml::_('select.genericlist',  $this->contacts, 'id', 'class="inputbox" onchange="document.location.href = this.value"', 'link', 'name', $this->contact->link);?>
 		</form>
 	<?php endif; ?>
-	
-	<?php // TAGS ?>	
-	<?php if ($this->params->get('show_tags', 1) && !empty($this->item->tags)) : ?>
-		<?php $this->item->tagLayout = new JLayoutFile('joomla.content.tags'); ?>
-		<?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?>
-	<?php endif; ?>
-
 	<?php  if ($this->params->get('presentation_style')!='plain'){?>
 		<?php  echo  JHtml::_($this->params->get('presentation_style').'.start', 'contact-slider'); ?>
 	<?php  echo JHtml::_($this->params->get('presentation_style').'.panel', JText::_('COM_CONTACT_DETAILS'), 'basic-details'); } ?>
