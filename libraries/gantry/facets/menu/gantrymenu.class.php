@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: gantrymenu.class.php 11319 2013-06-07 15:26:51Z steph $
+ * @version   $Id: gantrymenu.class.php 3131 2012-09-03 20:44:06Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -37,11 +37,11 @@ class GantryMenu
 		/** @var $gantry Gantry */
 		global $gantry;
 		$conf = JFactory::getConfig();
-		if ($conf->get('caching') && $params->get("module_cache", 0)) {
+		if ($conf->getValue('config.caching') && $params->get("module_cache", 0)) {
 			$user  = JFactory::getUser();
 			$cache = JFactory::getCache('Gantry');
 			$cache->setCaching(true);
-			$cache->setLifeTime($gantry->get("cache-time", $conf->get('cachetime') * 60));
+			$cache->setLifeTime($gantry->get("cache-time", $conf->getValue('config.cachetime') * 60));
 			$args     = array(&$params);
 			$checksum = md5($params->toString());
 
@@ -56,7 +56,7 @@ class GantryMenu
 		return $gantrymenu;
 	}
 
-	static function &_getInstance($params)
+	function &_getInstance($params)
 	{
 		$gantrymenu = new GantryMenu($params);
 		return $gantrymenu;
