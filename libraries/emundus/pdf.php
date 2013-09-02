@@ -40,10 +40,14 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	$db->setQuery($query);
 	$letters = $db->loadAssocList();
 
-	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.") ORDER BY date_start ASC";
+	/*$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE id = (select training_id from #__emundus_training_174_repeat where applicant_id=".$user_id." and campaign_id=".$campaign_id.") ORDER BY date_start ASC";
 	$db->setQuery($query);
 	$courses = $db->loadAssocList();
-	
+	*/
+	$query = "SELECT * FROM #__emundus_setup_teaching_unity WHERE code=".$db->Quote($training). " ORDER BY date_start ASC";
+	$db->setQuery($query);
+	$courses = $db->loadAssocList();
+
 	$courses_list = '';
 	$courses_fee = ' ';
 	foreach ($courses as $c) {
