@@ -19,6 +19,10 @@ $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
 $db 			=& JFactory::getDBO();
 
+$aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
+if(is_array($aid))
+	$aid = $aid[0];
+
 $can_be_view 	= $jinput->get('jos_emundus_uploads___can_be_viewed');
 $db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id'));
 $upload = $db->loadObject();
@@ -29,13 +33,18 @@ $profile=$db->loadResult();
 $query = 'SELECT ap.displayed, attachment.lbl 
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile.'
-			WHERE attachment.id ='.$jinput->get('jos_emundus_uploads___attachment_id').' ';
+			WHERE attachment.id ='.$aid.' ';
 $db->setQuery( $query );
-$attachement_params = $db->loadObject();
+$attachment_params = $db->loadObject();
 
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
-if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0') $nom.= "_locked";
-$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
+if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') $nom.= "_locked";
+$nom .= $attachment_params->lbl.rand().'.'.end(explode('.', $upload->filename));
+
+// test if directory exist
+if (!file_exists(EMUNDUS_PATH_ABS.$upload->user_id)) {
+	mkdir(EMUNDUS_PATH_ABS.$upload->user_id, 0777, true);
+}
 
 if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom))
 	die("ERROR_MOVING_UPLOAD_FILE");
