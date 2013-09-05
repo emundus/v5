@@ -43,7 +43,7 @@ class EmundusControllerApplication extends JController
 	}
 
 	/**
-	 * Delete an applicant attachment
+	 * Delete an applicant attachment(s)
 	 */
 	function delete_attachments() {
 		$user = JFactory::getUser();
@@ -72,6 +72,7 @@ class EmundusControllerApplication extends JController
 			$filename = $db->loadResult();
 			
 			$file = EMUNDUS_PATH_ABS.$user_id.DS.$filename;
+			@unlink($file);
 			/*if(!@unlink($file) && file_exists($file)) {
 				// JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
 				$this->setRedirect($url, JText::_('FILE_NOT_FOUND'), 'error');
@@ -86,12 +87,134 @@ class EmundusControllerApplication extends JController
 		$this->setRedirect($url, JText::_('ATTACHMENTS_DELETED'), 'message');
 		return;
 	}
+
+	/**
+	 * Delete an applicant attachment (one by one)
+	 */
+	function delete_attachment() {
+		$user = JFactory::getUser();
+		
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+
+		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+				
+		$id = JRequest::getVar('id', null, 'GET', 'none',0);
+		
+		$model = $this->getModel('application');
+		$result = $model->deleteAttachment($id);
+		echo $result;
+		if($result != 1){
+			echo JText::_('ATTACHMENT_DELETE_ERROR');
+		}
+	}
+
+	/**
+	 * Upload an applicant attachment (one by one)
+	 */
+	function upload_attachment() {
+		$user = JFactory::getUser();
+
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+
+		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$aid = JRequest::getVar('attachment_id', null, 'POST', 'none',0);
+		$uid = JRequest::getVar('uid', null, 'POST', 'none',0);
+		$filename = JRequest::getVar('filename', null, 'POST', 'none',0);
+		$campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'none',0);
+		$can_be_viewed = JRequest::getVar('can_be_viewed', null, 'POST', 'none',0);
+		$can_be_deleted = JRequest::getVar('can_be_deleted', null, 'POST', 'none',0);
+
+		$targetFolder = EMUNDUS_PATH_ABS.$uid; 
+		
+		
+		//echo $stringData . $targetFolder . $_FILES['filename']['name'];
+
+		if (!empty($_FILES)) {
+			$msg = "";
+			$data = "{";
+			switch ($_FILES['filename']['error']) {
+			case 0:		$msg .= "File uploaded"; 
+						$data .= '"message":"'.$msg.'",';
+						$tempFile = $_FILES['filename']['tmp_name'];
+						$targetPath = $targetFolder;
+						
+						// Validate the file type
+						$fileTypes = array('jpg','jpeg','gif','png', 'pdf', 'doc', 'docx', 'odt'); // File extensions
+						$fileParts = pathinfo($_FILES['filename']['name']);
+						
+						if (in_array($fileParts['extension'], $fileTypes)) {
+							$model = $this->getModel('application');
+							$type_attachment = $model->getAttachmentByID($aid);
+							
+							$filename = date('Y-m-d_H-i-s').$type_attachment['lbl'].'_'.$_FILES['filename']['name'];
+							$fileURL = EMUNDUS_PATH_REL.$uid.'/'.$filename;
+							$targetFile = rtrim($targetPath,'/') . DS . $filename;
+
+							move_uploaded_file($tempFile, $targetFile);
+
+							$filesize = $_FILES['filename']['size'];
+
+							$attachment["key"] = array("user_id", "attachment_id", "filename", "description", "can_be_deleted", "can_be_viewed", "campaign_id");
+							$attachment["value"] = array($uid, $aid, '"'.$filename.'"', '"'.date('Y-m-d H:i:s').'"', $can_be_deleted, $can_be_viewed, $campaign_id);
+							
+							$id = $model->uploadAttachment($attachment);
+						} else {
+							$msg .= JText::_('COM_EMUNDUS_FILETYPE_INVALIDE');
+						}
+						
+						$data .= '"message":"'.$msg.'",';
+						$data .= '"url":"'.htmlentities($fileURL).'",';
+						$data .= '"id":"'.$id.'",';
+						$data .= '"filesize":"'.$filesize.'",';
+						$data .= '"name":"'.$type_attachment['value'].'",';
+						$data .= '"filename":"'.$filename.'",';
+						$data .= '"path":"'.str_replace("\\", "\\\\", $targetPath).'",';
+						$data .= '"aid":"'.$aid.'",';
+						$data .= '"uid":"'.$uid.'"';
+						//$data .= '"html":"'.$html.'"';
+						
+						
+				break;
+			case 1:		$msg .= "The file is bigger than this PHP installation allows";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 2:		$msg .= "The file is bigger than this form allows";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 3:		$msg .= "Only part of the file was uploaded";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 4:		$msg .= "No file was uploaded";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 6:		$msg .= "Missing a temporary folder";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 7:		$msg .= "Failed to write file to disk";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			case 8:		$msg .= "File upload stopped by extension";
+						$data .= '"message":"'.$msg.'"';
+				break;
+			default:	$msg .= "Unknown error ".$_FILES['filename']['error'];
+						$data .= '"message":"'.$msg.'",';
+						$data .= '"message":"'.$html.'"';
+				break;
+			}
+			$data .= "}";
+			echo $data;
+			//echo json_encode($data);
+		}
+	}
 	
 	
 	function deletecomment(){
 		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		//$allowed = array("Super Users", "Administrator", "Editor");
+
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 				

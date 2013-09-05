@@ -208,12 +208,16 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 		$db->setQuery($query);
 		$file = $db->loadAssoc();
 
+		// test if directory exist
+		if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
+			mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true);
+		}
 		if(count($file) > 0) {
 			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id;
 			$db->setQuery($query);
 			$db->query();
 
-			unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
+			@unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
 		}
 
 		@chdir('tmp');
@@ -224,12 +228,14 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.')';
 			$db->setQuery($query);
 			$db->query();
+			$id = $db->insertid();
 	//die(str_replace("#_", "jos", $query));
 		}else{
 			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
 		}
+		$file_info['id'] = $id;
 		$file_info['path'] = EMUNDUS_PATH_ABS.$user_id.DS.$name;
-		$file_info['id'] = $letter['attachment_id'];
+		$file_info['attachment_id'] = $letter['attachment_id'];
 		$file_info['name'] = $attachment['value'];
 		$file_info['url'] = EMUNDUS_PATH_REL.$user_id.'/'.$name;
 

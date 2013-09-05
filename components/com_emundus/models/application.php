@@ -127,6 +127,40 @@ class EmundusModelApplication extends JModel
 		}
 	}
 
+	function deleteAttachment($id){ 
+		$query = 'SELECT * FROM #__emundus_uploads WHERE id='.$id;
+		$this->_db->setQuery( $query );
+		$file = $this->_db->loadAssoc();
+
+		$f = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename']; 
+		@unlink($f);
+		/*if(!@unlink($f) && file_exists($f)) {
+			// JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
+			//$this->setRedirect($url, JText::_('FILE_NOT_FOUND'), 'error');
+			return -1;
+		}*/
+			
+		$query = 'DELETE FROM #__emundus_uploads WHERE id='.$id; 
+		$this->_db->setQuery( $query );
+		
+		return $this->_db->Query();
+	}
+
+	function uploadAttachment($data) {
+		$query = 'INSERT INTO #__emundus_uploads ('.implode(",", $data["key"]).') VALUES ('.implode(",", $data["value"]).')';
+		$this->_db->setQuery( $query );
+		$this->_db->Query() or die($this->_db->getErrorMsg());
+
+		return $this->_db->insertid();
+	}
+
+	function getAttachmentByID($id) {
+		$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$id;
+		$this->_db->setQuery($query);
+
+		return $this->_db->loadAssoc();
+	}
+
 	function getFormsProgress($aid, $pid) {
 		$query = 'SELECT distinct(esa.value) 
 					FROM #__emundus_setup_attachment_profiles AS profiles 

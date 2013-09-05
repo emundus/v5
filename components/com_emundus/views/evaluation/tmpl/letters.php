@@ -1,12 +1,16 @@
 <?php 
 defined('_JEXEC') or die('Restricted access'); 
 
+$document = JFactory::getDocument();
+
 JHTML::_('behavior.modal'); 
 JHTML::_('behavior.tooltip'); 
 JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
-JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
+//JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
 JHTML::stylesheet( 'general.css', JURI::Base().'templates/system/css/' );
 JHTML::stylesheet( 'system.css', JURI::Base().'templates/system/css/' );
+// AJAX upload
+JHTML::script('webtoolkit.aim.js', JURI::base().'media/com_emundus/js/');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -38,6 +42,9 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	$user = JFactory::getUser($student_id);
 
+	$final_grade = $evaluations->getFinalGrade($student_id, $evaluation[0]["campaign_id"]); 
+	//var_dump($campaign_candidature);
+
 	$chemin = EMUNDUS_PATH_REL;
 
 	// Get email 
@@ -51,13 +58,10 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$email = $emails->getEmail("candidature_decision");
 
 	?>
-	<!--
-	<div class="em_email_block_nav">
-		<input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" >
-	</div>
-	-->
-	<h1><?php echo JText::_( 'INFORM_APPLICANT' ); ?></h1>
-
+<!--
+<div class="em_email_block_nav"><input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" ></div>
+<h1><?php echo JText::_( 'INFORM_APPLICANT' ); ?></h1>
+-->
 	<div id="attachment_list">
 	  <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data" />
 	    <?php echo EmundusHelperEmails::createEmailBlock(array('evaluation_result')); ?>
@@ -65,20 +69,101 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	</div>
 
 	<?php
-	if (!empty($eligibility[$evaluation[0]["result"]]->whenneed)) {
+	if (!empty($eligibility[$evaluation[0]["result"]]->whenneed) && empty($final_grade['result_sent'])) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-	$files = letter_pdf($user->id, @$eligibility[$evaluation[0]["result"]]->whenneed, $campaign['training'], $campaign['id'], $evaluations_id, "F");
+		$files = letter_pdf($user->id, @$eligibility[$evaluation[0]["result"]]->whenneed, $campaign['training'], $campaign['id'], $evaluations_id, "F");
+	} else {
+		$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id'], $result_id); 
+		//var_dump($attachments);
+		if (!empty($attachments)) {
+			$files = array();
+			foreach ($attachments as $attachment) {
+				$file_info['id'] = $attachment->id;
+				$file_info['path'] = EMUNDUS_PATH_ABS.$user_id.DS.$attachment->filename;
+				$file_info['attachment_id'] = $attachment->attachment_id;
+				$file_info['name'] = $attachment->value;
+				$file_info['url'] = EMUNDUS_PATH_REL.$student_id.'/'.$attachment->filename;
+
+				$files[] = $file_info;
+			}
+		}
 	}
 
 	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>'; 
+	// Upload ajax
+	/*$aupload .= '<input type="file" name="file_upload" id="file_upload" />';
+	echo $aupload;*/
+
+	//echo '<script type="text/javascript" src="/djs/webtoolkit.aim.js"></script>';
+	?>
+	<script type="text/javascript">
+			function startCallback() {
+				submit_attachment = document.getElementById('submit_attachment');
+				submit_attachment.value = "";
+				submit_attachment.disabled=true;
+				submit_attachment.style="background: url('media/com_emundus/images/icones/loading.gif');width:16px;height:11px;";
+				return true;
+			}
+
+			function completeCallback(response) { //document.getElementById("em_attachment").innerHTML += response;
+				submit_attachment = document.getElementById('submit_attachment');
+				submit_attachment.disabled=false;
+				submit_attachment.style="background: url('')";
+				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
+    			var objJSON = JSON.parse(response);
+				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
+				html += '<img src="<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+				
+				document.getElementById("em_attachment").innerHTML += html;
+
+				$('mail_attachments').value += "," + "<?php echo str_replace('\\', '\\\\', EMUNDUS_PATH_ABS.$student_id.DS); ?>" + objJSON.filename;
+				
+
+				//document.getElementById("nr").innerHTML = parseInt(document.getElementById("nr").innerHTML) + 1;
+				//document.getElementById("r").innerHTML = response;
+			}
+		</script>
+ 
+	<form action="<?php echo JURI::Base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
+		<div>
+			<?php echo EmundusHelperFilters::setEvaluationList($result_id); ?>
+			<input name="campaign_id" type="hidden" value="<?php echo $evaluation[0]["campaign_id"]; ?>" />
+			<input name="uid" type="hidden" value="<?php echo $student_id; ?>" />
+			<input name="aid" type="hidden" value="26" />
+			<input name="can_be_viewed" type="hidden" value="1" />
+			<input name="can_be_deleted" type="hidden" value="0" />
+			<input name="MAX_FILE_SIZE" type="hidden" value="10000000" />
+			<input name="filename" type="file" />
+			<input id="submit_attachment" type="submit" value="<?php echo JText::_('UPLOAD'); ?>" />
+		</div>
+	</form>
+	<?php
+	/*echo '<hr />
+		<div># of submited forms: <span id="nr">0</span></div>
+		<div>last submit response: <span id="r"></span></div>';*/
+
+/////////////////////////////////////////
+
 	echo '<ul class="em_attachments_list">';
 	$files_path = "";
 	foreach ($files as $file) {
 		$files_path .= str_replace('\\', '\\\\', $file['path']).',';
-		echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
+		//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
+		echo '<div id="em_attachment">
+			<div id="em_dl_'.$file['id'].'" class="em_dl">
+				<a class="dO" target="_blank" href="'.$file['url'].'">
+					<div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
+					<div class="vJ"></div>
+				</a>
+				<div class="em_email_icon" id="attachment_'.$file['id'].'">
+					<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+				</div>
+			</div>
+		</div>';
 	}
 	$files_path = rtrim($files_path, ",");
 	echo '</ul>';
+	
 	echo '</fieldset>';
 
 	?>
@@ -101,7 +186,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	$('mail_body').value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
 	$('mail_subject').value = "<?php echo $campaign['label']; ?>";
-	$('mail_attachments').value = "<?php echo $files_path; ?>";
+	$('mail_attachments').value = "<?php echo $files_path; ?>"; 
 
 	</script>
 <?php } ?>

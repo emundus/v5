@@ -735,5 +735,32 @@ class EmundusModelEvaluation extends JModel
 		$db->setQuery($query);
 		return $db->loadResult();
 	}
+
+	function getCampaignCandidature($applicant_id, $campaign_id) {
+		$query = "SELECT * FROM #__emundus_campaign_candidature WHERE applicant_id=".$applicant_id." AND campaign_id=".$campaign_id;
+		$this->_db->setQuery($query);
+
+		return $this->_db->loadAssoc();
+	}
+
+	function getFinalGrade($applicant_id, $campaign_id) {
+		$query = "SELECT * FROM #__emundus_final_grade WHERE student_id=".$applicant_id." AND campaign_id=".$campaign_id;
+		$this->_db->setQuery($query);
+
+		return $this->_db->loadAssoc();
+	}
+
+	function getEvaluationDocuments($applicant_id, $campaign_id, $result) {
+		$query = 'SELECT *, eu.id as id, esa.id as attachment_id FROM #__emundus_uploads eu 
+					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id 
+					WHERE eu.user_id='.$applicant_id.' 
+					AND eu.attachment_id IN (
+						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE esl.eligibility='.$result.'
+						) 
+					ORDER BY eu.timedate';
+
+		$this->_db->setQuery( $query );
+		return $this->_db->loadObjectList();
+	}
 }
 ?>

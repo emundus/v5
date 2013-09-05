@@ -25,6 +25,7 @@ jimport('joomla.application.component.helper');
  */
 class EmundusHelperEmails{
 	function createEmailBlock($params){
+		$itemid = JRequest::getVar('Itemid', null, 'GET', null, 0);
 		$current_user = JFactory::getUser();
 		$email = '<div class="em_email_block" id="em_email_block">';
 		if(in_array('default',$params)){
@@ -157,27 +158,69 @@ class EmundusHelperEmails{
 			$campaign_id = JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
 			$applicant = JFactory::getUser($student_id);
 			
-			$email.= '<fieldset>
+			$email .= '<fieldset>
 				<legend> 
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
-						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.'
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i> 
 					</span>
 				</legend>
-				<div>
-				<p><label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
+				<div>';
+				//$email .= '<p><label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>';
+				$email .= '
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
 				<p>
 					<input name="mail_to" type="hidden" class="inputbox" id="mail_to" value="'.$applicant->id.'" />
 					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="80" />
-				</div>
-				<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'
+				</div>';
+				//$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
+				$email .= $mail_body;
+				$email .= '
 				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
-				<br><br>
 				<p><div><input type="submit" name="evaluation_result_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 				</p>
 			</fieldset>';
+			
+			$email .= '<script>
+			function getXMLHttpRequest() {
+				var xhr = null;
+				 
+				if (window.XMLHttpRequest || window.ActiveXObject) {
+					if (window.ActiveXObject) {
+						try {
+							xhr = new ActiveXObject("Msxml2.XMLHTTP");
+						} catch(e) {
+							xhr = new ActiveXObject("Microsoft.XMLHTTP");
+						}
+					} else {
+						xhr = new XMLHttpRequest();
+					}
+				} else {
+					alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+					return null;
+				}
+				 
+				return xhr;
+			}
+			function deleteAttachment(id){
+				var xhr = getXMLHttpRequest();
+				xhr.onreadystatechange = function()
+				{
+					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+					{
+						if(xhr.responseText != "SQL Error"){ 
+							$("em_dl_"+id).innerHTML = "";
+							$("em_dl_"+id).style.visibility="hidden";
+						}else{
+							alert(xhr.responseText);
+						}
+					}
+				};
+				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr.send("&id="+id);
+			}</script>';
 		}
 		if(in_array('this_applicant', $params)){
 			$email_to = JRequest::getVar('sid', null, 'GET', 'none',0);
