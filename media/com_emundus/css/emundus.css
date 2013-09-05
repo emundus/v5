@@ -651,7 +651,86 @@ float : left;
 display:inline;
 width: 20%;
 }
-
+.em_dl {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #F5F5F5;
+    border-bottom-color: #DCDCDC;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-image-outset: 0 0 0 0;
+    border-image-repeat: stretch stretch;
+    border-image-slice: 100% 100% 100% 100%;
+    border-image-source: none;
+    border-image-width: 1 1 1 1;
+    border-left-color-ltr-source: physical;
+    border-left-color-rtl-source: physical;
+    border-left-color-value: #DCDCDC;
+    border-left-style-ltr-source: physical;
+    border-left-style-rtl-source: physical;
+    border-left-style-value: solid;
+    border-left-width-ltr-source: physical;
+    border-left-width-rtl-source: physical;
+    border-left-width-value: 1px;
+    border-right-color-ltr-source: physical;
+    border-right-color-rtl-source: physical;
+    border-right-color-value: #DCDCDC;
+    border-right-style-ltr-source: physical;
+    border-right-style-rtl-source: physical;
+    border-right-style-value: solid;
+    border-right-width-ltr-source: physical;
+    border-right-width-rtl-source: physical;
+    border-right-width-value: 1px;
+    border-top-color: #DCDCDC;
+    border-top-style: solid;
+    border-top-width: 1px;
+    font-weight: bold;
+    margin-bottom: 9px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0;
+    max-width: 448px;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 4px;
+    padding-top: 4px;
+}
+.em_email_icon {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    cursor: pointer;
+    float: right;
+    margin-top: 1px;
+}
+.vI {
+    display: inline-block;
+    max-width: 315px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding-bottom: 3px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 3px;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+}
+.vJ {
+    color: #777777;
+    display: inline-block;
+    padding-bottom: 3px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 3px;
+}
 /* helper list : affect to evaluator(s) */
 #assessor_group {
 float : left;
