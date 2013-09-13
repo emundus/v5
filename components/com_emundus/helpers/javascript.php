@@ -37,14 +37,20 @@ function OnSubmitForm() {
 		switch(button_name[0]) {
 		   case \'affect\': 
 		   		document.adminForm.task.value = "setAssessor";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
+		   		if(is_checked("ud")) 
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
+				else
+					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
 			break;
 			case \'unaffect\': 
-				if (confirm("'.JText::_("CONFIRM_UNAFFECT_ASSESSORS").'")) {
-					document.adminForm.task.value = "unsetAssessor";
-					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
+				if(is_checked("ud")) {
+					if (confirm("'.JText::_("CONFIRM_UNAFFECT_ASSESSORS").'")) {
+						document.adminForm.task.value = "unsetAssessor";
+						document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
+					} else 
+						return false;
 				} else 
-					return false;
+					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
 			break;
 			case \'export_zip\': 
 				if (is_checked()) {

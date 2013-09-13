@@ -305,7 +305,8 @@ class EmundusHelperList{
 	** @return array Array of HTML to display in page for action block indexed by user ID.
 	*/	
 	function createActionsBlock($users, $params){
-		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
+		$s = JRequest::getVar('s', null, 'POST', 'none', 0); 
 		$actions = array(); 
 		$ids = array();
 		//print_r($users);
@@ -324,7 +325,8 @@ class EmundusHelperList{
 				$avatar = EmundusHelperList::getAvatar($user['user_id']);
 				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_actions" id="em_actions_'.$user['user_id'].'">';
 				if(in_array('checkbox',$params)){
-					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'|'.$user['campaign_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'|'.$user['campaign_id'].'"/></div>';
+					$checked = ($s==$user['user_id'])?'checked':'';
+					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'|'.$user['campaign_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'|'.$user['campaign_id'].'" '.$checked.' /></div>';
 				}
 				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'">#'.$user['user_id'].'</div>';
 				if(in_array('gender',$params)){
