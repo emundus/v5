@@ -29,7 +29,7 @@ class EmundusControllerCheck extends JController {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
@@ -45,6 +45,12 @@ class EmundusControllerCheck extends JController {
 		}
 		parent::display();
     }
+    
+////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
+	function applicantEmail() {
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+		EmundusHelperEmails::sendApplicantEmail();
+	}
 
 	function clear() {
 		EmundusHelperFilters::clear();

@@ -36,11 +36,13 @@ function OnSubmitForm() {
 		var button_name=document.pressed.split("|"); 
 		switch(button_name[0]) {
 		   case \'affect\': 
-		   		document.adminForm.task.value = "setAssessor";
-		   		if(is_checked("ud")) 
+		   		if(is_checked("ud")) {
+		   			document.adminForm.task.value = "setAssessor";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
-				else
+				} else {
 					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
+					return false;
+				}
 			break;
 			case \'unaffect\': 
 				if(is_checked("ud")) {
@@ -56,8 +58,10 @@ function OnSubmitForm() {
 				if (is_checked()) {
 					document.adminForm.task.value = "export_zip";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				} else {
+					alert("'.JText::_("PLEASE_SELECT_APPLICANT").'");
+					return false;
 				}
-				else alert("'.JText::_("PLEASE_SELECT_APPLICANT").'");
 			break;
 			case \'export_to_xls\': 
 				document.adminForm.task.value = "transfert_view";
@@ -68,8 +72,13 @@ function OnSubmitForm() {
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=customEmail";
 			break;
 			case \'applicant_email\': 
-				document.adminForm.task.value = "applicantEmail";
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+				if(is_checked("ud")) {
+					document.adminForm.task.value = "applicantEmail";
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+				} else {
+					alert("'.JText::_('PLEASE_SELECT_APPLICANT').'");
+					return false;
+				}
 			break;
 			case \'default_email\': 
 				if (confirm("'.JText::_("CONFIRM_DEFAULT_EMAIL").'")) {
@@ -693,6 +702,7 @@ function OnSubmitForm() {
 	
 	function getTemplate(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$editor = &JFactory::getEditor();
 		$script = '
 		function getXMLHttpRequest() {
 			var xhr = null;
@@ -724,14 +734,16 @@ function OnSubmitForm() {
 				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 				{
 					email = xhr.responseText;
+					tinyMCE.execCommand("mceToggleEditor", false, "mail_body");
 					tab = email.split("(***)");
 					var email_block = document.getElementById("em_email_block");
 					email_block.getElementById("mail_subject").value=tab[0];
 					//email_block.getElementById("mail_body").value=tab[1];
 					$("mail_body").value = tab[1];
 					var content = email_block.getElementById("mail_body_ifr").contentWindow ? email_block.getElementById("mail_body_ifr").contentWindow.document : email_block.getElementById("mail_body_ifr").contentDocument;
-					content.execCommand("mceRepaint");
-					//content.getElementById("tinymce").innerText=tab[1];
+					//tinyMCE.execCommand("mceRepaint", false, "mail_body");
+					
+					tinyMCE.execCommand("mceToggleEditor", false, "mail_body");
 				}
 			};
 			xhr.open("POST", "index.php?option=com_emundus&controller=email&view=email&task=getTemplate", true);

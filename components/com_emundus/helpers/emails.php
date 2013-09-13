@@ -122,28 +122,28 @@ class EmundusHelperEmails{
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_SELECTED_APPLICANTS').'::'.JText::_('EMAIL_SELECTED_APPLICANTS_TIP').'">
 						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_SELECTED_APPLICANTS').'"/> '.JText::_( 'EMAIL_SELECTED_APPLICANTS' ).'
 					</span>
-				</legend>
-				<div>
-					<p>
-					<dd>
+				</legend>';
+			
+			$email.= '<label for="select_template">'.JText::_( 'TEMPLATE' ).'</label>';
+			$AllEmail_template = EmundusHelperEmails::getAllEmail();
+			$email.='<select name="select_template" onChange="getTemplate(this);">
+				<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
+			foreach ($AllEmail_template as $email_template){
+				$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
+			}
+			$email.='</select>';
+
+			$email.= '<div><dd>
 					[NAME] : '.JText::_('TAG_NAME_TIP').'<br />
 					[SITE_URL] : '.JText::_('SITE_URL_TIP').'<br />
-					</dd>
-					</p><br />
-					<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label><br/>
+					</dd></div>';
+			$email.= '<div><label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label>
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />
-				</div>
-				<label for="select_template">'.JText::_( 'TEMPLATE' ).'</label>';
-				$AllEmail_template = EmundusHelperEmails::getAllEmail();
-				$email.='<select name="select_template" onChange="getTemplate(this);">
-				<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
-				foreach ($AllEmail_template as $email_template){
-					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
-				}
-				$email.='</select>';
-				$editor = &JFactory::getEditor();
-				$mail_body = $editor->display( 'mail_body', '[NAME], ', '99%', '400', '20', '20', false, 'mail_body', null, null );
-				$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'<BR />
+				</div>';
+
+			$editor = &JFactory::getEditor();
+			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null );
+			$email .='<label for="mail_body">'.JText::_( 'MESSAGE' ).' </label><br/>'.$mail_body.'<br />
 				<div><input type="submit" name="applicant_email" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
 			</fieldset>
 			<script>
