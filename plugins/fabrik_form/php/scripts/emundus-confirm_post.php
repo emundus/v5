@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: confirm_post.php 89 2013-06-08 Benjamin Rivalland
+ * @version 1.5: confirm_post.php 89 2013-09-18 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -14,27 +14,29 @@ defined( '_JEXEC' ) or die();
  */
 
 $db =& JFactory::getDBO();
-/*$query = 'SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="confirm_post"';
-$db->setQuery( $query );
-$db->query();
-$obj=$db->loadObject();
-
-$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[DEADLINE\]/','/\n/');
-$replacements = array ($student->id, $student->name, $student->email, strftime("%A %d %B %Y %H:%M", strtotime($student->candidature_end) ).' (GMT)', '<br />');
-*/
 $student = & JFactory::getUser();
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 
+
+// get current applicant course
+$campaigns = new EmundusModelCampaign;
+$campaign = $campaigns->getCampaignByID($student->campaign_id);
+
 $emails = new EmundusModelEmails;
 
-$post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($student->candidature_end)),
+$post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
 				'APPLICANTS_LIST' => $applicants,
 				'EVAL_CRITERIAS' => $criterias,
-				'EVAL_PERIOD' => $eval_period 
+				'EVAL_PERIOD' => $eval_period,
+				'CAMPAIGN_LABEL' => $campaign['label'],
+				'CAMPAIGN_YEAR' => $campaign['year'],
+				'CAMPAIGN_START' => $campaign['start_date'],
+				'CAMPAIGN_END' => $campaign['end_date'],
+				'CAMPAIGN_CODE' => $campaign['training']
 			);
-$tags = $emails->setTags($student->id, array());
+$tags = $emails->setTags($student->id, $post);
 $email = $emails->getEmail("confirm_post");
 
 // Apllicant cannot delete this attachments now
@@ -90,10 +92,6 @@ try {
 }
 
 unset($recipient);
-
-// get current applicant course
-$campaigns = new EmundusModelCampaign;
-$campaign = $campaigns->getCampaignByID($student->campaign_id);
 
 // get evaluators groups for current applicant course
 $groups = new EmundusModelGroups;

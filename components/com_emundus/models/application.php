@@ -1,6 +1,6 @@
 <?php
 /**
- * Users Model for eMundus World Component
+ * Users Model for eMundus Component
  * 
  * @package    eMundus
  * @subpackage Components
@@ -31,7 +31,7 @@ class EmundusModelApplication extends JModel
 		parent::__construct();
 		global $option;
 		
-		$mainframe = JFactory::getApplication();
+		$this->_mainframe = JFactory::getApplication();
 		
 		$this->_db = JFactory::getDBO();
 		$this->_user = JFactory::getUser();		
@@ -125,6 +125,13 @@ class EmundusModelApplication extends JModel
 		}else{
 			return -1;
 		}
+	}
+
+	function deleteData($id, $table){ 
+		$query = 'DELETE FROM `'.$table.'` WHERE id='.$id;
+		$this->_db->setQuery($query);
+
+		return $this->_db->Query();
 	}
 
 	function deleteAttachment($id){ 
@@ -239,7 +246,7 @@ class EmundusModelApplication extends JModel
 				$forms .= $itemt->label;
 				$forms .= '</h3>';
 				// liste des groupes pour le formulaire d'une table
-				$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated
+				$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 							FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 							WHERE ff.group_id = fg.id AND
 								  ff.form_id = "'.$itemt->form_id.'" 
@@ -283,35 +290,40 @@ class EmundusModelApplication extends JModel
 							 }
 		
 						// TABLEAU DE PLUSIEURS LIGNES
-					} elseif ($itemg->repeated>0){
+					} elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
 						$forms .= '<table class="adminlist">
 							  <thead>
 							  <tr> ';
 						
-						$query = 'SELECT * FROM '.$itemt->db_table_name.'_'.$itemg->group_id.'_repeat
+						//-- Entrée du tableau -- */
+						//$nb_lignes = 0;
+						$t_elt = array();
+						foreach($elements as &$element) { 
+							$t_elt[] = $element->name;
+							$forms .= '<th scope="col">'.$element->label.'</th>';
+							/*$element->content = explode('//..*..//', $element->content);
+							if(count($element->content)>$nb_lignes) $nb_lignes = count($element->content);*/
+						}
+						unset($element);
+						$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
+						$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
 									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
 						$this->_db->setQuery($query);
 						$repeated_elements = $this->_db->loadObjectList();
-						//-- Entrée du tableau -- */
-						$nb_lignes = 0;
-						foreach($elements as &$element) { 
-							$forms .= '<th scope="col">'.$element->label.'</th>';
-							$element->content = explode('//..*..//', $element->content);
-							if(count($element->content)>$nb_lignes) $nb_lignes = count($element->content);
-						}
-						unset($element);
+						unset($t_elt);
+//print_r($repeated_elements);
 						$forms .= '</tr></thead><tbody>';
 						// -- Ligne du tableau -- 
 						foreach ($repeated_elements as $r_element) {
 							$forms .= '<tr>';
 								$j = 0;
 								foreach ($r_element as $key => $r_elt) {
-									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j - 2])) {
-										if ($elements[$j - 2]->plugin=='date') {
-											$date_params = json_decode($elements[$j - 2]->params);
+									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+										if ($elements[$j]->plugin=='date') {
+											$date_params = json_decode($elements[$j]->params);
 											$elt = strftime($date_params->date_form_format, strtotime($r_elt));
-										} elseif($elements[$j - 2]->plugin=='databasejoin') {
-												$params = json_decode($elements[$j-2]->params);
+										} elseif($elements[$j]->plugin=='databasejoin') {
+												$params = json_decode($elements[$j]->params);
 												$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 												$from = $params->join_db_name;
 												$where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
@@ -320,8 +332,14 @@ class EmundusModelApplication extends JModel
 												$query = preg_replace('#{my->id}#', @$item->user_id, $query);
 												$this->_db->setQuery( $query );
 												$elt = $this->_db->loadResult();
-										} else $elt = $r_elt;
-										$forms .= '<td>'.$elt.'</td>';
+										} else 
+											$elt = $r_elt;
+//print_r($this->_mainframe->data);
+										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+											$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'">
+								<img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+										}
+										$forms .= '<td><div id="em_training_'.$r_element->id.'">'.$elt.' '.$delete_link.'</span></td>';
 									}
 									$j++;
 								}

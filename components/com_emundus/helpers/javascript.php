@@ -340,10 +340,8 @@ function OnSubmitForm() {
 				}else{
 					var value_i = input.value;
 				}
-				// alert(name_i+" "+value_i+" "+input.checked);
 				jsonObj.push({\'id\': name_i, \'value\': value_i});
 			}
-			// alert(jsonObj[1][\'id\']+" "+jsonObj[1][\'value\']);
 			
 			var jsonObjString = JSON.stringify(jsonObj); // constraints
 
@@ -428,11 +426,10 @@ function OnSubmitForm() {
 			xhr.send("&filter_id="+select_id);
 		}
 
-		function setFilters(select, constraints) {
+		function setFilters(select, constraints) {  alert(constraints);
 			var constraintsObj = JSON.parse(constraints);
 			var k =0;
 			for (var i = 0; i < constraintsObj.length; i++) {
-				// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
 				var field = $(constraintsObj[i].id);
 				var define_type = constraintsObj[i].id.split(\'_\');
 				if(define_type[0]==\'select\'){
@@ -441,7 +438,6 @@ function OnSubmitForm() {
 					for(j=0;j<field.length;j++) {
 						if(field[j].value == constraintsObj[i].value){
 							field[j].selected = true;							
-							// alert(field[j].value);
 						}else if(!in_array(field[j].value,constraintsObj)){
 							field[j].selected = false;
 						}
@@ -450,7 +446,6 @@ function OnSubmitForm() {
 					field.value = constraintsObj[i].value;
 				}else if(define_type[0]==\'check\'){
 					field.checked = constraintsObj[i].value;
-					// alert(constraintsObj[i].id+\' - \'+constraintsObj[i].value);
 				}else{
 					if(constraintsObj[i].id==\'elements\' || constraintsObj[i].id==\'elements_values\'){
 						if(constraintsObj[i].id==\'elements\'){
@@ -481,7 +476,6 @@ function OnSubmitForm() {
 		}
 		
 		function clear_filter(){
-		
 			// delete advance filter
 			if(document.getElementById(\'myDiv\')){
 				var selects_object = document.getElementById(\'myDiv\').getElementsByTagName(\'select\');

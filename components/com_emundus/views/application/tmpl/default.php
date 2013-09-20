@@ -582,6 +582,38 @@ function deleteComment(comment_id){
 	xhr.send("&comment_id="+comment_id);
 }
 
+function deleteData(id, table){ 
+	var xhr = getXMLHttpRequest();
+	xhr.onreadystatechange = function()
+	{
+		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+		{
+			if(xhr.responseText!="SQL Error"){
+				var training = ($('training_'+id).parentNode).id;
+				var training_content = ($('training_'+id).parentNode).id;
+				var training_icon = $('training_'+id);
+				var i;
+				for (i=0;i<training_icon.childNodes.length;i++)
+				{
+					training_icon.childNodes[i].src = "<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/trash.png";
+					training_icon.childNodes[i].onclick = null;
+				}
+				$(training).style.background="#B0B4B3";
+				$(training_content).style.background="#B0B4B3";
+				$(training).style.color="#FFFFFF";
+				$(training_content).style.color="#FFFFFF";
+				$(training).style.textDecoration="line-through";
+				$(training_content).style.textDecoration="line-through";
+			}else{
+				alert(xhr.responseText);
+			}
+		}
+	};
+	xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=deletetraining&Itemid=<?php echo $itemid; ?>&id="+id+"&t="+table, true);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	xhr.send("&id="+id+"&t="+table);
+}
+
 function delayAct(user_id){
 	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?> <?php if(!empty($tmpl)){ echo'&tmpl='.$tmpl; }?>";
 	setTimeout("document.applicant_form.submit()",10) 

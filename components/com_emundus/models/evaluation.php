@@ -537,7 +537,7 @@ class EmundusModelEvaluation extends JModel
 						
 						// var_dump($eval);
 						if(in_array($val, array_keys($sub_val)))
-							$eval_list[$eval->name] = $sub_val[$val];
+							$eval_list[$eval->name] = @$sub_val[$val];
 						else
 							$eval_list[$eval->name] = $val;
 						

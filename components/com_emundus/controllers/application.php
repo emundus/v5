@@ -227,4 +227,25 @@ class EmundusControllerApplication extends JController
 			echo JText::_('COMMENT_DELETE_ERROR');
 		}
 	}
+
+	function deletetraining(){ 
+		$user = JFactory::getUser();
+
+		if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+
+		$view = JRequest::getVar('view', null, 'GET', 'none',0);
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+				
+		$id = JRequest::getVar('id', null, 'GET', 'none',0);
+		$table = JRequest::getVar('t', null, 'GET', 'none',0);
+	
+		$model = $this->getModel('application');
+		$result = $model->deleteData($id, $table);
+		
+		echo $result;
+		/*
+		if($result!=1){
+			echo JText::_('DELETE_ERROR');
+		}*/
+	}
 }
