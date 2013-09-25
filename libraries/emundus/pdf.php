@@ -22,7 +22,7 @@ function age($naiss) {
 // @params Code of the programme
 // @params Type of output
 
-function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true) {
+function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true) { 
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/config/lang/eng.php');
 	require_once(JPATH_LIBRARIES.'/emundus/tcpdf/tcpdf.php');
@@ -98,141 +98,156 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	}
 	$emails = new EmundusModelEmails;
 	$evaluations = new EmundusModelEvaluation;
-
+//die(var_dump($letters));
 	foreach ($letters as $letter) {
+
 		$htmldata = "";
 		$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$letter['attachment_id'];
 		$db->setQuery($query);
 		$attachment = $db->loadAssoc();
 
-		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-		$pdf->SetCreator(PDF_CREATOR);
-		$pdf->SetAuthor($current_user->name);
-		$pdf->SetTitle($letter['title']);
-
-		// set margins
-		$pdf->SetMargins(5, 40, 5);
-		//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-		//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-		$pdf->footer = $letter["footer"];
-
-		//get logo
-		preg_match('#src="(.*?)"#i', $letter['header'], $tab);
-		$pdf->logo = JPATH_BASE.DS.$tab[1];
-		
-		preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
-		$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
-
-		//get title
-	/*	$config =& JFactory::getConfig(); 
-		$title = $config->getValue('config.sitename');
-		$title = "";
-		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);*/
-		unset($logo);
-		unset($logo_footer);
-		
-		//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-		//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-		$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-		//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-		$pdf->SetFont('helvetica', '', 8);
-
-		//$dimensions = $pdf->getPageDimensions();
-
-		//
-		// Evaluation result
-		//
-		$evaluation = $evaluations->getEvaluationByID($evaluation_id);
-		$reason = $evaluations->getEvaluationReasons();
-		unset($evaluation[0]["id"]);
-		unset($evaluation[0]["user"]);
-		unset($evaluation[0]["time_date"]);
-		unset($evaluation[0]["student_id"]);
-		unset($evaluation[0]["parent_id"]);
-		unset($evaluation[0]["campaign_id"]);
-		unset($evaluation[0]["comment"]);
-		if(empty($evaluation[0]["reason"])) {
-			unset($evaluation[0]["reason"]);
-			unset($evaluation[0]["reason_other"]);
-		} elseif(empty($evaluation[0]["reason_other"])) {
-			unset($evaluation[0]["reason_other"]);
-		}
-		$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
-
-		$result = "";
-		foreach ($evaluation_details as $ed) {
-			if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
-				//$result .= '<br>'.$ed->element_label.' : ';
-				if($ed->element_name=="reason") {
-					$result .= '<ul>';
-					foreach ($evaluation as $e) {
-						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
-					}
-					if (@!empty($evaluation[0]["reason_other"]))
-						$result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
-					$result .= '</ul>';
-				} /*elseif($ed->element_name=="result") {
-						$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
-				} else
-					$result .= $evaluation[0][$ed->element_name];*/
-			}
-		}
-
-//
-// Replacement
-//
-		$post = array(  'TRAINING_CODE' => $training, 
-						'TRAINING_PROGRAMME' => $campaign['label'],
-						'REASON' => $result, 
-						'TRAINING_FEE' => $courses_fee, 
-						'TRAINING_PERIODE' => $courses_list,
-						'USER_NAME' => $current_user->name, 
-						'USER_EMAIL' => $current_user->email );
-
-		$tags = $emails->setTags($user_id, $post);
-
-		//$htmldata .= $letter["header"];
-		$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
-		//$htmldata .= $letter["footer"];
-//die($htmldata);
-		$pdf->AddPage();
-
-		// Print text using writeHTMLCell()
-		$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-
-		// Test if letter type has already been created for that user/campaign/attachment and delete before if true.
-		$query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id;
-		$db->setQuery($query);
-		$file = $db->loadAssoc();
-
-		// test if directory exist
-		if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-			mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true);
-		}
-		if(count($file) > 0) {
-			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id;
-			$db->setQuery($query);
-			$db->query();
-
-			@unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
-		}
-
-		@chdir('tmp');
-		if($output){
-				//$output?'FI':'F'
-			$name = date('Y-m-d_H-i-s').$attachment['lbl'].'.pdf';
-			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
+		if($letter['template_type'] == 1) {
+			$file_path = explode(DS, $letter['file']);
+			$file_type = explode('.', $file_path[count($file_path)-1]);
+			$name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
+			copy(JPATH_BASE.$letter['file'], EMUNDUS_PATH_ABS.$user_id.DS.$name);
 			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.')';
 			$db->setQuery($query);
 			$db->query();
 			$id = $db->insertid();
-	//die(str_replace("#_", "jos", $query));
-		}else{
-			$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
+
+		} else {
+			$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+			$pdf->SetCreator(PDF_CREATOR);
+			$pdf->SetAuthor($current_user->name);
+			$pdf->SetTitle($letter['title']);
+
+			// set margins
+			$pdf->SetMargins(5, 40, 5);
+			//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+			//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+			$pdf->footer = $letter["footer"];
+
+			//get logo
+			preg_match('#src="(.*?)"#i', $letter['header'], $tab);
+			$pdf->logo = JPATH_BASE.DS.$tab[1];
+			
+			preg_match('#src="(.*?)"#i', $letter['footer'], $tab);
+			$pdf->logo_footer = JPATH_BASE.DS.$tab[1];
+
+			//get title
+		//	$config =& JFactory::getConfig(); 
+		//	$title = $config->getValue('config.sitename');
+		//	$title = "";
+		//	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+
+			unset($logo);
+			unset($logo_footer);
+			
+			//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+			//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+			$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+			//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+			$pdf->SetFont('helvetica', '', 8);
+
+			//$dimensions = $pdf->getPageDimensions();
+
+			//
+			// Evaluation result
+			//
+			$evaluation = $evaluations->getEvaluationByID($evaluation_id);
+			$reason = $evaluations->getEvaluationReasons();
+			unset($evaluation[0]["id"]);
+			unset($evaluation[0]["user"]);
+			unset($evaluation[0]["time_date"]);
+			unset($evaluation[0]["student_id"]);
+			unset($evaluation[0]["parent_id"]);
+			unset($evaluation[0]["campaign_id"]);
+			unset($evaluation[0]["comment"]);
+			if(empty($evaluation[0]["reason"])) {
+				unset($evaluation[0]["reason"]);
+				unset($evaluation[0]["reason_other"]);
+			} elseif(empty($evaluation[0]["reason_other"])) {
+				unset($evaluation[0]["reason_other"]);
+			}
+			$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
+
+			$result = "";
+			foreach ($evaluation_details as $ed) {
+				if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
+					//$result .= '<br>'.$ed->element_label.' : ';
+					if($ed->element_name=="reason") {
+						$result .= '<ul>';
+						foreach ($evaluation as $e) {
+							$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
+						}
+						if (@!empty($evaluation[0]["reason_other"]))
+							$result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
+						$result .= '</ul>';
+					} /*elseif($ed->element_name=="result") {
+							$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
+					} else
+						$result .= $evaluation[0][$ed->element_name];*/
+				}
+			}
+
+			//
+			// Replacement
+			//
+			$post = array(  'TRAINING_CODE' => $training, 
+							'TRAINING_PROGRAMME' => $campaign['label'],
+							'REASON' => $result, 
+							'TRAINING_FEE' => $courses_fee, 
+							'TRAINING_PERIODE' => $courses_list,
+							'USER_NAME' => $current_user->name, 
+							'USER_EMAIL' => $current_user->email );
+
+			$tags = $emails->setTags($user_id, $post);
+
+			//$htmldata .= $letter["header"];
+			$htmldata .= preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $letter["body"])))); 
+			//$htmldata .= $letter["footer"];
+			//die($htmldata);
+			$pdf->AddPage();
+
+			// Print text using writeHTMLCell()
+			$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+
+			// Test if letter type has already been created for that user/campaign/attachment and delete before if true.
+			$query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id;
+			$db->setQuery($query);
+			$file = $db->loadAssoc();
+
+			// test if directory exist
+			if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
+				mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true);
+			}
+			if(count($file) > 0) {
+				$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id;
+				$db->setQuery($query);
+				$db->query();
+
+				@unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
+			}
+
+			@chdir('tmp');
+			if($output){
+					//$output?'FI':'F'
+				$name = date('Y-m-d_H-i-s').$attachment['lbl'].'.pdf';
+				$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, $output);
+				$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.')';
+				$db->setQuery($query);
+				$db->query();
+				$id = $db->insertid();
+			//die(str_replace("#_", "jos", $query));
+			}else{
+				$pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS.$name, 'F');
+			}	
 		}
+		
 		$file_info['id'] = $id;
 		$file_info['path'] = EMUNDUS_PATH_ABS.$user_id.DS.$name;
 		$file_info['attachment_id'] = $letter['attachment_id'];
@@ -241,7 +256,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 		$files[] = $file_info;
 	}
-//die(print_r($files));
+//die(var_dump($files));
 	return $files;
 }	
 

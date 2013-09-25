@@ -306,7 +306,11 @@ class EmundusModelApplication extends JModel
 						}
 						unset($element);
 						$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
-						$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
+						if($itemg->group_id == 174)
+							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
+										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
+						else
+							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
 									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
 						$this->_db->setQuery($query);
 						$repeated_elements = $this->_db->loadObjectList();

@@ -70,7 +70,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	<?php
 	if (!empty($eligibility[$evaluation[0]["result"]]->whenneed) && empty($final_grade['result_sent'])) {
-		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
 		$files = letter_pdf($user->id, @$eligibility[$evaluation[0]["result"]]->whenneed, $campaign['training'], $campaign['id'], $evaluations_id, "F");
 	} else {
 		$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id'], $result_id); 
@@ -138,32 +138,37 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		</div>
 	</form>
 	<?php
-	/*echo '<hr />
-		<div># of submited forms: <span id="nr">0</span></div>
+	echo '<hr />'; 
+	/*	<div># of submited forms: <span id="nr">0</span></div>
 		<div>last submit response: <span id="r"></span></div>';*/
 
 /////////////////////////////////////////
 
 	echo '<ul class="em_attachments_list">';
 	$files_path = "";
-	foreach ($files as $file) {
-		$files_path .= str_replace('\\', '\\\\', $file['path']).',';
-		//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
-		echo '<div id="em_attachment">
-			<div id="em_dl_'.$file['id'].'" class="em_dl">
-				<a class="dO" target="_blank" href="'.$file['url'].'">
-					<div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
-					<div class="vJ"></div>
-				</a>
-				<div class="em_email_icon" id="attachment_'.$file['id'].'">
-					<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+	if(!empty($files) && isset($files)) {
+		foreach ($files as $file) {
+			$files_path .= str_replace('\\', '\\\\', $file['path']).',';
+			//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
+			echo '<div id="em_attachment">
+				<div id="em_dl_'.$file['id'].'" class="em_dl">
+					<a class="dO" target="_blank" href="'.$file['url'].'">
+						<div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
+						<div class="vJ"></div>
+					</a>
+					<div class="em_email_icon" id="attachment_'.$file['id'].'">
+						<img src="'.JURI::Base().'/media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+					</div>
 				</div>
-			</div>
-		</div>';
+			</div>';
+		}
+		$files_path = rtrim($files_path, ",");
+		echo '</ul>';
+	} else {
+		echo '<div id="em_attachment">';
+		echo JText::_('NO_FILE_FROM_TEMPLATE');
+		echo '</div>';
 	}
-	$files_path = rtrim($files_path, ",");
-	echo '</ul>';
-	
 	echo '</fieldset>';
 
 	?>
