@@ -79,7 +79,7 @@ class EmundusControllerEvaluation extends JController {
 	}
 	
 	////// AFFECT ASSESSOR ///////////////////
-	function setAssessor($reqids = null) { die('aaa');
+	function setAssessor($reqids = null) { 
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();

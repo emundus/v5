@@ -23,38 +23,66 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusHelperJavascript {
+class EmundusHelperJavascript{
 	
 	function onSubmitForm(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$view = JRequest::getVar('view', null, 'GET', 'none',0);
 		
-		$script = 'function OnSubmitForm() {
-		var button_name=document.pressed.split("|");
+		$script = '
+function OnSubmitForm() { 
+	if(typeof document.pressed !== "undefined") { 
+		document.adminForm.task.value = "";
+		var button_name=document.pressed.split("|"); 
 		switch(button_name[0]) {
 		   case \'affect\': 
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
+		   		if(is_checked("ud")) {
+		   			document.adminForm.task.value = "setAssessor";
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=setAssessor";
+				} else {
+					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
+					return false;
+				}
 			break;
 			case \'unaffect\': 
-				if (confirm("'.JText::_("CONFIRM_UNAFFECT_ASSESSORS").'")) {
-					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
+				if(is_checked("ud")) {
+					if (confirm("'.JText::_("CONFIRM_UNAFFECT_ASSESSORS").'")) {
+						document.adminForm.task.value = "unsetAssessor";
+						document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=unsetAssessor";
+					} else 
+						return false;
 				} else 
-					return false;
+					alert("'.JText::_('COM_EMUNDUS_ALERT_NO_CHECKBOX_CHECKED').'");
 			break;
 			case \'export_zip\': 
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				if (is_checked()) {
+					document.adminForm.task.value = "export_zip";
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=export_zip";
+				} else {
+					alert("'.JText::_("PLEASE_SELECT_APPLICANT").'");
+					return false;
+				}
 			break;
 			case \'export_to_xls\': 
+				document.adminForm.task.value = "transfert_view";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=transfert_view&v='.$view.'";
 			break;
 			case \'custom_email\': 
+				document.adminForm.task.value = "customEmail";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=customEmail";
 			break;
 			case \'applicant_email\': 
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+				if(is_checked("ud")) {
+					document.adminForm.task.value = "applicantEmail";
+					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=applicantEmail";
+				} else {
+					alert("'.JText::_('PLEASE_SELECT_APPLICANT').'");
+					return false;
+				}
 			break;
 			case \'default_email\': 
 				if (confirm("'.JText::_("CONFIRM_DEFAULT_EMAIL").'")) {
+					document.adminForm.task.value = "defaultEmail";
 					document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=defaultEmail";
 				} else 
 					return false;
@@ -63,22 +91,109 @@ class EmundusHelperJavascript {
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'";
 			break;
 			case \'clear_button\': 
-				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=clear";
+				document.adminForm.task.value = "clear";
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=clear";
 			break;
 			case \'delete\':
-			if(confirm("'.JText::_("CONFIRM_DELETE").'"))
+			if(confirm("'.JText::_("CONFIRM_DELETE").'")) {
+				document.adminForm.task.value = "delete";
 				document.adminForm.action = "index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete&sid="+button_name[1];
+			}
+			break;
+			case \'push_true\': 
+				document.adminForm.task.value = "push_true";
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_true";
+			break;
+			case \'push_false\':
+				document.adminForm.task.value = "push_false";
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=push_false";
+			break;
+			case \'validate\': 
+				document.adminForm.task.value = "administrative_check";
+				document.getElementById("cb"+button_name[1]).checked = true;
+				document.getElementById("validation_list").value = 1;
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+			break;
+			case \'unvalidate\': 
+				document.adminForm.task.value = "administrative_check";
+				document.getElementById("cb"+button_name[1]).checked = true;
+				document.getElementById("validation_list").value = 0;
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
+			break;
+			case \'set_status\':
+				document.adminForm.task.value = "administrative_check";
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=administrative_check";
 			break;
 			case \'delete_eval\': 
-			if(confirm("'.JText::_("CONFIRM_DELETE_EVAL").'"))
+			if(confirm("'.JText::_("CONFIRM_DELETE_EVAL").'")) {
+				document.adminForm.task.value = "delete_eval";
 				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&Itemid='.$itemid.'&task=delete_eval&sid="+button_name[1];
-			else return false;
-		break;
+			} else return false;
+			break;
+			case \'export_account_to_xls\': 
+				document.adminForm.task.value = "export_account_to_xls"; 
+				document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=export_account_to_xls&Itemid='.$itemid.'";
+			break;
+			
+			case \'archive\': 
+				document.adminForm.task.value = "archive";
+				document.adminForm.action ="index.php?option=com_emundu&view='.$view.'&controller='.$view.'&task=archive&Itemid='.$itemid.'";
+			break;
+			case \'delusers\': 
+				document.adminForm.task.value = "delusers";
+				if (confirm("'.JText::_("CONFIRM_DELETE").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&Itemid='.$itemid.'&task=delusers&v='.$view.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'delrefused\': 
+				document.adminForm.task.value = "delrefused";
+				if (confirm("'.JText::_("CONFIRM_DELETE").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delrefused&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'delincomplete\': 
+				document.adminForm.task.value = "delincomplete";
+				if (confirm("'.JText::_("CONFIRM_INCOMPLETE").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delincomplete&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'delnonevaluated\': 
+				document.adminForm.task.value = "delnonevaluated";
+				if (confirm("'.JText::_("CONFIRM_NON_EVALUATED").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delnonevaluated&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'delete_attachements\': 
+				document.adminForm.task.value = "delete_attachements";
+				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'delete_comments\': 
+				document.adminForm.task.value = "delete_comments";
+				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_COMMENTS").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
+			case \'add_comment\': 
+				document.adminForm.task.value = "add_comment";
+				if (confirm("'.JText::_("ADD_COMMENT").'")) {
+	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
+			 	} else 
+			 		return false;
+			break;
 			default: return false;
 		}
 		return true;
-	} ';
-		
+	}
+} ';
+
 		return $script;
 	}
 	
@@ -632,7 +747,5 @@ class EmundusHelperJavascript {
 		';
 		return $script;
 	}
-
 }
-
 ?>
