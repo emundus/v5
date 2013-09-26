@@ -211,7 +211,7 @@ class EmundusController extends JController {
 				if (move_uploaded_file(	$files['tmp_name'][$i], $chemin.$user->id.DS.$paths)) {
 					$can_be_deleted = @$post['can_be_deleted_'.$attachments[$i]]!=''?$post['can_be_deleted_'.$attachments[$i]]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
 					$can_be_viewed = @$post['can_be_viewed_'.$attachments[$i]]!=''?$post['can_be_viewed_'.$attachments[$i]]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
-					$query .= '('.$user->id.', '.$attachments[$i].', \''.$paths.'\', \''.$descriptions[$i].'\', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.'),';
+					$query .= '('.$user->id.', '.$attachments[$i].', \''.$paths.'\', '.$db->Quote($descriptions[$i]).', '.$can_be_deleted.', '.$can_be_viewed.', '.$user->campaign_id.'),';
 					$nb++;
 				}
 				if ($labels[$i]=="_photo") {
