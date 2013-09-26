@@ -426,7 +426,7 @@ function OnSubmitForm() {
 			xhr.send("&filter_id="+select_id);
 		}
 
-		function setFilters(select, constraints) {  alert(constraints);
+		function setFilters(select, constraints) {  
 			var constraintsObj = JSON.parse(constraints);
 			var k =0;
 			for (var i = 0; i < constraintsObj.length; i++) {
