@@ -76,7 +76,7 @@ function age($naiss) {
 		<div class="content">
 			<?php
 			foreach($this->userCampaigns as $campaign){
-				$info= '<ul>';
+				$info= $campaign->training.'<ul>';
 					$info.= '<li><div class="sub_title">'.JText::_('ACADEMIC_YEAR').'</div> : '.$campaign->year.'</li>';
 					if($campaign->submitted==1){
 						$info.= '<li><div class="sub_title">'.JText::_('SUBMITTED').'</div> : '.JText::_('JYES').'</li>';
@@ -243,8 +243,8 @@ function age($naiss) {
 				echo '<div class="attachment_name">';
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 					echo '<input type="checkbox" name="attachments[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
-				echo '<a href="'.JURI::Base().$path.'" target="_blank" onMouseOver="tooltip(this, \''.htmlentities($info).'\');"';
-				echo '<label for="aid_'.$i.'">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.'</label>';
+				echo '<a href="'.JURI::Base().$path.'" target="_blank" onMouseOver="tooltip(this, \''.htmlentities($info).'\');">';
+				echo '<label for="aid_'.$i.'">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.' <em>'.$attachment->description.'</em></label>';
 				echo '</a> ';
 					//echo '<input type="image" onMouseOver="tooltip(this, \'<div>'.JText::_('DELETE_ATTACHMENT').'</div>\');" onClick="document.pressed=this.name" name="delete_attachments" src="'.JURI::Base().'/media/com_emundus/images/icones/delete_attachments.png" width="5%" />';
 				echo '</div>';
@@ -284,6 +284,7 @@ function age($naiss) {
 		<?php
 		if(count($this->userComments) > 0) { 
 			$i=0;
+//var_dump($this->userComments);
 			foreach($this->userComments as $comment){
 				
 				echo'<div class="comment" id="comment-box_'.$comment->id.'">';

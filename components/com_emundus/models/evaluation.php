@@ -753,7 +753,7 @@ class EmundusModelEvaluation extends JModel
 	function getEvaluationDocuments($applicant_id, $campaign_id, $result) {
 		$query = 'SELECT *, eu.id as id, esa.id as attachment_id FROM #__emundus_uploads eu 
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id 
-					WHERE eu.user_id='.$applicant_id.' 
+					WHERE eu.user_id='.$applicant_id.' AND campaign_id='.$campaign_id.' 
 					AND eu.attachment_id IN (
 						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE esl.eligibility='.$result.'
 						) 
@@ -761,6 +761,18 @@ class EmundusModelEvaluation extends JModel
 
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
+	}
+
+	function getLettersTemplate($eligibility, $training) {
+		$query = "SELECT * FROM #__emundus_setup_letters WHERE eligibility=".$eligibility." AND training=".$this->_db->Quote($training);
+		$this->_db->setQuery($query); 
+		return $this->_db->loadAssocList();
+	}
+
+	function getLettersTemplateByID($id) {
+		$query = "SELECT * FROM #__emundus_setup_letters WHERE id=".$id;
+		$this->_db->setQuery($query); 
+		return $this->_db->loadAssocList();
 	}
 }
 ?>

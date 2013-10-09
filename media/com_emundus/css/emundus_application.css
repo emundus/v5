@@ -47,7 +47,8 @@
 		#center .content .title-campaign {
 			border-bottom:1px solid #9DADC6;
 			font-weight: bold;
-			margin-bottom:2px;
+			margin:2px 0px 2px 0px;
+			padding:2px 0px 2px 0px;
 		}
 		#center .content a{
 			text-decoration:none;

@@ -153,7 +153,7 @@ class EmundusControllerCheck extends JController {
 
 	
 	function push_false() {
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access) || !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();
@@ -170,7 +170,7 @@ class EmundusControllerCheck extends JController {
 		
 		foreach ($users_id as $id) {
 			if(!empty($comment)) {
-				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
+				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body) 
 						VALUES('.$id.','.$this->_user->id.',"Consider application form as incomplete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
 				$db->setQuery( $query );
 				$db->query();
@@ -179,7 +179,7 @@ class EmundusControllerCheck extends JController {
 			$query ='UPDATE #__emundus_declaration SET time_date = "0000-00-00 00:00:00" WHERE user = '.$id;
 			$db->setQuery( $query );
 			$db->query();
-			$campaign_id = $model->getCurrentCampaignByApplicant($id);
+			$campaign_id = $model->getCurrentCompleteCampaignByApplicant($id);
 			$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted = 0, date_submitted = NULL WHERE applicant_id = '.mysql_real_escape_string($id).' AND campaign_id='.$campaign_id);
 			$db->Query() or die($db->getErrorMsg());
 			

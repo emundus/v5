@@ -26,8 +26,8 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
 	//$campaign_id = JRequest::getVar('jos_emundus_evaluations___campaign_id[value]', null, 'GET', 'INT',0); 
 
-	include_once(JPATH_BASE.'/components/com_emundus/models/evaluation.php');
-	include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 	$evaluations = new EmundusModelEvaluation;
 	$emails = new EmundusModelEmails;
@@ -69,11 +69,12 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	</div>
 
 	<?php
-	if (!empty($eligibility[$evaluation[0]["result"]]->whenneed) && empty($final_grade['result_sent'])) {
+	$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id'], $result_id); 
+
+	if ( (!empty($result_id) && empty($final_grade['result_sent'])) || count($attachments) == 0 ) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
-		$files = letter_pdf($user->id, @$eligibility[$evaluation[0]["result"]]->whenneed, $campaign['training'], $campaign['id'], $evaluations_id, "F");
+		$files = letter_pdf($user->id, @$result_id, $campaign['training'], $campaign['id'], $evaluations_id, "F");
 	} else {
-		$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id'], $result_id); 
 		//var_dump($attachments);
 		if (!empty($attachments)) {
 			$files = array();
@@ -166,7 +167,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		echo '</ul>';
 	} else {
 		echo '<div id="em_attachment">';
-		echo JText::_('NO_FILE_FROM_TEMPLATE');
+		echo '<a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('NO_FILE_FROM_TEMPLATE').'<a>';
 		echo '</div>';
 	}
 	echo '</fieldset>';

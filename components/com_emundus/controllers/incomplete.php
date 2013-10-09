@@ -191,7 +191,7 @@ class EmundusControllerIncomplete extends JController {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id,$access)) {
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access) || !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();
@@ -208,19 +208,21 @@ class EmundusControllerIncomplete extends JController {
 
 		foreach ($users_id as $id) {
 			if(!empty($comment)) {
-				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment) 
+				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body) 
 						VALUES('.$id.','.$user->id.',"Consider application form as complete","'.date("Y.m.d H:i:s").'",'.$db->quote($comment).')';
 				$db->setQuery( $query );
 				$db->query();
 			}
-			$query = 'INSERT INTO #__emundus_declaration (time_date, user) VALUES("'.date("Y.m.d H:i:s").'", '.$id.')';
-			$db->setQuery( $query );
-			$db->query();
-			$query = 'UPDATE #__emundus_declaration SET time_date = NOW() WHERE user = '.$id;
-			$db->setQuery( $query );
-			$db->query();
-			$campaign_id = $model->getCurrentCampaignByApplicant($id);
-			$db->setQuery('UPDATE #__emundus_campaign_candidature SET submitted = 1, date_submitted = NOW() WHERE applicant_id = '.mysql_real_escape_string($id).' AND campaign_id='.$campaign_id);
+			if (!$model->isApplicationDeclared($id)) {		
+				$query = 'INSERT INTO #__emundus_declaration (time_date, user) VALUES("'.date("Y.m.d H:i:s").'", '.$id.')';
+				$db->setQuery( $query );
+				$db->query() or die($db->getErrorMsg());
+			}
+			
+			$campaign_id = $model->getCurrentIncompleteCampaignByApplicant($id);
+			$query = 'UPDATE #__emundus_campaign_candidature SET submitted = 1, date_submitted = NOW() WHERE applicant_id = '.mysql_real_escape_string($id).' AND campaign_id='.$campaign_id; 
+		//die(str_replace("#_", "jos", $query));
+			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
 		}
 		$Itemid=JSite::getMenu()->getActive()->id;
@@ -230,7 +232,7 @@ class EmundusControllerIncomplete extends JController {
 	/**
 	 * export selected to xls
 	 */
-	function export_incompletes_xls() {
+/*	function export_incompletes_xls() {
 		//$allowed = array("Super Users", "Administrator", "Editor");
 		$user = JFactory::getUser();
 		$menu=JSite::getMenu()->getActive();
@@ -253,7 +255,7 @@ class EmundusControllerIncomplete extends JController {
 			export_incompletes_xls($cid);
 		exit;
 	}
-
+*/
 	
 	////// Export incomplete application form ///////////////////
 	function export_incomplete_to_xls() {

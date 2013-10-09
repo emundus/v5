@@ -158,6 +158,8 @@ function check_field(){
 	email1 = document.getElementById("jform_email1");
 	email2 = document.getElementById("jform_email2");
 	email2.onkeyup = function() { if(jform_email1.value != this.value) $('em_msg_jform[email2]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_EMAIL2_MESSAGE');?>"; else $('em_msg_jform[email2]').innerHTML = ""; };
+	campaign = document.getElementById("jform_emundus_profile_campaign");
+	campaign.onclick = function() { if(campaign.value == "") $('em_msg_jform[emundus_profile][campaign]').innerHTML = "<?php echo JText::_('COM_USERS_PROFILE_CAMPAIGN_MESSAGE');?>"; else $('em_msg_jform[emundus_profile][campaign]').innerHTML = ""; };
 }
 check_field();
 

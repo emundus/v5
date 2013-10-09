@@ -78,7 +78,7 @@ class EmundusModelApplication extends JModel
 	
 	function getUserCampaigns($id){
 		
-		$query = 'SELECT esc.label, esc.year, ecc.date_submitted, ecc.submitted, efg.result_sent, efg.date_result_sent, efg.final_grade
+		$query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, efg.result_sent, efg.date_result_sent, efg.final_grade
 			FROM #__emundus_users eu
 			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
 			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
@@ -91,19 +91,19 @@ class EmundusModelApplication extends JModel
 	
 	function getUserAttachments($id){
 		
-		$query = 'SELECT upload.id AS aid, attachment.id, upload.filename, upload.description, attachment.value, upload.timedate, campaign.label as campaign_label, campaign.year  
-            FROM #__emundus_uploads AS upload
-            LEFT JOIN #__emundus_setup_attachments AS attachment ON  upload.attachment_id=attachment.id
-			LEFT JOIN #__emundus_setup_campaigns AS campaign ON campaign.id=upload.campaign_id
-            WHERE upload.user_id = '.$id;'
-            ORDER BY attachment.ordering';
+		$query = 'SELECT eu.id AS aid, esa.*, eu.filename, eu.description, eu.timedate, esc.label as campaign_label, esc.year, esc.training 
+            FROM #__emundus_uploads AS eu
+            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
+			LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
+            WHERE eu.user_id = '.$id;'
+            ORDER BY esa.ordering';
         $this->_db->setQuery( $query );
         return $this->_db->loadObjectList();
 	}
 	
 	function getUsersComments($id){ 
 		
-		$query = 'SELECT ec.id, ec.comment, ec.reason, ec.date, u.name
+		$query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.date, u.name
 				FROM #__emundus_comments ec 
 				LEFT JOIN #__users u ON u.id = ec.user_id 
 				WHERE ec.applicant_id ="'.$id.'" 
@@ -244,6 +244,11 @@ class EmundusModelApplication extends JModel
 			foreach($tableuser as $key => $itemt) { 
 				$forms .= '<br><h3>';
 				$forms .= $itemt->label;
+
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "jos_emundus_training"){
+					$forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank">'.JText::_('EDIT').'</a>';
+				}
+ 
 				$forms .= '</h3>';
 				// liste des groupes pour le formulaire d'une table
 				$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1

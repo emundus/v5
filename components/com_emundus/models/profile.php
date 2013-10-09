@@ -93,6 +93,22 @@ class EmundusModelProfile extends JModel
 		return $res;
 	}
 
+	function getCurrentIncompleteCampaignByApplicant($uid) {
+		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE submitted=0 AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadResult();
+
+		return $res;
+	}
+
+	function getCurrentCompleteCampaignByApplicant($uid) {
+		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE submitted=1 AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadResult();
+
+		return $res;
+	}
+
 	function getCurrentCampaignInfoByApplicant($uid) {
 		$query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted 
 					FROM #__emundus_campaign_candidature AS ecc 
@@ -102,6 +118,13 @@ class EmundusModelProfile extends JModel
 		$res = $this->_db->loadAssoc();
 
 		return $res;
+	}
+
+	function isApplicationDeclared($aid) {
+		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$aid;
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadResult();
+		return $res>0?true:false;
 	}
 }
 ?>

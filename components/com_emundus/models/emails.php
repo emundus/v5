@@ -101,6 +101,36 @@ class EmundusModelEmails extends JModel
 		return $tags;
 	}
 
+	function setTagsWord($user_id, $post=null, $passwd='')
+	{
+		$db = &JFactory::getDBO();
+		$user = & JFactory::getUser($user_id);
+
+		$query = "SELECT tag, request FROM #__emundus_setup_tags";
+		$db->setQuery($query);
+		$tags = $db->loadAssocList();
+
+		$constants = $this->setConstants($user_id, $post, $passwd);
+
+		$patterns = array();
+		$replacements = array(); 
+		foreach ($tags as $tag) {
+			$patterns[] = $tag['tag']; 
+			$value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']); 
+			$request = explode('|', $value);
+			if (count($request) > 1) {
+				$query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
+				$db->setQuery($query);
+				$replacements[] = $db->loadResult();
+			} else
+				$replacements[] = $request[0];
+		}
+
+		$tags = array('patterns' => $patterns , 'replacements' => $replacements);
+
+		return $tags;
+	}
+
 	function sendMail($type=null)
 	{
 		$mail_type = JRequest::getVar('mail_type', null, 'POST', 'VARCHAR',0); 

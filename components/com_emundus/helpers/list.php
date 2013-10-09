@@ -350,7 +350,7 @@ class EmundusHelperList{
 				}				
 				if(in_array('details',$params)){
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_details" id="em_details_'.$user['user_id'].'">';
-					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.@$user['user_id'].');}}" href="index.php?option=com_emundus&view=application&sid='.@$user['user_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png"/></a>';
+					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="index.php?option=com_emundus&view=application&sid='.@$user['user_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png"/></a>';
 					@$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</div>';
 				}
 				if(in_array('upload',$params)){
@@ -735,7 +735,7 @@ class EmundusHelperList{
 	
 	function getApplicationComments($user_id){
 		$db = JFactory::getDBO();
-		$query = 'SELECT ec.applicant_id, ec.reason, ec.date as com_date, ec.comment, u.name as evaluator_name
+		$query = 'SELECT ec.applicant_id, ec.reason, ec.date as com_date, ec.comment_body as comment, u.name as evaluator_name
 				FROM #__emundus_comments ec 
 				LEFT JOIN #__users u ON ec.user_id = u.id
 				WHERE ec.applicant_id = '.$user_id;

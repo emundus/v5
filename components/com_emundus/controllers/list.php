@@ -73,7 +73,7 @@ class EmundusControllerList extends JController {
 		
 		foreach ($ids as $id) {
 			if(!empty($comment)) {
-				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
+				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason,date, comment_body) 
 						VALUES('.$id.','.$user->id.',"Consider application form as complete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
 				$db->setQuery( $query );
 				$db->query();
@@ -101,7 +101,7 @@ class EmundusControllerList extends JController {
 		
 		foreach ($ids as $id) {
 			if(!empty($comment)) {
-				$query = 'INSERT INTO `#__emundus_comments` (applicant_id,user_id,reason,date,comment) 
+				$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body) 
 						VALUES('.$id.','.$user->id.',"Consider application form as incomplete","'.date("Y.m.d H:i:s").'","'.$comment.'")';
 				$db->setQuery( $query );
 				$db->query();

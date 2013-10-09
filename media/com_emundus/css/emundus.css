@@ -497,7 +497,7 @@ input.btnhov {
 }
 .em_actions {display: inline-block; min-width:30px}
 .em_upload, .em_gender, .em_email, .em_details, .em_evaluation, .em_selection_outcome, .em_user_id, .em_checkbox {padding: 1px 3px 1px 3px; display: inline;}
-.em_attachments, .em_forms {margin: 0px 3px 0px 3px; display: inline-block;}
+.em_attachments, .em_forms {margin: 0px 3px 0px 3px; float: right;}
 .em_photo {float: right;}
 .em_validation {display:inline;}
 .em_campaign_label{font-weight:bold;}

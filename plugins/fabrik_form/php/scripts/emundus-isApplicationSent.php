@@ -12,12 +12,21 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description Vérification de l'autorisation de mettre à jour le formulaire
  */
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 $user =& JFactory::getUser();
-$db =& JFactory::getDBO();
+//$db =& JFactory::getDBO();
 $mainframe = JFactory::getApplication();
 $jinput = $mainframe->input;
 
-$registered = $db->loadResult();
+//$registered = $db->loadResult();
+if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
+	$student_id = JRequest::getVar('rowid', null, 'get');
+	$student = JUser::getInstance($student_id);
+	echo '<a href="index.php?option=com_emundus&view=application&sid='.$student_id.'"><h1>'.$student->name.'</h1></a>';
+	JHTML::stylesheet( 'template_css.php?c=29&view=form" type="text/css', JURI::Base().'components/com_fabrik/views/form/tmpl/labels-above/' ); 
+	JHTML::stylesheet( 'fabrik.css', JURI::Base().'media/com_fabrik/css/' );
+	JHTML::stylesheet( 'light2.css', JURI::Base().'templates/rt_afterburner/css/' );
+}
 if ($jinput->get('view') == 'form' && $user->usertype == "Registered") {
 	$itemid = $jinput->get('Itemid');
 	

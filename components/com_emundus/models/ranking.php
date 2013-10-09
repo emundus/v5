@@ -735,13 +735,15 @@ str_replace("#_", "jos", $query);
 		$cols[] = array('name' =>'final_grade', 'label'=>'FINAL_GRADE');
 		$cols[] = array('name' =>'scholarship', 'label'=>'SCHOLARSHIP');
 		
-		foreach ($search as $c){
-			if(!empty($c)){
-				$tab = explode('.', $c);	
-				if($tab[0]=='jos_emundus_training'){
-					$cols[] = array('name' =>$tab[1], 'label'=>strtoupper($tab[1]));
-				}else{
-					$cols[] = array('name' =>$tab[0].'__'.$tab[1], 'label'=>strtoupper($tab[1]));		
+		if (count($search)>0) {
+			foreach ($search as $c){
+				if(!empty($c)){
+					$tab = explode('.', $c);	
+					if($tab[0]=='jos_emundus_training'){
+						$cols[] = array('name' =>$tab[1], 'label'=>strtoupper($tab[1]));
+					}else{
+						$cols[] = array('name' =>$tab[0].'__'.$tab[1], 'label'=>strtoupper($tab[1]));		
+					}
 				}
 			}
 		}
