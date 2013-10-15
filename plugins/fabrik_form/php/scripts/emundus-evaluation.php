@@ -31,11 +31,11 @@ if(!empty($result)) {
 	if ($cpt == 0) {
 		$query = 'INSERT INTO #__emundus_final_grade (user, student_id, final_grade, type_grade, campaign_id) VALUE ('.$user->id.', '.$aid->id.', '.$result.', "candidature", '.$campaign_id.')';
 	} else {
-		$query = 'UPDATE #__emundus_final_grade SET user='.$user->id.', result='.(int)$result.', date_result=NOW() 
+		$query = 'UPDATE #__emundus_final_grade SET user='.$user->id.', final_grade='.(int)$result.', time_date=NOW() 
 					WHERE campaign_id='.(int)$campaign_id.' 
-					AND applicant_id='.$aid->id;
+					AND student_id='.$aid->id;
 	}
-	$db->setQuery( $query ); //die($query);
+	$db->setQuery( $query ); //die($query); 
 	try {
 		$result = $db->query();
 	} catch (Exception $e) {

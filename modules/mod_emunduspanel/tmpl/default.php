@@ -18,7 +18,7 @@ if (!empty($tab)) {
     <table class="emundus_home_page" ><tr>
     <?php 
     $i=1; $j=1;
-	$l = @$user->candidature_posted == 1 ? 2 : '999';
+	$l = (@$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 ) ? 2 : '999';
 	//die(print_r($user));
 
     foreach ($tab as $t){ 
@@ -37,7 +37,7 @@ if (!empty($tab)) {
 	$db->setQuery($query);
 	$cpt = $db->loadResult();
 
-	if (@$user->applicant == 1 && @$user->candidature_posted == 1 && $cpt > 0) {
+	if (@$user->applicant == 1 && @$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 && $cpt > 0) {
 		$str = '<a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" /></a>';
 		$str .= '<br/><a class="text" href="'.JURI::Base().'index.php?option=com_emundus&view=renew_application">'.JText::_('RENEW_APPLICATION').'</a>';
 		echo '<td align="center">'.$str.'</td>';

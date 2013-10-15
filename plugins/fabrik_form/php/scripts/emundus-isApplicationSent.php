@@ -31,7 +31,7 @@ if ($jinput->get('view') == 'form' && $user->usertype == "Registered") {
 	$itemid = $jinput->get('Itemid');
 	
 	// Si l'application Form a été envoyée : affichage vue details
-	if($user->candidature_posted > 0)
+	if($user->candidature_posted > 0 && $user->candidature_incomplete == 0)
 		$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid);
 }
 ?>

@@ -77,15 +77,18 @@ class  plgSystemEmundus_period extends JPlugin
 				$script_tz = date_default_timezone_get();
 				*/
 				elseif($user->profile != 8){
-					$db->setQuery('SELECT year FROM #__emundus_setup_campaigns WHERE id = '.$user->campaign_id);
+					$query = 'SELECT year FROM #__emundus_setup_campaigns WHERE id = '.$user->campaign_id; 
+					$db->setQuery($query);
 					$schoolyear = $db->loadResult();
-					if ( ($id == 29 || $id == 30 || $id == 78 || ($id >= 19 && $id <= 24)) && $option == 'com_content' || $task == 'user.logout' || $option == 'com_contact' || $option == 'com_users' || $view == 'renew_application') {
+					if ( ($id == 29 || $id == 30 || $id == 78 || $id == 46 || ($id >= 19 && $id <= 24)) && $option == 'com_content' || $task == 'user.logout' || $option == 'com_contact' || $option == 'com_users' || $view == 'renew_application') {
 							return '';
-					}elseif($schoolyear != $user->schoolyear){
+					} /*elseif($schoolyear != $user->schoolyear){
 						die($app->redirect('index.php?option=com_emundus&view=renew_application'));
-					}elseif ( strtotime(date("Y-m-d H:m:i")) > strtotime($user->candidature_end) ) {
+					} */elseif ( empty($user->candidature_end) ) {
+						die($app->redirect('index.php?option=com_content&view=article&id=46'));
+					} elseif ( strtotime(date("Y-m-d H:m:i")) > strtotime($user->candidature_end) ) {
 						JError::raiseNotice('PERIOD', utf8_encode(JText::sprintf('PERIOD',strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_start) ),strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_end) ))));
-						//die(print_r($user));
+						//die($user->candidature_end);
 						die($app->redirect('index.php?option=com_content&view=article&id=29'));
 					} elseif ( strtotime(date("Y-m-d H:m:i")) < strtotime($user->candidature_start) ) { 
 						JError::raiseNotice('PERIOD', utf8_encode(JText::sprintf('PERIOD',strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_start) ),strftime("%A %d %B %Y %H:%M", strtotime($user->candidature_end) ))));

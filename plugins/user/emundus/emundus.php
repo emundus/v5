@@ -285,25 +285,30 @@ class plgUserEmundus extends JPlugin
 			$profiles = new EmundusModelProfile;
 			$p = $profiles->isProfileUserSet($current_user->id);
 			$campaign = $profiles->getCurrentCampaignInfoByApplicant($current_user->id); 
-			
+			$incomplete = $profiles->getCurrentIncompleteCampaignByApplicant($current_user->id); 
+			if( count($incomplete) > 0 ) 
+				$campaign_incomplete = $profiles->getCampaignById($incomplete); 
+
 			if( $p['cpt'] == 0 || empty($p['profile']) )
 				$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=102&random=0");
 				//$mainframe->redirect("index.php?option=com_emundus&view=campaign");
-			else {
+			else { 
 				$profile = $profiles->getProfileByApplicant($current_user->id);
 				
-				$current_user->firstname 			= $profile["firstname"];
-				$current_user->lastname	 			= strtoupper($profile["lastname"]);
-				$current_user->profile	 			= $profile["profile"];
-				$current_user->profile_label 		= $profile["profile_label"];
-				$current_user->menutype	 			= $profile["menutype"];
-				$current_user->university_id		= $profile["university_id"];
-				$current_user->applicant			= $profile["published"];
-				$current_user->candidature_start	= $campaign["start_date"];
-				$current_user->candidature_end		= $campaign["end_date"];
-				$current_user->candidature_posted 	= ($campaign["date_submitted"] == "0000-00-00 00:00:00" || $campaign["date_submitted"] ==0  ||$campaign["date_submitted"] == NULL)?0:1;
-				$current_user->schoolyear			= $campaign["year"];
-				$current_user->campaign_id			= $campaign["id"];
+				$current_user->firstname 				= $profile["firstname"];
+				$current_user->lastname	 				= strtoupper($profile["lastname"]);
+				$current_user->profile	 				= $profile["profile"];
+				$current_user->profile_label 			= $profile["profile_label"];
+				$current_user->menutype	 				= $profile["menutype"];
+				$current_user->university_id			= $profile["university_id"];
+				$current_user->applicant				= $profile["published"];
+				$current_user->candidature_start		= $campaign["start_date"];
+				$current_user->candidature_end			= $campaign["end_date"];
+				$current_user->candidature_posted 		= ($campaign["date_submitted"] == "0000-00-00 00:00:00" || $campaign["date_submitted"] ==0  ||$campaign["date_submitted"] == NULL)?0:1;
+				$current_user->candidature_incomplete 	= (count($incomplete)==0)?0:1; 
+				$current_user->schoolyear				= $campaign["year"];
+				$current_user->campaign_id				= (count($incomplete)==0)?$campaign["id"]:$incomplete;
+				$current_user->campaign_name			= (count($incomplete)==0)?$campaign["label"]." (".$campaign["year"].")":$campaign_incomplete['label']." (".$campaign_incomplete["year"].")";
 //die(print_r($current_user));
 				$mainframe->redirect("index.php");
 			}

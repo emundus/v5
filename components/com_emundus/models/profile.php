@@ -120,6 +120,14 @@ class EmundusModelProfile extends JModel
 		return $res;
 	}
 
+	function getCampaignById($id) {
+		$query = 'SELECT * FROM  #__emundus_setup_campaigns AS esc WHERE id='.$id;
+		$this->_db->setQuery( $query );
+		$res = $this->_db->loadAssoc();
+
+		return $res;
+	}
+
 	function isApplicationDeclared($aid) {
 		$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$aid;
 		$this->_db->setQuery( $query );
