@@ -288,7 +288,8 @@ class EmundusModelEvaluation extends JModel
 	function _buildFilters(){
 		$view_calc = JRequest::getVar('view_calc', null, 'POST', 'none', 0);
 
-		$search					= $this->getState('elements');
+        $layout					= JRequest::getVar('layout', null, 'GET', 'none', 0);
+        $search					= $this->getState('elements');
 		$search_values			= $this->getState('elements_values');
 		$search_other			= $this->getState('elements_other');
 		$search_values_other	= $this->getState('elements_values_other');
@@ -303,6 +304,7 @@ class EmundusModelEvaluation extends JModel
 		$miss_doc				= $this->getState('missing_doc');
 		$complete				= $this->getState('complete');
 		$validate_application	= $this->getState('validate');
+        $aid = JRequest::getVar('aid', null, 'GET', 'none', 0);
 
 		// Starting a session.
 		$session = JFactory::getSession();
@@ -324,82 +326,85 @@ class EmundusModelEvaluation extends JModel
 			$search_values = $s_elements_values;
 		}
 		$query = '';
+        if(isset($aid) && !empty($aid))
+            $query .= ' AND eu.user_id ='.$aid;
 		$and = true;
-		if($schoolyears[0] == "%")
-			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
-		elseif(!empty($schoolyears))
-			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
-		else
-			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
+        if($layout != "evaluation"){
+            if($schoolyears[0] == "%")
+                $query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+            elseif(!empty($schoolyears))
+                $query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
+            else
+                $query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
 
 
-		if(@$campaigns[0] == "%" || empty($campaigns[0]))
-			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
-		elseif(!empty($campaigns)) 
-			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
-		else	
-			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
-		
-		if(isset($finalgrade) && !empty($finalgrade)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .=' WHERE '; }
-			$query.= 'efg.final_grade like "%'.$finalgrade.'%"';
-		}
-		
-		if(!empty($search_values)) {
-			$i = 0;
-			foreach ($search as $s) {
-				if(!empty($s)){
-					$tab = explode('.', $s);
-					if (count($tab)>1 && !empty($search_values[$i])) {
-						if($tab[0]=='jos_emundus_training'){
-							$query .= ' AND ';
-							$query .= 'search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
-						}else{
-							$query .= ' AND ';
-							$query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
-						}
-					}
-					$i++;
-				}
-			}
-		}
-			
-		if(isset($quick_search) && !empty($quick_search)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			if (is_numeric ($quick_search)) 
-				$query.= 'u.id='.$quick_search.' ';
-			else
-				$query.= '(eu.lastname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR eu.firstname LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR u.email LIKE "%'.mysql_real_escape_string($quick_search).'%" 
-						OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%")';
-		}	
-		
-		if(isset($gid) && !empty($gid)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= '(ege.group_id='.mysql_real_escape_string($gid).' OR ege.user_id IN (select user_id FROM #__emundus_groups WHERE group_id='.mysql_real_escape_string($gid).'))';
-		}
-		if(isset($uid) && !empty($uid)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= '(ege.user_id='.mysql_real_escape_string($uid).' OR ege.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id='.mysql_real_escape_string($uid).'))';
-		}
-		
-		if(isset($profile) && !empty($profile)){
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= '(esp.id = '.$profile.' OR efg.result_for = '.$profile.' OR eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id = '.$profile.'))';
-		}
-		
-		if(isset($miss_doc) &&  !empty($miss_doc)) {
-			if($and) $query .= ' AND ';
-			else { $and = true; $query .='WHERE '; }
-			$query.= $miss_doc.' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE eup.user_id = u.id)';
-		}
-		
+            if(@$campaigns[0] == "%" || empty($campaigns[0]))
+                $query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+            elseif(!empty($campaigns))
+                $query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
+            else
+                $query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
+
+            if(isset($finalgrade) && !empty($finalgrade)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .=' WHERE '; }
+                $query.= 'efg.final_grade like "%'.$finalgrade.'%"';
+            }
+
+            if(!empty($search_values)) {
+                $i = 0;
+                foreach ($search as $s) {
+                    if(!empty($s)){
+                        $tab = explode('.', $s);
+                        if (count($tab)>1 && !empty($search_values[$i])) {
+                            if($tab[0]=='jos_emundus_training'){
+                                $query .= ' AND ';
+                                $query .= 'search_'.$tab[0].'.id like "%'.$search_values[$i].'%"';
+                            }else{
+                                $query .= ' AND ';
+                                $query .= $tab[0].'.'.$tab[1].' like "%'.$search_values[$i].'%"';
+                            }
+                        }
+                        $i++;
+                    }
+                }
+            }
+
+            if(isset($quick_search) && !empty($quick_search)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                if (is_numeric ($quick_search))
+                    $query.= 'u.id='.$quick_search.' ';
+                else
+                    $query.= '(eu.lastname LIKE "%'.mysql_real_escape_string($quick_search).'%"
+                            OR eu.firstname LIKE "%'.mysql_real_escape_string($quick_search).'%"
+                            OR u.email LIKE "%'.mysql_real_escape_string($quick_search).'%"
+                            OR u.username LIKE "%'.mysql_real_escape_string($quick_search).'%")';
+            }
+
+            if(isset($gid) && !empty($gid)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= '(ege.group_id='.mysql_real_escape_string($gid).' OR ege.user_id IN (select user_id FROM #__emundus_groups WHERE group_id='.mysql_real_escape_string($gid).'))';
+            }
+            if(isset($uid) && !empty($uid)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= '(ege.user_id='.mysql_real_escape_string($uid).' OR ege.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id='.mysql_real_escape_string($uid).'))';
+            }
+
+            if(isset($profile) && !empty($profile)){
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= '(esp.id = '.$profile.' OR efg.result_for = '.$profile.' OR eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id = '.$profile.'))';
+            }
+
+            if(isset($miss_doc) &&  !empty($miss_doc)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= $miss_doc.' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE eup.user_id = u.id)';
+            }
+        }
 		//$query .= ' ORDER BY eu.user_id';
 		// var_dump(str_replace('#__','jos_',$query));
 		return $query;

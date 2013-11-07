@@ -44,6 +44,11 @@ class EmundusViewApplication extends JView{
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
+        $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+        $document->addStyleSheet( JURI::base()."media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
+        $document->addScript( JURI::base()."media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
+
+
         $menu=JSite::getMenu()->getActive();
 		$access=!empty($menu)?$menu->access : 0;
 		
