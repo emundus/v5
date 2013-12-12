@@ -33,7 +33,7 @@ JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );
                     <tr><td align="center" colspan="18"><?php echo $this->pagination->getResultsCounter(); ?></td></tr>
                     <tr><?php
                         foreach ($this->header_values as $key=>$value){ 
-                        	if($value['name'] != 'user' && $value['name'] != 'user_id' && $value['name'] != 'profile' && $value['name'] != 'email' && $value['name'] != 'time_date' && $value['name'] != 'ranking' && $value['name'] != 'comment' && $value['name'] != 'campaign_id' && $value['name'] != 'evaluation_id' && $value['name'] != 'final_grade' && $value['name'] != 'assoc_evaluators')
+                        	if($value['name'] != 'user' && $value['name'] != 'user_id' && $value['name'] != 'profile' && $value['name'] != 'email' && $value['name'] != 'time_date' && $value['name'] != 'ranking' && $value['name'] != 'comment' && $value['name'] != 'campaign_id' && $value['name'] != 'evaluation_id' && $value['name'] != 'final_grade' && $value['name'] != 'assoc_evaluators' && $value['name'] != 'email_applicant')
 								echo '<th>'.JHTML::_('grid.sort', JText::_($value['label']), $value['name'], $this->lists['order_Dir'], $this->lists['order']).'</th>';
                         } ?>
                     </tr>
@@ -43,7 +43,7 @@ JHTML::script( 'emundus.js', JURI::Base().'media/com_emundus/js/' );
 					foreach($this->users as $evalu){ ?>
                         <tr class="row<?php echo $j++%2; ?>" id="<?php echo 'em_line_'.$i.'_'.$evalu['user_id']; ?>"><?php
                             foreach ($evalu as $key=>$value){ ;
-								if($key != 'user' && $key != 'user_id' && $key != 'profile' && $key != 'email' && $key != 'time_date' && $key != 'ranking' && $key != 'comment' && $key != 'campaign_id' && $key != 'evaluation_id' && $key != 'final_grade')  {
+								if($key != 'user' && $key != 'user_id' && $key != 'profile' && $key != 'email' && $key != 'time_date' && $key != 'ranking' && $key != 'comment' && $key != 'campaign_id' && $key != 'evaluation_id' && $key != 'final_grade' && $key != 'email_applicant')  {
 	                                if($key == 'comment'){
 										echo '<td>'.$this->comment[$evalu['user_id']][$evalu['user']].'</td>';
 	                                }elseif(empty($value) && $value !== '0' && $key != 'overall' && $key !='application_mark'){

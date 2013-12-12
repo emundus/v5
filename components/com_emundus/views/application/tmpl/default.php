@@ -33,7 +33,7 @@ function age($naiss) {
 <div class="ui two column grid">
     <div class="column">
         <div class="ui fluid form segment">
-            <h3 class="ui header"><?php echo JText::_('APPLICANT'); ?></h3>
+            <h3 class="ui header"><?php echo JText::_('APPLICANT'); ?> | <?php echo $this->student->id; ?></h3>
             <div class="content">
                 <div class="ui two column divided grid">
                     <div class="row">
@@ -47,7 +47,6 @@ function age($naiss) {
                                     echo'<img id="image" class="rounded ui image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
                                 }
                                 ?>
-                                <div class="ui secondary inverted segment"><i class="sign icon"></i><?php echo $this->student->id; ?>
                                 <div class="ui buttons">
                                 <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&task=pdf&user=<?php echo $this->student->id; ?>">
                                     <button class="mini ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>">
@@ -73,7 +72,6 @@ function age($naiss) {
                                     </button>
                                 </a>
                                 </div>
-                            </div>
                     </div>
                 </div>
                         <div class="column">
@@ -147,7 +145,7 @@ function age($naiss) {
                 }
                 $info .= '</div>';
 
-                echo'<div class="icon">';
+                echo'<div class="campaign icon">';
                 if($campaign->submitted==0){
                 ?>
                 <a data-title="<?php echo JText::_('SUBMITTED'); ?>" data-content="<?php echo JText::_('JNO'); ?>" href="#" title="" >
@@ -381,7 +379,7 @@ function age($naiss) {
         <?php echo JText::_('EVALUATIONS'); ?>
     </div>
     <div class="content">
-        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=evaluation&layout=evaluation&aid=1572&tmpl=component&iframe=1&Itemid=143" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
+        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=evaluation&layout=evaluation&aid=<?php echo $this->student->id; ?>&tmpl=component&iframe=1&Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
     </div>
     <div class="title" id="em_application_emails">
         <i class="dropdown icon"></i>

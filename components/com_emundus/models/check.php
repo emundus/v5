@@ -169,6 +169,7 @@ class EmundusModelCheck extends JModel
         if (!empty($select_list))
             foreach ($this->getSelectList() as $cols) $can_be_ordering[] = $cols['name'];
         $can_be_ordering[] = 'schoolyear';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.date_submitted';
 //	print_r($this->_applicants);
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
             $this->_applicants = $this->multi_array_sort($this->_applicants, $filter_order, $sort);
@@ -621,6 +622,7 @@ class EmundusModelCheck extends JModel
                     $eval_list['user'] = $applicant->user_id;
                     $eval_list['schoolyear'] = $applicant->schoolyear;
                     $eval_list['registerDate'] = $applicant->registerDate;
+                    $eval_list['jos_emundus_campaign_candidature.date_submitted'] = $applicant->date_submitted;
                     // @comment	All administrative validation element to check
                     foreach ($this->validate_details as $vd) {
                         $eval_list[$vd->element_name] = $applicant->{$vd->element_name};

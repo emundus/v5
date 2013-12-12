@@ -153,7 +153,7 @@ class EmundusControllerCheck extends JController {
 
 	
 	function push_false() {
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access) || !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_("ACCES_DENIED"));
 		}
 		$db = JFactory::getDBO();

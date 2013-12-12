@@ -43,7 +43,7 @@ function zip_file($cids) {
 		$query = 'SELECT c.firstname, c.lastname, c.user_id AS id, d.id AS declared, c.schoolyear
 			FROM #__emundus_users AS c
 			LEFT JOIN #__emundus_declaration AS d ON d.user = c.user_id 
-			WHERE c.user_id = '.$users;
+			WHERE c.user_id IN ('.implode(',', $users).')';
 	}
 	$db->setQuery($query);
 	$users = $db->loadObjectList();
@@ -61,7 +61,7 @@ function zip_file($cids) {
 			$file = $_SERVER['HTTP_HOST'].'_'.date("Y").'_'.$user->id.'_'.$user->lastname.'_'.$user->firstname.'/';
 			$app = false;
 			if(!is_dir($dossier)) {
-				mkdir($dossier);
+				mkdir($dossier, 0777, true);
 			}
 			$dir = @opendir($dossier);
 			

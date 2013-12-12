@@ -169,7 +169,7 @@ class EmundusController extends JController {
 		$nb = 0;
 
 		if(!file_exists(EMUNDUS_PATH_ABS.$user->id)) {	
-			if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) 
+			if (!mkdir(EMUNDUS_PATH_ABS.$user->id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) 
 					return JError::raiseWarning(500, 'Unable to create user file');
 		}
 
@@ -442,7 +442,7 @@ function updateprofile() {
 		
 		$model->adduser($user, $other_param);
 
-		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
+		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
 			return JError::raiseWarning(500, 'Unable to create user file');
 		}
 

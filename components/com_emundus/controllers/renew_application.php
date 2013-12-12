@@ -35,9 +35,15 @@ class EmundusControllerRenew_application extends JController
 	
 	function export_zip(){
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
-		require_once('libraries/emundus/zip.php');
-		zip_file($user);
-		unlink(EMUNDUS_PATH_ABS.$user.DS.'application.pdf');
+		$current_user = JFactory::getUser();
+		if ( $user == $current_user->id ) {
+			require_once('libraries/emundus/zip.php');
+			zip_file(array($user));
+			unlink(EMUNDUS_PATH_ABS.$user.DS.'application.pdf');
+		} else {
+			$this->setRedirect('index.php', JText::_('ACCES_DENIED'), 'message');
+			exit();
+		}
 	}
 
 	/**
@@ -79,15 +85,15 @@ class EmundusControllerRenew_application extends JController
 		$session = JFactory::getSession();
 		$current_user = JFactory::getUser();
 		$model = $this->getModel('renew_application');
+		$application = $this->getModel('application');
 		$user = JRequest::getVar('uid', null, 'GET', 'none',0);
 		$profile = JRequest::getVar('up', null, 'GET', 'none',0);
 		
-		
-		//1.delete application forms
-		$this->deleteApplication();
-		
-		//2.generated zip file & application pdf file
+		//1.generated zip file & application pdf file
 		$this->export_zip();
+
+		//2.delete application forms
+		$this->deleteApplication();
 		
 		//3.delete all about references
 		$this->deleteReferents();
@@ -100,6 +106,14 @@ class EmundusControllerRenew_application extends JController
 
 		//6.make attachments editable
 		$model->updateAttachments($user);
+
+		//7.add a comment
+		$row = array(	'applicant_id'	=>	$current_user->id,
+						'user_id'		=>	62,
+						'reason'		=>	JText::_('RENEW_APPLICATION'),
+						'comment_body'	=>	$current_user->schoolyear.' : '.$current_user->campaign_name.' ('.$current_user->campaign_id.')'
+					);
+		$application->addComment($row);
 		
 		
 		//

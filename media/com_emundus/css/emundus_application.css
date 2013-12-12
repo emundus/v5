@@ -98,3 +98,8 @@
 	margin-bottom:5px;
 	margin-top:20px;
 }
+.campaign.icon {
+    float: left;
+    width: 60px;
+}
+a:link {text-decoration:none;}

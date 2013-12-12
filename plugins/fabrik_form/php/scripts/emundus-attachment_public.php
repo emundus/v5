@@ -77,7 +77,7 @@ if(!isset($attachement_params->displayed) || $attachement_params->displayed === 
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 if(!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-	if (!mkdir(EMUNDUS_PATH_ABS.$user_id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
+	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html')) 
 			die(JError::raiseWarning(500, 'Unable to create user file'));
 }
 	

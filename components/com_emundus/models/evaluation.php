@@ -245,7 +245,7 @@ class EmundusModelEvaluation extends JModel
 				$cols = implode(', ',$cols);
 		}
 		
-		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent, efg.final_grade ';
+		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, u.email, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent, efg.final_grade ';
 		if(!empty($cols)) 
 			$query .= ', '.$cols;
 		if(!empty($eval_columns)) 
@@ -497,6 +497,7 @@ class EmundusModelEvaluation extends JModel
 				$eval_list=array();
 				$eval_list['user_id']=$applicant->user_id;
 				$eval_list['name']='<b>'.strtoupper($applicant->lastname).'</b> <br / >'.$applicant->firstname;
+				$eval_list['email_applicant']=$applicant->email;
 				//$eval_list['profile']=$applicant->profile;
 				$eval_list['campaign']=$applicant->campaign;
 				$eval_list['campaign_id']=$applicant->campaign_id;

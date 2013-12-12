@@ -792,7 +792,7 @@ class EmundusHelperEmails{
 				$query='SELECT ege.applicant_id, ege.campaign_id
 				FROM #__emundus_groups_eval as ege
 				LEFT JOIN #__emundus_groups as eg ON eg.group_id=ege.group_id
-				WHERE eg.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
+				WHERE ege.user_id='.$evaluator->id.' AND ege.id IN ('.implode(", ",$evaluation_list).')';
 				$db->setQuery( $query );
 				// var_dump(str_replace('#__','jos_',$query));
 				$object=$db->loadObject();

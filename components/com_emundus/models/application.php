@@ -127,6 +127,13 @@ class EmundusModelApplication extends JModel
 		}
 	}
 
+	function addComment($row){ 
+		$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body) 
+				VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).')';
+		$this->_db->setQuery( $query );
+		$this->_db->query();
+	}
+
 	function deleteData($id, $table){ 
 		$query = 'DELETE FROM `'.$table.'` WHERE id='.$id;
 		$this->_db->setQuery($query);
