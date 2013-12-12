@@ -66,22 +66,29 @@ class EmundusControllerApplication extends JController
 			$mainframe->redirect($url);
 			exit;
 		} 
+
+		$model = $this->getModel('application');
+		
 		foreach ($attachments as $id) {
-			$query = 'SELECT filename FROM #__emundus_uploads WHERE id='.$id;
-			$db->setQuery( $query );
-			$filename = $db->loadResult();
-			
-			$file = EMUNDUS_PATH_ABS.$user_id.DS.$filename;
-			@unlink($file);
-			/*if(!@unlink($file) && file_exists($file)) {
-				// JError::raiseError(500, JText::_('FILE_NOT_FOUND').$file);
-				$this->setRedirect($url, JText::_('FILE_NOT_FOUND'), 'error');
-				return;
-			}*/
-			
-			$query = 'DELETE FROM #__emundus_uploads WHERE id='.$id;
-			$db->setQuery( $query );
-			$db->query();
+			$upload = $model->getUploadByID($id); 
+			$attachment = $model->getAttachmentByID($upload['attachment_id']); 
+
+			$result = $model->deleteAttachment($id);
+
+			if($result != 1){
+				echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
+			} else {
+				$file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
+				@unlink($file);
+
+				$row['applicant_id'] = $upload['user_id'];
+				$row['user_id'] = $user->id;
+				$row['reason'] = JText::_('ATTACHMENT_DELETED');
+				$row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+				$model->addComment($row);
+
+				echo $result;
+			}
 		}
 		
 		$this->setRedirect($url, JText::_('ATTACHMENTS_DELETED'), 'message');
@@ -102,10 +109,22 @@ class EmundusControllerApplication extends JController
 		$id = JRequest::getVar('id', null, 'GET', 'none',0);
 		
 		$model = $this->getModel('application');
+
+		$upload = $model->getUploadByID($id); 
+		$attachment = $model->getAttachmentByID($upload['attachment_id']); 
+
 		$result = $model->deleteAttachment($id);
-		echo $result;
+
 		if($result != 1){
 			echo JText::_('ATTACHMENT_DELETE_ERROR');
+		} else {
+			$row['applicant_id'] = $upload['user_id'];
+			$row['user_id'] = $user->id;
+			$row['reason'] = JText::_('ATTACHMENT_DELETED');
+			$row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+			$model->addComment($row);
+
+			echo $result;
 		}
 	}
 
@@ -237,12 +256,22 @@ class EmundusControllerApplication extends JController
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 				
 		$id = JRequest::getVar('id', null, 'GET', 'none',0);
+		$sid = JRequest::getVar('sid', null, 'GET', 'none',0);
 		$table = JRequest::getVar('t', null, 'GET', 'none',0);
-	
+
 		$model = $this->getModel('application');
 		$result = $model->deleteData($id, $table);
 		
+		$model = $this->getModel('application');
+
+		$row['applicant_id'] = $sid;
+		$row['user_id'] = $user->id;
+		$row['reason'] = JText::_('DATA_DELETED');
+		$row['comment_body'] = JText::_('LINE').' '.$id.' '.JText::_('FROM').' '.$table;
+		$model->addComment($row);
+
 		echo $result;
+
 		/*
 		if($result!=1){
 			echo JText::_('DELETE_ERROR');

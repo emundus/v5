@@ -78,7 +78,7 @@ class EmundusModelApplication extends JModel
 	
 	function getUserCampaigns($id){
 		
-		$query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, efg.result_sent, efg.date_result_sent, efg.final_grade
+		$query = 'SELECT esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade
 			FROM #__emundus_users eu
 			LEFT JOIN #__emundus_campaign_candidature ecc ON ecc.applicant_id=eu.user_id
 			LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
@@ -170,6 +170,13 @@ class EmundusModelApplication extends JModel
 
 	function getAttachmentByID($id) {
 		$query = "SELECT * FROM #__emundus_setup_attachments WHERE id=".$id;
+		$this->_db->setQuery($query);
+
+		return $this->_db->loadAssoc();
+	}
+
+	function getUploadByID($id) {
+		$query = "SELECT * FROM #__emundus_uploads WHERE id=".$id;
 		$this->_db->setQuery($query);
 
 		return $this->_db->loadAssoc();
@@ -352,10 +359,10 @@ class EmundusModelApplication extends JModel
 											$elt = $r_elt;
 //print_r($this->_mainframe->data);
 										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-											$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'">
-								<img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+											//$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+											$delete_link = '<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
 										}
-										$forms .= '<td><div id="em_training_'.$r_element->id.'">'.$elt.' '.$delete_link.'</span></td>';
+										$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.' '.$delete_link.'</div></td>';
 									}
 									$j++;
 								}

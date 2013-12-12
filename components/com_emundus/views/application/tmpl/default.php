@@ -72,8 +72,8 @@ function age($naiss) {
                                     </button>
                                 </a>
                                 </div>
-                    </div>
-                </div>
+                            </div>
+                        </div>
                         <div class="column">
                             <div id="informations">
                                 <div class="ui list">
@@ -113,6 +113,7 @@ function age($naiss) {
             <div class="content">
                 <?php
             foreach($this->userCampaigns as $campaign){
+                echo '<div class="campaign '.$campaign->campaign_candidature_id.'">';
                 $info = '<div class="ui list">
                           <div class="item">
                             <div class="header">'. $campaign->training.'</div>
@@ -152,7 +153,7 @@ function age($naiss) {
                     <?php
                     echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/publish_x.png" style="margin-right:20px;" />';
                     echo '</a>';
-                    }else{
+                }else{
                     if($campaign->result_sent==0){
                     ?>
                     <a data-title="<?php echo JText::_('SUBMITTED'); ?>" data-content="<?php echo JText::_('JYES'); ?>" href="#" title="" >
@@ -176,34 +177,35 @@ function age($naiss) {
                                     echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/email_send.png" />
 							</a>';
                                     }
-                                    }
-                                    $tab = array (2,3,4);
-                                    if(!empty($campaign->final_grade) && in_array($campaign->final_grade,$tab)){
-                                    $contenu = '';
-                                    if($campaign->final_grade==4){
-                                        $contenu.=JText::_("ACCEPTED");
-                                    }else if($campaign->final_grade==3){
-                                        $contenu.=JText::_("WAITING_LIST");
-                                    }else if($campaign->final_grade==2){
-                                        $contenu.=JText::_("REJECTED");
-                                    }
-                                    ?>
-                                    <a data-title="<?php echo JText::_('FINAL_GRADE'); ?>" data-content="<?php echo $contenu; ?>" href="#" title="" >
-                                        <?php
-                                        echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'_16x16.png" />
-						</a>';
-                                        }
-                                        echo'</div>';
-                                        ?>
-                                        <div class="campaign">
-                                            <a data-html="<?php echo htmlentities($info); ?>" href="#" title="" >
-                                            <?php
-                                            echo'<div class="title-campaign">'.$campaign->label.'</div>
-				                            </a></div>
-				                            <div class="ui divider"></div>';
-                                            }
-                                            ?>
-            </div>
+                    }
+                    $tab = array (2,3,4);
+                    if(!empty($campaign->final_grade) && in_array($campaign->final_grade,$tab)){
+                        $contenu = '';
+                        if($campaign->final_grade==4){
+                            $contenu.=JText::_("ACCEPTED");
+                        }else if($campaign->final_grade==3){
+                            $contenu.=JText::_("WAITING_LIST");
+                        }else if($campaign->final_grade==2){
+                            $contenu.=JText::_("REJECTED");
+                        }
+                    ?>
+                        <a data-title="<?php echo JText::_('FINAL_GRADE'); ?>" data-content="<?php echo $contenu; ?>" href="#" title="" >
+        <?php
+                        echo '<img style="border:0;" src="'.JURI::Base().'media/com_emundus/images/icones/grade-'.$campaign->final_grade.'_16x16.png" /></a>';
+                    }
+                    echo'</div>';
+                    if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && count($this->userCampaigns) > 1) {
+                        $delete_link = '<a class=​"ui" name="delete_campaign" data-title="'.JText::_('DELETE_CAMPAIGN').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#campaign_id\').val('.$campaign->campaign_candidature_id.'); $(\'#campaign_table\').val(\'jos_emundus_campaign_candidature\'); $(\'.basic.modal.confirm.campaign\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
+                    }
+        ?>
+                   
+                    <a data-html="<?php echo htmlentities($info); ?>" href="#" title="" ><div class="title-campaign"><?php echo $campaign->label; ?></div></a><?php echo $delete_link; ?></div>
+        <?php                           
+                    
+                    echo '<div class="ui divider"></div>';
+                   // echo "</div>";
+            }
+        ?>
         </div>
     </div>
 </div>
@@ -466,7 +468,7 @@ function age($naiss) {
 <input type="hidden" value="<?php echo $tmpl; ?>" name="tmpl">
 </form>
 </div>
-
+<!-- Confirm delete comment -->
 <div class="ui basic modal confirm">
     <input class="input confirm type" id="confirm_type" type="hidden" value="">
     <input class="input confirm id" id="confirm_id" type="hidden" value="">
@@ -490,8 +492,62 @@ function age($naiss) {
         </div>
     </div>
 </div>
-<script type="application/javascript">
 
+<!-- Confirm delete registration campaign -->
+<div class="ui basic modal confirm campaign">
+    <input class="input confirm type" id="campaign_type" type="hidden" value="">
+    <input class="input confirm id" id="campaign_id" type="hidden" value="">
+    <input class="input confirm id" id="campaign_table" type="hidden" value="">
+    <div class="header"> </div>
+    <div class="content">
+        <div class="left">
+            <i class="comment icon"></i>
+        </div>
+        <div class="right"></div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui buttons">
+            <div class="ui negative labeled icon button">
+                <i class="remove icon"></i>
+                <?php echo JText::_('JNO'); ?>
+            </div>
+            <div class="ui positive right labeled icon button">
+                <?php echo JText::_('JYES'); ?>
+                <i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm delete registration course -->
+<div class="ui basic modal confirm course">
+    <input class="input confirm type" id="course_type" type="hidden" value="">
+    <input class="input confirm id" id="course_id" type="hidden" value="">
+    <input class="input confirm id" id="course_table" type="hidden" value="">
+    <div class="header"> </div>
+    <div class="content">
+        <div class="left">
+            <i class="comment icon"></i>
+        </div>
+        <div class="right"></div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui buttons">
+            <div class="ui negative labeled icon button">
+                <i class="remove icon"></i>
+                <?php echo JText::_('JNO'); ?>
+            </div>
+            <div class="ui positive right labeled icon button">
+                <?php echo JText::_('JYES'); ?>
+                <i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="application/javascript">
+// Confirm delete comment
 $('.basic.modal.confirm')
     .modal('setting', {
         closable  : true,
@@ -520,6 +576,66 @@ $('.basic.modal.confirm')
     })
 ;
 
+// Confirm delete campaign
+$('.basic.modal.confirm.campaign')
+    .modal('setting', {
+        closable  : true,
+        onDeny    : function(){
+            $(this).modal('hide');
+            return false;
+        },
+        onApprove : function() {
+            switch ($('#confirm_type').val()){
+                case "delete_campaign" : 
+                    var id = $('#campaign_id').val();
+                    var table = $('#campaign_table').val();
+                    deleteData(id, table);  
+                    $('.campaign.'+id).fadeOut('slow');
+                    break;
+
+            }
+            return true;
+        },
+        onShow : function() {
+            $('.ui.basic.modal.confirm.campaign .content .right').empty();
+            $('.ui.basic.modal.confirm.campaign .content .right').text('<?php echo JText::_('DELETE_CAMPAIGN_CONFIRM'); ?>');
+            $('.ui.basic.modal.confirm.campaign .header').empty();
+            $('.ui.basic.modal.confirm.campaign .header').text('<?php echo JText::_('DELETE_CAMPAIGN'); ?>');
+            return true;
+        }
+    })
+;
+
+// Confirm delete course
+$('.basic.modal.confirm.course')
+    .modal('setting', {
+        closable  : true,
+        onDeny    : function(){
+            $(this).modal('hide');
+            return false;
+        },
+        onApprove : function() {
+            switch ($('#confirm_type').val()){
+                case "delete_course" : 
+                    var id = $('#course_id').val();
+                    var table = $('#course_table').val();
+                    deleteData(id, table); 
+                    $('.course.'+id).fadeOut('slow');
+                    break;
+
+            }
+            return true;
+        },
+        onShow : function() {
+            $('.ui.basic.modal.confirm.course .content .right').empty();
+            $('.ui.basic.modal.confirm.course .content .right').text('<?php echo JText::_('DELETE_COURSE_CONFIRM'); ?>');
+            $('.ui.basic.modal.confirm.course .header').empty();
+            $('.ui.basic.modal.confirm.course .header').text('<?php echo JText::_('DELETE_COURSE'); ?>');
+            return true;
+        }
+    })
+;
+
 $('.ui.fluid.accordion')
     .accordion()
 ;
@@ -533,11 +649,11 @@ $('.ui.icon')
 $('.ui.button')
     .popup({position : 'bottom center'})
 ;
-$('a')
-    .popup({position : 'bottom right'})
+$('.attachment_name a')
+    .popup({position : 'bottom center'})
 ;
 $('.campaign a')
-    .popup({position : 'bottom center'})
+    .popup({position : 'bottom left'})
 ;
 $('.ui.label')
     .popup({position : 'bottom right'})
@@ -623,26 +739,11 @@ function getXMLHttpRequest() {
 function deleteComment(comment_id){
 	var xhr = getXMLHttpRequest();
 	xhr.onreadystatechange = function()
-	{
+	{ 
 		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 		{
 			if(xhr.responseText!="SQL Error"){
                 return true;
-				/*var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
-				var comment_content = ($('comment_'+comment_id).parentNode).id;
-				var comment_icon = $('comment_'+comment_id);
-				var i;
-				for (i=0;i<comment_icon.childNodes.length;i++)
-				{
-					comment_icon.childNodes[i].src = "<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/trash.png";
-					comment_icon.childNodes[i].onclick = null;
-				}
-				$(comment).style.background="#B0B4B3";
-				$(comment_content).style.background="#B0B4B3";
-				$(comment).style.color="#FFFFFF";
-				$(comment_content).style.color="#FFFFFF";
-				$(comment).style.textDecoration="line-through";
-				$(comment_content).style.textDecoration="line-through";*/
 			}else{
 				alert(xhr.responseText);
                 return false;
@@ -662,28 +763,29 @@ function deleteData(id, table){
 	{
 		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 		{
-			if(xhr.responseText!="SQL Error"){
-				var training = ($('training_'+id).parentNode).id;
-				var training_content = ($('training_'+id).parentNode).id;
-				var training_icon = $('training_'+id);
-				var i;
-				for (i=0;i<training_icon.childNodes.length;i++)
-				{
-					training_icon.childNodes[i].src = "<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/trash.png";
-					training_icon.childNodes[i].onclick = null;
-				}
-				$(training).style.background="#B0B4B3";
-				$(training_content).style.background="#B0B4B3";
-				$(training).style.color="#FFFFFF";
-				$(training_content).style.color="#FFFFFF";
-				$(training).style.textDecoration="line-through";
-				$(training_content).style.textDecoration="line-through";
+			if(xhr.responseText!="SQL Error"){ 
+				return true;
+                /*var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
+                var comment_content = ($('comment_'+comment_id).parentNode).id;
+                var comment_icon = $('comment_'+comment_id);
+                var i;
+                for (i=0;i<comment_icon.childNodes.length;i++)
+                {
+                    comment_icon.childNodes[i].src = "<?php echo JURI::Base(); ?>/media/com_emundus/images/icones/trash.png";
+                    comment_icon.childNodes[i].onclick = null;
+                }
+                $(comment).style.background="#B0B4B3";
+                $(comment_content).style.background="#B0B4B3";
+                $(comment).style.color="#FFFFFF";
+                $(comment_content).style.color="#FFFFFF";
+                $(comment).style.textDecoration="line-through";
+                $(comment_content).style.textDecoration="line-through";*/
 			}else{
 				alert(xhr.responseText);
 			}
 		}
 	};
-	xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=deletetraining&Itemid=<?php echo $itemid; ?>&id="+id+"&t="+table, true);
+	xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=deletetraining&Itemid=<?php echo $itemid; ?>&id="+id+"&t="+table+"&sid=<?php echo $this->student->id; ?>", true);
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	xhr.send("&id="+id+"&t="+table);
 }
