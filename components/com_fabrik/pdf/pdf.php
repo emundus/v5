@@ -40,7 +40,7 @@ class JDocumentpdf extends JDocumentHTML
 		parent::__construct($options);
 
 		$config = JComponentHelper::getParams('com_fabrik');
-		if ($config->get('pdf_debug', false))
+		if ($config->get('pdf_debug', true))
 		{
 			$this->setMimeEncoding('text/html');
 			$this->_type = 'html';
@@ -67,9 +67,6 @@ class JDocumentpdf extends JDocumentHTML
 
 	protected function iniDomPdf()
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-
 		$file = JPATH_LIBRARIES . '/dompdf/dompdf_config.inc.php';
 		if (!JFile::exists($file))
 		{
@@ -88,25 +85,9 @@ class JDocumentpdf extends JDocumentHTML
 
 		// Default settings are a portrait layout with an A4 configuration using millimeters as units
 		$this->engine = new DOMPDF;
+
+		$this->engine->set_paper('A4', 'landscape');
 		return true;
-	}
-
-	/**
-	 * Set the paper size and orientation
-	 * Note if too small for content then the pdf renderer will bomb out in an infinite loop
-	 * Legal seems to be more leiniant than a4 for example
-	 * If doing landscape set large paper size
-	 *
-	 * @since 3.0.7
-	 *
-	 * @param   string   $size         Paper size E.g A4,legal
-	 * @param   string   $orientation  Paper orientation landscape|portrait
-	 */
-
-	public function setPaper($size = 'A4', $orientation = 'landscape')
-	{
-		$size = strtoupper($size);
-		$this->engine->set_paper($size, $orientation);
 	}
 
 	/**
@@ -124,8 +105,7 @@ class JDocumentpdf extends JDocumentHTML
 
 	/**
 	 * Returns the document name
-	 *
-	 * @return	string
+	 * @return  string
 	 */
 
 	public function getName()

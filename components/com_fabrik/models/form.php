@@ -4,12 +4,12 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 require_once 'fabrikmodelform.php';
@@ -279,8 +279,9 @@ class FabrikFEModelForm extends FabModelForm
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
+		$app = JFactory::getApplication();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$id = JRequest::getInt('formid', $usersConfig->get('formid'));
+		$id = $app->input->getInt('formid', $usersConfig->get('formid'));
 		$this->setId($id);
 	}
 
@@ -664,9 +665,12 @@ class FabrikFEModelForm extends FabModelForm
 			{
 				// Merge the js attribs back into the array
 				$a = json_decode($r->params);
-				foreach ($a as $k => $v)
+				if ($a)
 				{
-					$r->$k = $v;
+					foreach ($a as $k => $v)
+					{
+						$r->$k = $v;
+					}
 				}
 				unset($r->params);
 				if (!isset($r->js_published) || (int) $r->js_published === 1)
@@ -990,11 +994,33 @@ class FabrikFEModelForm extends FabModelForm
 		}
 		else
 		{
+
+			/*
+			 * $$$ hugh - when loading origdata on editing of a rowid=-1/usekey form,
+			 * the rowid will be set to the actual form tables's rowid, not the userid,
+			 * so we need to unset 'usekey', otherwise we end up with the wrong row.
+			 * I thought we used to take care of this elsewhere?
+			 */
+			$app = JFactory::getApplication();
+			$input = $app->input;
+			$menu_rowid = FabrikWorker::getMenuOrRequestVar('rowid', '0', $this->isMambot, 'menu');
+
+			if ($menu_rowid == '-1')
+			{
+				$orig_usekey = $input->get('usekey', '');
+				$input->set('usekey', '');
+			}
+
 			$listModel = $this->getListModel();
 			$fabrikDb = $listModel->getDb();
 			$sql = $this->_buildQuery();
 			$fabrikDb->setQuery($sql);
 			$this->_origData = $fabrikDb->loadObjectList();
+
+			if ($menu_rowid == '-1')
+			{
+				$input->set('usekey', $orig_usekey);
+			}
 		}
 	}
 
@@ -1088,7 +1114,7 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			return false;
 		}
-		/** $$$ rob 27/10/2011 - moved above _doUpload as code in there is tryign to update formData which is not yet set
+		/** $$$ rob 27/10/2011 - moved above _doUpload as code in there is trying to update formData which is not yet set
 		 * this->setFormData();
 		 */
 
@@ -1528,7 +1554,7 @@ class FabrikFEModelForm extends FabModelForm
 		// COPY function should create new records
 		if (array_key_exists('Copy', $this->_formData))
 		{
-			$this->_rowId = '';
+			$this->setRowId('');
 
 			// $$$ rob dont pass in $item->db_primary_key directly into safeColName as its then
 			// modified permanently by this function
@@ -1636,7 +1662,7 @@ class FabrikFEModelForm extends FabModelForm
 
 			if (array_key_exists('Copy', $this->_formData))
 			{
-				$this->_rowId = '';
+				$this->setRowId('');
 				/* $$$ hugh - nope, this is wrong, builds the wrong element name, we need to use the join's PK, not it's FK,
 				 * so we need the new 'pk' param if available, or build it from first principles.
 				 * So ... moved that code to just above, where we now build the oJoinPk.
@@ -2236,7 +2262,6 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$groups = $this->getGroupsHiarachy();
 			$gkeys = array_keys($groups);
-			//jimport('joomla.utilities.simplecrypt');
 			$crypt = FabrikWorker::getCrypt();
 			$w = new FabrikWorker;
 			foreach ($gkeys as $g)
@@ -2254,42 +2279,40 @@ class FabrikFEModelForm extends FabModelForm
 							 * if ($elementModel->canView())
 							 * $$$ hugh - testing adding non-viewable, non-editable elements to encrypted vars
 							 */
-							if (true)
+
+							if (is_array($encrypted))
 							{
-								if (is_array($encrypted))
-								{
-									// Repeat groups
-									$v = array();
-									foreach ($encrypted as $e)
-									{
-										// $$$ rob urldecode when posting from ajax form
-										$e = urldecode($e);
-										$e = empty($e) ? '' : $crypt->decrypt($e);
-										$e = FabrikWorker::JSONtoData($e);
-										$v[] = $w->parseMessageForPlaceHolder($e, $post);
-									}
-								}
-								else
+								// Repeat groups
+								$v = array();
+								foreach ($encrypted as $e)
 								{
 									// $$$ rob urldecode when posting from ajax form
-									$encrypted = urldecode($encrypted);
-									$v = empty($encrypted) ? '' : $crypt->decrypt($encrypted);
-									/* $$$ hugh - things like elementlist elements (radios, etc) seem to use
-									 * their JSON data for encrypted read only vals, need to decode.
-									 */
-									$v = FabrikWorker::JSONtoData($v, true);
-									foreach ($v as &$tmpV)
-									{
-										$tmpV = $w->parseMessageForPlaceHolder($tmpV, $post);
-									}
+									$e = urldecode($e);
+									$e = empty($e) ? '' : $crypt->decrypt($e);
+									$e = FabrikWorker::JSONtoData($e);
+									$v[] = $w->parseMessageForPlaceHolder($e, $post);
 								}
-								$elementModel->setGroupModel($groupModel);
-								$elementModel->setValuesFromEncryt($post, $key, $v);
-								/* $$ rob set both normal and rawvalues to encrypted - otherwise validate method doesn't
-								 * pick up decrypted value
-								 */
-								$elementModel->setValuesFromEncryt($post, $key . '_raw', $v);
 							}
+							else
+							{
+								// $$$ rob urldecode when posting from ajax form
+								$encrypted = urldecode($encrypted);
+								$v = empty($encrypted) ? '' : $crypt->decrypt($encrypted);
+								/* $$$ hugh - things like elementlist elements (radios, etc) seem to use
+								 * their JSON data for encrypted read only vals, need to decode.
+								 */
+								$v = FabrikWorker::JSONtoData($v, true);
+								foreach ($v as &$tmpV)
+								{
+									$tmpV = $w->parseMessageForPlaceHolder($tmpV, $post);
+								}
+							}
+							$elementModel->setGroupModel($groupModel);
+							$elementModel->setValuesFromEncryt($post, $key, $v);
+							/* $$ rob set both normal and rawvalues to encrypted - otherwise validate method doesn't
+							 * pick up decrypted value
+							 */
+							$elementModel->setValuesFromEncryt($post, $key . '_raw', $v);
 						}
 					}
 				}
@@ -2506,11 +2529,11 @@ class FabrikFEModelForm extends FabModelForm
 						/* $$$ rob for repeat groups no join setting to array() menat that $_POST only contained the last repeat group data
 						 * $elDbVals = array();
 						 */
-						$elDbVals[$c] = $elementModel->toDbVal($form_data, $c);
+						$elDbVals[$c] = $form_data;
 					}
 					else
 					{
-						$elDbVals = $elementModel->toDbVal($form_data, $c);
+						$elDbVals = $form_data;
 					}
 					// Validations plugins attached to elemenets
 					$pluginc = 0;
@@ -2533,7 +2556,7 @@ class FabrikFEModelForm extends FabModelForm
 							{
 								if ($groupModel->canRepeat())
 								{
-									$elDbVals[$c] = $elementModel->toDbVal($form_data, $c);
+									$elDbVals[$c] = $form_data;
 									$testreplace = $plugin->replace($elDbVals[$c], $elementModel, $pluginc, $c);
 									if ($testreplace != $elDbVals[$c])
 									{
@@ -2605,7 +2628,7 @@ class FabrikFEModelForm extends FabModelForm
 	{
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.';
+		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . (int) $this->getRowId() . '.';
 		$session = JFactory::getSession();
 
 		// Store errors in local array as clearErrors() removes $this->_arErrors
@@ -2637,7 +2660,7 @@ class FabrikFEModelForm extends FabModelForm
 		$session = JFactory::getSession();
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.';
+		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . (int) $this->getRowId() . '.';
 		$this->_arErrors = array();
 		$session->clear($context . 'errors');
 		/* $$$ rob this was commented out, but putting back in to test issue that if we have ajax validations on
@@ -2660,7 +2683,7 @@ class FabrikFEModelForm extends FabModelForm
 		$session = JFactory::getSession();
 		$app = JFactory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
-		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . $this->getRowId() . '.';
+		$context = 'com_' . $package . '.form.' . $this->getId() . '.' . (int) $this->getRowId() . '.';
 		$session->set($context . 'errors', $errors);
 		$session->set($context . 'session.on', true);
 	}
@@ -3003,6 +3026,20 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
+	 * Are we creating a new record or editing an existing one?
+	 * Put here to ensure compat when we go from 3.0 where rowid = 0 = new, to row id '' = new
+	 *
+	 * @since   3.0.9
+	 *
+	 * @return  boolean
+	 */
+
+	public function isNewRecord()
+	{
+		return $this->getRowId() == 0;
+	}
+
+	/**
 	 * Get the current records row id
 	 * setting a rowid of -1 will load in the current users record (used in
 	 * conjunction wth usekey variable
@@ -3082,7 +3119,7 @@ class FabrikFEModelForm extends FabModelForm
 		// $$$rob required in paolo's site when rendering modules with ajax option turned on
 		$this->listModel = null;
 		@set_time_limit(300);
-		$this->_rowId = $this->getRowId();
+		$this->setRowId($this->getRowId());
 
 		/*
 		 * $$$ hugh - need to call this here as we set $this->editable here, which is needed by some plugins
@@ -3174,6 +3211,51 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
+	 * Build a mock array of the data as it would be submitted by the form
+	 *
+	 * @return  array
+	 */
+	public function mockPostData()
+	{
+		$data = $this->getData();
+		if (!array_key_exists('join', $data))
+		{
+			$data['join'] = array();
+		}
+
+		$elements = $this->getListModel()->getElements();
+
+		// Shunt db join element data in to their own join array
+		foreach ($elements as $element)
+		{
+			if ($element->isJoin())
+			{
+				$join = $element->getJoin();
+				if (!array_key_exists($join->id, $data['join']))
+				{
+					$data['join'][$join->id] = array();
+				}
+
+				$name = $element->getFullName(false, true, false);
+				$idname = $element->getFullName(false, true, false) . '_id';
+				$rawname = $element->getFullName(false, true, false) . '_raw';
+
+				if (array_key_exists($name, $data))
+				{
+					$values = explode(GROUPSPLITTER, $data[$idname]);
+					$data['join'][$join->id][$name] = $values;
+					$pk = FabrikString::safeColNameToArrayKey($join->params->get('pk'));
+					$data['join'][$join->id][$pk] = array_fill(0, count($values), 0);
+					unset($data[$name]);
+					unset($data[$idname]);
+					unset($data[$rawname]);
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
 	 * Main method to get the data to insert into the form
 	 *
 	 * @return  array  form's data
@@ -3192,8 +3274,25 @@ class FabrikFEModelForm extends FabModelForm
 		$profiler = JProfiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('formmodel getData: start') : null;
 		$this->_data = array();
-		$data = JRequest::get('request');
-		$data = array(FArrayHelper::toObject($data));
+		/*
+		 * $$$ hugh - we need to remove any elements from the query string,
+		 * if the user doesn't have access, otherwise ACL's on elements can
+		 * be bypassed by just setting value on form load query string!
+		 */
+		$clean_request = JRequest::get('request');
+		foreach ($clean_request as $key => $value)
+		{
+			$test_key = FabrikString::rtrimword($key, '_raw');
+			$elementModel = $this->getElement($test_key, false, false);
+			if ($elementModel !== false)
+			{
+				if (!$elementModel->canUse())
+				{
+					unset($clean_request[$key]);
+				}
+			}
+		}
+		$data = array(FArrayHelper::toObject($clean_request));
 		$form = $this->getForm();
 
 		$aGroups = $this->getGroupsHiarachy();
@@ -3289,7 +3388,9 @@ class FabrikFEModelForm extends FabModelForm
 							}
 						}
 						// $data = array(FArrayHelper::toObject(array_merge(unserialize($srow->data), JArrayHelper::fromObject($data[0]))));
-						$data = array(FArrayHelper::toObject(array_merge($tmp_data, JArrayHelper::fromObject($data[0]))));
+						$bits = JArrayHelper::fromObject($data[0]);
+						$bits = array_merge($tmp_data, $bits);
+						$data = array(FArrayHelper::toObject($bits));
 						FabrikHelperHTML::debug($data, 'form:getData from session (form not in Mambot and no errors');
 					}
 				}
@@ -3333,7 +3434,7 @@ class FabrikFEModelForm extends FabModelForm
 									$this->_rowId = isset($row->__pk_val) ? $row->__pk_val : $this->_rowId;
 								}
 								$row = empty($row) ? array() : JArrayHelper::fromObject($row);
-								$request = JRequest::get('request');
+								$request = $clean_request;
 								$request = array_merge($row, $request);
 								$data[] = FArrayHelper::toObject($request);
 							}
@@ -3358,7 +3459,7 @@ class FabrikFEModelForm extends FabModelForm
 								if (empty($usekey) && !$this->isMambot)
 								{
 									$this->_rowId = 0;
-									JError::raiseNotice(500, JText::sprintf('COULD NOT FIND RECORD IN DATABASE', $this->_rowId));
+									JError::raiseNotice(500, JText::_('COM_FABRIK_COULD_NOT_FIND_RECORD_IN_DATABASE'));
 									return;
 								}
 								else
@@ -3435,9 +3536,14 @@ class FabrikFEModelForm extends FabModelForm
 		$session = JFactory::getSession();
 
 		// Set in plugins such as confirmation plugin
-		if ($session->get('com_' . $package . '.form.' . $this->getId() . '.session.on') == true && $useSessionOn)
+		$pluginManager = FabrikWorker::getPluginManager();
+		$pluginManager->runPlugins('usesSession', $this, 'form');
+		if (in_array(true, $pluginManager->_data))
 		{
-			return true;
+			if ($session->get('com_' . $package . '.form.' . $this->getId() . '.session.on') == true && $useSessionOn)
+			{
+				return true;
+			}
 		}
 		$save = (int) $params->get('multipage_save', 0);
 		$user = JFactory::getUser();
@@ -3664,7 +3770,7 @@ class FabrikFEModelForm extends FabModelForm
 		// Get prefilter conditions from table and apply them to the record
 		// the false, ignores any filters set by the table
 		$where = $listModel->_buildQueryWhere(false);
-		if (strstr($sql, 'WHERE') && $this->_rowId != '')
+		if (strstr($sql, 'WHERE'))
 		{
 			// Do it this way as queries may contain subquerues which we want to keep the where
 			$firstword = JString::substr($where, 0, 5);
@@ -3676,7 +3782,7 @@ class FabrikFEModelForm extends FabModelForm
 		// Set rowId to -2 to indicate random record
 		if ($random)
 		{
-			$this->_rowId = -2;
+			$this->setRowId(-2);
 		}
 		// $$$ rob ensure that all prefilters are wrapped in brackets so that
 		// only one record is loaded by the query - might need to set $word = and?
@@ -3708,6 +3814,7 @@ class FabrikFEModelForm extends FabModelForm
 	public function hasElement($searchName, $checkInt = false, $checkShort = true)
 	{
 		$groups = $this->getGroupsHiarachy();
+		$form = $this->getForm();
 		foreach ($groups as $groupModel)
 		{
 			$elementModels = $groupModel->getMyElements();
@@ -3750,6 +3857,17 @@ class FabrikFEModelForm extends FabModelForm
 				{
 					$this->currentElement = $elementModel;
 					return true;
+				}
+
+				// 3.0 test for repeat elements (e.g. multi file upload)
+				if ($form->record_in_database == '1')
+				{
+					$fullName = $this->getListModel()->getTable()->db_table_name . '___' . $elementModel->getElement()->name;
+					if ($searchName == $fullName)
+					{
+						$this->currentElement = $elementModel;
+						return true;
+					}
 				}
 			}
 		}
@@ -4352,6 +4470,36 @@ class FabrikFEModelForm extends FabModelForm
 	}
 
 	/**
+	 * Strip out any element names from url qs vars
+	 *
+	 * @param   string  $url  URL
+	 *
+	 * @return  string
+	 */
+	protected function stripElementsFromUrl($url)
+	{
+		$url = explode('?', $url);
+		if (count($url) == 1)
+		{
+			return $url;
+		}
+		$filtered = array();
+		$bits = explode('&', $url[1]);
+		foreach ($bits as $bit)
+		{
+			$parts = explode('=', $bit);
+			$key = $parts[0];
+			$key = FabrikString::rtrimword($key, '_raw');
+			if (!$this->hasElement($key))
+			{
+				$filtered[] = implode('=', $parts);
+			}
+		}
+		$url = $url[0] . '?' . implode('&', $filtered);
+		return $url;
+	}
+
+	/**
 	 * Get the url to use as the form's action property
 	 *
 	 * @return	string	url
@@ -4367,6 +4515,7 @@ class FabrikFEModelForm extends FabModelForm
 		if ($app->isAdmin())
 		{
 			$action = JArrayHelper::getValue($_SERVER, 'REQUEST_URI', 'index.php');
+			$action = $this->stripElementsFromUrl($action);
 			$action = str_replace("&", "&amp;", $action);
 
 			// $$$rob no good for cck form?
@@ -4577,7 +4726,8 @@ class FabrikFEModelForm extends FabModelForm
 			$groupTable = $groupModel->getGroup();
 			$group = $groupModel->getGroupProperties($this);
 			$groupParams = $groupModel->getParams();
-			$group->intro = $groupParams->get('intro');
+			$group->intro = (string) $groupParams->get('intro', '');
+			$group->outro = (string) $groupParams->get('outro', '');
 			$group->columns = $groupParams->get('group_columns', 1);
 			if ($groupModel->canRepeat())
 			{
@@ -4636,12 +4786,14 @@ class FabrikFEModelForm extends FabModelForm
 									if ($this->sessionModel->row->data === '')
 									{
 										$startHidden = true;
-										foreach ($origData['join'][$joinTable->id] as $jData)
+										foreach ($origData['join'][$joinTable->id] as $key => $jData)
 										{
-											if (!empty($jData[0]))
+											// Only check _raw data plugins may have altered label data.
+											$raw = JString::substr($key, - 4) === '_raw';
+											if ($raw && !empty($jData[0]))
 											{
 												$startHidden = false;
-												continue;
+												break;
 											}
 										}
 									}
@@ -5064,7 +5216,7 @@ class FabrikFEModelForm extends FabModelForm
 					// Return to the page that called the form
 					$url = urldecode($input->post->get('fabrik_referrer', 'index.php', 'string'));
 				}
-				$Itemid = (int) @$app->getMenu('site')->getActive()->id;
+				$Itemid = (int) FabrikWorker::itemId();
 				if ($url == '')
 				{
 					if ($Itemid !== 0)

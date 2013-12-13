@@ -191,7 +191,7 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$input->set('limitstart' . $listId, $start);
 		$listModel->setLimits($start, $this->step);
 
-		if ($listModel->canView() || $listModel->canEdit())
+		if ($listModel->canView())
 		{
 			$data = $listModel->getData();
 			$elements = $listModel->getElements();
@@ -199,17 +199,20 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 			$startdate2 = $startdate;
 			$endKey = FabrikString::safeColName($enddate2);
 			$startKey = FabrikString::safeColName($startdate2);
+
 			if (!array_key_exists($endKey, $elements))
 			{
 				$endKey = $startKey;
 				$enddate2 = $startdate2;
 			}
+
 			$endElement = $elements[$endKey];
 
 			if (!array_key_exists($startKey, $elements))
 			{
 				JError::raiseError(500, $startdate2 . " not found in the list, is it published?");
 			}
+
 			$startElement = $elements[$startKey];
 			$endParams = $endElement->getParams();
 			$startParams = $startElement->getParams();
@@ -333,7 +336,10 @@ class FabrikModelTimeline extends FabrikFEModelVisualization
 		$this->clearSession();
 		$w = new FabrikWorker;
 		jimport('string.normalise');
-		$document->addScript('http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true');
+
+		// The similie jQuery autodetect and load code is broken as it tests for $ (for which mootools gives a false positive) so include
+		$document->addScript('http://code.jquery.com/jquery-1.9.1.min.js');
+		$document->addScript('http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js?bundle=true');
 		$c = 0;
 		$templates = (array) $params->get('timeline_detailtemplate', array());
 		$startdates = (array) $params->get('timeline_startdate', array());

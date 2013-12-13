@@ -72,6 +72,13 @@ class FabrikPlugin extends JPlugin
 	 */
 	public $jform = null;
 
+	/*
+	 * Plugin data
+	 *
+	 * @var array
+	 */
+	public $data = null;
+
 	/**
 	 * Set the plugin id
 	 *
@@ -110,10 +117,8 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * Constructor
 	 *
-	 * @access      protected
-	 * @param       object  $subject The object to observe
-	 * @param       array   $config  An array that holds the plugin configuration
-	 * @since       1.5
+	 * @param   object  &$subject  The object to observe
+	 * @param   array   $config    An array that holds the plugin configuration
 	 */
 
 	public function __construct(&$subject, $config = array())
@@ -135,10 +140,6 @@ class FabrikPlugin extends JPlugin
 			$type = str_replace('fabrik_', '', $this->_type);
 			$formType = $type . '-options';
 			$formName = 'com_fabrik.' . $formType;
-			//$controlName = 'jform[plugin-options]';
-			// $$$ rob - NO! the params option should be set in the plugin fields.xml file <fields name="params">
-			// allows for params which update actual db fields
-			//$controlName = 'jform[params]';
 			$controlName = 'jform';
 			$this->jform = new JForm($formName, array('control' => $controlName));
 		}
@@ -148,8 +149,8 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * Render the element admin settings
 	 *
-	 * @param   array  $data           admin data
-	 * @param   int    $repeatCounter  repeat plugin counter
+	 * @param   array  $data           Admin data
+	 * @param   int    $repeatCounter  Repeat plugin counter
 	 *
 	 * @return  string	admin html
 	 */
@@ -281,8 +282,8 @@ class FabrikPlugin extends JPlugin
 	 * Used in plugin manager runPlugins to set the correct repeat set of
 	 * data for the plugin
 	 *
-	 * @param   object  $params         original params
-	 * @param   int     $repeatCounter  repeat group counter
+	 * @param   object  &$params        Original params
+	 * @param   int     $repeatCounter  Repeat group counter
 	 *
 	 * @return   object  params
 	 */
@@ -446,6 +447,15 @@ class FabrikPlugin extends JPlugin
 		return $ok;
 	}
 
+	/**
+	 * Custom process plugin result
+	 *
+	 * @param   string  $method      Method
+	 * @param   JModel  &$formModel  Form Model
+	 *
+	 * @return boolean
+	 */
+
 	public function customProcessResult($method, &$formModel)
 	{
 		return true;
@@ -583,9 +593,11 @@ class FabrikPlugin extends JPlugin
 		}
 		else
 		{
-			//show fabrik elements in the table
-			//$keyType 1 = $element->id;
-			//$keyType 2 = tablename___elementname
+			/*
+			 * show fabrik elements in the table
+			 * $keyType 1 = $element->id;
+			 * $keyType 2 = tablename___elementname
+			 */
 			$model = JModel::getInstance('List', 'FabrikFEModel');
 			$model->setId($tid);
 			$table = $model->getTable();
@@ -748,9 +760,9 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * Process the plugin, called when form is submitted
 	 *
-	 * @param   string             $paramName  param name which contains the PHP code to eval
-	 * @param   array              $data       data
-	 * @param   FabrikFEModelForm  $formModel  form model
+	 * @param   string             $paramName  Param name which contains the PHP code to eval
+	 * @param   array              $data       Data
+	 * @param   FabrikFEModelForm  $formModel  Form model
 	 *
 	 * @return  bool
 	 */

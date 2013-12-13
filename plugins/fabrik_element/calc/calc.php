@@ -25,7 +25,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array  $data  Form data
 	 *
 	 * @return mixed
 	 */
@@ -50,8 +50,8 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	/**
 	 * Get value
 	 *
-	 * @param   string  $data           value
-	 * @param   int     $repeatCounter  repeat group counter
+	 * @param   string  $data           Value
+	 * @param   int     $repeatCounter  Repeat group counter
 	 *
 	 * @return  string
 	 */
@@ -86,31 +86,30 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 			// $$$ hugh need to remove repeated joined data which is not part of this repeatCount
 			$groupModel = $this->getGroup();
+			$data_copy = $data;
 			if ($groupModel->isJoin())
 			{
 				if ($groupModel->canRepeat())
 				{
+					$data_copy = unserialize(serialize($data));
 					$joinid = $groupModel->getGroup()->join_id;
-					if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]))
+					if (array_key_exists('join', $data_copy) && array_key_exists($joinid, $data_copy['join']) && is_array($data_copy['join'][$joinid]))
 					{
-						foreach ($data['join'][$joinid] as $name => $values)
+						foreach ($data_copy['join'][$joinid] as $name => $values)
 						{
-							foreach ($data['join'][$joinid][$name] as $key => $val)
+							foreach ($data_copy['join'][$joinid][$name] as $key => $val)
 							{
 								if ($key != $repeatCounter)
 								{
-									unset($data['join'][$joinid][$name][$key]);
+									unset($data_copy['join'][$joinid][$name][$key]);
+									unset($data_copy[$name]);
 								}
 							}
 						}
 					}
 				}
 			}
-			else
-			{
-				$data_copy = $data;
-			}
-			$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $data, true, true);
+			$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $data_copy, true, true);
 			$default = @eval($default);
 			FabrikWorker::logEval($default, 'Caught exception on eval of ' . $this->getElement()->name . '::_getV(): %s');
 			return $default;
@@ -208,9 +207,9 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	/**
 	 * Determines the value for the element in the form view
 	 *
-	 * @param   array  $data           form data
-	 * @param   int    $repeatCounter  when repeating joinded groups we need to know what part of the array to access
-	 * @param   array  $opts           options
+	 * @param   array  $data           Form data
+	 * @param   int    $repeatCounter  When repeating joinded groups we need to know what part of the array to access
+	 * @param   array  $opts           Options
 	 *
 	 * @return  string	value
 	 */
@@ -244,7 +243,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	/**
 	 * run on formModel::setFormData()
 	 *
-	 * @param   int  $c  repeat group counter
+	 * @param   int  $c  Repeat group counter
 	 *
 	 * @return void
 	 */
@@ -348,12 +347,12 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 					foreach (array_keys($v) as $x)
 					{
 						$origval = JArrayHelper::getValue($origdata, $x);
-						$d[$elkey][$x] = $elementModel->getLabelForValue($v[$x], $origval, $d);
+						$d[$elkey][$x] = $elementModel->getLabelForValue($v[$x], $origval, true);
 					}
 				}
 				else
 				{
-					$d[$elkey] = $elementModel->getLabelForValue($v, JArrayHelper::getValue($d, $elkey), $d);
+					$d[$elkey] = $elementModel->getLabelForValue($v, JArrayHelper::getValue($d, $elkey), true);
 				}
 			}
 		}
@@ -413,6 +412,34 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			$raw_name = $this->getFullName(false, true, false) . '_raw';
 			$row->$raw_name = str_replace(GROUPSPLITTER, ',', $res);
 			return parent::preFormatFormJoins($res, $row);
+		}
+	}
+
+	/**
+	 * Does the element require other elements to be successfully used
+	 * E.g. calc element in csv export must have its calc elements included
+	 *
+	 * @param   array  &$fields  Existing list of fields
+	 *
+	 * @since 3.0.8
+	 *
+	 * @return  void
+	 */
+	public function requiresOtherAsFields(&$fields)
+	{
+		$params = $this->getParams();
+		$calc = $params->get('calc_calculation', '');
+		$formModel = $this->getFormModel();
+		preg_match("/{[^}\s]+}/i", $calc, $matches);
+		$f = array();
+		foreach ($matches as $m)
+		{
+			$m = str_replace(array('{', '}'), '', $m);
+			$elementModel = $formModel->getElement($m);
+			if ($elementModel !== false)
+			{
+				$elementModel->getAsField_html($fields, $f);
+			}
 		}
 	}
 

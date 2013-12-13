@@ -1,13 +1,15 @@
 <?php
 /**
+ * Plugin element to render an image already located on the server
+ *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.image
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Plugin element to render an image already located on the server
@@ -341,6 +343,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$value = $this->getValue($data, $repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$rootFolder = $this->rootFolder($value);
+		$value = str_replace($rootFolder, '', $value);
 
 		// $$$ rob - 30/06/2011 can only select an image if its not a remote image
 		$canSelect = ($params->get('image_front_end_select', '0') && JString::substr($value, 0, 4) !== 'http');
@@ -363,7 +366,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			$str[] = '<img src="' . $defaultImage . '" alt="' . $value . '" ' . $float . ' class="imagedisplayor"/>';
 			if (array_key_exists($name, $data))
 			{
-				if (trim($value) == '')
+				if (trim($value) == '' && $rootFolder === '')
 				{
 					$path = "/";
 				}
@@ -426,7 +429,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 	}
 
 	/**
-	 * On Ajax files?
+	 * On Ajax files
 	 *
 	 * @return  void
 	 */
@@ -436,7 +439,11 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$this->loadMeForAjax();
 		$app = JFactory::getApplication();
 		$folder = $app->input->get('folder', '', 'string');
-		$pathA = JPath::clean(JPATH_SITE . '/' . $folder);
+		if (!strstr($folder, JPATH_SITE))
+		{
+			$folder = JPATH_SITE . '/' . $folder;
+		}
+		$pathA = JPath::clean($folder);
 		$folder = array();
 		$files = array();
 		$images = array();
@@ -484,7 +491,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$rootFolder = '';
 		$params = $this->getParams();
 		$canSelect = ($params->get('image_front_end_select', '0') && JString::substr($value, 0, 4) !== 'http');
-		$defaultImg = $params->get('imagepath');
+		$defaultImg = $params->get('imagepath', '');
 		if ($canSelect && (JFolder::exists($defaultImg) || JFolder::exists(COM_FABRIK_BASE . $defaultImg)))
 		{
 			$rootFolder = $defaultImg;

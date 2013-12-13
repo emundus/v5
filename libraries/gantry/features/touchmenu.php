@@ -1,6 +1,6 @@
 <?php
 /**
- * @version   $Id: touchmenu.php 2381 2012-08-15 04:14:26Z btowles $
+ * @version   $Id: touchmenu.php 12549 2013-08-09 16:52:04Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2013 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -74,6 +74,7 @@ class GantryFeatureTouchMenu extends GantryFeature
 		/** @var $gantry Gantry */
 		global $gantry;
 
+		JHTML::_('behavior.framework', true);
 
 		if ($gantry->browser->platform != 'iphone' && $gantry->browser->platform != 'ipad' && $gantry->browser->platform != 'android') return false;
 		gantry_import('facets.menu.gantrymenu');
@@ -85,7 +86,7 @@ class GantryFeatureTouchMenu extends GantryFeature
 		}
 		$passing_params = new GantryRegistry();
 		$passing_params->loadString($module_params, 'INI');
-		$gantrymenu = GantryMenu::getInstance($passing_params);
+        $gantrymenu = new GantryMenu($passing_params);
 
 		return $gantrymenu->render($passing_params);
 

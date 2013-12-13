@@ -63,7 +63,7 @@ class JHttpTransportSocket implements JHttpTransport
 	 * @since   11.3
 	 * @throws  RuntimeException
 	 */
-	public function request($method, JUri $uri, $data = null, array $headers = null, $timeout = null, $userAgent = null)
+	public function request($method, JUri $uri, $data = null, array $headers = null, $timeout = 30, $userAgent = null)
 	{
 		$connection = $this->connect($uri, $timeout);
 
@@ -249,5 +249,17 @@ class JHttpTransportSocket implements JHttpTransport
 		}
 
 		return $this->connections[$key];
+	}
+
+	/**
+	 * method to check if http transport socket available for using
+	 *
+	 * @return bool true if available else false
+	 *
+	 * @since   12.1
+	 */
+	static public function isSupported()
+	{
+		return function_exists('fsockopen') && is_callable('fsockopen');
 	}
 }

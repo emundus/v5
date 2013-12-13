@@ -6,7 +6,6 @@ var FbDatabasejoin = new Class({
 		'formid': 0,
 		'key': '',
 		'label': '',
-		'popwiny': 0,
 		'windowwidth': 360,
 		'displayType': 'dropdown',
 		'popupform': 0,
@@ -42,10 +41,13 @@ var FbDatabasejoin = new Class({
 	},
 	
 	/**
-	 * add option via a popup form. Opens a window with the releated form
+	 * Add option via a popup form. Opens a window with the releated form
 	 * inside
 	 */
 	start: function (e) {
+		if (!this.options.editable) {
+			return;
+		}
 		// First time loading - auto close the hidden loaded popup.
 		var onContentLoaded = function () {
 			this.close();
@@ -70,11 +72,14 @@ var FbDatabasejoin = new Class({
 		if (this.options.popupform === 0 || this.options.allowadd === false) {
 			return;
 		}
-
-		var url = "index.php?option=com_fabrik&task=form.view&tmpl=component&ajax=1&formid=" + this.options.popupform;
-		if (typeOf(this.element) === 'null') {
+		c = this.getContainer();
+		if (typeOf(this.element) === 'null' || typeOf(c) === 'null') {
 			return;
 		}
+		var a = c.getElement('.toggle-addoption');
+		var url = typeOf(a) === 'null' ? e.target.get('href') : a.get('href');
+		
+		
 		var id = this.element.id + '-popupwin';
 		this.windowopts = {
 			'id': id,
@@ -83,7 +88,6 @@ var FbDatabasejoin = new Class({
 			'loadMethod': 'xhr',
 			'contentURL': url,
 			'height': 320,
-			'y': this.options.popwiny,
 			'minimizable': false,
 			'collapsible': true,
 			'visible': visible,
@@ -92,7 +96,7 @@ var FbDatabasejoin = new Class({
 		};
 		var winWidth = this.options.windowwidth;
 		if (winWidth !== '') {
-			this.windowopts.width = winWidth.toInt();
+			this.windowopts.width = winWidth;
 			this.windowopts.onContentLoaded = onContentLoaded;
 		}
 		
@@ -130,7 +134,8 @@ var FbDatabasejoin = new Class({
 		case 'dropdown':
 		/* falls through */
 		case 'multilist':
-			selected = (v === this.options.value) ? 'selected' : '';
+			var sel = typeOf(this.options.value) === 'array' ? this.options.value : Array.from(this.options.value);
+			selected = sel.contains(v) ? 'selected' : '';
 			opt = new Element('option', {'value': v, 'selected': selected}).set('text', l);
 			document.id(this.element.id).adopt(opt);
 			break;
@@ -138,7 +143,7 @@ var FbDatabasejoin = new Class({
 			if (autoCompleteUpdate) {
 				labelfield = this.element.getParent('.fabrikElement').getElement('input[name*=-auto-complete]');
 				this.element.value = v;
-				labelfield.value = l;
+				labelfield.value = Encoder.htmlDecode(l);
 			}
 			break;
 		case 'checkbox':
@@ -246,7 +251,8 @@ var FbDatabasejoin = new Class({
 				'task': 'plugin.pluginAjax',
 				'plugin': 'databasejoin',
 				'method': 'ajax_getOptions',
-				'element_id': this.options.id
+				'element_id': this.options.id,
+				'formid': this.options.formid
 			};
 		// $$$ hugh - don't think we need to fetch values if auto-complete
 		// and v is empty, otherwise we'll just fetch every row in the target table,
@@ -264,7 +270,7 @@ var FbDatabasejoin = new Class({
 			method: 'post', 
 			'data': data,
 			onSuccess: function (json) {
-				var existingValues = this.getOptionValues();
+				var sel, existingValues = this.getOptionValues();
 				
 				// If duplicating an element in a repeat group when its auto-complete we dont want to update its value
 				if (this.options.displayType === 'auto-complete' && v === '' && existingValues.length === 0) {
@@ -272,10 +278,8 @@ var FbDatabasejoin = new Class({
 				}
 				json.each(function (o) {
 					if (!existingValues.contains(o.value) && typeOf(o.value) !== 'null') {
-						if (this.activePopUp) {
-							this.options.value = o.value;
-						}
-						this.addOption(o.value, o.text, this.activePopUp);
+						sel = this.options.value === o.value;
+						this.addOption(o.value, o.text, sel);
 						this.element.fireEvent('change', new Event.Mock(this.element, 'change'));
 						this.element.fireEvent('blur', new Event.Mock(this.element, 'blur'));
 					}
@@ -384,7 +388,6 @@ var FbDatabasejoin = new Class({
 						if (Fabrik.Windows[winid]) {
 							Fabrik.Windows[winid].close();
 						}
-						this.updateFromServer(json.rowid);
 					}
 				}.bind(this));
 				
@@ -434,6 +437,7 @@ var FbDatabasejoin = new Class({
 		url += "&triggerElement=" + this.element.id;
 		url += "&resetfilters=1";
 		url += '&c=' + this.options.listRef;
+		
 		this.windowopts = {
 			'id': id,
 			'title': Joomla.JText._('PLG_ELEMENT_DBJOIN_SELECT'),
@@ -441,9 +445,8 @@ var FbDatabasejoin = new Class({
 			'loadMethod': 'xhr',
 			'evalScripts': true,
 			'contentURL': url,
-			'width': this.options.windowwidth.toInt(),
+			'width': this.options.windowwidth,
 			'height': 320,
-			'y': this.options.popwiny,
 			'minimizable': false,
 			'collapsible': true,
 			'onContentLoaded': function (win) {
@@ -619,6 +622,8 @@ var FbDatabasejoin = new Class({
 	 * @return  string
 	 */
 	getFormElementsKey: function (elId) {
+		// Needed for events on chx 
+		this.baseElementId = elId;
 		if (this.options.displayType === 'checkbox' || this.options.displayType === 'multilist') {
 			return this.options.listName + '___' + this.options.elementShortName;
 		} else {
@@ -653,6 +658,10 @@ var FbDatabasejoin = new Class({
 	
 	init: function () {
 		
+		// Could be in a popup add record form, in which case we don't want to ini on a main page load
+		if (typeOf(this.element) === 'null') {
+			return;
+		}
 		if (this.options.editable) {
 			this.getCheckboxTmplNode();
 			this.getCheckboxIDTmplNode();
@@ -665,11 +674,16 @@ var FbDatabasejoin = new Class({
 
 				// Fired when form submitted - enables element to update itself with any new submitted data
 				if (this.options.popupform === form.id) {
+					
+					// Only set the value if this element has triggered the pop up (ie could not be if in a repeat group)
+					if (this.activePopUp) {
+						this.options.value = json.rowid;
+					}
 					// rob previously we we doing appendInfo() but that didnt get the concat labels for the database join
 					if (this.options.displayType === 'auto-complete') {
 						
 						// Need to get v if autocomplete and updating from posted popup form as we only want to get ONE 
-						// option back inside updateFromServer;
+						// option back inside update();
 						var myajax = new Request.JSON({
 							'url': Fabrik.liveSite + 'index.php?option=com_fabrik&view=form&format=raw',
 							'data': {
@@ -677,7 +691,7 @@ var FbDatabasejoin = new Class({
 								'rowid': json.rowid
 							},
 							'onSuccess': function (json) {
-								this.updateFromServer(json.data[this.options.key]);
+								this.update(json.data[this.options.key]);
 							}.bind(this)
 						}).send();
 					} else {
@@ -734,6 +748,8 @@ var FbDatabasejoin = new Class({
 				}.bind(this));
 			}
 			break;
+		case 'checkbox':
+		/* falls through */
 		case 'radio':
 			this._getSubElements();
 			this.subElements.each(function (el) {

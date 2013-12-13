@@ -22,7 +22,7 @@ require_once COM_FABRIK_FRONTEND . '/models/validation_rule.php';
  * @since       3.0
  */
 
-class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
+class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule
 {
 
 	/**
@@ -70,9 +70,12 @@ class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
 		if ($domatch)
 		{
 			$formModel = $elementModel->getFormModel();
+			$formData = $formModel->_formData;
+			$w = new FabrikWorker;
 			$php_code = $params->get('php-code');
-			$retval = eval($php_code[$pluginc]);
-			return $retval;
+			$php_code = JArrayHelper::getValue($php_code, $pluginc, '');
+			$php_code = $w->parseMessageForPlaceHolder($php_code, $formData, true, true);
+			return eval($php_code);
 		}
 		return true;
 	}
@@ -97,8 +100,12 @@ class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
 		if (!$domatch)
 		{
 			$formModel = $elementModel->getFormModel();
+			$formData = $formModel->_formData;
+			$w = new FabrikWorker;
 			$php_code = $params->get('php-code');
-			return eval($php_code[$pluginc]);
+			$php_code = JArrayHelper::getValue($php_code, $pluginc, '');
+			$php_code = $w->parseMessageForPlaceHolder($php_code, $formData, true, true);
+			return eval($php_code);
 		}
 		return $data;
 	}

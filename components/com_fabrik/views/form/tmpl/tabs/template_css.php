@@ -8,8 +8,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  * @since       3.0
  */
- ?>
-<?php
+
 header('Content-type: text/css');
 $c = (int) $_REQUEST['c'];
 $view = isset($_REQUEST['view']) ? $_REQUEST['view'] : 'form';
@@ -22,6 +21,12 @@ echo "
 #{$view}_$c .groupintro{
 	margin-top:40px;
 	padding:0 20px;
+	color:#666;
+}
+
+/*Here is the styling for your group outro*/
+#{$view}_$c .groupoutro{
+	padding:10px 20px 10px 20px;
 	color:#666;
 }
 
@@ -75,10 +80,16 @@ echo "
 	padding:5px;
 }
 
-/** link sub elements **/
+/** link sub elements commented **/
 
 .fabrikSubElementContainer > div {
-	clear:left;
+	clear: left;
+}
+
+/** But dbjoin as radios etc can be floated **/
+.fabrikSubElementContainer.databasejoin > div,
+.databasejoin .fabrikSubElementContainer > div {
+	clear: none;
 }
 
 /* START: align google map sub elements vertically */
@@ -127,6 +138,48 @@ echo "
 	display:box;
 	overflow:visible;
 	width:50%;
+}
+
+#{$view}_$c table.repeatGroupTable {
+	width: 100%;
+}
+
+/** Repeat group rendered as a table **/
+#{$view}_$c .repeatGroupTable .fabrikElementContainer {
+	display:table-cell;
+	width: auto;
+	padding: 5px;
+	margin: 0;
+}
+
+#{$view}_$c .repeatGroupTable tr {
+	float: none;
+	width:100%;
+}
+
+#{$view}_$c .repeatGroupTable .fabrikElement {
+    margin: 0;
+}
+
+#details_$c .fabrikErrorMessage {
+    display: none;
+}
+
+#{$view}_$c ul.fabrikRepeatData {
+	margin: 0;
+}
+
+#details_$c .oddRow0 {
+	background-color: #FAFAFA;
+}
+
+#details_$c .oddRow1,
+	background-color: #Efefef;
+}
+
+
+#details_$c .fabrikSubGroup {
+    margin-top: 10px;
 }
 
 #{$view}_$c .fabrikActions input{
@@ -406,4 +459,4 @@ border-radius:3px;
 #{$view}_$c .addGroup:link {
 	text-decoration: none;
 }
-";?>
+";

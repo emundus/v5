@@ -56,14 +56,12 @@ var FbAutocomplete = new Class({
 	},
 	
 	search: function (e) {
-		this.matchedResult = false;
-		if (e.key === 'tab') {
+		if (e.key === 'tab' || e.key === 'enter') {
+			e.stop();
 			this.closeMenu();
 			return;
 		}
-		if (e.key === 'enter') {
-			e.stop();
-		}
+		this.matchedResult = false;
 		var v = this.getInputElement().get('value');
 		if (v === '') {
 			this.element.value = '';
@@ -89,10 +87,6 @@ var FbAutocomplete = new Class({
 						this.completeAjax(e, v);
 					}.bind(this)
 				}).send();
-			}
-		} else {
-			if (e.key === 'enter') {
-				this.openMenu();
 			}
 		}
 		this.searchText = v;
@@ -220,7 +214,7 @@ var FbAutocomplete = new Class({
 				this.openMenu();
 			}
 		} else {
-			if (e.key === 'enter') {
+			if (e.key === 'enter' || e.key === 'tab') {
 				window.fireEvent('blur');
 			}
 			switch (e.code) {
@@ -244,11 +238,12 @@ var FbAutocomplete = new Class({
 			case 13://enter
 			case 9://tab
 				e.stop();
-				this.makeSelection({}, this.getSelected());
-				this.closeMenu();
+				var selectEvnt = new Event.Mock(this.getSelected(), 'click');
+				this.makeSelection(selectEvnt);
 				break;
 			case 27://escape
 				e.stop();
+				this.matchedResult = false;
 				this.closeMenu();
 				break;
 			}
@@ -263,6 +258,7 @@ var FbAutocomplete = new Class({
 	},
 	
 	highlight: function () {
+		this.matchedResult = true;
 		this.menu.getElements('li').each(function (li, i) {
 			if (i === this.selected) {
 				li.addClass('selected');
@@ -298,17 +294,24 @@ var FabCddAutocomplete = new Class({
 				this.openMenu();
 			} else {
 				Fabrik.loader.start(this.getInputElement());
-				//this.spinner.fade('in'); //f3 fx now used
 				if (this.ajax) {
 					this.closeMenu();
 					this.ajax.cancel();
 				}
+				
+				// If you are observing a radio list then u need to get the Element js plugin value
+				var obsValue = document.id(this.options.observerid).get('value');
+				if (typeOf(obsValue) === 'null') {
+					obsValue = Fabrik.blocks[this.options.formRef].formElements.get(this.options.observerid).get('value');
+				}
+					
 				this.ajax = new Request({
+					method: 'post',
 					url : this.options.url,
 					data: {
 						value: v,
 						fabrik_cascade_ajax_update: 1,
-						v: document.id(this.options.observerid).get('value')
+						v: obsValue
 					},
 					
 					onSuccess: function (e) {

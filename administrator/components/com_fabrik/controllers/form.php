@@ -144,7 +144,7 @@ class FabrikControllerForm extends JControllerForm
 							$eMsgs[] = count($e[0]) === 1 ? '<li>' . $e[0][0] . '</li>' : '<ul><li>' . implode('</li><li>', $e[0]) . '</ul>';
 						}
 					}
-				if (!empty($eMsgs))
+					if (!empty($eMsgs))
 					{
 						$eMsgs = '<ul>' . implode('</li><li>', $eMsgs) . '</ul>';
 						header('HTTP/1.1 500 ' . JText::_('COM_FABRIK_FAILED_VALIDATION') . $eMsgs);
@@ -325,7 +325,7 @@ class FabrikControllerForm extends JControllerForm
 
 		$oldtotal = $model->getTotalRecords();
 		$model->setId($listid);
-		$model->deleteRows($ids);
+		$ok = $model->deleteRows($ids);
 
 		$total = $oldtotal - count($ids);
 
@@ -350,7 +350,8 @@ class FabrikControllerForm extends JControllerForm
 		}
 		else
 		{
-			$app->redirect($ref, count($ids) . " " . JText::_('COM_FABRIK_RECORDS_DELETED'));
+			$msg = $ok ? count($ids) . ' ' . JText::_('COM_FABRIK_RECORDS_DELETED') : '';
+			$app->redirect($ref, $msg);
 		}
 	}
 }

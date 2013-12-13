@@ -27,13 +27,17 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	/**
 	 * Does a file exist
 	 *
-	 * @param   string  $filepath  file path to test
+	 * @param   string  $filepath  File path to test
 	 *
 	 * @return bool
 	 */
 
 	public function exists($filepath)
 	{
+		if ($filepath == '\\')
+		{
+			return false;
+		}
 		return JFile::exists($filepath);
 	}
 
@@ -73,17 +77,64 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	 * Create a folder
 	 *
 	 * @param   string  $path  folder path
+	 * @param   bitmask  $mode Permissions
 	 *
 	 * @return bool
 	 */
 
-	public function createFolder($path)
+	public function createFolder($path, $mode = 0755)
 	{
-		if (JFolder::create($path))
+
+		if (JFolder::create($path, $mode))
 		{
 			return $this->createIndexFile($path);
 		}
 		return false;
+	}
+
+
+	/**
+	 * Make recursive folders
+	 *
+	 * @param   string   $folderPath  Path to folder - eg /images/stories
+	 * @param   bitmask  $mode        Permissions
+	 *
+	 * @return  mixed JError|void
+	 */
+
+	public function makeRecursiveFolders($folderPath, $mode = 0755)
+	{
+		static $nested = 0;
+		// Check if parent dir exists
+		$parent = dirname($folderPath);
+		if (!$this->folderExists($parent))
+		{
+			// Prevent infinite loops!
+			$nested++;
+			if (($nested > 20) || ($parent == $folderPath))
+			{
+				$nested--;
+				return false;
+			}
+
+			if ($this->makeRecursiveFolders($parent, $mode) !== true)
+			{
+				// JFolder::create throws an error
+				$nested--;
+				return false;
+			}
+
+			// OK, parent directory has been created
+			$nested--;
+		}
+
+
+		if (JFolder::exists($folderPath))
+		{
+			return true;
+		}
+
+		return $this->createFolder($folderPath, $mode);
 	}
 
 	/**
@@ -111,30 +162,8 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	public function cleanName($filename, $repeatCounter)
 	{
 		// Replace any non-alnum chars (except _ and - and .) with _
-		$filename_o = preg_replace('#[^a-zA-Z0-9_\-\.]#', '_', $filename);
-
-		// $$$peamak: add random filename
-		$params = $this->getParams();
-		if ($params->get('random_filename') == 1)
-		{
-			$length = $params->get('length_random_filename');
-			$key = "";
-			$possible = "0123456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRTVWXYZ";
-			$i = 0;
-			while ($i < $length)
-			{
-				$char = JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
-				$key .= $char;
-				$i++;
-			}
-			$file_e = JFile::getExt($filename_o);
-			$file_f = preg_replace('/.' . $file_e . '$/', '', $filename_o);
-			$filename = $file_f . '_' . $key . '.' . $file_e;
-		}
-		else
-		{
-			$filename = $filename_o;
-		}
+		$filename = preg_replace('#[^a-zA-Z0-9_\-\.]#', '_', $filename);
+		$this->randomizeName($filename);
 		return $filename;
 	}
 

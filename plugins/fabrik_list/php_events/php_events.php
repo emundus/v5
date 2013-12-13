@@ -176,6 +176,11 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 		return true;
 	}
 
+	public function onBuildQueryWhere($params, $model)
+	{
+		return $this->doEvaluate($params->get('list_phpevents_onbuildquerywhere'), $model);
+	}
+
 	/**
 	 * Evaluate supplied PHP
 	 *
@@ -189,13 +194,18 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	{
 		$w = new FabrikWorker;
 		$code = $w->parseMessageForPlaceHolder($code);
+		$retval = true;
 		if ($code != '')
 		{
 			if (eval($code) === false)
 			{
-				return false;
+				$retval = false;
 			}
 		}
-		return true;
+		if (isset($statusMsg) && !empty($statusMsg))
+		{
+			$model->msg = $statusMsg;
+		}
+		return $retval;
 	}
 }

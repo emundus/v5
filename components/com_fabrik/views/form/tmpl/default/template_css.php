@@ -45,6 +45,12 @@ echo "
 	color:#666;
 }
 
+/*Here is the styling for your group outro*/
+#{$view}_$c .groupoutro{
+	padding:10px 20px 10px 20px;
+	color:#666;
+}
+
 #{$view}_$c legend span,
 #{$view}_$c h3.legend span{
 	padding:5px;
@@ -189,7 +195,7 @@ echo "
 	background-color: #FAFAFA;
 }
 
-#details_$c .oddRow1,
+#details_$c .oddRow1 {
 	background-color: #Efefef;
 }
 

@@ -1,21 +1,21 @@
 <?php
 /**
- * Fabrik Elemenet Model
+ * Fabrik Element Model
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
 /**
- * Fabrik Elemenet Model
+ * Fabrik Element Model
  *
  * @package  Fabrik
  * @since    3.0
@@ -63,7 +63,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 *
 	 * @var bol
 	 */
-	protected $_recordInDatabase = 1;
+	protected $recordInDatabase = 1;
 
 	/**
 	 * Contain access rights
@@ -129,7 +129,8 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	protected $hasLabel = true;
 
-	/** Does the element contain sub elements e.g checkboxes radiobuttons
+	/**
+	 * Does the element contain sub elements e.g checkboxes radiobuttons
 	 *
 	 * @var bool
 	 */
@@ -511,11 +512,11 @@ class PlgFabrik_Element extends FabrikPlugin
 	}
 
 	/**
-	 * Replace labels shown in table view with icons (if found)
+	 * Replace labels shown in list view with icons (if found)
 	 *
-	 * @param   string  $data  data
-	 * @param   string  $view  list/details
-	 * @param   string  $tmpl  template
+	 * @param   string  $data  Data
+	 * @param   string  $view  List/details
+	 * @param   string  $tmpl  Template
 	 *
 	 * @since 3.0 - icon_folder is a bool - search through template folders for icons
 	 *
@@ -542,7 +543,10 @@ class PlgFabrik_Element extends FabrikPlugin
 			$this->iconsSet = false;
 			return $data;
 		}
-
+		if ($this->iconsSet !== true)
+		{
+			$this->iconsSet = false;
+		}
 		/**
 		 * Jaanus added this and following if/else; sometimes we need permanent image
 		 * (e.g logo of the website where the link always points, like Wikipedia's W)
@@ -550,59 +554,62 @@ class PlgFabrik_Element extends FabrikPlugin
 		$iconfile = $params->get('icon_file', '');
 
 		$cleanData = $iconfile === '' ? FabrikString::clean(strip_tags($data)) : $iconfile;
-		foreach ($this->imageExtensions as $ex)
+		$cleanDatas = array($this->getElement()->name . '_' . $cleanData, $cleanData);
+		foreach ($cleanDatas as $cleanData)
 		{
-			$f = JPath::clean($cleanData . '.' . $ex);
-			$img = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl);
-			if ($img !== '')
+			foreach ($this->imageExtensions as $ex)
 			{
-				$this->iconsSet = true;
-				$opts = new stdClass;
-				$opts->position = 'top';
-				$opts = json_encode($opts);
-				$data = '<span>' . $data . '</span>';
-
-				// See if data has an <a> tag
-				$html = new DOMDocument;
-				$html->loadXML($data);
-				$as = $html->getElementsBytagName('a');
-
-				if ($params->get('icon_hovertext', true))
+				$f = JPath::clean($cleanData . '.' . $ex);
+				$opts = array('forceImage' => true);
+				$img = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), false, $opts);
+				if ($img !== '')
 				{
-					$ahref = '#';
-					$target = '';
-					if ($as->length)
-					{
-						// Data already has an <a href="foo"> lets get that for use in hover text
-						$a = $as->item(0);
-						$ahref = $a->getAttribute('href');
-						$target = $a->getAttribute('target');
-						$target = 'target="' . $target . '"';
-					}
-					$data = htmlspecialchars($data, ENT_QUOTES);
-					$img = '<a class="fabrikTip" ' . $target . ' href="' . $ahref . '" opts=\'' . $opts . '\' title="' . $data . '">' . $img . '</a>';
-				}
-				elseif (!empty($iconfile))
-				{
-					/**
-					 * $$$ hugh - kind of a hack, but ... if this is an upload element, it may already be a link, and
-					 * we'll need to replace the text in the link with the image
-					 * After ages dicking around with a regex to do this, decided to use DOMDocument instead!
-					 */
+					$this->iconsSet = true;
+					$opts = new stdClass;
+					$opts->position = 'top';
+					$opts = json_encode($opts);
+					$data = '<span>' . $data . '</span>';
 
-					if ($as->length)
+					// See if data has an <a> tag
+					$html = new DOMDocument;
+					$html->loadXML($data);
+					$as = $html->getElementsBytagName('a');
+					if ($params->get('icon_hovertext', true))
 					{
-						$img = $html->createElement('img');
-						$img->setAttribute('src', FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true));
-						$as->item(0)->nodeValue = '';
-						$as->item(0)->appendChild($img);
-						return $html->saveHTML();
+						$ahref = '#';
+						$target = '';
+						if ($as->length)
+						{
+							// Data already has an <a href="foo"> lets get that for use in hover text
+							$a = $as->item(0);
+							$ahref = $a->getAttribute('href');
+							$target = $a->getAttribute('target');
+							$target = 'target="' . $target . '"';
+						}
+						$data = htmlspecialchars($data, ENT_QUOTES);
+						$img = '<a class="fabrikTip" ' . $target . ' href="' . $ahref . '" opts=\'' . $opts . '\' title="' . $data . '">' . $img . '</a>';
 					}
+					elseif (!empty($iconfile))
+					{
+						/**
+						 * $$$ hugh - kind of a hack, but ... if this is an upload element, it may already be a link, and
+						 * we'll need to replace the text in the link with the image
+						 * After ages dicking around with a regex to do this, decided to use DOMDocument instead!
+						 */
+
+						if ($as->length)
+						{
+							$img = $html->createElement('img');
+							$img->setAttribute('src', FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true));
+							$as->item(0)->nodeValue = '';
+							$as->item(0)->appendChild($img);
+							return $html->saveHTML();
+						}
+					}
+					return $img;
 				}
-				return $img;
 			}
 		}
-		$this->iconsSet = false;
 		return $data;
 	}
 
@@ -814,7 +821,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if (!is_object($this->access) || !array_key_exists($key, $this->access))
 		{
-			$groups = $user->authorisedLevels();
+			$groups = $user->getAuthorisedViewLevels();
 			$this->access->$key = in_array($params->get($prop, $default), $groups);
 		}
 
@@ -892,7 +899,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (!is_object($this->access) || !array_key_exists('filter', $this->access))
 		{
 			$user = JFactory::getUser();
-			$groups = $user->authorisedLevels();
+			$groups = $user->getAuthorisedViewLevels();
 
 			// $$$ hugh - fix for where certain elements got created with 0 as the
 			// the default for filter_access, which isn't a legal value, should be 1
@@ -1080,7 +1087,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * This really does get just the default value (as defined in the element's settings)
 	 *
-	 * @param   array  $data  form data
+	 * @param   array  $data  Form data
 	 *
 	 * @return mixed
 	 */
@@ -1093,14 +1100,14 @@ class PlgFabrik_Element extends FabrikPlugin
 			$w = new FabrikWorker;
 			$element = $this->getElement();
 			$default = $w->parseMessageForPlaceHolder($element->default, $data);
-			if ($element->eval == "1")
+			if ($element->eval == "1" && is_string($default))
 			{
 				/**
 				 * Inline edit with a default eval'd "return FabrikHelperElement::filterValue(290);"
 				 * was causing the default to be eval'd twice (no idea y) - add in check for 'return' into eval string
 				 * see http://fabrikar.com/forums/showthread.php?t=30859
 				 */
-				if (is_string($default) && !stristr($default, 'return'))
+				if (!stristr($default, 'return'))
 				{
 					$this->_default = $default;
 				}
@@ -1151,15 +1158,16 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Element plugin specific method for setting unecrypted values baack into post data
 	 *
-	 * @param   array   &$post  data passed by ref
-	 * @param   string  $key    key
-	 * @param   string  $data   elements unencrypted data
+	 * @param   array   &$post  Data passed by ref
+	 * @param   string  $key    Key
+	 * @param   string  $data   Elements unencrypted data
 	 *
 	 * @return  void
 	 */
 
 	public function setValuesFromEncryt(&$post, $key, $data)
 	{
+		$app = JFactory::getApplication();
 		$group = $this->getGroup();
 		if ($group->isJoin())
 		{
@@ -1174,6 +1182,9 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				$repeatCounts = JArrayHelper::getValue($post, 'fabrik_repeat_group', array());
 				$c = JArrayHelper::getValue($repeatCounts, $group->getId());
+				/**
+				 * $$$ hugh - this seems to be hosed up on failed validations
+				 */
 				for ($x = 0; $x < $c; $x ++)
 				{
 					$post['join'][$group->getGroup()->join_id][$key][$x] = $data[$x];
@@ -1192,6 +1203,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		// $$$rob even though $post is passed by reference - by adding in the value
 		// we arent actually modifiying the $_POST var that post was created from
 		JRequest::setVar($key, $data);
+		$app->input->set($key, $data);
 	}
 
 	/**
@@ -1487,7 +1499,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				$str .= '<span class="' . $labelClass . ' faux-label">';
 			}
-			$l = $element->label;
+			//$l = htmlspecialchars($element->label);
+			$l = $config->get('fbConf_wysiwyg_label', false) ? $element->label : htmlspecialchars(JText::_($element->label));
 			if ($rollOver)
 			{
 				$l .= FabrikHelperHTML::image('questionmark.png', 'form', $tmpl);
@@ -1536,6 +1549,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	protected function addErrorHTML($repeatCounter, $tmpl = '')
 	{
 		$err = $this->_getErrorMsg($repeatCounter);
+		$err = htmlspecialchars($err, ENT_QUOTES);
 		$str = '<span class="fabrikErrorMessage">';
 		if ($err !== '')
 		{
@@ -2588,11 +2602,15 @@ class PlgFabrik_Element extends FabrikPlugin
 					}
 					elseif ($jsAct->js_e_condition == 'CONTAINS')
 					{
-						$js = "if (Array.from(this.get('value')).contains('$jsAct->js_e_value')) {";
+						$js = "if (Array.from(this.get('value')).contains('$jsAct->js_e_value')";
+						$js .= " || this.get('value').contains('$jsAct->js_e_value')";
+						$js .= ") {";
 					}
 					elseif ($jsAct->js_e_condition == '!CONTAINS')
 					{
-						$js = "if (!Array.from(this.get('value')).contains('$jsAct->js_e_value')) {";
+						$js = "if (!Array.from(this.get('value')).contains('$jsAct->js_e_value')";
+						$js .= " || !this.get('value').contains('$jsAct->js_e_value')";
+						$js .= ") {";
 					}
 					// $$$ hugh if we always quote the js_e_value, numeric comparison doesn't work, as '100' < '3'.
 					// So let's assume if they use <, <=, > or >= they mean numbers.
@@ -2707,26 +2725,31 @@ class PlgFabrik_Element extends FabrikPlugin
 				{
 					$k = $counter;
 				}
-				// Is there a filter with this elements name
+				// Is there a filter with this elements id
 				if ($k !== false)
 				{
-					/**
-					 * if its a search all filter dont use its value.
-					 * if we did the next time the filter form is submitted its value is turned
-					 * from a search all filter into an element filter
-					 */
 					$searchType = JArrayHelper::getValue($filters['search_type'], $k);
-					if (!is_null($searchType) && $searchType != 'searchall')
+
+					// Check element name is the same as the filter (could occur in advanced search when swapping element type)
+					if ($searchType <> 'advanced' || $filters['key'][$k] === $app->input->getString('element'))
 					{
-						if ($searchType != 'prefilter')
+						/**
+						 * if its a search all filter dont use its value.
+						 * if we did the next time the filter form is submitted its value is turned
+						 * from a search all filter into an element filter
+						 */
+
+						if (!is_null($searchType) && $searchType != 'searchall')
 						{
-							$default = $filters['origvalue'][$k];
+							if ($searchType != 'prefilter')
+							{
+								$default = $filters['origvalue'][$k];
+							}
 						}
 					}
 				}
 			}
 		}
-
 		$default = $app->getUserStateFromRequest($context, $elid, $default);
 		$fType = $this->getElement()->filter_type;
 		if ($this->multiOptionFilter())
@@ -2735,7 +2758,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			if (is_array($default))
 			{
 				// Hidden querystring filters can be using ranged valued though
-				if (!in_array($fType, array('hidden', 'checkbox', 'multiselect')))
+				if (!in_array($fType, array('hidden', 'checkbox', 'multiselect', 'range')))
 				{
 					// Wierd thing on meow where when you first load the task list the id element had a date range filter applied to it????
 					$default = '';
@@ -2852,6 +2875,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			case 'field':
 			default:
 			// $$$ rob - if searching on "O'Fallon" from querystring filter the string has slashes added regardless
+				$default = (string) $default;
 				$default = stripslashes($default);
 				$default = htmlspecialchars($default);
 				$return[] = '<input type="text" name="' . $v . '" class="' . $class . '" size="' . $size . '" value="' . $default . '" id="'
@@ -3005,8 +3029,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			$opts['menuclass'] = 'auto-complete-container advanced';
 		}
 		$element = $this->getElement();
-
-		FabrikHelperHTML::autoComplete($selector, $element->id, $element->plugin, $opts);
+		$formid = $this->getFormModel()->getId();
+		FabrikHelperHTML::autoComplete($selector, $element->id, $formid, $element->plugin, $opts);
 		return $return;
 	}
 
@@ -3093,7 +3117,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Run after unmergeFilterSplits to ensure filter dropdown labels are correct
 	 *
-	 * @param   array  &$rows  filter options
+	 * @param   array  &$rows  Filter options
 	 *
 	 * @return  null
 	 */
@@ -3108,7 +3132,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			$k = array_search($row->value, $values);
 			if ($k !== false)
 			{
-				$row->text = $labels[$k];
+				$row->text = strip_tags($labels[$k]);
 			}
 		}
 		$rows = array_values($rows);
@@ -3161,6 +3185,26 @@ class PlgFabrik_Element extends FabrikPlugin
 			foreach ($phpOpts as $phpOpt)
 			{
 				$opts[] = $phpOpt->text;
+			}
+		}
+		return $opts;
+	}
+
+	/**
+	 * Get sub option enabled/disabled state
+	 *
+	 * @return  array
+	 */
+
+	protected function getSubOptionEnDis()
+	{
+		$opts = array();
+		$phpOpts = $this->getPhpOptions();
+		if ($phpOpts)
+		{
+			foreach ($phpOpts as $phpOpt)
+			{
+				$opts[] = $phpOpt->disable;
 			}
 		}
 		return $opts;
@@ -3598,7 +3642,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * This builds an array containing the filters value and condition
 	 * when using a ranged search
 	 *
-	 * @param   string  $value  initial value
+	 * @param   array  $value  Initial values
 	 *
 	 * @return  array  (value condition)
 	 */
@@ -3700,9 +3744,9 @@ class PlgFabrik_Element extends FabrikPlugin
 	/**
 	 * Builds an array containing the filters value and condition
 	 *
-	 * @param   string  $value      initial value
-	 * @param   string  $condition  intial $condition
-	 * @param   string  $eval       how the value should be handled
+	 * @param   string  $value      Initial value
+	 * @param   string  $condition  Intial $condition
+	 * @param   string  $eval       How the value should be handled
 	 *
 	 * @return  array	(value condition)
 	 */
@@ -4030,19 +4074,20 @@ class PlgFabrik_Element extends FabrikPlugin
 
 	public function recordInDatabase($data = null)
 	{
-		return $this->_recordInDatabase;
+		return $this->recordInDatabase;
 	}
 
 	/**
-	 * used by elements with suboptions
+	 * Used by elements with suboptions, given a value, return its label
 	 *
-	 * @param   string  $v             value
-	 * @param   string  $defaultLabel  default label
+	 * @param   string  $v             Value
+	 * @param   string  $defaultLabel  Default label
+	 * @param   bool    $forceCheck    Force check even if $v === $defaultLabel
 	 *
-	 * @return  string	label
+	 * @return  string	Label
 	 */
 
-	public function getLabelForValue($v, $defaultLabel = '')
+	public function getLabelForValue($v, $defaultLabel = null, $forceCheck = false)
 	{
 		/**
 		 * $$$ hugh - only needed getParent when we weren't saving changes to parent params to child
@@ -4316,6 +4361,15 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 			{
 				$gById = FabrikString::safeColName($sName);
 			}
+			else
+			{
+				// If its a concat - can we use the key value as the group by name
+				if (method_exists($plugin, 'getJoinValueColumn'))
+				{
+					$sName = $plugin->getJoinValueColumn();
+					$gById = FabrikString::safeColName($sName);
+				}
+			}
 		}
 		return $groupBys;
 	}
@@ -4362,7 +4416,9 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 
 			$sql = $listModel->pluginQuery($sql);
 			$db->setQuery($sql);
-			$results2 = $db->loadObjectList('label');
+
+			// Cast to array to avoid notices - dont use in 3.1
+			$results2 = (array) $db->loadObjectList('label');
 			$this->formatCalValues($results2);
 			$uberTotal = 0;
 			foreach ($results2 as $pair)
@@ -4868,6 +4924,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 		$opts->label = $element->label;
 		$opts->defaultVal = $this->getDefaultValue($data);
 		$opts->inRepeatGroup = $this->getGroup()->canRepeat() == 1;
+		$opts->fullName = $this->getFullName(false, true, false);
 		$validationEls = array();
 		$validations = $this->getValidations();
 		if (!empty($validations) && $this->isEditable())
@@ -5135,7 +5192,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 	 * @return  object	join table or false if not loaded
 	 */
 
-	protected function getJoin()
+	public function getJoin()
 	{
 		return null;
 	}
@@ -5148,7 +5205,8 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 
 	public function getFieldDescription()
 	{
-		$plugin = JPluginHelper::getPlugin('fabrik_element', 'dropdown');
+		$element = strtolower(str_ireplace('PlgFabrik_Element', '', get_class($this)));
+		$plugin = JPluginHelper::getPlugin('fabrik_element', $element);
 		$fparams = new JRegistry($plugin->params);
 		$p = $this->getParams();
 		if ($this->encryptMe())
@@ -5220,6 +5278,21 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 			$d = $listModel->_addLink($d, $this, $thisRow, $i);
 		}
 		return $this->renderListDataFinal($data);
+	}
+
+	/**
+	 * Does the element require other elements to be successfully used
+	 * E.g. calc element in csv export must have its calc elements included
+	 *
+	 * @param   array  &$fields  Existing list of fields
+	 *
+	 * @since 3.0.8
+	 *
+	 * @return  void
+	 */
+	public function requiresOtherAsFields(&$fields)
+	{
+
 	}
 
 	/**
@@ -5395,22 +5468,6 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 	public function requiresAJAXSubmit()
 	{
 		return false;
-	}
-
-	/**
-	 * Called on failed form validation.
-	 * Ensures submitted form data is converted back into the format
-	 * that the form would expect to get it in, if the data had been
-	 * draw from the database record
-	 *
-	 * @param   string  $str  submitted form value
-	 *
-	 * @return  string	formated value
-	 */
-
-	public function toDbVal($str)
-	{
-		return $str;
 	}
 
 	/**
@@ -5756,7 +5813,6 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 	{
 		// Needed for ajax update (since we are calling this method via dispatcher element is not set)
 		$this->setId(JRequest::getInt('element_id'));
-		//$this->getElement(true);
 		$this->loadMeForAjax();
 		$listModel = $this->getListModel();
 		$cache = FabrikWorker::getCache($listModel);
@@ -5794,6 +5850,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 		foreach ($tmp as &$t)
 		{
 			$elementModel->toLabel($t->text);
+			$t->text = strip_tags($t->text);
 		}
 		return json_encode($tmp);
 	}
@@ -6443,6 +6500,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label FROM " . Fab
 		$this->_list = JModel::getInstance('list', 'FabrikFEModel');
 		$this->_list->loadFromFormId($formId);
 		$table = $this->_list->getTable(true);
+		$table->form_id = $formId;
 		$element = $this->getElement(true);
 		/**
 		 * $$$ hugh - had to add this after this commit:

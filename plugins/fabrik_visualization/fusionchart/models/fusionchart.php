@@ -462,7 +462,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 			if (!array_key_exists($tid, $tmodels))
 			{
 				$listModel = null;
-				$listModel = JModel::getInstance('list', 'FabrikFEModel');
+				$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 				$listModel->setId($tid);
 				$tmodels[$tid] = $listModel;
 			}
@@ -524,7 +524,7 @@ class FabrikModelFusionchart extends FabrikFEModelVisualization
 				{
 					foreach ($caldata as $k => $o)
 					{
-						if ($k !== 'Total')
+						if ($k !== JText::_('COM_FABRIK_TOTAL'))
 						{
 							$calculationData[] = (float) $o->value;
 							$calculationLabels[] = trim(strip_tags($o->label));

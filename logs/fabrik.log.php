@@ -352,3 +352,130 @@ WHERE `session_id` = 'ibrbqghrhetjm26rdn7toep7t2'
 2013-03-22T15:21:22+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
 2013-03-22T15:21:22+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
 2013-03-22T15:21:22+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	NOTICE	com_fabrik	A prefilter has been set up on an unpublished element, and will not be applied:``
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JError::isError() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JError::isError() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JError::getError() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:26:39+00:00	WARNING	deprecated	JDatabase::getErrorMsg() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	NOTICE	com_fabrik	A prefilter has been set up on an unpublished element, and will not be applied:``
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JError::isError() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JError::isError() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JError::getError() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDate::toFormat() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDate::toFormat() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JUser::authorisedLevels() is deprecated.
+2013-12-13T12:27:12+00:00	NOTICE	com_fabrik	A prefilter has been set up on an unpublished element, and will not be applied:``
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	DEBUG	gantry	GANTRY_INITIALIZED_FROM
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorNum() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JBehavior::mootools is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	The used parameter set in JHtml::stylesheet() is deprecated.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JDatabase::getErrorMsg() is deprecated, use exception handling instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.
+2013-12-13T12:27:12+00:00	WARNING	deprecated	JRegistry::getValue() is deprecated. Use get instead.

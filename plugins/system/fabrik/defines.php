@@ -21,8 +21,7 @@ if (!JFolder::exists(JPATH_SITE . '/components/com_fabrik/'))
 }
 define("COM_FABRIK_BASE",  str_replace(DS . 'administrator', '', JPATH_BASE) . DS);
 define("COM_FABRIK_FRONTEND",  COM_FABRIK_BASE . 'components/com_fabrik');
-
-define("COM_FABRIK_LIVESITE",  str_replace('/administrator', '', JURI::base()));
+define("COM_FABRIK_LIVESITE", JURI::root());
 define("COM_FABRIK_LIVESITE_ROOT", JURI::getInstance()->toString(array('scheme', 'host', 'port')));
 define("FABRIKFILTER_TEXT", 0);
 define("FABRIKFILTER_EVAL", 1);
@@ -43,8 +42,11 @@ JHTML::addIncludePath(JPATH_SITE . '/components/com_fabrik/jhelpers/' . $version
 // Register the element class with the loader
 JLoader::register('JElement', JPATH_SITE . '/administrator/components/com_fabrik/element.php');
 
-JLoader::import('components.com_fabrik.classes.field', JPATH_SITE . '/administrator', 'administrator.');
-JLoader::import('components.com_fabrik.classes.form', JPATH_SITE . '/administrator', 'administrator.');
+/**
+ * Moved these to the plugin constructur, fixing a compat issue with Kunena, see comments there.
+ */
+//JLoader::import('components.com_fabrik.classes.field', JPATH_SITE . '/administrator', 'administrator.');
+//JLoader::import('components.com_fabrik.classes.form', JPATH_SITE . '/administrator', 'administrator.');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_fabrik/tables/fabtable.php';
 require_once COM_FABRIK_FRONTEND . '/models/fabrik.php';

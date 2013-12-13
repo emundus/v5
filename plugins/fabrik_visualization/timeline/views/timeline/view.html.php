@@ -21,7 +21,7 @@ jimport('joomla.application.component.view');
  * @since       3.0
  */
 
-class fabrikViewTimeline extends JView
+class FabrikViewTimeline extends JView
 {
 
 	/**
@@ -34,23 +34,28 @@ class fabrikViewTimeline extends JView
 
 	public function display($tpl = 'default')
 	{
+		$app = JFactory::getApplication();
+		$input = $app->input;
+		$j3 = FabrikWorker::j3();
 		$srcs = FabrikHelperHTML::framework();
 
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model = $this->getModel();
-
-		// Needed to load the language file!
-		$pluginManager = FabrikWorker::getPluginManager();
-		$plugin = $pluginManager->getPlugIn('timeline', 'visualization');
-
-		$id = JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0)));
+		$id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
 		$model->setId($id);
 		$row = $model->getVisualization();
+		$this->row = $row;
+
+		if ($this->row->published == 0)
+		{
+			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return '';
+		}
 
 		$js = $model->render();
 		$this->assign('containerId', $this->get('ContainerId'));
-		$this->assignRef('row', $row);
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1) === 1 ? 1 : 0);
+		$this->showFilters = $model->showFilters();
 		$this->assignRef('filters', $this->get('Filters'));
 		$this->advancedSearch = $this->get('AdvancedSearchLink');
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
@@ -68,7 +73,6 @@ class fabrikViewTimeline extends JView
 		$srcs[] = 'media/com_fabrik/js/listfilter.js';
 		$srcs[] = 'plugins/fabrik_visualization/timeline/timeline.js';
 		$srcs[] = 'media/com_fabrik/js/advanced-search.js';
-		//$srcs[] = 'media/com_fabrik/js/encoder.js';
 
 		$js .= $model->getFilterJs();
 		FabrikHelperHTML::script($srcs, $js);

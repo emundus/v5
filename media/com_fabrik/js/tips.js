@@ -26,17 +26,38 @@ var FloatingTips = new Class({
 		this.options.fxProperties = {transition: eval(this.options.tipfx), duration: this.options.duration};
 		//any tip (not necessarily in this instance has asked for all other tips to be hidden.
 		window.addEvent('tips.hideall', function (e, trigger) {
+			if (typeOf(e) === 'element') {
+				trigger = e;
+			}
 			this.hideOthers(trigger);
 		}.bind(this));
 		if (elements) {
 			this.attach(elements);
 		}
+		
+		// Hide tips on esc key press
+		window.addEvent('keyup', function (e) {
+			if (e.key === 'esc') {
+				this.hideAll();
+			}
+		}.bind(this));
+		
+		// Remove old tips if you use ajax edit and update a record
+		Fabrik.addEvent('fabrik.list.update', function () {
+			this.hideAll();
+		}.bind(this));
 	},
 	
 	attach: function (elements) {
 		this.elements = $$(elements);
 		this.elements.each(function (trigger) {
-			var opts = Object.merge(Object.clone(this.options), JSON.decode(trigger.get('opts', '{}').opts));
+			var tmpOpts = {};
+			// Tip text in gmap viz bubble not decodable so test if json is valid first
+			if (trigger.get('opts', '{}').opts && JSON.validate(trigger.get('opts', '{}').opts)) {
+				tmpOpts = JSON.decode(trigger.get('opts', '{}').opts);
+			}
+			 
+			var opts = Object.merge(Object.clone(this.options), tmpOpts);
 			var optStore = trigger.retrieve('opts', {});
 			trigger.erase('opts');
 			if (!optStore[opts.showOn]) {
@@ -236,14 +257,16 @@ var FloatingTips = new Class({
 	},
 	
 	hideOthers: function (except) {
-		this.elements.each(function (element) {
-			if (element !== except) {
-				var tips = element.retrieve('tip');
-				$H(tips).each(function (tip) {
-					tip.hide();
-				});
-			}
-		});
+		if (this.element) {
+			this.elements.each(function (element) {
+				if (element !== except) {
+					var tips = element.retrieve('tip');
+					$H(tips).each(function (tip) {
+						tip.hide();
+					});
+				}
+			});
+		}
 	},
 	
 	hideAll: function () {

@@ -10,6 +10,21 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 		</field>
+
+		<field name="google_api_key"
+			type="text"
+			label="COM_FABRIK_GOOGLE_API_KEY_LABEL"
+			description="COM_FABRIK_GOOGLE_API_KEY_DESC" />
+		
+		<field name="google_buisness_client_id"
+			type="text"
+			label="COM_FABRIK_GOOGLE_BUSINESS_CLIENT_ID_LABEL"
+			description="COM_FABRIK_GOOGLE_BUSINESS_CLIENT_ID_DESC" />
+			
+		<field name="google_buisness_signature"
+			type="text"
+			label="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_LABEL"
+			description="COM_FABRIK_GOOGLE_BUSINESS_SIGNATURE_DESC" />
 			
 	</fieldset>
 	<fieldset label="COM_FABRIK_LISTS" name="lists">
@@ -76,6 +91,126 @@
 				<option value="inline">COM_FABRIK_FIELD_ACTION_METHOD_INLINE</option>
 				<option value="floating">COM_FABRIK_FIELD_ACTION_METHOD_FLOATING</option>
 		</field>
+
+	</fieldset>
+
+	<fieldset label="COM_FABRIK_ELEMENTS" name="elements" addfieldpath="/administrator/components/com_fabrik/models/fields">
+
+		<field name="default_element_plugins" 
+			type="spacer"
+			label="COM_FABRIK_ELEMENTS_DEFAULT_PLUGINS"/>
+
+		<field name="default_element_plugins_desc" 
+			type="spacer"
+			label="COM_FABRIK_ELEMENTS_DEFAULT_PLUGINS_DESC"/>
+
+		<field name="int"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="INT"/>
+
+		<field name="decimal"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="DECIMAL"/>
+
+		<field name="tinyint"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="TINYINT"
+			description="COM_FABRIK_ELEMENTS_DEFAULT_PLUGINS_TINYINT_DESC"/>
+
+		<field name="smallint"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="SMALLINT"/>
+
+		<field name="mediumint"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="MEDIUMINT"/>
+
+		<field name="bigint"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="BIGINT"/>
+
+		<field name="varchar"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="VARCHAR"/>
+
+		<field name="text"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="textarea"
+			label="TEXT"/>
+
+		<field name="tinytext"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="textarea"
+			label="TINYTEXT"/>
+
+		<field name="mediumtext"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="textarea"
+			label="MEDIUMTEXT"/>
+
+		<field name="longtext"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="textarea"
+			label="LONGTEXT"/>
+
+		<field name="datetime"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="date"
+			label="DATETIME"/>
+
+		<field name="date"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="date"
+			label="DATE"
+			description="COM_FABRIK_ELEMENTS_DEFAULT_PLUGINS_DATE_DESC"/>
+
+		<field name="timestamp"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="date"
+			label="TIMESTAMP"/>
+
+		<field name="time"
+			type="pluginlist" 
+			plugin="fabrik_element" 
+			required="true"
+			default="field"
+			label="TIME"
+			description="COM_FABRIK_ELEMENTS_DEFAULT_PLUGINS_TIME_DESC"/>
 
 	</fieldset>
 

@@ -4,12 +4,12 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005 Fabrik. All rights reserved.
- * @license     http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Check to ensure this file is included in Joomla!
-defined('_JEXEC') or die();
+// No direct access
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
@@ -22,7 +22,6 @@ jimport('joomla.application.component.model');
 
 class FabrikFEModelGroup extends FabModel
 {
-
 	/**
 	 * Parameters
 	 *
@@ -113,17 +112,6 @@ class FabrikFEModelGroup extends FabModel
 	* @var bool
 	*/
 	protected $canEdit = null;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
-	 */
-
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-	}
 
 	/**
 	 * Method to set the group id
@@ -229,11 +217,18 @@ class FabrikFEModelGroup extends FabModel
 	/**
 	 * Can the user view the group
 	 *
+	 * @param   string  $mode  View mode list|form
+	 *
 	 * @return   bool
 	 */
 
-	public function canView()
+	public function canView($mode = 'form')
 	{
+		// No ACL option for list view.
+		if ($mode === 'list')
+		{
+			return true;
+		}
 		if (!is_null($this->canView))
 		{
 			return $this->canView;
@@ -611,6 +606,7 @@ class FabrikFEModelGroup extends FabModel
 		{
 			$this->listQueryElements[$sig] = array();
 			$elements = $this->getMyElements();
+			$joins = $this->getListModel()->getJoins();
 			foreach ($elements as $elementModel)
 			{
 				$element = $elementModel->getElement();
@@ -630,6 +626,31 @@ class FabrikFEModelGroup extends FabModel
 					if ($input->get('view') == 'list' && !$elementModel->canView('list'))
 					{
 						continue;
+					}
+
+					/**
+					 * $$$ hugh - if the eleent is an FK or a PK in a list join, ignore the include_in_list setting,
+					 * and just include it.  Technically we could check to see if any of the elements from the joined
+					 * list are being included before making this decision, but it's such a corner case, I vote for
+					 * just including list join PK/FK's, period.
+					 */
+					foreach ($joins as $join)
+					{
+						if (!empty($join->list_id))
+						{
+							/*
+							 * Bit of a hack, just grab the fullname, bust it up into table and element name,
+							 * then compare it against PK and FK table/field names.
+							 */
+							$fullname = $elementModel->getFullName(false, true, false);
+							list($tablename, $shortname) = explode('___', $fullname);
+							if (($tablename == $join->join_from_table && $shortname == $join->table_key)
+								|| ($tablename == $join->table_join && $shortname == $join->table_join_key))
+							{
+								$this->listQueryElements[$sig][] = $elementModel;
+								continue;
+							}
+						}
 					}
 
 					if (empty($showInList))
@@ -975,4 +996,38 @@ class FabrikFEModelGroup extends FabModel
 		unset($this->elements);
 	}
 
+	/**
+	 * Get the number of times the group was repeated based on the form's current data
+	 *
+	 * @since   3.1rc1
+	 *
+	 * @return number
+	 */
+
+	public function repeatCount()
+	{
+		if (!$this->isJoin())
+		{
+			return 1;
+		}
+
+		$data = $this->getFormModel()->getData();
+		$elementModels = $this->getPublishedElements();
+		reset($elementModels);
+		$tmpElement = current($elementModels);
+
+		if (!empty($elementModels))
+		{
+			$smallerElHTMLName = $tmpElement->getFullName(false, true, false);
+			$joinid = $this->getJoinId();
+			$repeatGroup = count(JArrayHelper::getValue($data['join'][$joinid], $smallerElHTMLName, 1));
+		}
+		else
+		{
+			// No published elements - not sure if setting repeatGroup to 0 is right though
+			$repeatGroup = 0;
+		}
+
+		return $repeatGroup;
+	}
 }

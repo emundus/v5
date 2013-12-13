@@ -16,7 +16,8 @@ var FbElement =  new Class({
 		label: '',
 		editable: false,
 		isJoin: false,
-		joinId: 0
+		joinId: 0,
+		fullName: '' // tablename___elementname (regardless of join / repeat etc)
 	},
 	
 	/**
@@ -67,6 +68,7 @@ var FbElement =  new Class({
 	 * @return  string
 	 */
 	getFormElementsKey: function (elId) {
+		this.baseElementId = elId;
 		return elId;
 	},
 	
@@ -190,7 +192,7 @@ var FbElement =  new Class({
 	
 	addNewEventAux: function (action, js) {
 		this.element.addEvent(action, function (e) {
-			e.stop();
+			// Don't stop event - means fx's onchange events wouldnt fire.
 			typeOf(js) === 'function' ? js.delay(0, this, this) : eval(js);
 		}.bind(this));
 	},
@@ -211,6 +213,11 @@ var FbElement =  new Class({
 				this.addNewEventAux(action, js);
 			}
 		}
+	},
+	
+	// Alais to addNewEvent.
+	addEvent: function (action, js) {
+		this.addNewEvent(action, js);
 	},
 	
 	validate: function () {},
@@ -250,6 +257,11 @@ var FbElement =  new Class({
 				this.element.innerHTML = val;
 			}
 		}
+	},
+	
+	// Alias to update()
+	set: function (val) {
+		this.update(val);
 	},
 	
 	getValue: function () {
@@ -364,6 +376,13 @@ var FbElement =  new Class({
 				Fabrik.tips.attach(a);
 			}
 			errorElements[0].adopt(a);
+			
+			// If tmpl has additional error message divs (e.g labels above) then set html msg there
+			if (errorElements.length > 1) {
+				for (i = 1; i < errorElements.length; i ++) {
+					errorElements[i].set('html', msg);
+				}
+			}
 			
 			container.removeClass('alert-success').removeClass('alert-info').addClass('alert-error');
 			break;
@@ -532,6 +551,27 @@ var FbElement =  new Class({
 	
 	select: function () {},
 	focus: function () {},
+	
+	hide: function () {
+		var c = this.getContainer();
+		if (c) {
+			c.hide();
+		}
+	},
+	
+	show: function () {
+		var c = this.getContainer();
+		if (c) {
+			c.show();
+		}
+	},
+	
+	toggle: function () {
+		var c = this.getContainer();
+		if (c) {
+			c.toggle();
+		}
+	},
 	
 	/**
 	 * Used to find element when form clones a group

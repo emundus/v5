@@ -139,6 +139,20 @@ Element.implement({
 });
 
 /**
+ * Extend the Array object
+ * @param candid The string to search for
+ * @returns Returns the index of the first match or -1 if not found
+*/
+Array.prototype.searchFor = function (candid) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].indexOf(candid) === 0) {
+            return i;
+        }
+    }
+    return -1;
+};
+
+/**
  * Loading aninimation class, either inline next to an element or 
  * full screen
  */
@@ -193,10 +207,65 @@ var Loader = new Class({
 		Fabrik.Windows = {};
 		Fabrik.loader = new Loader();
 		Fabrik.blocks = {};
+		Fabrik.periodicals = {};
 		Fabrik.addBlock = function (blockid, block) {
 			Fabrik.blocks[blockid] = block;
 			Fabrik.fireEvent('fabrik.block.added', [block, blockid]);
 		};
+		
+		/**
+		 * Search for a block
+		 * 
+		 * @param   string    blockid  Block id 
+		 * @param   bool      exact    Exact match - default false. When false, form_8 will match form_8 & form_8_1
+		 * @param   function  cb       Call back function - if supplied a periodical check is set to find the block and once 
+		 *                             found then the cb() is run, passing the block back as an parameter
+		 * 
+		 * @return  mixed  false if not found | Fabrik block 
+		 */
+		Fabrik.getBlock = function (blockid, exact, cb) {
+			cb = cb ? cb : false;
+			if (cb) {
+				Fabrik.periodicals[blockid] = Fabrik._getBlock.periodical(500, this, [blockid, exact, cb]);
+			}
+			return Fabrik._getBlock(blockid, exact, cb);
+		};
+		
+		/**
+		 * Private Search for a block
+		 * 
+		 * @param   string    blockid  Block id 
+		 * @param   bool      exact    Exact match - default false. When false, form_8 will match form_8 & form_8_1
+		 * @param   function  cb       Call back function - if supplied a periodical check is set to find the block and once 
+		 *                             found then the cb() is run, passing the block back as an parameter
+		 * 
+		 * @return  mixed  false if not found | Fabrik block 
+		 */
+		Fabrik._getBlock = function (blockid, exact, cb) {
+			exact = exact ? exact : false;
+			if (Fabrik.blocks[blockid] !== undefined) {
+				
+				// Exact match
+				foundBlockId = blockid;
+			} else {
+				if (exact) {
+					return false;
+				}
+				// Say we're editing a form (blockid = form_1_2) - but have simply asked for form_1
+				var keys = Object.keys(Fabrik.blocks),
+				i = keys.searchFor(blockid);
+				if (i === -1) {
+					return false;
+				}
+				foundBlockId = keys[i];
+			}
+			if (cb) {
+				clearInterval(Fabrik.periodicals[blockid]);
+				cb(Fabrik.blocks[foundBlockId]);
+			}
+			return Fabrik.blocks[foundBlockId];
+		};
+		
 		document.addEvent('click:relay(.fabrik_delete a)', function (e, target) {
 			if (e.rightClick) {
 				return;
@@ -270,6 +339,13 @@ var Loader = new Class({
 		
 		Fabrik.cbQueue = {'google': []};
 		
+		/**
+		 * Load the google maps API once 
+		 * 
+		 * @param  bool   s   Sensor
+		 * @param  mixed  cb  Callback method function or function name (assinged to window)
+		 * 
+		 */
 		Fabrik.loadGoogleMap = function (s, cb) {
 			
 			var prefix = document.location.protocol === 'https:' ? 'https:' : 'http:';
@@ -314,8 +390,15 @@ var Loader = new Class({
 		 */
 		Fabrik.mapCb = function () {
 			Fabrik.googleMap = true;
+			var fn;
 			for (var i = 0; i < Fabrik.cbQueue.google.length; i ++) {
-				window[Fabrik.cbQueue.google[i]]();
+				fn = Fabrik.cbQueue.google[i];
+				if (typeOf(fn) === 'function') {
+					fn();
+				} else {
+					window[fn]();
+				}
+				
 			}
 			Fabrik.cbQueue.google = [];
 		};
@@ -369,9 +452,11 @@ var Loader = new Class({
 		 * @since 3.0.7
 		 */
 		Fabrik.watchEdit = function (e, target) {
-			var listRef = target.get('data-list');
-			var list = Fabrik.blocks[listRef];
-			var row = list.getActiveRow(e);
+			
+			var listRef = target.get('data-list'),
+			loadMethod = 'xhr',
+			list = Fabrik.blocks[listRef],
+			row = list.getActiveRow(e);
 			if (!list.options.ajax_links) {
 				return;
 			}
@@ -381,17 +466,16 @@ var Loader = new Class({
 			}
 			list.setActive(row);
 			var rowid = row.id.split('_').getLast();
-			if (list.options.links.edit === '') {
-				url = Fabrik.liveSite + "index.php?option=com_fabrik&view=form&formid=" + list.options.formid + '&rowid=' + rowid + '&tmpl=component&ajax=1';
-				loadMethod = 'xhr';
+	
+			if (e.target.get('tag') === 'a') {
+				a = e.target;
 			} else {
-				if (e.target.get('tag') === 'a') {
-					a = e.target;
-				} else {
-					a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
-				}
-				url = a.get('href');
-				loadMethod = 'iframe';
+				a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
+			}
+			url = a.get('href');
+			loadMethod = a.get('data-loadmethod');
+			if (typeOf(loadMethod) === 'null') {
+				loadMethod = 'xhr';
 			}
 			// Make id the same as the add button so we reuse the same form.
 			var winOpts = {
@@ -434,8 +518,9 @@ var Loader = new Class({
 		 */
 		
 		Fabrik.watchView = function (e, target) {
-			var listRef = target.get('data-list');
-			var list = Fabrik.blocks[listRef];
+			var listRef = target.get('data-list'),
+			loadMethod = 'xhr',
+			list = Fabrik.blocks[listRef];
 			if (!list.options.ajax_links) {
 				return;
 			}
@@ -446,17 +531,16 @@ var Loader = new Class({
 			}
 			list.setActive(row);
 			var rowid = row.id.split('_').getLast();
-			if (list.options.links.detail === '') {
-				url = Fabrik.liveSite + "index.php?option=com_fabrik&view=details&formid=" + list.options.formid + '&rowid=' + rowid + '&tmpl=component&ajax=1';
-				loadMethod = 'xhr';
+			
+			if (e.target.get('tag') === 'a') {
+				a = e.target;
 			} else {
-				if (e.target.get('tag') === 'a') {
-					a = e.target;
-				} else {
-					a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
-				}
-				url = a.get('href');
-				loadMethod = 'iframe';
+				a = typeOf(e.target.getElement('a')) !== 'null' ? e.target.getElement('a') : e.target.getParent('a');
+			}
+			url = a.get('href');
+			loadMethod = a.get('data-loadmethod');
+			if (typeOf(loadMethod) === 'null') {
+				loadMethod = 'xhr';
 			}
 			var winOpts = {
 				'id': 'view.' + '.' + listRef + '.' + rowid,

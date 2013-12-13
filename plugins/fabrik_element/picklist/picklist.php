@@ -16,9 +16,10 @@ require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.picklist
+ * @since       3.0
  */
 
-class plgFabrik_ElementPicklist extends plgFabrik_ElementList
+class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 {
 
 	/**
@@ -41,13 +42,13 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	/**
 	 * Draws the html form element
 	 *
-	 * @param   array  $data           to preopulate element with
-	 * @param   int    $repeatCounter  repeat group counter
+	 * @param   array  $data           To preopulate element with
+	 * @param   int    $repeatCounter  Repeat group counter
 	 *
 	 * @return  string	elements html
 	 */
 
-	function render($data, $repeatCounter = 0)
+	public function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
@@ -71,7 +72,6 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 		$tolist[] = JText::_('PLG_FABRIK_PICKLIST_TO') . ':<ul id="' . $id . '_tolist" class="topicklist">';
 		foreach ($arVals as $v)
 		{
-			//$tmptxt = addslashes(htmlspecialchars($arTxt[$i]));
 			if (!in_array($v, $arSelected))
 			{
 				$fromlist[] = '<li id="' . $id . '_value_' . $v . '" class="picklist">' . $arTxt[$i] . '</li>';
@@ -82,7 +82,7 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 		$lookup = array_flip($arVals);
 		foreach ($arSelected as $v)
 		{
-			if ($v == '' || $v == '-')
+			if ($v == '' || $v == '-' || $v = '[""]')
 			{
 				continue;
 			}
@@ -92,11 +92,11 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 			$aRoValues[] = $tmptxt;
 			$i++;
 		}
-		if (empty($arSelected))
+		if (FArrayHelper::emptyIsh($arSelected))
 		{
 			$fromlist[] = '<li class="emptyplicklist">' . JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . '</li>';
 		}
-		if (empty($aRoValues))
+		if (FArrayhelper::emptyIsh($aRoValues))
 		{
 			$tolist[] = '<li class="emptyplicklist">' . JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . '</li>';
 		}
@@ -106,7 +106,8 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 
 		$str = '<div ' . $attribs . '>' . implode("\n", $fromlist) . '</div>';
 		$str .= '<div class="picklistcontainer">' . implode("\n", $tolist) . '</div>';
-		$str .= $this->getHiddenField($name, json_encode($arSelected), $id);
+		$arSelected = htmlspecialchars(json_encode($arSelected), ENT_COMPAT, 'UTF-8');
+		$str .= $this->getHiddenField($name, $arSelected, $id);
 		if (!$this->isEditable())
 		{
 			return implode(', ', $aRoValues);
@@ -146,7 +147,7 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	 * sees then switch from the search string to the db value here
 	 * overwritten in things like checkbox and radio plugins
 	 *
-	 * @param   string  $value  filterVal
+	 * @param   string  $value  FilterVal
 	 *
 	 * @return  string
 	 */
@@ -169,9 +170,9 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	/**
 	 * Builds an array containing the filters value and condition
 	 *
-	 * @param   string  $value      initial value
-	 * @param   string  $condition  intial $condition
-	 * @param   string  $eval       how the value should be handled
+	 * @param   string  $value      Initial value
+	 * @param   string  $condition  Intial $condition
+	 * @param   string  $eval       How the value should be handled
 	 *
 	 * @return  array	(value condition)
 	 */
@@ -184,24 +185,27 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	}
 
 	/**
-	 * Build the filter query for the given element.
-	 * Can be overwritten in plugin - e.g. see checkbox element which checks for partial matches
+	 * Does the element conside the data to be empty
+	 * Used in isempty validation rule
 	 *
-	 * @param   string  $key            element name in format `tablename`.`elementname`
-	 * @param   string  $condition      =/like etc
-	 * @param   string  $value          search string - already quoted if specified in filter array options
-	 * @param   string  $originalValue  original filter value without quotes or %'s applied
-	 * @param   string  $type           filter type advanced/normal/prefilter/search/querystring/searchall
+	 * @param   array  $data           data to test against
+	 * @param   int    $repeatCounter  repeat group #
 	 *
-	 * @return  string	sql query part e,g, "key = value"
+	 * @return  bool
 	 */
 
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function dataConsideredEmpty($data, $repeatCounter)
 	{
-		$originalValue = trim($value, "'");
-		$this->encryptFieldName($key);
-		$str = ' (' . $key . ' ' . $condition . ' ' . $value . ' OR ' . $key . ' LIKE \'%"' . $originalValue . '"%\')';
-		return $str;
+		$data = (array) $data;
+		foreach ($data as $d)
+		{
+			if ($d != '' && $d != '[""]')
+			{
+				return false;
+			}
+		}
+		return true;
 	}
+
 
 }
