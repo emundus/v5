@@ -34,4 +34,4 @@ if ($sent>0 && $user->candidature_incomplete == 0) {
   </div>
   </div>
 </div>
- <?php echo $renew; ?>
+ <?php echo $renew; ?> 
