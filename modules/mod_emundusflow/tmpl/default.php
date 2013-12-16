@@ -2,9 +2,7 @@
 defined('_JEXEC') or die('Restricted access'); 
 //JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emundusflow/style/' );
 $document = JFactory::getDocument();
-$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
 $document->addStyleSheet( JURI::base()."media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
-$document->addScript( JURI::base()."media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 ?>
 <?php 
 if ($sent>0 && $user->candidature_incomplete == 0) {
