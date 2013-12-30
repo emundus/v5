@@ -94,7 +94,7 @@ class EmundusModelProfile extends JModel
 	}
 
 	function getCurrentIncompleteCampaignByApplicant($uid) {
-		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE submitted=0 AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
+		$query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE (submitted=0 OR submitted IS NULL) AND applicant_id = '.$uid. ' ORDER BY date_time DESC';
 		$this->_db->setQuery( $query );
 		$res = $this->_db->loadResult();
 
