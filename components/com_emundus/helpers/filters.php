@@ -46,6 +46,7 @@ class EmundusHelperFilters {
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
 							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -67,6 +68,7 @@ class EmundusHelperFilters {
 		$mainframe->setUserState( $option."filter_order_Dir", "" );
 		$mainframe->setUserState( $option."schoolyears", EmundusHelperFilters::getSchoolyears() );
 		$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$mainframe->setUserState( $option."programmes", array() );
 		$mainframe->setUserState( $option."elements", array() );
 		$mainframe->setUserState( $option."elements_values", array() );
 		$mainframe->setUserState( $option."elements_other", array() );
@@ -139,6 +141,13 @@ class EmundusHelperFilters {
 	function getCampaigns() {
 		$db =& JFactory::getDBO();
 		$query = 'SELECT id, label, year  FROM #__emundus_setup_campaigns WHERE published=1 ORDER BY year DESC';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+
+	function getProgrammes() {
+		$db =& JFactory::getDBO();
+		$query = 'SELECT *  FROM #__emundus_setup_programmes WHERE published=1 ORDER BY label,ordering ASC';
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
@@ -489,6 +498,10 @@ class EmundusHelperFilters {
 		global $option;
 
 		$mainframe = JFactory::getApplication();
+		$document = JFactory::getDocument();
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
+		$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+		$document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
 		$current_profile		= $mainframe->getUserStateFromRequest(  $option.'profile', 'profile', @$params['profile'] );
@@ -501,6 +514,7 @@ class EmundusHelperFilters {
 		$newsletter				= $mainframe->getUserStateFromRequest(  $option.'newsletter', 'newsletter', @$params['newsletter'] );
 		$spam_suspect			= $mainframe->getUserStateFromRequest(  $option.'spam_suspect', 'spam_suspect', @$params['spam_suspect'] );
 		$current_campaign		= $mainframe->getUserStateFromRequest(  $option.'campaigns', 'campaigns', EmundusHelperFilters::getCurrentCampaign() );
+		$current_programme		= $mainframe->getUserStateFromRequest(  $option.'programmes', 'programmes' );
 		$search					= $mainframe->getUserStateFromRequest(  $option.'elements', 'elements' );
 		$search_values			= $mainframe->getUserStateFromRequest(  $option.'elements_values', 'elements_values' );
 		$search_other		 	= $mainframe->getUserStateFromRequest(  $option.'elements_other', 'elements_other' );
@@ -543,9 +557,10 @@ class EmundusHelperFilters {
 		</div>
 		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().''.EmundusHelperJavascript::clearAdvanceFilter().'</script>';
 		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
-		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/></div></div>';
+		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/> <span id="filter_action"> <a href="#" id="shower">'.JText::_('MORE_FILTERS').'</a> | <a href="#" id="hider">'.JText::_('HIDE_FILTERS').'</a> </span></div></div>';
+
 		$filters .= $quick;
-		
+
 		if(@$params['profile'] !== NULL){
 			$profile = '';
 			if ($types['profile'] != 'hidden') $profile .= '<div class="em_filters" id="profile">
@@ -698,32 +713,11 @@ class EmundusHelperFilters {
 			$filters .= $validate;
 		}
 
-		if($params['schoolyear'] !== NULL){
-			$schoolyearList = EmundusHelperFilters::getSchoolyears();
-			$schoolyear = '';
-			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
-																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').'</label></div>
-																  <div class="em_filtersElement">';
-			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$schoolyear .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
-			$schoolyear .= '<option value="%" ';
-			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
-			$schoolyear .= '>'.JText::_('ALL').'</option>';
-			foreach($schoolyearList as $s) { 
-				$schoolyear .= '<option value="'.$s.'"';
-				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
-				$schoolyear .= '>'.$s.'</option>'; 
-			}
-			$schoolyear .= '</select>';
-			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
-			$filters .= $schoolyear;
-		}
-
 		if(@$params['campaign'] !== NULL){
 			$campaignList = EmundusHelperFilters::getCampaigns();
 			$campaign = '';
 			if ($types['campaign'] != 'hidden') $campaign .= '<div class="em_filters" id="campaign">
-																  <div class="em_label"><label>'.JText::_('CAMPAIGN').'</label></div>
+																  <div class="em_label"><label>'.JText::_('CAMPAIGN').' <a href="javascript:clearchosen(\'#select-multiple_campaigns\')">'.JText::_('CLEAR').'</a></label></div>
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
 			$campaign .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
@@ -737,8 +731,57 @@ class EmundusHelperFilters {
 				$campaign .= '>'.$c->label.' - '.$c->year.'</option>'; 
 			}
 			$campaign .= '</select>';
+			//$campaign .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_campaigns\')">'.JText::_('CLEAR').'</a></div>';
 			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
+			$campaign .= '<script>$(document).ready(function() {$("#select-multiple_campaigns").chosen({width: "650px"}); })</script>';
 			$filters .= $campaign;
+		}
+
+		if($params['schoolyear'] !== NULL){
+			$schoolyearList = EmundusHelperFilters::getSchoolyears();
+			$schoolyear = '';
+			if ($types['schoolyear'] != 'hidden') $schoolyear .= '<div class="em_filters" id="schoolyear">
+																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').' <a href="javascript:clearchosen(\'#select-multiple_schoolyears\')">'.JText::_('CLEAR').'</a></label></div>
+																  <div class="em_filtersElement">';
+			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$schoolyear .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
+			$schoolyear .= '<option value="%" ';
+			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
+			$schoolyear .= '>'.JText::_('ALL').'</option>';
+			foreach($schoolyearList as $s) { 
+				$schoolyear .= '<option value="'.$s.'"';
+				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
+				$schoolyear .= '>'.$s.'</option>'; 
+			}
+			$schoolyear .= '</select>';
+			//$schoolyear .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_schoolyears\')">'.JText::_('CLEAR').'</a></div>';
+			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
+			$schoolyear .= '<script>$(document).ready(function() {$("#select-multiple_schoolyears").chosen({width: "650px"});})</script>';
+			$filters .= $schoolyear;
+		}
+
+		if(@$params['programme'] !== NULL){ 
+			$programmeList = EmundusHelperFilters::getProgrammes();
+			$programme = '';
+			if ($types['programme'] != 'hidden') $programme .= '<div class="em_filters" id="programme">
+																  <div class="em_label"><label>'.JText::_('PROGRAMME').' <a href="javascript:clearchosen(\'#select-multiple_programmes\')">'.JText::_('CLEAR').'</a></label></div>
+																  <div class="em_filtersElement">';
+			$programme .= '<select id="select-multiple_programmes" name="programmes[]" '.($types['programme'] == 'hidden' ? 'style="visibility:hidden" ' : '');
+			$programme .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
+			$programme .= '<option value="%" ';
+			if(@$current_programme[0] == "%" || empty($current_programme[0])) $programme .= ' selected';
+			$programme .= '>'.JText::_('ALL').'</option>';
+			
+			foreach($programmeList as $p) { 
+				$programme .= '<option value="'.$p->code.'"';
+				if(!empty($current_programme) && in_array($p->code, $current_programme)) $programme .= ' selected';
+				$programme .= '>'.$p->label.' - '.$p->code.'</option>'; 
+			}
+			$programme .= '</select>';
+			//$programme .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_programmes\')">'.JText::_('CLEAR').'</a></div>';
+			if ($types['programme'] != 'hidden') $programme .= '</div></div>';
+			$programme .= '<script>$(document).ready(function() {$("#select-multiple_programmes").chosen({width: "650px"});})</script>';
+			$filters .= $programme;
 		}
 		
 		//Advance filter builtin
@@ -877,6 +920,19 @@ class EmundusHelperFilters {
 		$filters .= '</div><div class="buttons"><input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
 		$filters .='<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
 		$filters .= '</fieldset>';
+		$filters .= '<script>
+					$( "#hider" ).click(function() {
+						$( ".em_filters" ).hide( "slow" ); 
+						document.cookie="em_filters=hidden";
+					});
+					$( "#shower" ).click(function() {
+						$( ".em_filters" ).show( "slow" );
+						document.cookie="em_filters=displayed";
+					});
+					var cookies = document.cookie; 
+					if(cookies.indexOf("em_filters=hidden")>=0) 
+							$( ".em_filters" ).hide("slow"); 
+					</script>';
 		
 		return $filters;
 	}

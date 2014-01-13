@@ -53,6 +53,7 @@ class EmundusModelRanking extends JModel
 							   'evaluator'			=> NULL,
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
+							   'programme'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -71,6 +72,7 @@ class EmundusModelRanking extends JModel
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
 		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$programmes				= $mainframe->getUserStateFromRequest( $option.'programmes', 'programmes' );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -93,6 +95,7 @@ class EmundusModelRanking extends JModel
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
 		$this->setState('campaigns', $campaigns);
+		$this->setState('programmes', $programmes);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -363,6 +366,7 @@ class EmundusModelRanking extends JModel
 		$search					= $this->getState('elements');
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
+		$programmes				= $this->getState('programmes');
 		$gid					= $this->getState('groups');
 		if(empty($gid)) $gid	= $this->getState('evaluator_group');
 		$uid					= $this->getState('user');
@@ -405,7 +409,12 @@ class EmundusModelRanking extends JModel
 			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
 			
 		$query .= ' WHERE #__emundus_campaign_candidature.submitted = 1 AND #__emundus_declaration.validated = 1 AND #__users.block = 0 ';
-		if(empty($schoolyears)) $query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+
+		if(empty($schoolyears)) 
+			$query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+
+		if (!empty($programmes) && isset($programmes) && $programmes[0] != "%") 
+           		$query .= ' AND #__emundus_setup_campaigns.training IN ("' . implode('","', $programmes) . '")';
 				
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
 			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);

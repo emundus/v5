@@ -693,6 +693,7 @@ $htmldata .= '
 					ORDER BY fbtables.created_by_alias DESC, menu.ordering';
 	}
 	$db->setQuery( $query );
+
 	$tableuser = $db->loadObjectList();
 	// var_dump($tableuser);
 	if(isset($tableuser)) {

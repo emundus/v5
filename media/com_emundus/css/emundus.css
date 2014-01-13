@@ -167,7 +167,7 @@ p.need_missing {margin-left: 25px;}
 	list-style: none;
 	padding:1px 0px 4px 20px;
 	text-align:left;
-	height: 18px;
+	/*height: 18px;*/
 }
 p.need_ok{margin-left: 25px;}
 .print {
@@ -448,20 +448,15 @@ input.btnhov {
 .emundus_search_elm {
 	color: #003;
 }
-
+.em_filtersElement{display:inline;}
+.em_label{display:block;}
 .em_filters{
-	float:left;
-	padding-top:10px;
-	margin-right:20px;
+	display: block;
+	margin:2px;
 }
-#schoolyear.em_filters {
-	float:right;
-}
-#campaign.em_filters {
-	float:right;
-}
-#finalgrade.em_filters {
-	float:right;
+#schoolyear.em_filters, #select_missing-doc.em_filters, #campaign.em_filters, #finalgrade.em_filters, #evaluator.em_filters, #gp_evaluator.em_filters, #missing_doc.em_filters, #profile.em_filters  {
+	display: inline-block;
+	margin:5px 2px 5px 2px;
 }
 
 #add_filt {

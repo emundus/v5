@@ -52,6 +52,7 @@ class EmundusModelIncomplete extends JModel
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
 							   'campaign'			=> NULL,
+							    'programme'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -70,6 +71,7 @@ class EmundusModelIncomplete extends JModel
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option.'schoolyears', 'schoolyears', $this->getCurrentCampaign() );
 		$campaigns				= $mainframe->getUserStateFromRequest( $option.'campaigns', 'campaigns', $this->getCurrentCampaignsID() );
+		$programmes 			= $mainframe->getUserStateFromRequest($option . 'programmes', 'programmes' );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -91,6 +93,7 @@ class EmundusModelIncomplete extends JModel
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
 		$this->setState('campaigns', $campaigns);
+		$this->setState('programmes', $programmes);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -255,6 +258,7 @@ class EmundusModelIncomplete extends JModel
 		$search					= $this->getState('elements');
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
+		$programmes 			= $this->getState('programmes');
 		$gid					= $this->getState('groups');
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
@@ -291,7 +295,11 @@ class EmundusModelIncomplete extends JModel
 			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
 			
 		$query .= ' WHERE #__users.block = 0 AND (#__emundus_campaign_candidature.submitted = 0 OR #__emundus_campaign_candidature.submitted IS NULL)';
-		if(empty($schoolyears)) $query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+		if(empty($schoolyears)) 
+			$query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","',$this->getCurrentCampaign()).'")';
+
+		if (!empty($programmes) && isset($programmes) && $programmes[0] != "%") 
+            $query .= ' AND #__emundus_setup_campaigns.training IN ("' . implode('","', $programmes) . '")';
 		
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)){
 			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
@@ -317,6 +325,7 @@ class EmundusModelIncomplete extends JModel
 		$quick_search			= $this->getState('s');
 		$schoolyears			= $this->getState('schoolyears');
 		$campaigns				= $this->getState('campaigns');
+		$programmes		 		= $this->getState('programmes');
 		$gid					= $this->getState('groups');
 		$uid					= $this->getState('user');
 		$profile				= $this->getState('profile');
@@ -338,7 +347,7 @@ class EmundusModelIncomplete extends JModel
 		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
 		
 		if($schoolyears[0] == "%")
-			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+			$query .= ' ';
 		elseif(!empty($schoolyears))
 			$query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
 		else
@@ -346,7 +355,7 @@ class EmundusModelIncomplete extends JModel
 
 
 		if(@$campaigns[0] == "%" || empty($campaigns[0]))
-			$query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+			$query .= ' ';
 		elseif(!empty($campaigns)) 
 			$query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
 		else	

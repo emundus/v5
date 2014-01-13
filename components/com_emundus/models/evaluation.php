@@ -45,6 +45,7 @@ class EmundusModelEvaluation extends JModel
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
 		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
 		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$programmes 			= $mainframe->getUserStateFromRequest($option . 'programmes', 'programmes' );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
 		$elements_other			= $mainframe->getUserStateFromRequest( $option.'elements_other', 'elements_other' );
@@ -67,6 +68,7 @@ class EmundusModelEvaluation extends JModel
         $this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('schoolyears', $schoolyears);
 		$this->setState('campaigns', $campaigns);
+		$this->setState('programmes', $programmes);
 		$this->setState('elements', $elements);
 		$this->setState('elements_values', $elements_values);
 		$this->setState('elements_other', $elements_other);
@@ -297,6 +299,7 @@ class EmundusModelEvaluation extends JModel
 		$quick_search			= $this->getState('s');
 		$schoolyears			= $this->getState('schoolyears');
 		$campaigns				= $this->getState('campaigns');
+		$programmes		 		= $this->getState('programmes');
 		$gid					= $this->getState('groups');
 		if(empty($gid)) $gid=$this->getState('evaluator_group'); 
 		$uid					= $this->getState('user');
@@ -316,6 +319,7 @@ class EmundusModelEvaluation extends JModel
 		if(empty($uid) && $session->has( 'evaluator' )) $uid = $session->get( 'evaluator' );
 		if(empty($schoolyears) && $session->has( 'schoolyears' )) $schoolyears = $session->get( 'schoolyears' );
 		if(empty($campaigns) && $session->has( 'campaigns' )) $campaigns = $session->get( 'campaigns' );
+		if(empty($programmes) && $session->has( 'programmes' )) $programmes = $session->get( 'programmes' );
 		if(empty($profile)) $profile = JRequest::getVar('profile', null, 'GET', 'none', 0);
 		
 		$s_elements = $session->get('s_elements');
@@ -331,7 +335,7 @@ class EmundusModelEvaluation extends JModel
 		$and = true;
         if($layout != "evaluation"){
             if($schoolyears[0] == "%")
-                $query .= ' AND #__emundus_setup_campaigns.year like "%" ';
+                $query .= ' ';
             elseif(!empty($schoolyears))
                 $query .= ' AND #__emundus_setup_campaigns.year IN ("'.implode('","', $schoolyears).'") ';
             else
@@ -339,11 +343,14 @@ class EmundusModelEvaluation extends JModel
 
 
             if(@$campaigns[0] == "%" || empty($campaigns[0]))
-                $query .= ' AND #__emundus_setup_campaigns.id like "%" ';
+                $query .= ' ';
             elseif(!empty($campaigns))
                 $query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $campaigns).'") ';
             else
                 $query .= ' AND #__emundus_setup_campaigns.id IN ("'.implode('","', $this->getCurrentCampaignsID()).'")';
+
+            if (!empty($programmes) && isset($programmes) && $programmes[0] != "%") 
+           		$query .= ' AND #__emundus_setup_campaigns.training IN ("' . implode('","', $programmes) . '")';
 
             if(isset($finalgrade) && !empty($finalgrade)) {
                 if($and) $query .= ' AND ';

@@ -54,7 +54,8 @@ function tableOrdering( order, dir, task ) {
   document.adminForm.submit( task );
 }
 
-function validation(uid, validate, cible){
+/* Administrative validation -- Mootool */
+/*function validation(uid, validate, cible){ 
 	var getPlayerResult = $(cible);
 	var getPlayer = new Request(
 	{
@@ -76,6 +77,25 @@ function validation(uid, validate, cible){
     	getPlayerEvent.stop();
 		getPlayer.send('&uid=' + uid + '&validate=' + validate + '&cible=' + cible);
 	});
-	
-	
-} 
+}
+*/
+/* Administrative validation -- JQuery */
+function validation(uid, validate, cible){ 
+	document.getElementById(cible).innerHTML = '<img src="media/com_emundus/images/icones/loading.gif">';
+	$.ajax({type:'get',
+			url:'index.php?option=com_emundus&format=raw&task=ajax_validation&uid=' + uid + '&validate=' + validate + '&cible=' + cible,
+			dataType:'html', 
+			success:function(responseText) {
+	            document.getElementById(cible).innerHTML = responseText;
+				$('#'+cible).unbind('click');
+		    }, 
+	        error: function(jqxHR, textStatus, errorThrown) {
+	            document.getElementById(cible).innerHTML = 'ERROR';
+				$('#'+cible).unbind('click');
+	         }
+	       });
+}
+function clearchosen(cible){ 
+	$(cible).val("%");
+	$(cible).trigger('chosen:updated');
+}

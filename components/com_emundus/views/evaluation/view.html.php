@@ -123,6 +123,52 @@ class EmundusViewEvaluation extends JView
 		$options = array('profile', 'evaluator', 'evaluator_group', 'schoolyear', 'finalgrade', 'missing_doc');
 		else
 		$options = array();*/
+
+		//Filters
+		$tables 		= explode(',', $menu_params->get('em_tables_id'));
+		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
+		$filts_values	= explode(',', $menu_params->get('em_filters_values'));
+		$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
+		$filts_details 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL,
+								'adv_filter'		=> '');
+		$filts_options 	= array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL,
+								'adv_filter'		=> NULL);
+		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
+		$actions  		= explode(',', $menu_params->get('em_actions'));
+		
+		$i = 0;
+		foreach ($filts_names as $filt_name) {
+			if (array_key_exists($i, $filts_values))
+				$filts_details[$filt_name] = $filts_values[$i];
+			else
+				$filts_details[$filt_name] = '';
+			if (array_key_exists($i, $filts_types))
+				$filts_options[$filt_name] = $filts_types[$i];
+			else
+				$filts_options[$filt_name] = '';
+			$i++;
+		} 
+		unset($filts_names); unset($filts_values); unset($filts_types);
 		$filters = EmundusHelperFilters::createFilterBlock($filts_details, $filts_options, array());
 		$this->assignRef('filters', $filters);
 		unset($options);

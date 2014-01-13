@@ -452,7 +452,10 @@ class EmundusHelperList{
 						$alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
 					}
 					$id = $vd->tab_name.'.'.$vd->element_name.'.'.$user['user_id'];
-					@$validate[$user['user_id']] .= '<div class="em_validation" id="'.$id.'"><span class="hasTip" title="'.$alt.'"><input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" ></span></div> '.$vd->element_label.'<br>'; 
+					@$validate[$user['user_id']] .= '<div class="em_validation" id="'.$id.'"><span class="hasTip" title="'.$alt.'">';
+					@$validate[$user['user_id']] .= '<input type="image" src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
+					//@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$img.'" onclick="validation('.$user['user_id'].',\''.$user[$vd->element_name].'\', \''.$id.'\');" >';
+					@$validate[$user['user_id']] .= '</span></div> '.$vd->element_label.'<br>'; 
 				} else {
 					@$validate[$user['user_id']] .= '<img src="'.JURI::Base().'/media/com_emundus/images/icones/'.$btn.'" /> '.$vd->element_label.'<br>';
 				}

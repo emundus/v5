@@ -62,6 +62,7 @@ class EmundusViewIncomplete extends JView
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
 							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -73,6 +74,7 @@ class EmundusViewIncomplete extends JView
 							   'evaluator_group'	=> NULL,
 							   'schoolyear'			=> NULL,
 							   'campaign'			=> NULL,
+							   'programme'			=> NULL,
 							   'missing_doc'		=> NULL,
 							   'complete'			=> NULL,
 							   'finalgrade'			=> NULL,
@@ -100,7 +102,7 @@ class EmundusViewIncomplete extends JView
 		$this->assignRef('filters', $filters);
 		unset($filts_details); unset($filts_options);
 		
-				//Export
+		//Export
 		$options = array('xls');
 		if($this->_user->profile!=16) // devra être remplacé par un paramétrage au niveau du menu
 			$export_icones = EmundusHelperExport::export_icones($options);
