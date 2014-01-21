@@ -98,6 +98,17 @@ class EmundusModelCampaign extends JModel
 		return $this->_db->loadAssoc();
 	}
 
+	function getProgrammeByCampaignID($campaign_id)
+	{
+		$Campaign = $this->getCampaignByID($campaign_id);
+
+		$query = 'SELECT esc.* 
+					FROM #__emundus_setup_programmes AS esp 
+					WHERE esp.code like "'.$campaign[''].'"';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadAssoc();
+	}
+
 	function getCampaignsByCourse($course)
 	{
 		$query = 'SELECT esc.* 

@@ -554,7 +554,8 @@ function OnSubmitForm() {
 		}
 		
 		function submitFilters(){
-			var selected_id = $(\'select_filter\').options[$(\'select_filter\').selectedIndex].value;
+			var selected = document.getElementById("select_filter");
+			var selected_id = selected.options[selected.selectedIndex].value;
 			setCookie("selected_id",selected_id,5);
 			document.getElementById(\'search_button\').click();
 		}
@@ -728,16 +729,16 @@ function OnSubmitForm() {
 				if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 				{
 					email = xhr.responseText;
-					tinyMCE.execCommand("mceToggleEditor", false, "mail_body");
 					tab = email.split("(***)");
+
 					var email_block = document.getElementById("em_email_block");
 					email_block.getElementById("mail_subject").value=tab[0];
 					//email_block.getElementById("mail_body").value=tab[1];
-					$("mail_body").value = tab[1];
-					var content = email_block.getElementById("mail_body_ifr").contentWindow ? email_block.getElementById("mail_body_ifr").contentWindow.document : email_block.getElementById("mail_body_ifr").contentDocument;
-					//tinyMCE.execCommand("mceRepaint", false, "mail_body");
-					
-					tinyMCE.execCommand("mceToggleEditor", false, "mail_body");
+					$("mail_body").value = tab[1]; 
+					//var content = $("mail_body_ifr").contentWindow ? $("mail_body_ifr").contentWindow.document : $("mail_body_ifr").contentDocument;
+					tinyMCE.execCommand("mceSetContent", false, tab[1]);
+					//tinyMCE.execCommand("mceInsertContent", false, tab[1]);
+        			tinyMCE.execCommand("mceRepaint");
 				}
 			};
 			xhr.open("POST", "index.php?option=com_emundus&controller=email&view=email&task=getTemplate", true);

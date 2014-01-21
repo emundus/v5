@@ -48,8 +48,6 @@ $db = JFactory::getDBO();
 //$document->setTitle( JText::_( 'ADMINISTRATIVE_VALIDATION' ) );
 ?>
 
-<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().'/images/emundus/menu_style.css'; ?>" media="screen"/>
-
 <!--[if lt IE 7]>
 	<link rel="stylesheet" type="text/css" href="menu/includes/ie6.css" media="screen"/>
 <![endif]-->

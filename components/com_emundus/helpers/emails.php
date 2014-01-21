@@ -897,10 +897,14 @@ class EmundusHelperEmails{
 		$db	= JFactory::getDBO();
 		$current_user = JFactory::getUser();
 
+		// Model for GetCampaignWithID()
+		$model=$this->getModel('campaign');
+
 		$cids = JRequest::getVar( 'ud', array(), 'post', 'array' );
 		foreach ($cids as $cid){
 			$params=explode('|',$cid);
 			$users_id[] = intval($params[0]);
+			$campaigns_id[] = intval($params[1]); 
 		}
 		
 		$captcha	= 1;//JRequest::getInt( JR_CAPTCHA, null, 'post' );
@@ -959,14 +963,16 @@ class EmundusHelperEmails{
 		}
 
 		// template replacements
-		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SITE_URL\]/', '/\n/');
+		$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SITE_URL\]/', '/\[CAMPAIGN_LABEL\]/', '/\[COURSE_LABEL\]/', '/\n/');
 
 		$nUsers = count( $users );
 		for ($i = 0; $i < $nUsers; $i++) {
 			$user = &$users[$i];
+			$campaign = $model->getCampaignByID($campaigns_id[$i]);
+			$programme = $model->getProgrammeByCampaignID($campaigns_id[$i]);
 
 			// template replacements
-			$replacements = array ($user->id, $user->name, $user->email, JURI::base(), '<br />');
+			$replacements = array ($user->id, $user->name, $user->email, JURI::base(), $campaign['label'], $programme['label'], '<br />');
 			// template replacements
 			$body = preg_replace($patterns, $replacements, $message);
 

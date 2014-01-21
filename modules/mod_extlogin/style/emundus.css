@@ -6,6 +6,7 @@
  ********************************/
 
  #log_username {
+ display: inline-block;
 	font-weight: bold;
 	color: black;
 	margin-right: 5px;
@@ -23,6 +24,7 @@
  
 #form-login-nav {
 	float:right;
+	display: inline-block;
 	width:auto;
 	padding-top: 10px;
 	z-index:90;
@@ -54,7 +56,8 @@
 .log_updateprofile {
 	margin-right: 5px;
 	margin-left: 5px;
-	float: right;
+	/*float: right;*/
+	display: inline-block;
 	overflow: hidden;
 }
 
@@ -63,7 +66,8 @@
 	width: 73px;
 	height: 16px;
 	padding: 4px 5px 2px 25px;
-	float: left;
+	/*float: left;*/
+	display: inline-block;
 	overflow: hidden;
 }
 
@@ -89,7 +93,8 @@
 	background: none;
 	border: none;
 	outline: none;
-	float: left;
+	/*float: left;*/
+	display: inline-block;
 	color: #646464;
 	font-size: 11px;
 }
@@ -102,6 +107,7 @@
 }
 
 .login-button {
+display: inline-block;
 	margin-top: 2px;
 	margin-bottom: 2px;
 	padding:1px;
@@ -112,6 +118,7 @@
 	padding:2px 5px 2px 5px;
 }
 .register-button {
+display: inline-block;
 	margin-top: 2px;
 	margin-bottom: 2px;
 	padding:1px;
@@ -194,6 +201,7 @@
 }
 
 .logout-button {
+display: inline-block;
 	height: 20px;
 	background-color:#95D5FE;
 	-moz-border-radius: 10px;
@@ -217,7 +225,7 @@
 	color: #000000;
 }
 
-.log_updateprofile { background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px; }
+.log_updateprofile { display: inline-block; background-color:#FCC530; -moz-border-radius: 10px;border-radius: 10px; }
 
 .log_updateprofile:hover { background-color:#F1AF30; }
 
@@ -233,7 +241,8 @@
 	border-radius: 3px;
 	line-height: 1.6em;
 	width: 100%;
-	float: left;
+	/*float: left;*/
+	display: inline-block;
 	color: #646464;
 	font-size: 11px;
 	display: inline-block;

@@ -42,7 +42,6 @@ if (count($search)==0) {
 
 $db = JFactory::getDBO();
 ?>
-<link rel="stylesheet" type="text/css" href= "<?php echo JURI::Base().'/images/emundus/menu_style.css'; ?>" media="screen"/>
 
 <!--[if lt IE 7]>
 	<link rel="stylesheet" type="text/css" href="menu/includes/ie6.css" media="screen"/>

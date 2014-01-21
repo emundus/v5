@@ -189,10 +189,12 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		}
 		return true;
 	}
-
-	$('mail_body').value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
-	$('mail_subject').value = "<?php echo $campaign['label']; ?>";
-	$('mail_attachments').value = "<?php echo $files_path; ?>"; 
+	var mail_body = document.getElementById("mail_body");
+	var mail_subject = document.getElementById("mail_subject");
+	var mail_attachments = document.getElementById("mail_attachments");
+	mail_body.value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
+	mail_subject.value = "<?php echo $campaign['label']; ?>";
+	mail_attachments.value = "<?php echo $files_path; ?>"; 
 
 	</script>
 <?php } ?>

@@ -6,7 +6,7 @@
 */
 
 .readon, .rt-block {
-	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false) !important;
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false) !important;z-index: 9999;
 }
 
 ul.menu li.active.current > a:before, ul.menu li.active.current > .item:before, ul.menu li.active.current > .separator:before,

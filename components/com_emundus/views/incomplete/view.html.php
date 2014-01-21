@@ -41,8 +41,14 @@ class EmundusViewIncomplete extends JView
 	
     function display($tpl = null)
     {
-		$document = JFactory::getDocument();
-		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+		if(!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+			die("ACCESS_DENIED");
+		}
+
+		JHTML::_('behavior.modal');
+		JHTML::_('behavior.tooltip');
+		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
+		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
 
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
@@ -156,7 +162,7 @@ class EmundusViewIncomplete extends JView
 		$this->assignRef('email_applicant', $email_applicant);	
 		
 		// Javascript
-        JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
+       // JHTML::script( 'joomla.javascript.js', JURI::Base().'includes/js/' );
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);
 		$addElement = EmundusHelperJavascript::addElement();
