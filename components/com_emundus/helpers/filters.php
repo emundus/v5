@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * @version		$Id: filter.php 14401 2013-03-21 14:10:00Z brivalland $
  * @package		Joomla
@@ -119,21 +119,24 @@ class EmundusHelperFilters {
 	}
 	
 	function getCurrentCampaign(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
 		$db =& JFactory::getDBO();
 		$query = 'SELECT DISTINCT year as schoolyear 
-				FROM #__emundus_setup_campaigns 
-				WHERE published = 1 AND end_date > NOW()
-				ORDER BY schoolyear DESC';
-		$db->setQuery( $query );
+		FROM #__emundus_setup_campaigns 
+		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH) ORDER BY schoolyear DESC';
+		$db->setQuery( $query ); 
 		return $db->loadResultArray();
 	}
 
-	function getCurrentCampaignsID(){ 
+	function getCurrentCampaignsID(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
 		$db =& JFactory::getDBO();
 		$query = 'SELECT id 
-				FROM #__emundus_setup_campaigns 
-				WHERE published = 1 AND end_date > NOW()
-				ORDER BY year DESC';
+		FROM #__emundus_setup_campaigns 
+		WHERE published = 1 AND end_date > DATE_ADD(NOW(), INTERVAL -'.$nb_months_registration_period_access.' MONTH)
+		ORDER BY year DESC';
 		$db->setQuery( $query );
 		return $db->loadResultArray();
 	}

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<extension xmlns="http://www.joomla.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" client="site" method="upgrade" type="component" version="2.5" xsi:schemaLocation="http://www.joomla.org extension.xsd ">
+
+<name>jcrm</name>
+<creationDate>31/08/2011</creationDate>
+<author>Insert your Name</author>
+<authorEmail>Insert your Email</authorEmail>
+<authorUrl>http://www.mmleoni.net/joomla-component-builder</authorUrl>
+<copyright>Copyright Info</copyright>
+<license>GNU/GPL v2</license>
+<!--  The version string is recorded in the components table -->
+<version>1.00</version>
+<!-- The description is optional and defaults to the name -->
+<description>Component made by Marco's Component Maker for Joomla! 1.5 by http://www.mmleoni.net/joomla-component-builder</description>
+<files folder="site">
+<filename>index.html</filename>
+<filename>jcrm.php</filename>
+<filename>controller.php</filename>
+<filename>views/index.html</filename>
+<filename>models/index.html</filename>
+<filename>views/jcrmaccounts/index.html</filename>
+<filename>views/jcrmaccounts/view.html.php</filename>
+<filename>views/jcrmaccounts/metadata.xml</filename>
+<filename>views/jcrmaccounts/tmpl/default.xml</filename>
+<filename>views/jcrmaccounts/tmpl/default.php</filename>
+<filename>views/jcrmaccounts/tmpl/index.html</filename>
+<filename>models/jcrmaccounts.php</filename>
+<filename>views/jcrmcontacts/index.html</filename>
+<filename>views/jcrmcontacts/view.html.php</filename>
+<filename>views/jcrmcontacts/metadata.xml</filename>
+<filename>views/jcrmcontacts/tmpl/default.xml</filename>
+<filename>views/jcrmcontacts/tmpl/default.php</filename>
+<filename>views/jcrmcontacts/tmpl/index.html</filename>
+<filename>models/jcrmcontacts.php</filename>
+<filename>views/jcrmcountries/index.html</filename>
+<filename>views/jcrmcountries/view.html.php</filename>
+<filename>views/jcrmcountries/metadata.xml</filename>
+<filename>views/jcrmcountries/tmpl/default.xml</filename>
+<filename>views/jcrmcountries/tmpl/default.php</filename>
+<filename>views/jcrmcountries/tmpl/index.html</filename>
+<filename>models/jcrmcountries.php</filename>
+<filename>views/jcrmaccountslist/index.html</filename>
+<filename>views/jcrmaccountslist/view.html.php</filename>
+<filename>views/jcrmaccountslist/metadata.xml</filename>
+<filename>views/jcrmaccountslist/tmpl/default.xml</filename>
+<filename>views/jcrmaccountslist/tmpl/default.php</filename>
+<filename>views/jcrmaccountslist/tmpl/index.html</filename>
+<filename>models/jcrmaccountslist.php</filename>
+<filename>views/jcrmcontactslist/index.html</filename>
+<filename>views/jcrmcontactslist/view.html.php</filename>
+<filename>views/jcrmcontactslist/metadata.xml</filename>
+<filename>views/jcrmcontactslist/tmpl/default.xml</filename>
+<filename>views/jcrmcontactslist/tmpl/default.php</filename>
+<filename>views/jcrmcontactslist/tmpl/index.html</filename>
+<filename>models/jcrmcontactslist.php</filename>
+<filename>views/jcrmcountrieslist/index.html</filename>
+<filename>views/jcrmcountrieslist/view.html.php</filename>
+<filename>views/jcrmcountrieslist/metadata.xml</filename>
+<filename>views/jcrmcountrieslist/tmpl/default.xml</filename>
+<filename>views/jcrmcountrieslist/tmpl/default.php</filename>
+<filename>views/jcrmcountrieslist/tmpl/index.html</filename>
+<filename>models/jcrmcountrieslist.php</filename>
+
+</files>
+<install>
+<sql>
+<file charset="utf8" driver="mysql">install.sql</file>
+</sql>
+</install>
+<uninstall>
+<sql>
+<file charset="utf8" driver="mysql">uninstall.sql</file>
+</sql>
+</uninstall>
+<languages>
+<language tag="en-GB">languages/en-GB.com_jcrm.ini</language>
+<language tag="fr-FR">languages/fr-FR.com_jcrm.ini</language>
+<language tag="en-US">languages/en-US.com_jcrm.ini</language>
+
+</languages>
+<administration>
+<menu>jcrm</menu>
+<!-- Administration Main File Copy Section -->
+<files folder="admin">
+<!-- Site Main File Copy Section -->
+<filename>index.html</filename>
+<filename>jcrm.php</filename>
+<filename>controller.php</filename>
+<filename>config.xml</filename>
+<filename>controllers/index.html</filename>
+<filename>models/index.html</filename>
+<filename>tables/index.html</filename>
+<filename>views/index.html</filename>
+<filename>views/jcrmaccounts/index.html</filename>
+<filename>views/jcrmaccounts/view.html.php</filename>
+<filename>views/jcrmaccounts/tmpl/default.php</filename>
+<filename>views/jcrmaccounts/tmpl/index.html</filename>
+<filename>models/jcrmaccounts.php</filename>
+<filename>controllers/jcrmaccounts.php</filename>
+<filename>tables/jcrmaccounts.php</filename>
+<filename>views/jcrmcontacts/index.html</filename>
+<filename>views/jcrmcontacts/view.html.php</filename>
+<filename>views/jcrmcontacts/tmpl/default.php</filename>
+<filename>views/jcrmcontacts/tmpl/index.html</filename>
+<filename>models/jcrmcontacts.php</filename>
+<filename>controllers/jcrmcontacts.php</filename>
+<filename>tables/jcrmcontacts.php</filename>
+<filename>views/jcrmcountries/index.html</filename>
+<filename>views/jcrmcountries/view.html.php</filename>
+<filename>views/jcrmcountries/tmpl/default.php</filename>
+<filename>views/jcrmcountries/tmpl/index.html</filename>
+<filename>models/jcrmcountries.php</filename>
+<filename>controllers/jcrmcountries.php</filename>
+<filename>tables/jcrmcountries.php</filename>
+<filename>views/jcrmaccountslist/index.html</filename>
+<filename>views/jcrmaccountslist/view.html.php</filename>
+<filename>views/jcrmaccountslist/tmpl/default.php</filename>
+<filename>views/jcrmaccountslist/tmpl/index.html</filename>
+<filename>models/jcrmaccountslist.php</filename>
+<filename>controllers/jcrmaccountslist.php</filename>
+<filename>views/jcrmcontactslist/index.html</filename>
+<filename>views/jcrmcontactslist/view.html.php</filename>
+<filename>views/jcrmcontactslist/tmpl/default.php</filename>
+<filename>views/jcrmcontactslist/tmpl/index.html</filename>
+<filename>models/jcrmcontactslist.php</filename>
+<filename>controllers/jcrmcontactslist.php</filename>
+<filename>views/jcrmcountrieslist/index.html</filename>
+<filename>views/jcrmcountrieslist/view.html.php</filename>
+<filename>views/jcrmcountrieslist/tmpl/default.php</filename>
+<filename>views/jcrmcountrieslist/tmpl/index.html</filename>
+<filename>models/jcrmcountrieslist.php</filename>
+<filename>controllers/jcrmcountrieslist.php</filename>
+<filename>install.sql</filename>
+<filename>uninstall.sql</filename>
+
+</files>
+<languages>
+<language tag="en-GB">languages/en-GB.com_jcrm.ini</language>
+<language tag="fr-FR">languages/fr-FR.com_jcrm.ini</language>
+<language tag="en-US">languages/en-US.com_jcrm.ini</language>
+
+</languages>
+</administration>
+</extension>

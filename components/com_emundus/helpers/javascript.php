@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * @version		$Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
  * @package		Joomla
@@ -264,8 +264,8 @@ function OnSubmitForm() {
 	function delayAct(){
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 		$script = 
-		'function delayAct(user_id){
-			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'";
+		'function delayAct(user_id, campaign_id){
+			document.adminForm.action = "index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&Itemid='.$itemid.'#em_user_id_"+user_id+"_"+campaign_id;
 			setTimeout("document.adminForm.submit()",10) }';
 		return $script;
 	}

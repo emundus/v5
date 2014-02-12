@@ -39,7 +39,8 @@ class EmundusViewEvaluation extends JView
 	}
 
 	function display($tpl = null){
-		if(!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+		$access = new EmundusHelperAccess;
+		if(!$access->asEvaluatorAccessLevel($this->_user->id)) {
 			die("ACCESS_DENIED");
 		}
 

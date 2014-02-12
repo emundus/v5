@@ -23,10 +23,12 @@
 			<option value="2">COM_EMUNDUS_LINKED</option>
 			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
 			<option value="4">COM_EMUNDUS_ALL</option>
-		</field> 
+		</field>
+		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
+		<field name="applicant_files_path" type="text" size="50" default="images/emundus/files/" label="APPLICANT_FILES_PATH" description="APPLICANT_FILES_PATH_DESC" />
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
@@ -54,7 +56,10 @@
 			type="spacer"
 			hr="true"
 			/>
-		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />        
+		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" /> 
+		<field name="reference_table" type="text" label="Reference table" description="REFERENCE_TABLE" />
+		<field name="reference_field" type="text" label="Reference fiels" description="REFERENCE_FIELD" />
+		<field name="expert_fabrikformid" type="text" label="Fabrik form ID for expert" description="EXPERT_FIELD" />
     </fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >

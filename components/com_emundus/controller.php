@@ -3,7 +3,7 @@
  * @package    Joomla
  * @subpackage eMundus
  *             components/com_emundus/emundus.php
- * @link       http://www.decisionpublique.fr
+ * @link       http://www.decisionpublique.fH
  * @license    GNU/GPL
  * @author     Jonas Lerebours - Benjamin Rivalland
 */
@@ -454,7 +454,18 @@ function updateprofile() {
 		
 		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
 		
-		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
+		$message = array(
+			'user_id_from' => $current_user->id, 
+			'user_id_to' => $user->id, 
+			'subject' => $email->subject, 
+			'message' => $body
+						);
+		$model->logEmail($message);
+
+		if ($profile > 8) {
+			$this->setRedirect('index.php?option=com_emundus&view=application&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#em_application_forms');
+		} else		
+			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
 	}
 
 	function delusers($reqids = null) {
@@ -486,7 +497,7 @@ function updateprofile() {
 	}
 
 
-	function edituser() {
+	function edituser() { 
 		$db = JFactory::getDBO();
 		$current_user = JFactory::getUser();
 		$Itemid=JSite::getMenu()->getActive()->id; 
@@ -505,6 +516,7 @@ function updateprofile() {
 		$newuser['schoolyear'] = JRequest::getVar('schoolyear', null, 'POST', '', 0);
 		$newuser['profile'] = JRequest::getVar('profile', null, 'POST', '', 0);
 		$newuser['university_id'] = JRequest::getVar('university_id', null, 'POST', '', 0);
+		$newuser['cb_campaigns'] = JRequest::getVar('cb_campaigns', null, 'POST', '', 0);
 
 		$model = $this->getModel('profile');
 		$tacl = $model->getProfile($newuser['profile']);
@@ -550,28 +562,29 @@ function updateprofile() {
 		//
 		// Affectation a/aux groupe(s)
 		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array', 0);		
-			$db->setQuery('DELETE FROM `#__emundus_groups` WHERE user_id='.mysql_real_escape_string($newuser['id']));
-			$db->Query() or die($db->getErrorMsg());
+		$db->setQuery('DELETE FROM `#__emundus_groups` WHERE user_id='.mysql_real_escape_string($newuser['id']));
+		$db->Query() or die($db->getErrorMsg());
+		if(count($groups) > 0) {
 			foreach($groups as $grp) {
 				$query = 'INSERT INTO `#__emundus_groups` (`user_id`, `group_id`)
 							VALUES ('.$user->id.', '.$grp.')';
 				$db->setQuery($query);
 				$db->Query() or die($db->getErrorMsg());
 			}
-
+		}
 		if($user->profile == 999) {
 			$this->_blockuser($user->id);
 		}else{
-			$this->affectGroup($user->id,$user->profile);
+			$this->affectGroup($user->id, $user->profile);
 		}
-		
 		
 		//
 		// Affectation a/aux profil(s) secondaires
 		$profiles = JRequest::getVar('cb_profiles', null, 'POST', 'array', 0);
-			$db->setQuery('DELETE FROM `#__emundus_users_profiles` WHERE user_id='.mysql_real_escape_string($newuser['id']));
-			$db->Query() or die($db->getErrorMsg());
-			$profile_tmp='';
+		$db->setQuery('DELETE FROM `#__emundus_users_profiles` WHERE user_id='.mysql_real_escape_string($newuser['id']));
+		$db->Query() or die($db->getErrorMsg());
+		$profile_tmp='';
+		if(count($profiles) > 0) {
 			foreach($profiles as $p) {
 				if($profile_tmp != $p){
 					$query = 'INSERT INTO `#__emundus_users_profiles` (`user_id`, `profile_id`)
@@ -581,6 +594,32 @@ function updateprofile() {
 				}
 				$profile_tmp=$p;
 			}
+		}
+		// Manage with campaign
+		$m_users = $this->getModel('users');
+		$campaigns_candidature = $m_users->getCampaignsCandidature($user->id);
+		if (count($newuser['cb_campaigns']) > 0) {
+			foreach ($newuser['cb_campaigns'] as $campaign_id) {
+				$campaign_set = false;
+				foreach ($campaigns_candidature as $key => $cc) {
+					if ($cc->campaign_id == $campaign_id) {
+						$campaign_set = true;
+					}
+				}
+				if (!$campaign_set) {
+					// add new campaign
+					$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`) VALUES ('.$user->id.', '.$campaign_id.')';
+					$db->setQuery($query);
+					$db->Query() or die($db->getErrorMsg());
+				}
+			}
+		
+			// Delete campaigns_candidature NOT IN ($newuser['cb_campaigns'])
+			$query = 'DELETE FROM `#__emundus_campaign_candidature` WHERE `applicant_id`='.$user->id.' AND campaign_id NOT IN ('.implode(',', $newuser['cb_campaigns']).')';
+			$db->setQuery($query);
+			$db->Query() or die($db->getErrorMsg());
+		}
+
 		$Itemid=JSite::getMenu()->getActive()->id;
 		$this->setRedirect('index.php?option=com_emundus&view=users&rowid='.$newuser['id'].'&edit=1&tmpl=component&Itemid='.$Itemid, JText::_('Users successfully updated'), 'message');
 	}
@@ -826,6 +865,23 @@ function updateprofile() {
 		$model = $this->getModel('campaign');
 		$email = $model->setResultLetterSent($sid, $campaign_id);
 		
+
+		$this->setRedirect('index.php?option=com_emundus&view=application&Itemid='.$itemid.'&sid='.$sid.'&tmpl=component');
+	}
+
+	function sendmail_expert(){ 
+		if( !EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) ) {
+			die(JError::raiseWarning( 500, JText::_( 'ACCESS_DENIED' ) ));
+		}
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$sid = JRequest::getVar('sid', null, 'GET', 'INT',0);
+		$campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'INT',0);
+		$model = $this->getModel('emails');
+		$email = $model->sendmail();
+/*
+		$model = $this->getModel('campaign');
+		$email = $model->setResultLetterSent($sid, $campaign_id);
+		*/
 
 		$this->setRedirect('index.php?option=com_emundus&view=application&Itemid='.$itemid.'&sid='.$sid.'&tmpl=component');
 	}

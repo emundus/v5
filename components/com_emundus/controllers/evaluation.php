@@ -99,6 +99,9 @@ class EmundusControllerEvaluation extends JController {
 		if(empty($ids) && !empty($reqids)) {
 			$ids = $reqids;
 		}
+
+		if((empty($ag_id) || !isset($ag_id)) && (empty($au_id) || !isset($au_id))) { die(JText::_("PLEASE_SELECT_LESS_APPLICANT_AT_ONCE")); }
+
 		if(!empty($ids)) {
 			foreach ($ids as $id) {
 				$params=explode('|',$id);
@@ -130,7 +133,8 @@ class EmundusControllerEvaluation extends JController {
 						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id,campaign_id) VALUES ('.$applicant_id.',null,'.$au_id.','.$campaign_id.')');
 				}
 				else {
-					$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id);
+					echo JText::_('APPLICANT')." : ".$id." ".JText::_('NOT_AFFECTED')."<br>"; $k++;
+					//$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$applicant_id.' AND campaign_id='.$campaign_id);
 				}
 				$db->Query() or die($db->getErrorMsg());
 			}
@@ -234,14 +238,14 @@ class EmundusControllerEvaluation extends JController {
 		$view = JRequest::getVar('view', null, 'GET', null, 0);
 		$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT', 0);
 		$sid = JRequest::getVar('sid', null, 'GET', null, 0);
-		$sids = explode('-',$sid);
+		$sids = explode('-',$sid); // student_id-ID
 
 		$db = JFactory::getDBO();
 		
 		$model = $this->getModel($view);
 		
 		if( EmundusHelperAccess::asEvaluatorAccessLevel($user->id) ) {
-			if( (EmundusHelperAccess::isEvaluator($user->id) && $model->is_evaluator_of_this($sids[0])>0) || EmundusHelperAccess::isCoordinator($user->id) ){
+			if( $model->is_evaluator_of_this($sids[1]) > 0 || EmundusHelperAccess::isCoordinator($user->id) ){
 				$query = 'DELETE FROM #__emundus_evaluations WHERE student_id='.$sids[0].' AND id='.$sids[1];
 				$db->setQuery($query);
 				$db->query();

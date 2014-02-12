@@ -2,8 +2,8 @@
 <extension version="2.5" client="site" type="language" method="upgrade">
 	<name>French (fr-FR)</name>
     <tag>fr-FR</tag>
-	<version>2.5.16.1</version>
-	<creationDate>19 mar 2013</creationDate>
+	<version>2.5.17.1</version>
+	<creationDate>December 2013</creationDate>
 	<author>French translation team : joomla.fr</author>
 	<authorEmail>traduction@joomla.fr</authorEmail>
 	<authorUrl>www.joomla.fr</authorUrl>

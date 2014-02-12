@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<params>
+		<param name="excluded_words" type="textarea" default="university,departement" cols="50" rows="10" label="Excluded words" description="Write all the generic words for organisation" />
+	</params>
+</config>

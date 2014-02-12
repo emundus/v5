@@ -46,13 +46,14 @@ class  plgSystemEmundus_period extends JPlugin
 		$app 		=  JFactory::getApplication();
 		$user 		=  JFactory::getUser();
 
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+		// Global variables
+		define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.$applicant_files_path);
+		define('EMUNDUS_PATH_REL', $applicant_files_path);
+		define('EMUNDUS_PHOTO_AID', 10);
+
 		if ( !$app->isAdmin() && isset($user->id) && !empty($user->id) ) {
-			// Global variables
-			define('EMUNDUS_PATH_ABS', JPATH_ROOT.DS.'images'.DS.'emundus'.DS.'files'.DS);
-			define('EMUNDUS_PATH_REL', 'images/emundus/files/');
-			define('EMUNDUS_PHOTO_AID', 10);
-			
-			$eMConfig 		= JComponentHelper::getParams('com_emundus');
 			$id_applicants 	= $eMConfig->get('id_applicants', '0');
 			$applicants 	= explode(',',$id_applicants);
 			$r 				= JRequest::getVar('r', null, 'GET', 'none',0);

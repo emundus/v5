@@ -11,12 +11,10 @@
  */
  
 // No direct access
- 
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
-jimport( 'joomla.application.component.model' );
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
- 
+jimport( 'joomla.application.component.model' ); 
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+
 class EmundusModelUsers extends JModel
 {
 	var $_total = null;
@@ -327,6 +325,25 @@ class EmundusModelUsers extends JModel
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
+
+	function getCampaignsPublished()
+	{
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__emundus_setup_campaigns AS sc WHERE sc.published=1 ORDER BY sc.start_date DESC, sc.label ASC';
+		//echo str_replace('#_','jos',$query);
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
+
+	function getCampaignsCandidature($aid = 0)
+	{
+		$db = JFactory::getDBO();
+		$uid = ($aid!=0)?$aid:JRequest::getVar('rowid', null, 'GET', 'none', 0);
+		$query = 'SELECT * FROM #__emundus_campaign_candidature AS cc  WHERE applicant_id='.$uid;
+		//echo str_replace('#_','jos',$query);
+		$db->setQuery( $query );
+		return $db->loadObjectList();
+	}
 	
 	function getUserListWithSchoolyear($schoolyears)
 	{
@@ -569,10 +586,10 @@ class EmundusModelUsers extends JModel
 		return $this->data;
 	}
 	
-	function adduser($user,$other_params){
+	function adduser($user, $other_params){
 		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
-		$mainframe = JFactory::getApplication();
-		$db = JFactory::getDBO();
+		$mainframe 	= JFactory::getApplication();
+		$db 		= JFactory::getDBO();
 		$pathway 	= $mainframe->getPathway();
 		$config		= JFactory::getConfig();
 		$authorize	= JFactory::getACL();
@@ -611,7 +628,9 @@ class EmundusModelUsers extends JModel
 			$db->setQuery($query);
 			$db->Query() or die($db->getErrorMsg());
 			
-			JFactory::getApplication()->enqueueMessage(JText::_('USERS_SUCCESSFULLY_ADDED'), 'message');
+			JFactory::getApplication()->enqueueMessage(JText::_('USER_SUCCESSFULLY_ADDED'), 'message');
+
+			return $user->id;
 		}
 		
 	}
@@ -629,6 +648,55 @@ class EmundusModelUsers extends JModel
 		$db->setQuery($query);
 		return $db->loadResultArray();		
 	}
+
+  /**
+   *
+   * PLAIN LOGIN
+   *
+   */
+  function plainLogin($credentials) {
+    // Get the application object.
+    $app = JFactory::getApplication();
+
+    // Get the log in credentials.
+ /*   $credentials = array();
+    $credentials['username'] = $this->_user;
+    $credentials['password'] = $this->_passw;*/
+    
+    $options = array();
+    return $app->login($credentials, $options);
+    
+  }
+
+  /**
+   *
+   * ENCRYPT LOGIN
+   *
+   */
+  function encryptLogin($credentials) {
+    // Get the application object.
+    $app = JFactory::getApplication();
+    
+    $db =& JFactory::getDBO();
+    $query = 'SELECT `id`, `username`, `password`'
+      . ' FROM `#__users`'
+      . ' WHERE username=' . $db->Quote( $credentials['username'] )
+      . '   AND password=' . $db->Quote( $credentials['password'] )
+      ;
+    $db->setQuery( $query );
+    $result = $db->loadObject();
+    
+    if($result) {
+      JPluginHelper::importPlugin('user');
+      
+      $options = array();
+      $options['action'] = 'core.login.site';
+      
+      $response['username'] = $result->username;
+      $result = $app->triggerEvent('onUserLogin', array((array)$response, $options));
+    }
+
+  }
 
 }
 ?>

@@ -42,6 +42,31 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 			?>
         </td>
     </tr>
+    <tr id="show_campaign" style="visibility:visible;">
+      <th ><?php echo JText::_('CAMPAIGN'); ?></th>
+      <td><?php 
+        echo '<select name="cb_campaigns[]" size="5" multiple="multiple" id="cb_campaigns">';
+
+        foreach($this->campaigns_published as $campaign) { 
+          if($edit==1){
+            $applied = false;
+            foreach($this->campaigns_candidature as $cc){ 
+              if($campaign->id == $cc->campaign_id){
+                 $applied = true;
+              }
+            }
+            if($applied){
+              echo '<option value="'.$campaign->id.'" selected />'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+            } else{
+               echo '<option value="'.$campaign->id.'"/>'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+            }
+          } else{
+             echo '<option value="'.$campaign->id.'"/>'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+          }
+        }
+        echo '</select>';; 
+      ?></td>
+	</tr>
 	<tr>
 		<td colspan="2" align="center">
 			<input type="submit" value="<?php echo JText::_('SAVE'); ?>"/>
@@ -50,6 +75,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 </table>
 </fieldset>
 </form>
+<script>$(document).ready(function() {$("#cb_campaigns").chosen({width: "650px"}); })</script>';
 <script type="text/javascript">
 function hidden_tr(div1,div2, profile)
 {

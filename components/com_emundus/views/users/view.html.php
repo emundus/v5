@@ -58,6 +58,12 @@ class EmundusViewUsers extends JView
 		
 		$campaigns = $this->get('Campaigns');
 		$this->assignRef('campaigns', $campaigns);
+
+		$campaigns_published = $this->get('CampaignsPublished');
+		$this->assignRef('campaigns_published', $campaigns_published);
+
+		$campaigns_candidature = $this->get('CampaignsCandidature');
+		$this->assignRef('campaigns_candidature', $campaigns_candidature);
 		
 	/*	$newsletter = $this->get('Newsletter');
 		$this->assignRef('newsletter', $newsletter);

@@ -16,6 +16,9 @@ defined( '_JEXEC' ) or die();
 $jinput 	= JFactory::getApplication()->input;
 $key_id 	= $jinput->get->get('keyid');
 $sid 		= $jinput->get->get('sid');
+$email 		= JRequest::getVar('email', null,'GET');
+$campaign_id= JRequest::getVar('cid', null,'GET');
+$formid 	= JRequest::getVar('formid', null,'GET');
 
 $baseurl 	= JURI::base();
 
@@ -29,7 +32,7 @@ $obj=$db->loadObject();
 if (isset($obj)) {
 	$s = $jinput->get->get('s');
 	if ($s != 1) {
-		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&jos_emundus_uploads___user_id='.$sid.'&jos_emundus_uploads___attachment_id='.$obj->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&s=1';
+		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_uploads___user_id='.$sid.'&jos_emundus_uploads___attachment_id='.$obj->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&email='.$email.'&cid='.$campaign_id.'&s=1';
 		header('Location: '.$link_upload);
 		exit();
 	} else {
@@ -45,7 +48,7 @@ if (isset($obj)) {
 			exit();
 		} 
 		$student=JUser::getInstance($sid);
-		echo '<h1>'.JText::_('APPLICANT').' : '.$student->name.'</h1>';
+		echo '<h1>'.$student->name.'</h1>';
 	}
 } else {
 	header('Location: '.$baseurl.'index.php?option=com_content&view=article&id=28');

@@ -119,39 +119,41 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 	//
 	// Evaluation result
 	//
-	$evaluation = $evaluations->getEvaluationByID($evaluation_id);
-	$reason = $evaluations->getEvaluationReasons();
-	unset($evaluation[0]["id"]);
-	unset($evaluation[0]["user"]);
-	unset($evaluation[0]["time_date"]);
-	unset($evaluation[0]["student_id"]);
-	unset($evaluation[0]["parent_id"]);
-	unset($evaluation[0]["campaign_id"]);
-	unset($evaluation[0]["comment"]);
-	if(empty($evaluation[0]["reason"])) {
-		unset($evaluation[0]["reason"]);
-		unset($evaluation[0]["reason_other"]);
-	} elseif(empty($evaluation[0]["reason_other"])) {
-		unset($evaluation[0]["reason_other"]);
-	}
-	$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
+	if ($evaluation_id>0) {
+		$evaluation = $evaluations->getEvaluationByID($evaluation_id);
+		$reason = $evaluations->getEvaluationReasons();
+		unset($evaluation[0]["id"]);
+		unset($evaluation[0]["user"]);
+		unset($evaluation[0]["time_date"]);
+		unset($evaluation[0]["student_id"]);
+		unset($evaluation[0]["parent_id"]);
+		unset($evaluation[0]["campaign_id"]);
+		unset($evaluation[0]["comment"]);
+		if(empty($evaluation[0]["reason"])) {
+			unset($evaluation[0]["reason"]);
+			unset($evaluation[0]["reason_other"]);
+		} elseif(empty($evaluation[0]["reason_other"])) {
+			unset($evaluation[0]["reason_other"]);
+		}
+		$evaluation_details = EmundusHelperList::getElementsDetailsByName('"'.implode('","', array_keys($evaluation[0])).'"');
 
-	$result = "";
-	foreach ($evaluation_details as $ed) {
-		if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
-			//$result .= '<br>'.$ed->element_label.' : ';
-			if($ed->element_name=="reason") {
-				$result .= '<ul>';
-				foreach ($evaluation as $e) {
-					$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
-				}
-				if (@!empty($evaluation[0]["reason_other"]))
-					$result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
-				$result .= '</ul>';
-			} /*elseif($ed->element_name=="result") {
-					$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
-			} else
-				$result .= $evaluation[0][$ed->element_name];*/
+		$result = "";
+		foreach ($evaluation_details as $ed) {
+			if($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations") {
+				//$result .= '<br>'.$ed->element_label.' : ';
+				if($ed->element_name=="reason") {
+					$result .= '<ul>';
+					foreach ($evaluation as $e) {
+						$result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>'; //die(print_r(@$reason[$e[@$ed->element_name]]));
+					}
+					if (@!empty($evaluation[0]["reason_other"]))
+						$result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';
+					$result .= '</ul>';
+				} /*elseif($ed->element_name=="result") {
+						$result .= $eligibility[$evaluation[0][$ed->element_name]]->title;
+				} else
+					$result .= $evaluation[0][$ed->element_name];*/
+			}
 		}
 	}
 
@@ -388,11 +390,12 @@ function letter_pdf_template ($user_id, $letter_id) {
 	//
 	// Replacement
 	//
-	$post = array(  'TRAINING_CODE' => @$letters[0]['training'], 
-					'TRAINING_PROGRAMME' => @$programme,
-					'REASON' => JText::_("DEPEND_OF_EVALUATION"), 
-					'TRAINING_FEE' => @$courses_fee, 
-					'TRAINING_PERIODE' => @$courses_list );
+	$post = array(  'TRAINING_CODE' 		=> @$letters[0]['training'], 
+					'TRAINING_PROGRAMME' 	=> @$programme,
+					'REASON'				=> JText::_("DEPEND_OF_EVALUATION"), 
+					'TRAINING_FEE' 			=> @$courses_fee, 
+					'TRAINING_PERIODE'		=> @$courses_list
+				);
 	$tags = $emails->setTags($user_id, $post);
 
 	foreach ($letters as $letter) {

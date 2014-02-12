@@ -27,7 +27,7 @@ if($edit!=1) {
 
 <a href="<?php echo JURI::getInstance()->toString().'&tmpl=component'; ?>" target="_blank" class="emundusraw"><img src="<?php echo $this->baseurl.'/images/M_images/printButton.png" alt="'.JText::_('PRINT').'" title="'.JText::_('PRINT'); ?>" width="16" height="16" align="right" /></a>
 <?php
-echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid.'" rel="{handler:\'iframe\',size:{x:window.innerWidth*0.4,y:window.innerHeight*0.8}}" 
+echo'<a class="modal" target="_self" href="'.$this->baseurl.'/index.php?option=com_emundus&view=users&layout=adduser&tmpl=component&Itemid='.$itemid.'" rel="{handler:\'iframe\',size:{x:window.innerWidth*0.8,y:window.innerHeight*0.9}}" 
 >
 <img src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user.png" alt="'.JText::_('ADD_USER').'" width="50" align="bottom" />
 </a>';
@@ -290,11 +290,11 @@ foreach ($this->users as $user) { ?>
       <th><?php echo JText::_('UNIVERSITY_FROM'); ?></th>
       <td><select name="university_id">
           <?php echo '<option value="0">'.JText::_('PLEASE_SELECT').'</option>';
-			foreach($this->universities as $university) { 
-				echo '<option value="'.$university->id;
-				echo @$this->users[0]->university_id==$university->id?'" selected':'"';
-				echo '>'.$university->title;'</option>'; 
-			} ?>
+      foreach($this->universities as $university) { 
+        echo '<option value="'.$university->id;
+        echo @$this->users[0]->university_id==$university->id?'" selected':'"';
+        echo '>'.$university->title;'</option>'; 
+      } ?>
         </select></td>
     </tr>
     <tr id="show_group" style="visibility:hidden;">
@@ -319,6 +319,31 @@ foreach ($this->users as $user) { ?>
 				} 
 			?></td>
     </tr>
+       <tr id="show_campaign" style="visibility:visible;">
+      <th ><?php echo JText::_('CAMPAIGN'); ?></th>
+      <td><?php 
+        echo '<select name="cb_campaigns[]" size="5" multiple="multiple" id="cb_campaigns">';
+
+        foreach($this->campaigns_published as $campaign) { 
+          if($edit==1){
+            $applied = false;
+            foreach($this->campaigns_candidature as $cc){ 
+              if($campaign->id == $cc->campaign_id){
+                 $applied = true;
+              }
+            }
+            if($applied){
+              echo '<option value="'.$campaign->id.'" selected />'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+            } else{
+               echo '<option value="'.$campaign->id.'"/>'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+            }
+          } else{
+             echo '<option value="'.$campaign->id.'"/>'.$campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date.'</option>';
+          }
+        }
+        echo '</select>';; 
+      ?></td>
+    </tr>
     <tr>
       <td colspan="2" align="center"><input type="submit" value="<?php echo JText::_('SAVE'); ?>"/></td>
     </tr>
@@ -327,7 +352,7 @@ foreach ($this->users as $user) { ?>
 <input type="hidden" name="Itemid" value="<?php echo $itemid; ?>" />
 </form>
 </div>
-
+<script>$(document).ready(function() {$("#cb_campaigns").chosen({width: "650px"}); })</script>';
 <script type="text/javascript">
 window.onload=function(){
 	var profile = document.getElementById('profile');
@@ -338,8 +363,8 @@ window.onload=function(){
 	}
 }
 
-function hidden_tr(div1,div2, profile)
-{
+function hidden_tr(div1, div2, profile)
+{ 
 	if (profile[profile.selectedIndex].id!=2)
 	{
 		document.getElementById(div1).style.visibility = "visible";
@@ -357,7 +382,7 @@ function hidden_tr(div1,div2, profile)
 			}
 		}
 		if(div1.indexOf("univ")!=-1){
-			select = document.getElementById(div1).getElementsByTagName("select");alert(select.length);
+			select = document.getElementById(div1).getElementsByTagName("select"); //alert(select.length);
 			 for(i=0 ; i<select.length ; i++){
 				select[i].selectedIndex=0;
 			}

@@ -211,7 +211,82 @@ class EmundusHelperEmails{
 					{
 						if(xhr.responseText != "SQL Error"){ 
 							$("em_dl_"+id).innerHTML = "";
-							$("em_dl_"+id).style.visibility="hidden";
+							document.getElementById("em_dl_"+id).style.visibility="hidden";
+						}else{
+							alert(xhr.responseText);
+						}
+					}
+				};
+				xhr.open("GET", "index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr.send("&id="+id);
+			}</script>';
+		}
+		if(in_array('expert', $params)){
+			$editor = &JFactory::getEditor();
+			$mail_body = $editor->display( 'mail_body', '', '99%', '400', '20', '20', false, 'mail_body', null, null );
+
+			$student_id = JRequest::getVar('student_id', null, 'GET', 'INT',0);
+			$campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'INT',0);
+			$applicant = JFactory::getUser($student_id);
+
+			$experts = "";
+			
+			$email .= '<fieldset>
+				<legend> 
+					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_EXPERTS').'::'.JText::_('EMAIL_EXPERTS_TIP').'">
+						<img src="'.JURI::Base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'APPLICANT' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i> 
+					</span>
+				</legend>
+				<div>';
+				$email .= '<label for="mail_subject">'.JText::_( 'SUBJECT' ).' </label>';
+				$email .= '<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="80" />';
+				$email .= '<label for="mail_to">'.JText::_( 'EMAIL_TO' ).' </label>';
+				$email .= '<input name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="80" />';
+				$email .= '<input name="mail_from" type="hidden" class="inputbox" id="mail_from" value="'.$current_user->email.'" />	
+					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" />
+					<input name="student_id" type="hidden" class="inputbox" id="student_id" value="'.$student_id.'" />
+				</div>';
+				//$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
+				$email .= $mail_body;
+				$email .= '
+				</p>
+					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
+					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
+				<p><div><input type="submit" name="expert" onclick="document.pressed=this.name" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>
+				</p>
+			</fieldset>';
+			
+			$email .= '<script>
+			function getXMLHttpRequest() {
+				var xhr = null;
+				 
+				if (window.XMLHttpRequest || window.ActiveXObject) {
+					if (window.ActiveXObject) {
+						try {
+							xhr = new ActiveXObject("Msxml2.XMLHTTP");
+						} catch(e) {
+							xhr = new ActiveXObject("Microsoft.XMLHTTP");
+						}
+					} else {
+						xhr = new XMLHttpRequest();
+					}
+				} else {
+					alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+					return null;
+				}
+				 
+				return xhr;
+			}
+			function deleteAttachment(id){
+				var xhr = getXMLHttpRequest();
+				xhr.onreadystatechange = function()
+				{
+					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+					{
+						if(xhr.responseText != "SQL Error"){ 
+							$("em_dl_"+id).innerHTML = "";
+							document.getElementById("em_dl_"+id).style.visibility="hidden";
 						}else{
 							alert(xhr.responseText);
 						}
@@ -269,7 +344,7 @@ class EmundusHelperEmails{
 	}
 	
 	function getTemplate(){
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$select = JRequest::getVar('select', null, 'POST', 'none', 0);
 		$query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$select;
 		$db->setQuery($query);

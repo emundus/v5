@@ -43,8 +43,8 @@ class EmundusModelEvaluation extends JModel
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
-		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", "%" );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", "%" );
 		$programmes 			= $mainframe->getUserStateFromRequest($option . 'programmes', 'programmes' );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
@@ -413,7 +413,7 @@ class EmundusModelEvaluation extends JModel
             }
         }
 		//$query .= ' ORDER BY eu.user_id';
-		// var_dump(str_replace('#__','jos_',$query));
+		//var_dump(str_replace('#__','jos_',$query));
 		return $query;
 	}
 	
@@ -436,7 +436,7 @@ class EmundusModelEvaluation extends JModel
 		$query .= ' AND (ege.user_id='.$this->_user->id.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$this->_user->id.'))';
 		$query .= $this->_buildFilters();
 		$this->_db->setQuery($query);
-// echo str_replace('#_','jos',$query);
+ //echo str_replace('#_','jos',$query);
 		$applicants=$this->_db->loadObjectlist();
 		return $applicants;
 	}
@@ -457,7 +457,7 @@ class EmundusModelEvaluation extends JModel
 		}
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
-// echo str_replace('#_', "jos", $query);
+ //echo str_replace('#_', "jos", $query);
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectlist();
 	}
@@ -675,12 +675,13 @@ class EmundusModelEvaluation extends JModel
 	}
 
 	function getCurrentCampaignsID(){
-		$query = 'SELECT id 
+		/*$query = 'SELECT id 
 				FROM #__emundus_setup_campaigns 
 				WHERE published = 1 AND end_date > NOW()
 				ORDER BY year DESC';
 		$this->_db->setQuery( $query );
-		return $this->_db->loadResultArray();
+		return $this->_db->loadResultArray();*/
+		return EmundusHelperFilters::getCurrentCampaignsID();
 	}
 
 	function getPublished(){
@@ -784,6 +785,12 @@ class EmundusModelEvaluation extends JModel
 
 	function getLettersTemplateByID($id) {
 		$query = "SELECT * FROM #__emundus_setup_letters WHERE id=".$id;
+		$this->_db->setQuery($query); 
+		return $this->_db->loadAssocList();
+	}
+
+	function getExperts($applicant_id, $select, $table) {
+		$query = "SELECT ".$select." FROM ".$table." WHERE user=".$applicant_id;
 		$this->_db->setQuery($query); 
 		return $this->_db->loadAssocList();
 	}

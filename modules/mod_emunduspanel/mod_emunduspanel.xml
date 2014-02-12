@@ -86,6 +86,14 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
+
+                <field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 13&lt;b&gt;" label="" description="" />
+				<field name="menu_profile13" type="multilist" default="" label="menu_profile13"/>
+				<field name="menu_profile13_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
+				<field name="menu_profile13_text" type="radio" default="1" label="Display menu text" description="">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
 			</fieldset>
 		</fields>
 	</config>

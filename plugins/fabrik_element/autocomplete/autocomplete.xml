@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<install version="1.5" type="fabrikplugin" group="element" method="upgrade">
+	<name>autocomplete</name>
+	<author>Benjamin Rivalland</author>
+	<creationDate>Sept 2011</creationDate>
+	<copyright>(C) 2008-2011 decisionpublique.fr</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>benjamin@decisionpublique.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.0.0</version>
+	<description>Performs an ajax autocomplete on result data.</description>
+	<files>
+		<filename fabrikplugin="fabrikautocomplete">fabrikautocomplete.php</filename>
+		<filename>javascript.js</filename>
+		<filename>index.html</filename>
+	</files>
+	
+	<administration>
+		<languages folder="administrator/language" >
+			<language tag="en-GB">en-GB/en-GB.com_fabrik.plg.element.fabrikautocomplete.ini</language>
+			<language tag="fr-FR">fr-FR/fr-FR.com_fabrik.plg.element.fabrikautocomplete.ini</language>
+		</languages>
+	</administration>
+	
+	<params addpath="/administrator/components/com_fabrik/elements">
+		<param name="hidden" type="hidden" default="" size="3" label="HIDDEN" />
+		<param name="width" type="width" label="Width"/>
+		<param name="eval" type="eval" default="0" label="Eval" />
+		<param name="default" type="default" default="" label="Default" />
+	</params>
+	<params group="extra">
+		<param name="ac_sql" type="textarea" cols="60" rows="10" default="" label="SQL" description="SQL_DESC"/>
+		<param name="ac_callback_id" size="60" type="text" default="" label="CALLBACK_ID" description="CALLBACK_ID_DESC" />
+		<param name="ac_search_value_id" size="60" type="text" default="" label="SEARCH_VALUE_ID" description="SEARCH_VALUE_ID_DESC" />
+		<param name="ac_search_field" size="60" type="text" default="" label="SEARCH_FIELD" description="SEARCH_FIELD_DESC" />
+		<param name="ac_info_field" size="60" type="text" default="" label="INFO_FIELD" description="INFO_FIELD_DESC" />
+		<param name="ac_info_cible_id" size="60" type="text" default="" label="INFO_CIBLE_ID" description="INFO_CIBLE_ID_DESC" />
+		<param name="ac_format_string" type="text" default="" label="FORMATSTRING" description="FORMATSTRINGDESC" />
+	</params>
+</install>
