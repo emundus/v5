@@ -167,6 +167,9 @@ class EmundusModelEmails extends JModel
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 			$campaign = EmundusHelperfilters::getCampaignByID($campaign_id);
 			$application = new EmundusModelApplication;
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$formid = $eMConfig->get('expert_fabrikformid', '110');
+			$documentid = $eMConfig->get('expert_document_id', '36');
 			
 			$mode = 1; // HTML
 			$mail_cc = null;
@@ -200,13 +203,13 @@ class EmundusModelEmails extends JModel
 			foreach ($mail_to as $m_to) {
 				$key1 = md5($this->rand_string(20).time());
 				// 2. MAJ de la table emundus_files_request
-				$attachment_id = 36; // document avec clause de confidentialité
+				$attachment_id = $documentid; // document avec clause de confidentialité
 				$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email) VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($mail_to).')';
 				$this->_db->setQuery( $query );
 				$this->_db->query();
 				
 				// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-				$link_accept = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid=110&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
+				$link_accept = JURI::base().'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tableid=71&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
 				$link_refuse = JURI::base().'index.php?option=com_emundus&task=decline&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
 
 				$post = array(  'EXPERT_ACCEPT_LINK' 	=> $link_accept, 

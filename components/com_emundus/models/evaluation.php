@@ -39,6 +39,34 @@ class EmundusModelEvaluation extends JModel
 		
 		$this->_db = JFactory::getDBO();
 		$this->_user = JFactory::getUser();
+
+		$menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		/* 
+		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
+		*/
+		if (empty($current_menu))
+			return false;
+		$menu_params = $menu->getParams($current_menu->id);
+		
+		$filts_names = explode(',', $menu_params->get('em_filters_names'));
+		$filts_values = explode(',', $menu_params->get('em_filters_values'));
+		$filts_details = array('profile'			=> NULL,
+							   'evaluator'			=> NULL,
+							   'evaluator_group'	=> NULL,
+							   'schoolyear'			=> NULL,
+							   'missing_doc'		=> NULL,
+							   'complete'			=> NULL,
+							   'finalgrade'			=> NULL,
+							   'validate'			=> NULL,
+							   'other'				=> NULL);
+		$i = 0;
+		foreach ($filts_names as $filt_name)
+			if (array_key_exists($i, $filts_values))
+				$filts_details[$filt_name] = $filts_values[$i++];
+			else
+				$filts_details[$filt_name] = '';
+		unset($filts_names); unset($filts_values);
 	
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
@@ -88,6 +116,36 @@ class EmundusModelEvaluation extends JModel
 		
 		$col_elt	= $this->getState('elements');
 		$col_other	= $this->getState('elements_other'); 
+
+		$this->elements_id = $menu_params->get('em_elements_id');
+		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
+
+		$this->elements_default = array();
+		$default_elements = EmundusHelperFilters::getElementsName($this->elements_id);
+		if (!empty($default_elements))
+			foreach ($default_elements as $def_elmt) {
+				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
+			}
+		if (count($col_elt) == 0) $col_elt = array();
+		if (count($col_other) == 0) $col_other = array();
+		if (count($this->elements_default) == 0) $this->elements_default = array();
+		
+		$this->col = array_merge($col_elt, $col_other, $this->elements_default);
+		$this->joined = array();
+
+		$elements_names = '"'.implode('", "', $this->col).'"'; 
+		$result = EmundusHelperList::getElementsDetails($elements_names); 
+		$result = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels")); 
+		$this->details = new stdClass();
+		foreach ($result as $res) {
+			$this->details->{$res->tab_name.'__'.$res->element_name} = array('element_id'	=> $res->element_id,
+																			'plugin'		=> $res->element_plugin,
+																			'attribs'		=> $res->params,
+																			'sub_values'	=> $res->sub_values,
+																			'sub_labels'	=> $res->sub_labels,
+																			'group_by'		=> $res->tab_group_by);
+		} 
+		//echo '<pre>'; print_r($this->details);  echo '</pre>'; 
 	}
 	
 	function _buildContentOrderBy(){
@@ -197,6 +255,128 @@ class EmundusModelEvaluation extends JModel
 		}
 		return $applicants;
 	}
+
+	function setSubQuery($tab, $elem) {
+		$search 				= JRequest::getVar('elements'				, NULL, 'POST', 'array', 0);
+		$search_values 			= JRequest::getVar('elements_values'		, NULL, 'POST', 'array', 0);
+		$search_other 			= JRequest::getVar('elements_other'			, NULL, 'POST', 'array', 0);
+		$search_values_other 	= JRequest::getVar('elements_values_other'	, NULL, 'POST', 'array', 0);
+		
+		$db = JFactory::getDBO();
+		
+		$query = 'SELECT DISTINCT(#__emundus_users.user_id), '.$tab.'.'.$elem.' AS '.$tab.'__'.$elem;
+		$query .= '	FROM #__emundus_users 
+					LEFT JOIN #__users ON #__users.id=#__emundus_users.user_id';
+		
+		// subquery JOINS
+		$this->joined[] = 'jos_emundus_users';
+		$this->setJoins($search, $query, $this->joined);
+		$this->setJoins($search_other, $query, $this->joined);
+		$this->setJoins($this->elements_default, $query, $this->joined);
+		
+		// subquery WHERE
+		$query .= ' WHERE '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
+
+		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
+		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
+		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
+
+		//str_replace("#_", "jos", $query);
+		$db->setQuery( $query );
+		$obj = $db->loadObjectList();
+		$list = array();
+		$tmp = '';
+		foreach ($obj as $unit) {
+			if ($tmp != $unit->user_id)
+				$list[$unit->user_id] = EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			else
+				$list[$unit->user_id] .= ','.EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			$tmp = $unit->user_id;
+		}
+		return $list;
+	}
+	
+	function setSelect($search) {
+		$cols = array();
+		/*if(!empty($search)) {
+			asort($search);
+			$i = -1;
+			$old_table = '';
+			foreach ($search as $c)
+				if(!empty($c)){
+					$tab = explode('.', $c);
+					if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
+						$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
+					else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
+				}
+			if(count($cols > 0) && !empty($cols))
+				$cols = implode(', ',$cols);
+		}*/
+
+		if(!empty($search)) {
+			asort($search);
+			//$i = -1;
+			//$old_table = '';
+			$cols = array();
+			foreach ($search as $c) {
+				if(!empty($c)){
+					$tab = explode('.', $c);
+				  if(!in_array($tab[0].'.'.$tab[1], $cols)) {
+					if($tab[0]=="jos_emundus_training"){
+						if (count($tab)>=1) {
+							/*if($tab[0] != $old_table)
+								$i++;*/
+							$cols[] = 'search_'.$tab[0].'.label as '.$tab[1].' ';
+							//$old_table = $tab[0];
+						}
+					}else{
+						if (count($tab)>=1) {
+							/*if($tab[0] != $old_table)
+								$i++;*/
+							$cols[] = $tab[0].'.'.$tab[1];
+							//$old_table = $tab[0];
+						}
+					}
+				  }
+				}
+			}
+			if(count($cols>0) && !empty($cols))
+				$cols = implode(', ',$cols);
+		}
+		return $cols;
+	}
+	
+	function isJoined($tab, $joined) {
+		foreach ($joined as $j)
+			if ($tab == $j) return true;
+		return false;
+	}
+	
+	function setJoins($search, $query, $joined) {
+		if(!empty($search)) {
+			$old_table = '';
+			foreach ($search as $s) { 
+				$tab = explode('.', $s);
+				if (count($tab) > 1) {
+					if($tab[0] != $old_table && !$this->isJoined($tab[0], $joined)){
+						if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments' )
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.applicant_id=u.id ';
+						elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' || $tab[0] == 'jos_emundus_academic_transcript'
+								|| $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility')
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=u.id ';
+						elseif ($tab[0]=='jos_emundus_training'){
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training';
+						} else
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=u.id ';
+						$this->joined[] = $tab[0];var_dump($this->joined); 
+					}
+					$old_table = $tab[0];
+				}
+			}
+		}
+
+		return $query;
+	}
 	
 	function _buildSelect(){
 		$current_user 			= JFactory::getUser();
@@ -218,40 +398,24 @@ class EmundusModelEvaluation extends JModel
 
 		if (count($search)==0) $search = $s_elements;
 
-		if(!empty($search)) {
-			asort($search);
-			$i = -1;
-			$old_table = '';
-			$cols = array();
-			foreach ($search as $c) {
-				if(!empty($c)){
-					$tab = explode('.', $c);
-					if($tab[0]=="jos_emundus_training"){
-						if (count($tab)>=1) {
-							if($tab[0] != $old_table)
-								$i++;
-							$cols[] = 'search_'.$tab[0].'.label as '.$tab[1].' ';
-							$old_table = $tab[0];
-						}
-					}else{
-						if (count($tab)>=1) {
-							if($tab[0] != $old_table)
-								$i++;
-							$cols[] = $tab[0].'.'.$tab[1];
-							$old_table = $tab[0];
-						}
-					}
-				}
-			}
-			if(count($cols>0) && !empty($cols))
-				$cols = implode(', ',$cols);
-		}
-		
+		$cols = $this->setSelect($search);
+		$cols_other = $this->setSelect($search_other);
+		$cols_default = $this->setSelect($this->elements_default);
+	
+		$this->joined[] = 'jos_emundus_users';
+		$this->joined[] = 'jos_users';
+		$this->joined[] = 'jos_emundus_evaluations';
+		$this->joined[] = 'jos_emundus_setup_profiles';
+		$this->joined[] = 'jos_emundus_personal_detail';
+		$this->joined[] = 'jos_emundus_declaration';
+		$this->joined[] = 'jos_emundus_final_grade';
+			
 		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, u.email, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent, efg.final_grade ';
-		if(!empty($cols)) 
-			$query .= ', '.$cols;
-		if(!empty($eval_columns)) 
-			$query .= ', '.implode(",", $eval_columns);
+		if(!empty($cols)) $query .= ', '.$cols;
+		if(!empty($cols_other)) $query .= ', '.$cols_other;
+		if(!empty($cols_default)) $query .= ', '.$cols_default;
+		if(!empty($eval_columns)) $query .= ', '.implode(",", $eval_columns);
+
 		$query .= '	FROM #__emundus_campaign_candidature ecc
 			LEFT JOIN  #__emundus_users eu ON eu.user_id = ecc.applicant_id 
 			LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=ecc.campaign_id
@@ -265,7 +429,7 @@ class EmundusModelEvaluation extends JModel
 		if(!empty($miss_doc))
 			$query .= ' LEFT JOIN #__emundus_uploads AS eup ON eup.user_id=u.id';
 
-		if(!empty($search)) {
+		/*if(!empty($search)) {
 			$i = 0;
 			$column=array();
 			foreach ($search as $s) {
@@ -282,8 +446,13 @@ class EmundusModelEvaluation extends JModel
 					}
 				}
 			}
-		}
-// echo str_replace('#_','jos',$query);
+		}*/
+
+		$query = $this->setJoins($search, $query, $this->joined);  
+		$query = $this->setJoins($search_other, $query, $this->joined);   
+		$query = $this->setJoins($this->elements_default, $query, $this->joined);  
+
+ //echo "<hr>".str_replace('#_','jos',$query);
 		return $query;
 	}
 	
@@ -413,7 +582,7 @@ class EmundusModelEvaluation extends JModel
             }
         }
 		//$query .= ' ORDER BY eu.user_id';
-		//var_dump(str_replace('#__','jos_',$query));
+	//var_dump(str_replace('#__','jos_',$query));
 		return $query;
 	}
 	
@@ -457,7 +626,7 @@ class EmundusModelEvaluation extends JModel
 		}
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
- //echo str_replace('#_', "jos", $query);
+ echo "<hr>".str_replace('#_', "jos", $query);
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectlist();
 	}
@@ -587,11 +756,22 @@ class EmundusModelEvaluation extends JModel
 	
 	function getSelectList(){
 		
-		$col = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		/*$col_elt = JRequest::getVar('elements', null, 'POST', 'array', 0);
+		$col_other = JRequest::getVar('elements_other', null, 'POST', 'array', 0);
 		// Starting a session.
 		$session = JFactory::getSession();
 		$elements = $session->get('s_elements');
-		if (count($col)==0) $col = $elements;
+		$elements_other = $session->get('s_elements_other');
+
+		if (count($col_elt)==0 || empty($col_elt)) $col_elt = is_array($elements)?$elements:array();
+		if (count($col_other)==0 || empty($col_other)) $col_other = is_array($elements_other)?$elements_other:array();
+
+		$col = array_merge($col_elt, $col_other);
+
+		var_dump($col); var_dump($this->col);
+*/
+		$col = $this->col;
+
 		$lists = '';
 		
 		if(!empty($col)){

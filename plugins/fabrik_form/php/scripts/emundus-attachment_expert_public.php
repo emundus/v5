@@ -28,6 +28,9 @@ $cid 		= JRequest::getVar('cid', null,'GET');
 $email 		= JRequest::getVar('email', null,'GET');
 $attachment_id = $jinput->get('jos_emundus_uploads___attachment_id');
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$formid = $eMConfig->get('expert_fabrikformid', '110');
+
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php'); 
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php'); 
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -46,7 +49,7 @@ $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_req
 $file_request=$db->loadObject();
 
 if($files['jos_emundus_uploads___filename']['size'] == 0){
-		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=110&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&cid='.$campaign_id.'&email='.$email;
+		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&cid='.$campaign_id.'&email='.$email;
 		if($files['jos_emundus_uploads___filename']['error'] == 4)
 			JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file','error')); // no file
 		else

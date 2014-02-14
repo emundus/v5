@@ -59,7 +59,8 @@
 		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" /> 
 		<field name="reference_table" type="text" label="Reference table" description="REFERENCE_TABLE" />
 		<field name="reference_field" type="text" label="Reference fiels" description="REFERENCE_FIELD" />
-		<field name="expert_fabrikformid" type="text" label="Fabrik form ID for expert" description="EXPERT_FIELD" />
+		<field name="expert_fabrikformid" type="text" default="110" label="Fabrik form ID for expert" description="EXPERT_FIELD" />
+		<field name="expert_document_id" type="text" default="36" label="Document ID to upload in expert Fabrik form" description="EXPERT_DOCUMENT_FIELD" />
     </fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >

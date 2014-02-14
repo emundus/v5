@@ -406,7 +406,7 @@ class EmundusHelperList{
 				}
 				if(in_array('letter',$params)){ 
 					if (!empty($user['final_grade'])) { 
-						$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';
+						$letter = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=email&layout=letters&jos_emundus_evaluations___student_id='.$user['user_id'].'&jos_emundus_evaluations___campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&jos_emundus_evaluations___id='.@$user['evaluation_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_RESULT_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/mail_post_to.png" /></a>';
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $letter; 
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
@@ -417,7 +417,7 @@ class EmundusHelperList{
 					}
 				}
 				if(in_array('expert',$params)){ 
-						$expert = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=evaluation&layout=expert&campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_APPLICATION_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user_22x22.png" /></a>';
+						$expert = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=email&layout=expert&campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_APPLICATION_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user_22x22.png" /></a>';
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_expert" id="em_expert'.$user['user_id'].'_'.$user['campaign_id'].'">';
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $expert; 
 						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';

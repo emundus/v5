@@ -66,9 +66,11 @@ class EmundusHelperFilters {
 
 		$mainframe->setUserState( $option."filter_order", "" );
 		$mainframe->setUserState( $option."filter_order_Dir", "" );
-		$mainframe->setUserState( $option."schoolyears", EmundusHelperFilters::getSchoolyears() );
-		$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
-		$mainframe->setUserState( $option."programmes", array() );
+		//$mainframe->setUserState( $option."schoolyears", EmundusHelperFilters::getSchoolyears() );		
+		$mainframe->setUserState( $option."schoolyears", array('%') );
+		//$mainframe->setUserState( $option."campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$mainframe->setUserState( $option."campaigns", array('%') );
+		$mainframe->setUserState( $option."programmes", array('%') );
 		$mainframe->setUserState( $option."elements", array() );
 		$mainframe->setUserState( $option."elements_values", array() );
 		$mainframe->setUserState( $option."elements_other", array() );
@@ -517,7 +519,7 @@ class EmundusHelperFilters {
 		$newsletter				= $mainframe->getUserStateFromRequest(  $option.'newsletter', 'newsletter', @$params['newsletter'] );
 		$spam_suspect			= $mainframe->getUserStateFromRequest(  $option.'spam_suspect', 'spam_suspect', @$params['spam_suspect'] );
 		$current_campaign		= $mainframe->getUserStateFromRequest(  $option.'campaigns', 'campaigns', EmundusHelperFilters::getCurrentCampaign() );
-		$current_programme		= $mainframe->getUserStateFromRequest(  $option.'programmes', 'programmes' );
+		$current_programme		= $mainframe->getUserStateFromRequest(  $option.'programmes', 'programmes',  array('%') );
 		$search					= $mainframe->getUserStateFromRequest(  $option.'elements', 'elements' );
 		$search_values			= $mainframe->getUserStateFromRequest(  $option.'elements_values', 'elements_values' );
 		$search_other		 	= $mainframe->getUserStateFromRequest(  $option.'elements_other', 'elements_other' );
@@ -723,9 +725,9 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('CAMPAIGN').' <a href="javascript:clearchosen(\'#select-multiple_campaigns\')">'.JText::_('CLEAR').'</a></label></div>
 																  <div class="em_filtersElement">';
 			$campaign .= '<select id="select-multiple_campaigns" name="campaigns[]" '.($types['campaign'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$campaign .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
+			$campaign .= 'onChange="document.adminForm.task.value=\'\'; if(this.options.length > 0) this.options[0].selected = false; javascript:submit()" multiple="multiple" size="6">';
 			$campaign .= '<option value="%" ';
-			if(@$current_campaign[0] == "%" || empty($current_campaign[0])) $campaign .= ' selected';
+			if((@$current_campaign[0] == "%" || empty($current_campaign[0])) && count(@$current_campaign)<2) $campaign .= ' selected';
 			$campaign .= '>'.JText::_('ALL').'</option>';
 			
 			foreach($campaignList as $c) { 
@@ -747,13 +749,13 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('SCHOOLYEARS').' <a href="javascript:clearchosen(\'#select-multiple_schoolyears\')">'.JText::_('CLEAR').'</a></label></div>
 																  <div class="em_filtersElement">';
 			$schoolyear .= '<select id="select-multiple_schoolyears" name="schoolyears[]" '.($types['schoolyear'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$schoolyear .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
+			$schoolyear .= 'onChange="document.adminForm.task.value=\'\'; if(this.options.length > 0) this.options[0].selected = false; javascript:submit()" multiple="multiple" size="6">';
 			$schoolyear .= '<option value="%" ';
-			if($current_schoolyear[0]=="%") $schoolyear .= ' selected';
+			if( ($current_schoolyear[0]=="%" || empty($current_schoolyear[0])) && count($current_schoolyear)<2 ) $schoolyear .= ' selected';
 			$schoolyear .= '>'.JText::_('ALL').'</option>';
 			foreach($schoolyearList as $s) { 
 				$schoolyear .= '<option value="'.$s.'"';
-				if(!empty($current_schoolyear) && in_array($s, $current_schoolyear)) $schoolyear .= ' selected';
+				if( !empty($current_schoolyear) && in_array($s, $current_schoolyear) ) $schoolyear .= ' selected';
 				$schoolyear .= '>'.$s.'</option>'; 
 			}
 			$schoolyear .= '</select>';
@@ -770,9 +772,9 @@ class EmundusHelperFilters {
 																  <div class="em_label"><label>'.JText::_('PROGRAMME').' <a href="javascript:clearchosen(\'#select-multiple_programmes\')">'.JText::_('CLEAR').'</a></label></div>
 																  <div class="em_filtersElement">';
 			$programme .= '<select id="select-multiple_programmes" name="programmes[]" '.($types['programme'] == 'hidden' ? 'style="visibility:hidden" ' : '');
-			$programme .= 'onChange="document.adminForm.task.value=\'\'; javascript:submit()" multiple="multiple" size="6">';
+			$programme .= 'onChange="document.adminForm.task.value=\'\'; if(this.options.length > 0) this.options[0].selected = false; javascript:submit()" multiple="multiple" size="6">';
 			$programme .= '<option value="%" ';
-			if(@$current_programme[0] == "%" || empty($current_programme[0])) $programme .= ' selected';
+			if( (@$current_programme[0] == "%" || empty($current_programme[0])) && count(@$current_programme)<2 ) $programme .= ' selected';
 			$programme .= '>'.JText::_('ALL').'</option>';
 			
 			foreach($programmeList as $p) { 
