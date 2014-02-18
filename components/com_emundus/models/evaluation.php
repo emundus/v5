@@ -368,7 +368,7 @@ class EmundusModelEvaluation extends JModel
 							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training';
 						} else
 							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=u.id ';
-						$this->joined[] = $tab[0];var_dump($this->joined); 
+						$this->joined[] = $tab[0];
 					}
 					$old_table = $tab[0];
 				}
@@ -385,7 +385,8 @@ class EmundusModelEvaluation extends JModel
 		$search_other			= $this->getState('elements_other');
 		$schoolyears			= $this->getState('schoolyears');
 		$gid					= $this->getState('groups');
-		if(empty($gid)) $gid=$this->getState('evaluator_group'); 
+		if(empty($gid)) 
+			$gid 				= $this->getState('evaluator_group'); 
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
@@ -402,13 +403,13 @@ class EmundusModelEvaluation extends JModel
 		$cols_other = $this->setSelect($search_other);
 		$cols_default = $this->setSelect($this->elements_default);
 	
-		$this->joined[] = 'jos_emundus_users';
-		$this->joined[] = 'jos_users';
-		$this->joined[] = 'jos_emundus_evaluations';
-		$this->joined[] = 'jos_emundus_setup_profiles';
-		$this->joined[] = 'jos_emundus_personal_detail';
-		$this->joined[] = 'jos_emundus_declaration';
-		$this->joined[] = 'jos_emundus_final_grade';
+		$this->joined[] = '#__emundus_users';
+		$this->joined[] = '#__users';
+		$this->joined[] = '#__emundus_evaluations';
+		$this->joined[] = '#__emundus_setup_profiles';
+		$this->joined[] = '#__emundus_personal_detail';
+		$this->joined[] = '#__emundus_declaration';
+		$this->joined[] = '#__emundus_final_grade';
 			
 		$query = 'SELECT ee.student_id, eu.user_id, eu.firstname, eu.lastname, u.email, esp.id as profile, #__emundus_setup_campaigns.label as campaign, #__emundus_setup_campaigns.id as campaign_id, ee.user, ee.id as evaluation_id, efg.date_result_sent, efg.final_grade ';
 		if(!empty($cols)) $query .= ', '.$cols;
@@ -457,6 +458,9 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildFilters(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
+		
 		$view_calc = JRequest::getVar('view_calc', null, 'POST', 'none', 0);
 
         $layout					= JRequest::getVar('layout', null, 'GET', 'none', 0);
@@ -503,6 +507,12 @@ class EmundusModelEvaluation extends JModel
             $query .= ' AND eu.user_id ='.$aid;
 		$and = true;
         if($layout != "evaluation"){
+        	if(!$evaluators_can_see_other_eval && EmundusHelperAccess::isEvaluator($this->_user->id)) {
+                if($and) $query .= ' AND ';
+                else { $and = true; $query .='WHERE '; }
+                $query.= ' (ee.user IS NULL OR ee.user = '.$this->_user->id.') ';
+            }
+
             if($schoolyears[0] == "%")
                 $query .= ' ';
             elseif(!empty($schoolyears))
@@ -626,7 +636,7 @@ class EmundusModelEvaluation extends JModel
 		}
 		$query .= ' WHERE ed.validated = 1';
 		$query .= $this->_buildFilters();
- echo "<hr>".str_replace('#_', "jos", $query);
+ //echo "<hr>".str_replace('#_', "jos", $query);
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectlist();
 	}
@@ -680,9 +690,20 @@ class EmundusModelEvaluation extends JModel
 				$eval_list['evaluation_id'] = $applicant->evaluation_id;
 				$eval_list['final_grade'] = $applicant->final_grade;
 				$eval_list['date_result_sent'] = !empty($applicant->date_result_sent) ? date(JText::_('DATE_FORMAT_LC'), strtotime($applicant->date_result_sent)) : JText::_('NOT_SENT');
-				
+	//var_dump($this->col);			
 				if(!empty($search)){
 					foreach($search as $c){
+						if(!empty($c)){
+							$name = explode('.', $c);
+							if(!in_array(@$name[1], $head_val) && !empty($name[1])){
+								$eval_list[$name[1]] = $applicant->$name[1];
+							}
+						}
+					}
+				} 
+
+				if(!empty($this->col)){
+					foreach($this->col as $c){
 						if(!empty($c)){
 							$name = explode('.', $c);
 							if(!in_array(@$name[1], $head_val) && !empty($name[1])){

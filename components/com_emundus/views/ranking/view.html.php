@@ -123,7 +123,7 @@ class EmundusViewRanking extends JView
 		$filter_cols = $this->get('SelectList'); 
 		$eval_cols = $this->get('EvalColumns');
 		$rank_cols = $this->get('RankingColumns');
-			
+		
 		$header_values = EmundusHelperList::aggregation($appl_cols, $filter_cols, $eval_cols, $rank_cols);
 		$this->assignRef( 'header_values', $header_values );
 		

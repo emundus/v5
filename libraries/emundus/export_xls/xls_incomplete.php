@@ -34,59 +34,55 @@ function sortObjectByArray($object,$orderArray) {
 }
 
 function export_xls($uids, $element_id) {
-		$current_user =& JFactory::getUser();
-		
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) 
-			&& !EmundusHelperAccess::isCoordinator($current_user->id)
-			&& !EmundusHelperAccess::isEvaluator($current_user->id)
-			&& !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
-		@set_time_limit(10800);
-		global $mainframe;
-		$baseurl = JURI::base();
-		$db	= &JFactory::getDBO();
-		jimport( 'joomla.user.user' );
-		error_reporting(0);
-		/** PHPExcel */
-		ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
-		include 'PHPExcel.php';
-		include 'PHPExcel'.DS.'Writer'.DS.'Excel5.php';
-		
-		$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
-		$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
-		
-		$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
-		$db->setQuery( $query );
-		//die(str_replace('#_','jos',$query));
-		$params = $db->loadResult();
-		$params=json_decode($params);
-		$sub_options=$params->sub_options;
-		$sub_values=$sub_options->sub_values;
-		
-		foreach($sub_values as $sv)
-			$patterns[]="/".$sv."/";
-			
-		// Create new PHPExcel object
-		$objPHPExcel = new PHPExcel();
-		// Initiate cache
-		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-		$cacheSettings = array( 'memoryCacheSize' => '32MB');
-		PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-		// Set properties
-		$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-		$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-		$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-		$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+	//error_reporting(0);
+	$current_user =& JFactory::getUser();
+	@set_time_limit(10800);
+	global $mainframe;
+	$baseurl = JURI::base();
+	$db	= &JFactory::getDBO();
+	jimport( 'joomla.user.user' );
+	
+	/** PHPExcel */
+	ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
+	include 'PHPExcel.php';
+	include 'PHPExcel'.DS.'Writer'.DS.'Excel5.php';
+	
+	$filename = 'incomplete_applicants_'.date('Y.m.d').'.xls';
+	$realpath = EMUNDUS_PATH_REL.'tmp'.DS.$filename;
+
+	$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+	$db->setQuery( $query );
+	//die(str_replace('#_','jos',$query));
+	$params = $db->loadResult();
+	$params=json_decode($params);
+	$sub_options=$params->sub_options;
+	$sub_values=$sub_options->sub_values;
+	
+	foreach($sub_values as $sv)
+		$patterns[]="/".$sv."/";
+
+	// Create new PHPExcel object
+	$objPHPExcel = new PHPExcel();
+	// Initiate cache
+	$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+	$cacheSettings = array( 'memoryCacheSize' => '32MB');
+	PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+	// Set properties
+	$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
+	$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
+	$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
+	$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
+	$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
 
 		
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objPHPExcel->getActiveSheet()->setTitle('Incomplete application forms');
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+	$objPHPExcel->setActiveSheetIndex(0);
+	$objPHPExcel->getActiveSheet()->setTitle('Incomplete application forms');
+	$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
-		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'incomplete.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		
 		$mod = new EmundusModelIncomplete;
 		$model = $mod->_buildQuery();
@@ -103,6 +99,7 @@ function export_xls($uids, $element_id) {
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
+		if(count($element_id) == 0) $element_id = array(0);
 			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
@@ -462,19 +459,7 @@ function export_xls($uids, $element_id) {
 				}				
 				$i++;	
 			}
-			
-			/*// debug file
-			ob_start(); 
-			var_export(var_dump($objPHPExcel)); 
 
-			$tab_debug=ob_get_contents(); 
-			ob_end_clean(); 
-
-			$fichier=fopen('test.log','w'); 
-			fwrite($fichier,$tab_debug); 
-			fclose($fichier);
-			// end debug file
-			*/
 			$lastRow = $objPHPExcel->getActiveSheet()->getHighestRow();
 			$lastColumn = $objPHPExcel->getActiveSheet()->getHighestColumn();
 			$lastColumn++;
@@ -483,15 +468,12 @@ function export_xls($uids, $element_id) {
 				$cell[$column][$row] = $objPHPExcel->getActiveSheet()->getCell($column.$row);
 				}
 			}
-			// die(var_dump($cell));
 	//////////////////////////////////////////////
 			$objPHPExcel->setActiveSheetIndex(0);
 			$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel); 
 			//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007'); 
-			$objWriter->save($realpath); 
-
-	//////////////////////////////////////////////
-			
+			$objWriter->save($realpath);
+	//////////////////////////////////////////////	
 			$mtime = ($mtime = filemtime($realpath)) ? $mtime : gmtime();
 			$size = intval(sprintf("%u", filesize($realpath)));
 			// Maybe the problem is we are running into PHPs own memory limit, so:
@@ -531,5 +513,4 @@ function export_xls($uids, $element_id) {
 	// Echo done
 	exit;
 	}
-
 ?>

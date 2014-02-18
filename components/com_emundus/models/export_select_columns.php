@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Profile Model for eMundus Component
  * 
@@ -26,5 +26,4 @@ class EmundusModelExport_select_columns extends JModel {
 		parent::__construct();
 		$this->_db = JFactory::getDBO();
 	}
-	
 }

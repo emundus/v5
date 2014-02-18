@@ -55,11 +55,11 @@ function return_bytes($val) {
 			$cacheSettings = array( 'memoryCacheSize' => '32MB');
 			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 			// Set properties
-			$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-			$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-			$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-			$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+			$objPHPExcel->getProperties()->setCreator("DÃ©cision Publique : http://www.decisionpublique.fr/");
+			$objPHPExcel->getProperties()->setLastModifiedBy("DÃ©cision Publique");
+			$objPHPExcel->getProperties()->setTitle("eMmundusÂ® Report");
+			$objPHPExcel->getProperties()->setSubject("eMmundusÂ® Report");
+			$objPHPExcel->getProperties()->setDescription("Report from open source eMundusÂ® plateform : http://www.emundus.fr/");
 	
 			
 			$objPHPExcel->setActiveSheetIndex(0);
@@ -104,7 +104,7 @@ function return_bytes($val) {
 			//die(str_replace("#_","jos",$query));
 			$elements = $db->loadObjectList();		
 			
-			// @TODO : générer une chaine de caractère avec tous les user_id
+			// @TODO : gÃ©nÃ©rer une chaine de caractÃ¨re avec tous les user_id
 			
 			// Starting a session.
 			$session =& JFactory::getSession();

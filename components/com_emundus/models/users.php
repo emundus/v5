@@ -277,9 +277,16 @@ class EmundusModelUsers extends JModel
 		foreach ($current_user->groups as $group) {
 			if ($group > $current_group) $current_group = $group;
 		}
-		$query ='SELECT id, label FROM jos_emundus_setup_profiles WHERE '.$current_group.' >= acl_aro_groups GROUP BY id';
+		$query ='SELECT id, label FROM #__emundus_setup_profiles WHERE '.$current_group.' >= acl_aro_groups GROUP BY id';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
+	}
+
+	function getApplicantProfiles(){
+		$db = JFactory::getDBO();
+		$query ='SELECT * FROM #__emundus_setup_profiles WHERE published=1';
+		$db->setQuery( $query );
+		return $db->loadObjectList();
 	}
 	
 	
@@ -290,6 +297,13 @@ class EmundusModelUsers extends JModel
 		$query = 'SELECT eup.profile_id FROM #__emundus_users_profiles eup WHERE eup.user_id='.$uid;
 		$db->setQuery( $query );
 		return $db->loadObjectList();
+	}
+
+	function getCurrentUserProfile($uid){
+		$db = JFactory::getDBO();
+		$query = 'SELECT eu.profile FROM #__emundus_users eu WHERE eu.user_id='.$uid;
+		$db->setQuery( $query ); 
+		return $db->loadResult();
 	}
 
 	function getUniversities()

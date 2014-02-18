@@ -539,8 +539,16 @@ function application_form_pdf($user_id, $output = true) {
 
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+
+	$m_users = new EmundusModelUsers;
+	$user_profile = $m_users->getCurrentUserProfile($user_id);
+	
+	$menu = new EmundusHelperMenu;
 
 	$current_user =  JFactory::getUser();
+
 	// --- CONFIGURATION --- //
 	$group_personal_infos = 14;
 	$str_repeat = '//..*..//';
@@ -655,23 +663,32 @@ $htmldata .= '
 //		Liste des formulaires et de leurs données		//
 //______________________________________________________//
 // Récupération des tables qui doivent contenir un enregistrement de candidat
+	// Ajout depuis le back office des ID Fabrik List
 	$eMConfig =& JComponentHelper::getParams('com_emundus');
-	$query = 'SELECT ff.id, ff.label
-                        FROM #__fabrik_forms ff
-                        LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.id
-                        WHERE ft.created_by_alias IN ( "form", "eval" )
-                        OR ft.db_table_name = "jos_emundus_declaration"
-                        ORDER BY ff.label';
-	$db->setQuery($query);
-	$tableusers = implode(',', $db->loadResultArray());
+	$export_pdf = $eMConfig->get('export_pdf'); 
+	
 
-	//get profile or result for 
-	//$query = 'SELECT result_for FROM #__emundus_final_grade WHERE student_id = '.$user_id;
+	// Le profil dépend de la campagne
 	$query = 'SELECT profile_id FROM #__emundus_setup_campaigns WHERE id = '.$campaign_id;
 	$db->setQuery( $query );
 	$db->query();
 	$num_rows = $db->getNumRows();
 	($db->getNumRows()==1)?$user_profile=$db->loadResult():$user_profile = $item->profile;
+
+
+	$menu_list = $menu->buildMenuQuery($user_profile); 
+	foreach ($menu_list as $m) {
+		$fl[] = $m->table_id;
+	}
+	$query = 'SELECT ff.id, ff.label
+                        FROM #__fabrik_forms ff
+                        LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.id
+                        WHERE ft.id IN (( '.implode(',', $fl).' ) OR ft.id IN ( '.$export_pdf.' ))
+                        OR ft.db_table_name = "jos_emundus_declaration"
+                        ORDER BY ff.label';
+	$db->setQuery($query); 
+	$tableusers = implode(',', $db->loadResultArray());
+
 	//get the form evaluation for the applicant
 	$query = 'SELECT evaluation FROM #__emundus_setup_profiles WHERE id = '.$user_profile;
 	$db->setQuery( $query );
@@ -684,7 +701,7 @@ $htmldata .= '
 						LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = ff.id
 						WHERE fbtables.form_id IN ('.$tableusers.') AND esp.id = '.$user_profile.'
 						OR (fbtables.created_by_alias = "eval" AND (ff.id = '.$eval_form.' OR ff.id = 39)) 
-						ORDER BY fbtables.created_by_alias DESC, menu.ordering ASC, fbtables.label ASC';
+						ORDER BY fbtables.created_by_alias DESC, menu.lft ASC, fbtables.label ASC';
 	} else {
 		$query = 'SELECT DISTINCT(fbtables.form_id), fbtables.id, fbtables.label, fbtables.db_table_name, fbtables.created_by_alias 
 						FROM #__menu AS menu 
@@ -693,7 +710,7 @@ $htmldata .= '
 						LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = ff.id
 						WHERE fbtables.form_id IN ('.$tableusers.')
 						AND esp.id = '.$user_profile.'
-					ORDER BY fbtables.created_by_alias DESC, menu.ordering';
+					ORDER BY fbtables.created_by_alias DESC, menu.lft';
 	}
 	$db->setQuery( $query );
 

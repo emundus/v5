@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @version		$Id: javascript.php 14401 2013-03-19 14:10:00Z brivalland $
  * @package		Joomla

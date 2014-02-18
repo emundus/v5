@@ -25,7 +25,8 @@ foreach($s_elements as $s){
 
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
 	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
-	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
+	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
+	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/> -->
 	<input type="hidden" name="option" value="com_emundus"/>
     <input type="hidden" name="view" value="<?php echo $view; ?>"/>
     <input type="hidden" name="task" value=""/>
@@ -77,7 +78,8 @@ foreach($s_elements as $s){
 		echo '</fieldset></fieldset>';
 		echo '</div>';
 		?>
-	<input type="submit" name="send_incomplete_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/>
+	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
+	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/>  -->
 </form>    
 
 <script>
@@ -85,11 +87,11 @@ function check_all(box, obj, level) {
  var checked = document.getElementById(box).checked;
  var node = document.getElementById(obj);
 // var parent = node.parentNode; //place la variable parent sur le noeud parent de node
- var childList = node.childNodes; //récupère tous les enfants de node dans un tableau childNodesList
-// var child1 = node.firstChild; //récupère le premier enfant de node
-// var childx = node.lastChild; //récupère le dernier enfant de node
-// var frerePrec = node.previousSibling; //récupère le frère précédent de node (l'enfant précédent du parent de node)
-// var frereSuiv = node.nextSibling; //récupère le frère suivant
+ var childList = node.childNodes; //rÃ©cupÃ¨re tous les enfants de node dans un tableau childNodesList
+// var child1 = node.firstChild; //rÃ©cupÃ¨re le premier enfant de node
+// var childx = node.lastChild; //rÃ©cupÃ¨re le dernier enfant de node
+// var frerePrec = node.previousSibling; //rÃ©cupÃ¨re le frÃ¨re prÃ©cÃ©dent de node (l'enfant prÃ©cÃ©dent du parent de node)
+// var frereSuiv = node.nextSibling; //rÃ©cupÃ¨re le frÃ¨re suivant
  if(level == 1) {
 	 for (i=1 ; i < childList.length ; i++) {
 		childList[i].checked = checked;
@@ -151,9 +153,13 @@ function OnSubmitForm() {
 	var button_name=document.pressed.split("|");
 //alert(button_name[0]);
 	switch(button_name[0]) {
-		case 'send_incomplete_elements': 
+		case 'send_elements': 
 			document.adminForm.task.value = "send_elements";
-			document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";	
+			document.adminForm.action ="index.php?option=com_emundus&task=send_elements&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>"; 
+		break;
+		case 'send_elements_csv': 
+			document.adminForm.task.value = "send_elements_csv";
+			document.adminForm.action ="index.php?option=com_emundus&task=send_elements_csv&v=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>";
 		break;
 		default: return false;
 	}

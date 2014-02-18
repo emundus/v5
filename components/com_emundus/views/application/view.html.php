@@ -49,11 +49,17 @@ class EmundusViewApplication extends JView{
         $document->addScript( JURI::base()."media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 
 
-        $menu=JSite::getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
+       // $menu=JSite::getMenu()->getActive();
+        $menu = JSite::getMenu();
+		$current_menu  = $menu->getActive();
+		$access=!empty($current_menu)?$current_menu->access : 0;
 		
 		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
-		
+
+		$menu_params = $menu->getParams($current_menu->id);
+
+		$campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
+		$rowid = JRequest::getVar('rowid', null, 'GET', 'none', 0);
 		$aid = JRequest::getVar('sid', null, 'GET', 'none', 0);
 		$student = JFactory::getUser($aid);
 
@@ -98,7 +104,39 @@ class EmundusViewApplication extends JView{
 		$email = $application->getEmail($aid);
 		$this->assignRef('email', $email);
 
-		//var_dump($logged);
+		//Evaluation
+		if($this->_user->profile==16)
+			$options = array('view');
+		else
+			$options = array('add', 'edit', 'delete');
+
+		$user[0] = array (
+	      'user_id' => $student->id,
+	      'name' => $student->name,
+	      'email_applicant' => $student->email,
+	      'campaign' => "",
+	      'campaign_id' => $campaign_id,
+	      'evaluation_id' => $rowid, 
+	      'final_grade' => "",
+	      'date_result_sent' => "",
+	      'result' => "",
+	      'comment' => "",
+	      'user' => $this->_user->id,
+	      'user_name' => "",
+	      'ranking' => ""
+	      );
+
+		$this->assignRef('campaign_id', $campaign_id);
+
+		$evaluation = EmundusHelperList::createEvaluationBlock($user, $options);
+		$this->assignRef('evaluation', $evaluation);
+		unset($options);
+
+		$options = array('evaluation');
+		$actions = EmundusHelperList::createActionsBlock($user, $options);
+		$this->assignRef('actions', $actions);
+		unset($options);
+
         parent::display($tpl);
     }
 }

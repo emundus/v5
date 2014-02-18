@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @version		$Id: filter.php 14401 2013-03-21 14:10:00Z brivalland $
  * @package		Joomla
@@ -268,7 +268,7 @@ class EmundusHelperFilters {
 
 	function setEvaluationList ($result) {
 		$option_list =  EmundusHelperFilters::getEvaluation_doc($result);
-		$current_filter .= '<select name="attachment_id" id="attachment_id" >';
+		$current_filter .= '<select name="attachment_id" id="attachment_id">';
 		if(!empty($option_list)){
 			foreach($option_list as $value){
 				$current_filter .= '<option value="'.$value->id.'">'.$value->value.'</option>';
@@ -279,7 +279,24 @@ class EmundusHelperFilters {
 		return $current_filter;
 	}
 	
-	function getElements(){
+	function getElements() {
+		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	
+		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$export_pdf = $eMConfig->get('export_pdf');
+		
+		$menu = new EmundusHelperMenu;
+		$user = new EmundusModelUsers;
+
+		$profiles = $user->getApplicantProfiles();
+
+		foreach ($profiles as $profile) {
+			$menu_list = $menu->buildMenuQuery($profile->id); 
+			foreach ($menu_list as $m) {
+				$fl[] = $m->table_id;
+			}
+		}
 		$db = JFactory::getDBO();
 		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
@@ -290,12 +307,12 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
 				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 				WHERE tab.published = 1 
-					AND (tab.created_by_alias = "form")
+					AND (tab.id IN ( '.implode(',', $fl).' ) OR tab.id IN ( '.$export_pdf.' ) )
 					AND element.published=1 
 					AND element.hidden=0 
 					AND element.label!=" " 
 					AND element.label!=""  
-				ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering';
+				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
 		$db->setQuery( $query );
 		return $db->loadObjectList('id');
 	}

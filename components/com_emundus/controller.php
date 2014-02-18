@@ -681,7 +681,7 @@ function updateprofile() {
 	
 	/**
 	 * Get application form elements to display in XLS file
-	 */
+	*/
 	function send_elements() {
 		$view = JRequest::getVar('v', null, 'GET');
 		// Starting a session.
@@ -696,10 +696,45 @@ function updateprofile() {
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
-		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) 
+			&& !EmundusHelperAccess::isCoordinator($current_user->id)
+			&& !EmundusHelperAccess::isEvaluator($current_user->id)
+			&& !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
+			
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		export_xls($cid, $elements); 
+
+		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
+		export_xls($cid, $elements);
+		//$xls = $this->getModel('xls_'.$view);
+		//$xls->export_xls($cid, $elements); 
 		exit();
+	}
+ /*
+	function send_elements() {
+		$view = JRequest::getVar('v', null, 'GET');
+		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
+	}*/
+
+	/**
+	 * Get application form elements to display in CSV file
+	 */
+	function send_elements_csv() {
+		$view = JRequest::getVar('v', null, 'GET');
+		// Starting a session.
+		$session =& JFactory::getSession();
+		$cid = $session->get( 'uid' );
+		$quick_search = $session->get( 'quick_search' );
+		
+		$user =& JFactory::getUser();
+		$menu=JSite::getMenu()->getActive();
+		$access=!empty($menu)?$menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
+			die(JText::_('ACCESS_DENIED'));
+		}
+		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_csv'.DS.'csv_'.$view.'.php');
+		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
+		
+		export_csv($cid, $elements);
 	}
 	
 	function transfert_view($reqids=array()){

@@ -319,6 +319,7 @@ function age($naiss) {
       </div>
       <div class="title" id="em_application_evaluations"> <i class="dropdown icon"></i> <?php echo JText::_('EVALUATIONS'); ?> </div>
       <div class="content">
+        <?php echo $this->actions[$this->student->id][$this->current_user->id][$this->campaign_id]; ?>
         <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;view=evaluation&amp;layout=evaluation&amp;aid=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1&amp;Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
       </div>
       <div class="title" id="em_application_emails"> <i class="dropdown icon"></i> <?php echo JText::_('EMAIL_HISTORY'); ?> </div>

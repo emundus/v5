@@ -35,125 +35,112 @@ function sortObjectByArray($object,$orderArray) {
 }
 
 function export_xls($uids, $element_id) {
-		$current_user =& JFactory::getUser();
-		//$allowed = array("Super Administrator", "Administrator", "Publisher", "Editor", "Author");
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
+	error_reporting(0);
+	
+	@set_time_limit(10800);
+	global $mainframe;
+	$baseurl = JURI::base();
+	$db	= JFactory::getDBO();
+	jimport( 'joomla.user.user' );
+	
+	/** PHPExcel */
+	ini_set('include_path', JPATH_BASE . '/libraries/');
+	include 'PHPExcel.php'; 
+	include 'PHPExcel/Writer/Excel5.php'; 
+	$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
+	$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
 
-		@set_time_limit(10800);
-		global $mainframe;
-		$baseurl = JURI::base();
-		$db	= &JFactory::getDBO();
-		jimport( 'joomla.user.user' );
-		error_reporting(0);
-		/** PHPExcel */
-		ini_set('include_path', JPATH_BASE . '/libraries/');
+	$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
+	$db->setQuery( $query );
+	//die(str_replace('#_','jos',$query));
+	$params = $db->loadResult();
+	$params=json_decode($params);
+	$sub_options=$params->sub_options;
+	$sub_values=$sub_options->sub_values;
 
-		include 'PHPExcel.php'; 
-		include 'PHPExcel/Writer/Excel5.php'; 
-		
-		$filename = 'emundus_applicants_'.date('Y.m.d').'.xls';
-		$realpath = EMUNDUS_PATH_REL.'tmp/'.$filename;
-		
-		$query = 'SELECT params FROM #__fabrik_elements WHERE name like "final_grade" LIMIT 1';
-		$db->setQuery( $query );
-		//die(str_replace('#_','jos',$query));
-		$params = $db->loadResult();
-		$params=json_decode($params);
-		$sub_options=$params->sub_options;
-		$sub_values=$sub_options->sub_values;
-		
-		foreach($sub_values as $sv)
-			$patterns[]="/".$sv."/";
-		
-		// Create new PHPExcel object
-		$objPHPExcel = new PHPExcel();
-		// Initiate cache
-		$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-		$cacheSettings = array( 'memoryCacheSize' => '32MB');
-		PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-		// Set properties
-		$objPHPExcel->getProperties()->setCreator("Décision Publique : http://www.decisionpublique.fr/");
-		$objPHPExcel->getProperties()->setLastModifiedBy("Décision Publique");
-		$objPHPExcel->getProperties()->setTitle("eMmundus® Report");
-		$objPHPExcel->getProperties()->setSubject("eMmundus® Report");
-		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus® plateform : http://www.emundus.fr/");
+	foreach($sub_values as $sv)
+		$patterns[]="/".$sv."/";
 
-		
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objPHPExcel->getActiveSheet()->setTitle('Ranking');
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+	// Create new PHPExcel object
+	$objPHPExcel = new PHPExcel();
+	// Initiate cache
+	$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+	$cacheSettings = array( 'memoryCacheSize' => '32MB');
+	PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+	// Set properties
+	$objPHPExcel->getProperties()->setCreator("DÃ©cision Publique : http://www.decisionpublique.fr/");
+	$objPHPExcel->getProperties()->setLastModifiedBy("DÃ©cision Publique");
+	$objPHPExcel->getProperties()->setTitle("eMmundusÂ® Report");
+	$objPHPExcel->getProperties()->setSubject("eMmundusÂ® Report");
+	$objPHPExcel->getProperties()->setDescription("Report from open source eMundusÂ® plateform : http://www.emundus.fr/");
+	$objPHPExcel->setActiveSheetIndex(0);
+	$objPHPExcel->getActiveSheet()->setTitle('Ranking');
+	$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-		include_once(JPATH_BASE.'/components/com_emundus/models/ranking.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		
-		$model = new EmundusModelRanking;
-		$model->getUsers();
-		$users=$model->_applicants;
-		
-		$profile = EmundusHelperList::getProfiles();
-		
-		$col = new EmundusModelRanking;
-		$column = $col->getEvalColumns();
-		
-		
-		/// ****************************** ///
-		// Elements selected by administrator
-		/// ****************************** ///
-		
-		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
-						FROM #__fabrik_elements element	
-						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-						INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-						INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
-						WHERE tab.published = 1 
-						AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
-						AND element.published=1 
-						AND element.hidden=0 
-						AND element.label!=" " 
-						AND element.label!="" 
-						AND element.id IN ("'.implode('","', $element_id).'") 
-						ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering'; 
-			$db->setQuery( $query );
-			//die(str_replace("#_","jos",$query));
-			$elements = $db->loadObjectList();		
-		
-		// @TODO : générer une chaine de caractère avec tous les user_id
-			
-		foreach($uids as $uid){
-			$params=explode('|',$uid);
-			$usersid[]=intval($params[0]);
-			$campaignsid[]=intval($params[1]);
-		}
-		
-		// Starting a session.
-		$session =& JFactory::getSession();
-		if($usersid != ''){
-			foreach($users as $key=>$value){
-				if(in_array($value['user_id'],$usersid) && in_array($value['campaign_id'],$campaignsid)){
-					$us[] = $users[$key];
-				}
-			}
-			$user_id = $usersid;
-			$users = $us;
-			$session->clear( 'uid' );
-		}else{
-			foreach($users as $user){
-				$user_id[] = $user['user_id'];
+	include_once(JPATH_BASE.'/components/com_emundus/models/ranking.php');
+	require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+
+	$model = new EmundusModelRanking;
+	$model->getUsers();
+	$users=$model->_applicants;
+	$profile = EmundusHelperList::getProfiles();
+	$col = new EmundusModelRanking;
+	$column = $col->getEvalColumns();
+
+	//
+	// Elements selected by administrator
+	//
+	$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			FROM #__fabrik_elements element	
+			INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+			INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+			INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+			INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+			WHERE tab.published = 1 
+			AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
+			AND element.published=1 
+			AND element.hidden=0 
+			AND element.label!=" " 
+			AND element.label!="" 
+			AND element.id IN ("'.implode('","', $element_id).'") ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering'; 
+	$db->setQuery( $query );
+//die(str_replace("#_","jos",$query));
+	$elements = $db->loadObjectList();		
+
+	// @TODO : gÃ©nÃ©rer une chaine de caractÃ¨re avec tous les user_id
+	foreach($uids as $uid){
+		$params=explode('|',$uid);
+		$usersid[]=intval($params[0]);
+		$campaignsid[]=intval($params[1]);
+	}
+	// Starting a session.
+	$session =& JFactory::getSession();
+	if($usersid != ''){
+		foreach($users as $key=>$value){
+			if(in_array($value['user_id'],$usersid) && in_array($value['campaign_id'],$campaignsid)){
+				$us[] = $users[$key];
 			}
 		}
+		$user_id = $usersid;
+		$users = $us;
+		$session->clear( 'uid' );
+	}else{
+		foreach($users as $user){
+			$user_id[] = $user['user_id'];
+		}
+	}
+
+	$session->clear( 'profile' );
+	$session->clear( 'finalgrade' );
+	$session->clear( 'quick_search' );
+	unset($us);
 		
-		$session->clear( 'profile' );
-		$session->clear( 'finalgrade' );
-		$session->clear( 'quick_search' );
-		unset($us);
-		
-			$select = '';
-			$table = '';
-			foreach($elements as $element) {
-				if(!array_key_exists($element->element_name,$users[0]) || ($element->element_name == 'user_id' && $element->table_name == 'jos_emundus_comments'))	{
-					if($element->table_name == 'jos_emundus_comments')
+	$select = '';
+	$table = '';
+	foreach($elements as $element) {
+		if(!array_key_exists($element->element_name,$users[0]) || ($element->element_name == 'user_id' && $element->table_name == 'jos_emundus_comments')){
+			if($element->table_name == 'jos_emundus_comments')
 						$select_comment .= '`'.$element->table_name.'`.`'.$element->element_name.'`,';
 					else
 						$select .= '`'.$element->table_name.'`.`'.$element->element_name.'`,';
@@ -200,9 +187,9 @@ function export_xls($uids, $element_id) {
 			}
 		}
 		
-	// ********************************************
-	//				En-tete de colonnes
-	// ********************************************
+	//
+	// En-tete de colonnes
+	//
 	
 		$colonne=0;
 		$user0=$users[0];
@@ -242,9 +229,9 @@ function export_xls($uids, $element_id) {
 		foreach ($users as $user){
 			$colonne = 0;
 			
-		// ********************************************
-		//		Colonnes correspondants au model
-		// ********************************************
+		//
+		// Colonnes correspondants au model
+		//
 			$order = array('user_id','name','profile','campaign_id','campaign', 'engaged','final_grade','scholarship','ranking');
 			$user=sortArrayByArray($user,$order);
 				
@@ -297,11 +284,9 @@ function export_xls($uids, $element_id) {
 			}
 		
 			
-		// ********************************************
-		//				Application form
-		// ********************************************
-
-			
+		//
+		// Application form
+		//
 			$comment_val= '';
 				$tab_com = '';
 				$c = 0;
@@ -353,16 +338,15 @@ function export_xls($uids, $element_id) {
 							$value = '';
 						}
 					}
-				}				
-				$i++;	
+				}
+				$i++;
 			}
 		$objPHPExcel->setActiveSheetIndex(0);
-		$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel); 
-		//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007'); 
-		$objWriter->save($realpath); 
+		$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+		//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save($realpath);
 
 //////////////////////////////////////////////
-		
 		$mtime = ($mtime = filemtime($realpath)) ? $mtime : gmtime();
 		$size = intval(sprintf("%u", filesize($realpath)));
 		// Maybe the problem is we are running into PHPs own memory limit, so:

@@ -24,6 +24,8 @@ if(is_array($aid))
 	$aid = $aid[0];
 
 $can_be_view 	= $jinput->get('jos_emundus_uploads___can_be_viewed');
+$inform_applicant_by_email 	= $jinput->get('jos_emundus_uploads___inform_applicant_by_email');
+
 $db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id'));
 $upload = $db->loadObject();
 $student = & JUser::getInstance($upload->user_id);
@@ -63,20 +65,21 @@ if ($can_be_view == 1) {
 }
 $from_id = $user->id;
 
-// Récupération des données du mail à l'étudiant
-$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
-$email=$db->loadObject();
-$from = $email->emailfrom;
-$fromname =$email->name;
-$recipient[] = $student->email;
-$subject = $email->subject;
-$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
-$replyto = $email->emailfrom;
-$replytoname = $email->name;
-JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, @$attachment, $replyto, $replytoname);
-$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
-				VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
-$db->setQuery( $sql );
-$db->query();
-
+if ($inform_applicant_by_email == 1) {
+	// Récupération des données du mail à l'étudiant
+	$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
+	$email=$db->loadObject();
+	$from = $email->emailfrom;
+	$fromname =$email->name;
+	$recipient[] = $student->email;
+	$subject = $email->subject;
+	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
+	$replyto = $email->emailfrom;
+	$replytoname = $email->name;
+	JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, @$attachment, $replyto, $replytoname);
+	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
+					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
+	$db->setQuery( $sql );
+	$db->query();
+}
 ?>

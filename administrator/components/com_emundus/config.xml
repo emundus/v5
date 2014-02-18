@@ -24,6 +24,10 @@
 			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
 			<option value="4">COM_EMUNDUS_ALL</option>
 		</field>
+		<field name="evaluators_can_see_other_eval" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION" description="CCOM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
@@ -64,6 +68,6 @@
     </fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
-        <field name="export_pdf" type="text" default="" label="Select items for the pdf export"/>
+        <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
 	</fieldset>
 </config>

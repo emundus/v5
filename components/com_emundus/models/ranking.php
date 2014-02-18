@@ -1,40 +1,28 @@
 <?php
-/**
- * @package    	Joomla
- * @subpackage 	eMundus
- * @link       	http://www.emundus.fr
- * @copyright	Copyright (C) 2008 - 2013 Décision Publique. All rights reserved.
- * @license    	GNU/GPL
- * @author     	Decision Publique - Benjamin Rivalland
-*/
- 
- 
-// No direct access
- 
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+//error_reporting(0);
 jimport( 'joomla.application.component.model' );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
- 
+
 class EmundusModelRanking extends JModel
 {
 	var $_total = null;
 	var $_pagination = null;
 	var $_applicants = array();
-
-	/**
-	 * Constructor
-	 *
-	 * @since 1.5
-	 */
+	var $EmundusHelperFilters;
+	var $EmundusHelperList; 
+	
 	function __construct()
 	{
 		parent::__construct();
 		global $option;
 
 		$mainframe = JFactory::getApplication();
- 
+
+ 		$this->EmundusHelperFilters = new EmundusHelperFilters();
+		$this->EmundusHelperList = new EmundusHelperList(); 
+        
         // Get current menu parameters
 		$current_user = JFactory::getUser();
 		$menu = JSite::getMenu();
@@ -70,8 +58,8 @@ class EmundusModelRanking extends JModel
 		//Set session variables
 		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'overall', 'cmd' );
         $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", EmundusHelperFilters::getSchoolyears() );
-		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", EmundusHelperFilters::getCurrentCampaignsID() );
+		$schoolyears			= $mainframe->getUserStateFromRequest( $option."schoolyears", "schoolyears", $this->EmundusHelperFilters->getSchoolyears() );
+		$campaigns				= $mainframe->getUserStateFromRequest( $option."campaigns", "campaigns", $this->EmundusHelperFilters->getCurrentCampaignsID() );
 		$programmes				= $mainframe->getUserStateFromRequest( $option.'programmes', 'programmes' );
 		$elements				= $mainframe->getUserStateFromRequest( $option.'elements', 'elements' );
 		$elements_values		= $mainframe->getUserStateFromRequest( $option.'elements_values', 'elements_values' );
@@ -120,7 +108,7 @@ class EmundusModelRanking extends JModel
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->elements_default = array();
-		$default_elements = EmundusHelperFilters::getElementsName($this->elements_id);	
+		$default_elements = $this->EmundusHelperFilters->getElementsName($this->elements_id);	
 		if (!empty($default_elements))
 			foreach ($default_elements as $def_elmt) {
 				$this->elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name;
@@ -132,8 +120,8 @@ class EmundusModelRanking extends JModel
 		$this->col = array_merge($col_elt, $col_other, $this->elements_default);
 
 		$elements_names = '"'.implode('", "', $this->col).'"'; 
-		$result = EmundusHelperList::getElementsDetails($elements_names); 
-		$result = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels")); 
+		$result = $this->EmundusHelperList->getElementsDetails($elements_names); 
+		$result = $this->EmundusHelperFilters->insertValuesInQueryResult($result, array("sub_values", "sub_labels")); 
 		$this->details = new stdClass();
 		foreach ($result as $res) {
 			$this->details->{$res->tab_name.'__'.$res->element_name} = array('element_id'	=> $res->element_id,
@@ -243,11 +231,11 @@ class EmundusModelRanking extends JModel
 	}
 	
 	function getCurrentCampaign(){
-		return EmundusHelperFilters::getCurrentCampaign();
+		return $this->EmundusHelperFilters->getCurrentCampaign();
 	}
 
 	function getCurrentCampaignsID(){
-		return EmundusHelperFilters::getCurrentCampaignsID();
+		return $this->EmundusHelperFilters->getCurrentCampaignsID();
 	}
 	
 	function getProfileAcces($user)
@@ -283,9 +271,9 @@ class EmundusModelRanking extends JModel
 		
 		// subquery WHERE
 		$query .= ' WHERE #__emundus_campaign_candidature.submitted=1 AND '.$this->details->{$tab.'__'.$elem}['group_by'].'=#__users.id';
-		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
-		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
-		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
+		$query = $this->EmundusHelperFilters->setWhere($search, $search_values, $query);
+		$query = $this->EmundusHelperFilters->setWhere($search_other, $search_values_other, $query);
+		$query = $this->EmundusHelperFilters->setWhere($this->elements_default, $this->elements_values, $query);
 
 		$db->setQuery( $query );
 		$obj = $db->loadObjectList();
@@ -293,9 +281,9 @@ class EmundusModelRanking extends JModel
 		$tmp = '';
 		foreach ($obj as $unit) {
 			if ($tmp != $unit->user_id)
-				$list[$unit->user_id] = EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+				$list[$unit->user_id] = $this->EmundusHelperList->getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
 			else
-				$list[$unit->user_id] .= ','.EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+				$list[$unit->user_id] .= ','.$this->EmundusHelperList->getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
 			$tmp = $unit->user_id;
 		}
 		return $list;
@@ -456,9 +444,9 @@ class EmundusModelRanking extends JModel
 			$query.= '#__emundus_final_grade.final_grade like "%'.$finalgrade.'%"';
 		}
 		
-		$query = EmundusHelperFilters::setWhere($search, $search_values, $query);
-		$query = EmundusHelperFilters::setWhere($search_other, $search_values_other, $query);
-		$query = EmundusHelperFilters::setWhere($this->elements_default, $this->elements_values, $query);
+		$query = $this->EmundusHelperFilters->setWhere($search, $search_values, $query);
+		$query = $this->EmundusHelperFilters->setWhere($search_other, $search_values_other, $query);
+		$query = $this->EmundusHelperFilters->setWhere($this->elements_default, $this->elements_values, $query);
 
 		if($schoolyears[0] == "%")
 			$query .= ' AND #__emundus_setup_campaigns.year like "%" ';
@@ -532,11 +520,11 @@ class EmundusModelRanking extends JModel
 						if ($this->details->{$name[0].'__'.$name[1]}['group_by']
 							&& array_key_exists($name[0].'__'.$name[1], $this->subquery)
 							&& array_key_exists($applicant->user_id, $this->subquery[$name[0].'__'.$name[1]])){
-							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
+							$eval_list[$name[0].'__'.$name[1]] = $this->EmundusHelperList->createHtmlList(explode(",", $this->subquery[$name[0].'__'.$name[1]][$applicant->user_id]));
 						} elseif($name[0]=='jos_emundus_training'){
 							$eval_list[$name[1]] = $applicant->{$name[1]};
 						} elseif (!$this->details->{$name[0].'__'.$name[1]}['group_by']){
-							$eval_list[$name[0].'__'.$name[1]] = EmundusHelperList::getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
+							$eval_list[$name[0].'__'.$name[1]] = $this->EmundusHelperList->getBoxValue($this->details->{$name[0].'__'.$name[1]}, $applicant->{$name[0].'__'.$name[1]}, $name[1]);
 						}else
 							$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
 					}
@@ -586,6 +574,11 @@ class EmundusModelRanking extends JModel
 				$this->setEvalList($search, $eval_list, $head_val, $applicant);
 				$this->setEvalList($search_other, $eval_list, $head_val, $applicant);
 				$this->setEvalList($this->elements_default, $eval_list, $head_val, $applicant);
+
+				// affect means columns 
+				$evals = $this->getEvalColumns();
+				foreach($evals as $eval)
+					$eval_list[$eval['name']] = $this->getMeanEval($eval['name'],$applicant->user_id);
 
 				$eval_lists[]=$eval_list;
 			}
@@ -726,7 +719,7 @@ str_replace("#_", "jos", $query);
 				FROM #__fabrik_elements 
 				WHERE group_id=41
 				AND hidden != 1
-				AND plugin = "fabrikcalc"
+				AND plugin = "calc"
 				ORDER BY ordering';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadAssocList();
