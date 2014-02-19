@@ -90,6 +90,12 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
                                     echo '<td><div class="emundusprofile'.$evalu['profile'].'">'.$this->profiles_label[$evalu['profile']]->label.'</div></td>';
                                 }elseif($key == 'comment'){
 									echo '<td>'.$this->comment[$evalu['user_id']][$evalu['user']][$evalu['campaign_id']].'</td>';
+                                }elseif($key == 'date_result_sent'){
+                                	$date_result_sent = ($value != 0) ? date(JText::_('DATE_FORMAT_LC'), strtotime($value)) : JText::_('NOT_SENT');
+									echo '<td>'.$date_result_sent.'</td>';
+                                }elseif($key == 'request'){
+                                	$request = ($value != 0) ? date(JText::_('DATE_FORMAT_LC'), strtotime($value)) : JText::_('NOT_SENT');
+									echo '<td>'.$request.' '.$this->request[$evalu['user_id']][$evalu['user']][$evalu['campaign_id']].'</td>';
                                 }elseif(empty($value) && $value !== '0' && $key != 'overall' && $key !='application_mark')
                                     echo '<td class="red">'.$value.'</td>';
 								else

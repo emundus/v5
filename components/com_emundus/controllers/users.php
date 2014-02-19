@@ -211,7 +211,7 @@ class EmundusControllerUsers extends JController {
 		$result=$this->_db->Query();// or die($this->_db->getErrorMsg());
 		
 		if($result!=1){
-			echo JText::_('SQL_ERROR');
+			echo JText::_('SQL_ERROR : '.$query);
 		}else{
 			echo JText::_('FILTER_DELETED');
 		}

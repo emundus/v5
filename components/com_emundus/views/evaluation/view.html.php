@@ -155,8 +155,9 @@ class EmundusViewEvaluation extends JView
 							   'other'				=> NULL,
 								'adv_filter'		=> NULL);
 		$validate_id  	= explode(',', $menu_params->get('em_validate_id'));
-		$actions  		= explode(',', $menu_params->get('em_actions'));
-		
+		//$actions  		= explode(',', $menu_params->get('em_actions'));
+		$menu_actions = $this->get('actions'); 
+
 		$i = 0;
 		foreach ($filts_names as $filt_name) {
 			if (array_key_exists($i, $filts_values))
@@ -179,9 +180,7 @@ class EmundusViewEvaluation extends JView
 
 		// Columns
 		$appl_cols = $this->get('ApplicantColumns');
-
 		$filter_cols = $this->get('SelectList');
-
 		$eval_cols = $this->get('EvalColumns');
 		$eval_cols['evaluator'] = array('name' =>'evaluator', 'label'=>JText::_('EVALUATOR'));
 
@@ -197,7 +196,7 @@ class EmundusViewEvaluation extends JView
 		$this->assignRef( 'header_values', $header_values );
 
 		// Current call
-		$current_schoolyear = implode(', ',$this->get('CurrentCampaign'));
+		$current_schoolyear = implode(', ', $this->get('CurrentCampaign'));
 		$this->assignRef( 'current_schoolyear', $current_schoolyear );
 
 		//Call the state object
@@ -232,7 +231,8 @@ class EmundusViewEvaluation extends JView
 		$this->assignRef('users_groups', $users_groups);
 
 		//$options = array('checkbox', 'gender', 'details', 'evaluation', 'letter');
-		$options = explode(',', $menu_params->get('em_actions'));
+		$options = $this->get('actions'); 
+		//$options = explode(',', $menu_params->get('em_actions'));
 		$actions = EmundusHelperList::createActionsBlock($users, $options);
 		$this->assignRef('actions', $actions);
 		unset($options);
@@ -256,6 +256,12 @@ class EmundusViewEvaluation extends JView
 		//Comments
 		$comment = EmundusHelperList::createCommentBlock($users);
 		$this->assignRef('comment', $comment);
+
+		// Files Request
+		if (in_array('letter', $menu_actions)) {
+			$request = EmundusHelperList::createFilesRequestBlock($users);
+			$this->assignRef('request', $request);
+		}
 
 		// Schoolyears 
 		$schoolyears = EmundusHelperFilters::getSchoolyears();

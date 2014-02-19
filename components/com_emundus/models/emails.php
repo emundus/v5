@@ -204,7 +204,7 @@ class EmundusModelEmails extends JModel
 				$key1 = md5($this->rand_string(20).time());
 				// 2. MAJ de la table emundus_files_request
 				$attachment_id = $documentid; // document avec clause de confidentialité
-				$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email) VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($mail_to).')';
+				$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, email) VALUES (NOW(), '.$student_id.', "'.$key1.'", "'.$attachment_id.'", '.$campaign_id.', '.$this->_db->quote($m_to).')';
 				$this->_db->setQuery( $query );
 				$this->_db->query();
 				

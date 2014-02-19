@@ -358,8 +358,9 @@ function OnSubmitForm() {
 							if(xhr2.readyState == 4){
 								var filter_id = xhr2.responseText;
 								// filter_id=parseInt(filter_id)+1;
-								$(\'select_filter\').options[$(\'select_filter\').options.length] = new Option(name, filter_id);
-								$(\'select_filter\').value=$(\'select_filter\').options[$(\'select_filter\').options.length-1].value;
+								var select_filter = document.getElementById(\'select_filter\');
+								select_filter.options[select_filter.options.length] = new Option(name, filter_id);
+								select_filter.value=select_filter.options[select_filter.options.length-1].value;
 							}
 						}
 						xhr2.open("POST", "index.php?option=com_emundus&controller=users&format=raw&task=lastSavedFilter&Itemid="+itemid, true);
@@ -504,7 +505,8 @@ function OnSubmitForm() {
 
 		function delete_filters(){
 		//deleteFilter
-			var select_id = $(\'select_filter\').value;
+			var select_filter = document.getElementById(\'select_filter\');
+			var select_id = select_filter.value;
 			var xhr = getXMLHttpRequest();
 			
 			xhr.onreadystatechange = function()
@@ -513,10 +515,10 @@ function OnSubmitForm() {
 				{
 					window.document.getElementById(\'emundus_filters_response\').innerHTML = xhr.responseText;
 					if(xhr.responseText!="SQL Error"){
-						for(var i=0; i<$(\'select_filter\').options.length;i++)
-						if($(\'select_filter\').options[i].selected){
+						for(var i=0; i<select_filter.options.length;i++)
+						if(select_filter.options[i].selected){
 							// alert(i);
-							$(\'select_filter\').remove(i);
+							select_filter.remove(i);
 						}
 					}
 				}
@@ -586,7 +588,8 @@ function OnSubmitForm() {
 		
 		function setSessionFilterId(select_id){
 				var xhr3 = getXMLHttpRequest();
-				$select_id=$(\'select_filter\').value;
+				var select_filter = document.getElementById("select_filter");
+				$select_id=select_filter.value;
 				xhr3.onreadystatechange = function()
 				{
 					if (xhr3.readyState == 4 && (xhr3.status == 200 || xhr3.status == 0))
@@ -600,8 +603,9 @@ function OnSubmitForm() {
 		}
 		
 		window.onload=function() {
+			var select_filter = document.getElementById("select_filter");
 			if("'.$mainframe->getUserState($option.'select_id', 'select_id').'"!="select_id"){
-				$(\'select_filter\').options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
+				select_filter.options['.$mainframe->getUserState($option.'select_id', 'select_id').'].selected=true;
 			}
 			/* getLegend();*/
 		}

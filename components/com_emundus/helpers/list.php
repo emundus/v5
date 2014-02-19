@@ -141,6 +141,17 @@ class EmundusHelperList{
 		$this->_db->setQuery( $query );
 		return $this->_db->loadResult();
 	}
+
+	// get files request by or for applicant
+	function getFilesRequest($user_id, $campaign_id){
+		$query = 'SELECT efr.time_date, efr.keyid, efr.attachment_id, efr.filename, efr.uploaded, efr.email, esa.value, esa.description 
+					FROM #__emundus_files_request as efr 
+					LEFT JOIN #__emundus_setup_attachments as esa ON esa.id=efr.attachment_id 
+					WHERE student_id = '.$user_id.' AND campaign_id = '.$campaign_id. '
+					ORDER BY efr.time_date DESC, esa.ordering, esa.value ASC';
+		$this->_db->setQuery( $query );
+		return $this->_db->loadObjectList();
+	}
 	
 	//get evaluators for each applicant
 	function getUsersGroups(){
@@ -646,6 +657,42 @@ class EmundusHelperList{
 				@$evaluator[$user['user_id']][$user['campaign_id']] .= '<span class="hasTip" title="'.JText::_('ASSESSOR_FILTER_ALERT').'"><font color="red">'.JText::_('NO_ASSESSOR').'</font></span>';  
 		}
 		return $evaluator;
+	}
+
+	/*
+	** @description Create the block to display files request
+	*/
+	function createFilesRequestBlock($users) {
+		$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+		$actions = array();
+		$ids = array();
+		foreach($users as $user) {
+				$uploads = (!empty($user['user']) && !empty($user['campaign_id']))?EmundusHelperList::getFilesRequest($user['user_id'], $user['campaign_id']):'';
+
+				if(!empty($uploads)) {
+					
+						@$request[$user['user_id']][$user['user']][@$user['campaign_id']] .= "<div class='em_filesrequest'>".$c->value." : ".$c->email." ".$c->time_date."</div>";
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('REQUEST').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul>';
+
+						foreach ( $uploads as $row ) {
+							@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<li>';
+							if ($row->description != '') $link = $row->value.' (<em>'.$row->description.'</em>)';
+							else $link = $row->value;
+							@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $row->value." : ".$row->email." ".$row->time_date;
+							@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</li>';
+						}
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</ul></li>';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</ul>';
+						@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div></div>';
+					
+					
+				} else 
+					@$actions[$user['user_id']][$user['user']][@$user['campaign_id']] .= '';
+				
+		}
+		return $actions;
 	}
 	
 	/**/
