@@ -69,6 +69,8 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 	</tr>
 	<tr>
 		<td colspan="2" align="center">
+			<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid', '', 'GET', 'STRING'); ?>"/>
+			<input type="hidden" name="tmpl" id="tmpl" value="<?php echo JRequest::getVar('tmpl', '', 'GET', 'STRING'); ?>"/>
 			<input type="submit" value="<?php echo JText::_('SAVE'); ?>"/>
 		</td>
 	</tr>

@@ -169,9 +169,10 @@ class EmundusController extends JController {
 		$nb = 0;
 
 		if(!file_exists(EMUNDUS_PATH_ABS.$user->id)) {	
-			if (!mkdir(EMUNDUS_PATH_ABS.$user->id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) 
+			if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) 
 					return JError::raiseWarning(500, 'Unable to create user file');
 		}
+		chmod(EMUNDUS_PATH_ABS.$user->id, 0755);
 
 		for($i = 0; $i<count($files['name']);$i++) {
 			if (empty($files['name'][$i])) continue;
@@ -317,107 +318,31 @@ function updateprofile() {
 		$Itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		$this->setRedirect('index.php?option=com_emundus&view=profile&rowid='.$profile_id.'&Itemid='.$Itemid, '', '');
 }
-	/*function adduser() {
-		$current_user = JFactory::getUser();
-		//$Itemid=JSite::getMenu()->getActive()->id;
-		$Itemid="9";
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
-			return;
-		}
-		$mainframe = JFactory::getApplication();
-		// Get required system objects
-		$user 		= clone(JFactory::getUser(0));
-		$pathway 	= $mainframe->getPathway();
-		$config		= JFactory::getConfig();
-		$authorize	= JFactory::getACL();
-		$document   = JFactory::getDocument();
-		$db = JFactory::getDBO();
-		jimport( 'joomla.user.helper' );
-		$usersConfig = JComponentHelper::getParams( 'com_users' );
-		
-		// Get the user data.
-		$requestData = JRequest::getVar('jform', array(), 'post', 'array');
-		//die(print_r($requestData));
-		
-		$passwd = JUserHelper::genRandomPassword();
-		$requestData['password'] = $passwd;
-		$requestData['password2'] = $passwd;
-		
-		
-		$query = 'SELECT acl_aro_groups FROM `#__emundus_setup_profiles` WHERE id='.$requestData['profile'];
-		$db->setQuery($query);
-		$res = $db->loadObject();
-		
-		$requestData['groups'] = $res->acl_aro_groups;
-		
-		$model = $this->getModel('profile');
-		$tacl = $model->getProfile($requestData['profile']); 
-		// Bind the post array to the user object
-		$requestData['gid']=$tacl->acl_aro_groups;
-		//$newuser['gid']=$authorize->get_group_id( '', $newuser['usertype'], 'ARO' );
-		if (!$user->bind( $requestData )) {
-			JError::raiseError( 500, $user->getError());
-			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid);
-		}
-		// Set some initial user values
-		$user->set('id', 0);
-		
-		$user->set('registerDate', date('Y-m-d H:i:s'));
 
-		// If there was an error with registration, set the message and display form
-		if ( !$user->save() ) {
-		 	$document->setTitle( JText::_( 'Registration' ) );
-			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid,$user->getError(),'error');
-			return;
-		}
-	
-		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
-			return JError::raiseWarning(500, 'Unable to create user file');
-		}
-		
-		$groups = $requestData['groups'];
-		foreach($groups as $grp) {
-			$query = 'INSERT INTO `#__emundus_groups` (`user_id`, `group_id`)
-						VALUES ('.$user->id.', '.$grp.')';
-			$db->setQuery($query);
-			$db->Query() or die($db->getErrorMsg());
-		}
-		
-		
-		// Envoi de la confirmation de création de compte par email
-		$model = $this->getModel('emails');
-		$email = $model->getEmail('new_account');
-		//$email = $model->getEmail('register');
-		$body = $model->setBody($user, $email->message, $passwd);
-		
-		JUtility::sendMail($email->emailfrom, $email->name, $user->email, $email->subject, $body, 1);
 
-		$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$Itemid, JText::_('Users successfully added'), 'message');
-	}*/
 	function adduser(){
 		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
 		$current_user = JFactory::getUser();
 		$db = JFactory::getDBO();
+		$itemid = JSite::getMenu()->getActive()->id; 
 		
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			$this->setRedirect('index.php', JText::_('Only administrator can access this function.'), 'error');
+			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
-		$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
-		$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
-		$firstname = JRequest::getVar('firstname', null, 'POST', 'none',0);
-		$lastname = JRequest::getVar('lastname', null, 'POST', 'none',0);
-		$username = JRequest::getVar('login', null, 'POST', 'none',0);
-		$name = strtolower($firstname).' '.strtoupper($lastname);
-		$email = JRequest::getVar('email', null, 'POST', 'none',0);
-		$profile = JRequest::getVar('profile', null, 'POST', 'none',0);
-		$acl_aro_groups = JRequest::getVar('acl_aro_groups', null, 'POST', 'none',0);
-		$univ_id = JRequest::getVar('university_id', null, 'POST', 'none',0);
-		$groups = JRequest::getVar('cb_groups', null, 'POST', 'array',0);
+		$tmpl 			= JRequest::getVar('tmpl', '', 'POST', 'STRING'); 
+		$firstname 		= JRequest::getVar('firstname', null, 'POST', 'STRING');
+		$lastname 		= JRequest::getVar('lastname', null, 'POST', 'STRING');
+		$username 		= JRequest::getVar('login', null, 'POST', 'USERNAME', JREQUEST_NOTRIM);
+		$name 			= strtolower($firstname).' '.strtoupper($lastname);
+		$email 			= JRequest::getVar('email', null, 'POST', 'none', JREQUEST_NOTRIM);
+		$profile 		= JRequest::getVar('profile', null, 'POST', 'INT', JREQUEST_NOTRIM);
+		$acl_aro_groups = JRequest::getVar('acl_aro_groups', null, 'POST', 'INT', JREQUEST_NOTRIM);
+		$univ_id 		= JRequest::getVar('university_id', null, 'POST', 'INT', JREQUEST_NOTRIM);
+		$groups 		= JRequest::getVar('cb_groups', null, 'POST', 'ARRAY', JREQUEST_NOTRIM);
 		//$params='{"admin_language":"","language":"","editor":"","helpsite":"","timezone":""}';
-		$password = JUserHelper::genRandomPassword();
-		// die(var_dump($acl_aro_groups));		
+		$password 		= JUserHelper::genRandomPassword();
+
 		$user = clone(JFactory::getUser(0));
 		$user->name=$name;
 		$user->username=$username;
@@ -442,9 +367,10 @@ function updateprofile() {
 		
 		$model->adduser($user, $other_param);
 
-		if (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
+		if (!mkdir(EMUNDUS_PATH_ABS.$user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html')) {
 			return JError::raiseWarning(500, 'Unable to create user file');
 		}
+		chmod(EMUNDUS_PATH_ABS.$user->id, 0755);
 
 		// Envoi de la confirmation de création de compte par email
 		$model = $this->getModel('emails');
@@ -462,10 +388,11 @@ function updateprofile() {
 						);
 		$model->logEmail($message);
 
+		$tmpl = !empty($tmpl) ? '&layout=adduser&tmpl='.$tmpl : '';
 		if ($profile > 8) {
-			$this->setRedirect('index.php?option=com_emundus&view=application&sid='.$user->id.'&tmpl=component&Itemid='.$itemid.'#em_application_forms');
+			$this->setRedirect('index.php?option=com_emundus&view=application&sid='.$user->id.$tmpl.'&Itemid='.$itemid.'#em_application_forms');
 		} else		
-			$this->setRedirect('index.php?option=com_emundus&view=users&Itemid='.$itemid);
+			$this->setRedirect('index.php?option=com_emundus&view=users'.$tmpl.'&Itemid='.$itemid);
 	}
 
 	function delusers($reqids = null) {
