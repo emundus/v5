@@ -2,7 +2,7 @@
 /**
  * @package		Joomla.Site
  * @subpackage	Templates.beez5
- * @copyright	Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright	Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -24,8 +24,7 @@ if ($templateparams->get('html5')!=1)
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 ?>
 
-<?php if ($this->item->state == 0) : ?>
-<div class="system-unpublished">
+<?php if ($this->item->state == 0 || strtotime($this->item->publish_up) > strtotime(JFactory::getDate())) : ?>
 <?php endif; ?>
 <?php if ($params->get('show_title')) : ?>
 	<h2>
@@ -177,7 +176,7 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 		</p>
 <?php endif; ?>
 
-<?php if ($this->item->state == 0) : ?>
+<?php if ($this->item->state == 0 || strtotime($this->item->publish_up) > strtotime(JFactory::getDate())) : ?>
 </div>
 <?php endif; ?>
 
