@@ -34,7 +34,7 @@ function age($naiss) {
       <div class="ui two column grid">
         <div class="column">
           <div class="ui fluid form segment">
-            <h3 class="ui header"><?php echo JText::_('APPLICANT'); ?> | <?php echo $this->student->id; ?></h3>
+            <h3 class="ui header"><?php echo $this->student->name; ?> | <?php echo $this->student->id; ?></h3>
             <div class="content">
               <div class="ui two column divided grid">
                 <div class="row">
@@ -48,15 +48,15 @@ function age($naiss) {
                                     echo'<img id="image" class="rounded ui image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
                                 }
                                 ?>
-                      <div class="ui buttons"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
+                      <div class="ui buttons"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&task=pdf&user=<?php echo $this->student->id; ?>">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="file icon"></i> </button>
                         </a>
                         <button class="mini ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="archive icon"></i> </button>
-                        <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=67&amp;tableid=70&amp;rowid=&amp;jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment basic icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
+                        <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
+                        <button class="mini ui icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment icon"></i> </button>
+                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="comment basic icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
+                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=email&tmpl=component&sid=<?php echo $this->student->id; ?>&Itemid=<?php echo $itemid; ?>">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="mail basic icon "></i> </button>
                         </a> </div>
                     </div>
@@ -179,7 +179,7 @@ function age($naiss) {
                     }
                     echo'</div>';
                     if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && count($this->userCampaigns) > 1) {
-                        $delete_link = '<a class=​"ui" name="delete_campaign" data-title="'.JText::_('DELETE_CAMPAIGN').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#campaign_id\').val('.$campaign->campaign_candidature_id.'); $(\'#campaign_table\').val(\'jos_emundus_campaign_candidature\'); $(\'.basic.modal.confirm.campaign\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
+                        $delete_link = '<a class=​"ui" name="delete_campaign" data-title="'.JText::_('DELETE_CAMPAIGN').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#campaign_id\').val('.$campaign->campaign_candidature_id.'); $(\'#campaign_table\').val(\'jos_emundus_campaign_candidature\'); $(\'.basic.modal.confirm.campaign\').modal(\'show\');"><i class="trash icon link"></i>​</a>​';
                     }
         ?>
               <a data-html="<?php echo htmlentities($info); ?>" href="#" title="" >
@@ -196,37 +196,7 @@ function age($naiss) {
       </div>
     </div>
     <div class="ui fluid accordion">
-      <div class="title" id="em_application_connexion"> <i class="dropdown icon"></i> <?php echo JText::_('ACCOUNT'); ?> </div>
-      <div class="content">
-        <table>
-          <thead>
-            <tr>
-              <th><strong><?php echo JText::_('USERNAME'); ?></strong></th>
-              <th><strong><?php echo JText::_('ACCOUNT_CREATED_ON');?></strong></th>
-              <th><strong><?php echo JText::_('LAST_VISIT');?></strong></th>
-              <th><strong><?php echo JText::_('STATUS');?></strong></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><?php
-						if($this->current_user->authorise('core.manage', 'com_users'))
-							echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="'.JRoute::_('index.php?option=com_emundus&view=users&edit=1&rowid='.$this->student->id.'&tmpl=component').'">'. $this->student->username .'</a>';
-						else
-							echo $this->student->username;
-						?></td>
-              <td><?php echo JHtml::_('date', $this->student->registerDate, JText::_('DATE_FORMAT_LC2')); ?></td>
-              <td><?php echo JHtml::_('date', $this->student->lastvisitDate, JText::_('DATE_FORMAT_LC2')); ?></td>
-              <td><?php
-						if (isset($this->logged[0]->logoutLink))
-							echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
-						else
-							echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
-						?></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      
       <div class="title" id="em_application_attachments"> <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?> </div>
       <div class="content">
         <div class="actions">
@@ -234,8 +204,8 @@ function age($naiss) {
           <?php
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id)) {
 			?>
-          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8,onClose:function(){delayAct('<?php echo $this->student->id; ?>');}}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=67&amp;tableid=70&amp;rowid=&amp;jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
-          <button class="ui right icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="large attachment basic icon"></i> </button>
+          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8,onClose:function(){delayAct('<?php echo $this->student->id; ?>');}}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
+          <button class="ui right icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment icon"></i> </button>
           </a>
           <?php
 			 }
@@ -272,9 +242,10 @@ function age($naiss) {
 				echo '<div class="attachment_name">';
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id))
 					echo '<input type="checkbox" name="attachments[]" id="aid'.$attachment->aid.'" value="'.$attachment->aid.'" />';
-				echo '<a href="'.JURI::Base().$path.'" target="_blank" data-html="'.htmlentities($info).'">';
-				echo '<label for="aid_'.$i.'">'.$img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.' <em>'.$attachment->description.'</em></label>';
+				echo '<a href="'.JURI::Base().$path.'" target="_blank">';
+				echo $img_dossier.' '. $img_locked.' '.$img_missing.' '.$attachment->value.' <em>'.$attachment->description.'</em>';
 				echo '</a> ';
+        echo '<i class="help circle icon link icon" data-html="'.htmlentities($info).'"></i>';
 				echo '</div>';
 				$i++;
 			}
@@ -283,7 +254,7 @@ function age($naiss) {
       </div>
       <div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?> </div>
       <div class="active content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&task=pdf&user=<?php echo $this->student->id; ?>">
           <button class="ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="large file icon"></i> </button>
           </a>
           <button class="ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="large archive icon"></i> </button>
@@ -291,7 +262,7 @@ function age($naiss) {
         <?php echo $this->forms; ?> </div>
       <div class="title" id="em_application_comments"> <i class="dropdown icon"></i> <?php echo JText::_('COMMENTS'); ?> </div>
       <div class="content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
           <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="icon edit"></i><?php echo JText::_('ADD_COMMENT'); ?> </button>
           </a> </div>
         <div class="ui comments">
@@ -320,11 +291,11 @@ function age($naiss) {
       <div class="title" id="em_application_evaluations"> <i class="dropdown icon"></i> <?php echo JText::_('EVALUATIONS'); ?> </div>
       <div class="content">
         <?php echo $this->actions[$this->student->id][$this->current_user->id][$this->campaign_id]; ?>
-        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;view=evaluation&amp;layout=evaluation&amp;aid=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1&amp;Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
+        <iframe classe="iframe evaluation" id="em_evaluations" src="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=evaluation&layout=evaluation&aid=<?php echo $this->student->id; ?>&tmpl=component&iframe=1&Itemid=<?php echo $itemid; ?>" width="100%" height="400px" frameborder="0" marfin="0" padding="0"></iframe>
       </div>
       <div class="title" id="em_application_emails"> <i class="dropdown icon"></i> <?php echo JText::_('EMAIL_HISTORY'); ?> </div>
       <div class="content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
+        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=email&tmpl=component&sid=<?php echo $this->student->id; ?>&Itemid=<?php echo $itemid; ?>">
           <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="icon mail"></i><?php echo JText::_('SEND_EMAIL'); ?> </button>
           </a> </div>
         <?php
@@ -390,6 +361,37 @@ function age($naiss) {
 			';
 		}
 	?>
+      </div>
+      <div class="title" id="em_application_connexion"> <i class="dropdown icon"></i> <?php echo JText::_('ACCOUNT'); ?> </div>
+      <div class="content">
+        <table>
+          <thead>
+            <tr>
+              <th><strong><?php echo JText::_('USERNAME'); ?></strong></th>
+              <th><strong><?php echo JText::_('ACCOUNT_CREATED_ON');?></strong></th>
+              <th><strong><?php echo JText::_('LAST_VISIT');?></strong></th>
+              <th><strong><?php echo JText::_('STATUS');?></strong></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><?php
+            if($this->current_user->authorise('core.manage', 'com_users'))
+              echo '<a class="modal" target="_self" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="'.JRoute::_('index.php?option=com_emundus&view=users&edit=1&rowid='.$this->student->id.'&tmpl=component').'">'. $this->student->username .'</a>';
+            else
+              echo $this->student->username;
+            ?></td>
+              <td><?php echo JHtml::_('date', $this->student->registerDate, JText::_('DATE_FORMAT_LC2')); ?></td>
+              <td><?php echo JHtml::_('date', $this->student->lastvisitDate, JText::_('DATE_FORMAT_LC2')); ?></td>
+              <td><?php
+            if (isset($this->logged[0]->logoutLink))
+              echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/green.png" alt="'.JText::_('ONLINE').'" title="'.JText::_('ONLINE').'" />';
+            else
+              echo '<img style="border:0;" src="'.JURI::Base().'/media/com_emundus/images/icones/red.png" alt="'.JText::_('OFFLINE').'" title="'.JText::_('OFFLINE').'" />';
+            ?></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <input type="hidden" name="sid" value="<?php echo $this->student->id; ?>" />
@@ -554,8 +556,8 @@ $('.ui.icon')
 $('.ui.button')
     .popup({position : 'bottom center'})
 ;
-$('.attachment_name a')
-    .popup({position : 'bottom center'})
+$('.attachment_name i')
+    .popup({position : 'bottom right'})
 ;
 $('.campaign a')
     .popup({position : 'bottom left'})

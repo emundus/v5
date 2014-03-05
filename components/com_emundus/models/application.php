@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Users Model for eMundus Component
  * 

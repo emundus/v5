@@ -660,15 +660,15 @@ $htmldata .= '
 	$current_group_repeated = 0;
 
 //______________________________________________________//
-//		Liste des formulaires et de leurs données		//
+//		Liste des formulaires et de leurs donnÃ©es		//
 //______________________________________________________//
-// Récupération des tables qui doivent contenir un enregistrement de candidat
+// RÃ©cupÃ©ration des tables qui doivent contenir un enregistrement de candidat
 	// Ajout depuis le back office des ID Fabrik List
 	$eMConfig =& JComponentHelper::getParams('com_emundus');
 	$export_pdf = $eMConfig->get('export_pdf'); 
 	
 
-	// Le profil dépend de la campagne
+	// Le profil dÃ©pend de la campagne
 	$query = 'SELECT profile_id FROM #__emundus_setup_campaigns WHERE id = '.$campaign_id;
 	$db->setQuery( $query );
 	$db->query();
@@ -960,7 +960,7 @@ $htmldata .= '
 		}
 	}
 	
-	/* --- Listes des fichiers chargés --- */
+	/* --- Listes des fichiers chargÃ©s --- */
 	$query = 'SELECT sa.value, u.filename, u.description, u.timedate 
 	FROM #__emundus_uploads u 
 	LEFT JOIN #__emundus_setup_attachments AS sa ON sa.id=u.attachment_id 

@@ -1,3 +1,11 @@
+.ui.form .divider {
+clear: both;
+margin: 0;
+}
+/* Attachments */
+.attachment_name > input, a{
+	display: inline-block;
+}
 /* email */
 .email_legend {
 	font-size:14px;

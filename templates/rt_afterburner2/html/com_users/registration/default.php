@@ -151,8 +151,10 @@ function check_field(){
 			}
 		}
 	<?php } ?>
+	username = document.getElementById("jform_username");
 	passwd1 = document.getElementById("jform_password1");
 	passwd2 = document.getElementById("jform_password2");
+	username.onkeyup = function() { this.value = this.value.replace(/[^a-z0-9]/gi, '').toLowerCase(); };
 	passwd1.onkeyup = function() { if(passwd1.value.length < 4) $('em_msg_jform[password1]').innerHTML = "<?php echo JText::_('COM_USERS_DESIRED_PASSWORD');?>"; else $('em_msg_jform[password1]').innerHTML = ""; };
 	passwd2.onkeyup = function() { if(passwd1.value != this.value) $('em_msg_jform[password2]').innerHTML = "<?php echo JText::_('COM_USERS_FIELD_RESET_PASSWORD1_MESSAGE');?>"; else $('em_msg_jform[password2]').innerHTML = ""; };
 	email1 = document.getElementById("jform_email1");
