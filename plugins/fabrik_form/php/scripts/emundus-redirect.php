@@ -25,8 +25,8 @@ if (EmundusHelperAccess::isApplicant($user->id)){
 			FROM #__menu 
 			WHERE published=1 AND menutype = "'.$user->menutype.'" 
 			AND parent_id != 1
-			AND ordering = 1+(
-					SELECT menu.ordering 
+			AND lft = 2+(
+					SELECT menu.lft 
 					FROM `#__menu` AS menu 
 					WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'" 
 					AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';

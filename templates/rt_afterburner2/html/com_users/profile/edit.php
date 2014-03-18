@@ -35,6 +35,7 @@ $this->form->loadFile( dirname(__FILE__) . DS . "profile.xml");
 		<legend><?php echo JText::_($fieldset->label); ?></legend>
 		<?php endif;?>
 		<dl>
+		<h3><?php echo "#".JFactory::getUser()->id; ?></h3>
 		<?php  foreach ($fields as $field): //print_r($field);// Iterate through the fields in the set and display them.?>
 			<?php if ($field->hidden):// If the field is hidden, just display the input.?>
 				<?php echo $field->input;?>
