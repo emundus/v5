@@ -35,7 +35,7 @@ class EmundusModelIncomplete extends JModel
 		
 		// Get current menu parameters
 		$current_user = JFactory::getUser();
-		$menu=JSite::getMenu();
+		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();
 
 		/* 

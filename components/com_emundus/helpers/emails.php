@@ -779,7 +779,8 @@ class EmundusHelperEmails{
 		
 		// Content of email
 		$subject = JRequest::getVar('mail_subject', null, 'POST', 'none',0);
-		$message = JRequest::getVar('mail_body', null, 'POST', 'none',0);
+		$message = JRequest::getVar('mail_body', null, 'POST', 'STRING',JREQUEST_ALLOWHTML);
+		
 		if ($subject == '') {
 			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.$itemid);
@@ -942,6 +943,7 @@ class EmundusHelperEmails{
 					
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 					
+					
 					// mail function
 					if(JUtility::sendMail($from, $fromname, $evaluator->email, $subject, $body, 1)){
 						usleep(1000);
@@ -1050,6 +1052,7 @@ class EmundusHelperEmails{
 			$replacements = array ($user->id, $user->name, $user->email, JURI::base(), $campaign['label'], $programme['label'], '<br />');
 			// template replacements
 			$body = preg_replace($patterns, $replacements, $message);
+			
 
 			// mail function
 			if (JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1)) {
