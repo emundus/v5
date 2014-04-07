@@ -683,7 +683,7 @@ $htmldata .= '
 	$query = 'SELECT ff.id, ff.label
                         FROM #__fabrik_forms ff
                         LEFT JOIN #__fabrik_lists ft ON ft.form_id = ff.id
-                        WHERE ft.id IN (( '.implode(',', $fl).' ) OR ft.id IN ( '.$export_pdf.' ))
+                        WHERE ft.id IN ( '.implode(',', $fl).' ) OR ft.id IN ( '.$export_pdf.' )
                         OR ft.db_table_name = "jos_emundus_declaration"
                         ORDER BY ff.label';
 	$db->setQuery($query); 

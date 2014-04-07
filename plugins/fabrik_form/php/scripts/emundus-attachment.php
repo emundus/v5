@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 1: attachement.php 89 2008-10-13 Benjamin Rivalland
+ * @version 1: attachment.php 89 2014-103-26 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2008 Décision Publique. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
@@ -11,13 +11,22 @@ defined( '_JEXEC' ) or die();
  * other free or open source software licenses.
  * See COPYRIGHT.php for copyright notices and details.
  * @description Envoi automatique d'un email à l'étudiant lors d'un upload de document par le consortium. 
- *						Une copie est envoyée au user qui upload le document
+ * Une copie est envoyée au user qui upload le document
  */
 
 $mainframe 		= JFactory::getApplication();
 $jinput 		= $mainframe->input;
 $baseurl 		= JURI::base();
-$db 			=& JFactory::getDBO();
+$db 			= JFactory::getDBO();
+$student 		= JFactory::getUser($upload->user_id);
+$user	 		= JFactory::getUser();
+include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+
+$emails = new EmundusModelEmails;
+
+$post = array(  'PROGRAMME_NAME' => ''	);
+$tags = $emails->setTags($student->id, $post);
+$email = $emails->getEmail("attachment");
 
 $aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
 if(is_array($aid))
@@ -28,7 +37,7 @@ $inform_applicant_by_email 	= $jinput->get('jos_emundus_uploads___inform_applica
 
 $db->setQuery('SELECT id, user_id, filename FROM #__emundus_uploads WHERE id='.$jinput->get('jos_emundus_uploads___id'));
 $upload = $db->loadObject();
-$student = & JUser::getInstance($upload->user_id);
+
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id.'';
 $db->setQuery( $query );
 $profile=$db->loadResult();
@@ -66,16 +75,24 @@ if ($can_be_view == 1) {
 $from_id = $user->id;
 
 if ($inform_applicant_by_email == 1) {
-	// Récupération des données du mail à l'étudiant
-	$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
+	// Récupération des données du mail à l'étudiant	
+	$from = $email->emailfrom;
+	$from_id = $user->id;
+	$fromname = $user->name;
+	$recipient[] = $student->email;
+	$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
+	$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message).'<br/>'.@$file_url;
+
+/*	$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
 	$email=$db->loadObject();
 	$from = $email->emailfrom;
 	$fromname =$email->name;
 	$recipient[] = $student->email;
 	$subject = $email->subject;
-	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
-	$replyto = $email->emailfrom;
-	$replytoname = $email->name;
+	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;*/
+	$replyto = $user->email;
+	$replytoname = $user->name;
+	
 	JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, null, null, @$attachment, $replyto, $replytoname);
 	$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`) 
 					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";

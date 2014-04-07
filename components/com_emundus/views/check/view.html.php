@@ -47,8 +47,6 @@ class EmundusViewCheck extends JView
 		JHTML::_('behavior.tooltip');
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
-
-		$users = $this->_user;
 		
 		$menu = JSite::getMenu();
 		$current_menu  = $menu->getActive();

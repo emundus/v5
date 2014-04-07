@@ -24,12 +24,11 @@ include_once(JPATH_BASE.'/components/com_emundus/models/groups.php');
 $campaigns = new EmundusModelCampaign;
 $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
+
 $emails = new EmundusModelEmails;
 
 $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
-				'APPLICANTS_LIST' => $applicants,
-				'EVAL_CRITERIAS' => $criterias,
-				'EVAL_PERIOD' => $eval_period,
+				'PROGRAMME_NAME' => $campaign['label'],
 				'CAMPAIGN_LABEL' => $campaign['label'],
 				'CAMPAIGN_YEAR' => $campaign['year'],
 				'CAMPAIGN_START' => $campaign['start_date'],
@@ -38,6 +37,7 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign[
 			);
 $tags = $emails->setTags($student->id, $post);
 $email = $emails->getEmail("confirm_post");
+
 
 // Apllicant cannot delete this attachments now
 $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id;
@@ -71,7 +71,7 @@ $from = $email->emailfrom;
 $from_id = 62;
 $fromname =$email->name;
 $recipient[] = $student->email;
-$subject = $email->subject;
+$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
 //$body = preg_replace($patterns, $replacements, $email->message);
 $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
 $mode = 1;
