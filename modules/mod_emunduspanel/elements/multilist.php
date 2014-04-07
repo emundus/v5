@@ -44,7 +44,7 @@ class JFormFieldMultilist extends JFormFieldList
 		$query = 'SELECT menutype, title FROM #__menu_types WHERE menutype="'.$name.'"';
 		$db->setQuery($query);
 		$menutype = $db->loadResult();
-			$query = 'SELECT m.menutype, m.id, m.title, m.parent_id, m.link FROM #__menu m WHERE m.parent_id = 1 AND m.menutype="'.$menutype.'" ORDER BY m.parent_id DESC, m.ordering, m.level, m.menutype, m.id ASC';
+			$query = 'SELECT m.menutype, m.id, m.title, m.parent_id, m.link FROM #__menu m WHERE m.parent_id = 1 AND m.menutype="'.$menutype.'" ORDER BY m.parent_id DESC, m.left, m.level, m.menutype, m.id ASC';
 			$db->setQuery($query);
 			$parents = $db->loadObjectList();
 			$size = 0;
@@ -53,7 +53,7 @@ class JFormFieldMultilist extends JFormFieldList
 					$options[] = JHTML::_('select.optgroup', JText::_($parent->title));
 				else
 					$options[] = JHTML::_('select.option', $parent->id, JText::_($parent->title));
-				$query = 'SELECT m.menutype, m.id, m.title, m.parent_id, m.link FROM #__menu m WHERE m.parent_id = '.$parent->id.' ORDER BY m.parent_id DESC, m.ordering, m.level, m.menutype, m.id ASC';
+				$query = 'SELECT m.menutype, m.id, m.title, m.parent_id, m.link FROM #__menu m WHERE m.parent_id = '.$parent->id.' ORDER BY m.parent_id DESC, m.left, m.level, m.menutype, m.id ASC';
 				$db->setQuery($query);
 				$res = $db->loadObjectList();
 				$size += count($res);
