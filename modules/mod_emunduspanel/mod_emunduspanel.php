@@ -39,9 +39,9 @@ $user = JFactory::getUser();
 	if (!empty($t__)) {
 		$db	= JFactory::getDBO();
 		if($user_menutype == 'mainmenu')
-			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id, m.ordering, m.level, m.menutype, m.id';
+			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id, m.lft, m.level, m.menutype, m.id';
 		else
-			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id DESC, m.ordering, m.level, m.menutype, m.id ASC';
+			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id DESC, m.lft, m.level, m.menutype, m.id ASC';
 		$db->setQuery($query);
 		$res = $db->loadObjectList();
 
