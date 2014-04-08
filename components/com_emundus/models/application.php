@@ -260,7 +260,7 @@ class EmundusModelApplication extends JModel
 				$forms .= $itemt->label;
 
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && $itemt->db_table_name != "jos_emundus_training"){
-					$forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank">'.JText::_('EDIT').'</a>';
+					$forms .= ' <a href="index.php?option=com_fabrik&view=form&formid='.$itemt->form_id.'&usekey=user&rowid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><i class="icon edit">'.JText::_('EDIT').'</i></a>';
 				}
  
 				$forms .= '</h3>';

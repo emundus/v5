@@ -41,13 +41,13 @@ class EmundusViewApplication extends JView{
     function display($tpl = null){	
 	
         $document = JFactory::getDocument();
-        $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
-        $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
         $document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
         $document->addStyleSheet( JURI::base()."media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
         $document->addScript( JURI::base()."media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 
+        $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
+        $document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus_application.css" );
 
        // $menu=JSite::getMenu()->getActive();
         $menu = JSite::getMenu();
