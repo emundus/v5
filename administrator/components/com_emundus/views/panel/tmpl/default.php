@@ -19,13 +19,13 @@ defined('_JEXEC') or die('RESTRICTED');
     <p align="center"><a href="http://www.emundus.fr" target="_blank">www.emundus.fr</a></p></td>
     <td width="20%"><p align="center"><strong><?php echo JText::_("EMUNDUS_COMPONENT"); ?></strong></p>
       <p align="center"><?php echo JText::_("GESTIONNAIRE_CANDIDATURE"); ?></p>
-      <p align="center">Version 5 - 08/2013</p>
+      <p align="center">Version 5.1 - 01/2014</p>
     <p align="center"><?php echo JText::_("AUTHOR"); ?> <em>Benjamin Rivalland </em></p>
 	<p align="center"><?php echo JText::_("DEVELOPER"); ?> <em>Benjamin Rivalland (2008-2013)</em>,<br />
 	<em>Jonas Lerebours (2010)</em>,<br>
 	<em>Mathilde Guillossou (2011-2012)</em>,<br>
   <em>Riwal Le Buhan (2012)</em>
-  <em>Elisabeth Reculé (2013)</em>
+  <em>Elisabeth Reculé (2013)</em><em>Robin Colet (2014)</em>
 	</p></td>
   </tr>
 </table>

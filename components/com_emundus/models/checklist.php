@@ -126,5 +126,16 @@ class EmundusModelChecklist extends JModel
 		$cpt = $this->_db->loadResult();
 		return $cpt>0?true:false;
 	}
+
+	function getConfirmUrl()
+    {
+        $db = JFactory::getDBO();
+        $query = 'SELECT link
+        FROM #__menu 
+        WHERE level=1 AND menutype = "menu_profile'.$this->_user->profile.'" 
+        ORDER BY lft DESC';
+        $db->setQuery($query);
+        return $db->loadResult();
+    }
 }
 ?>

@@ -48,6 +48,7 @@ class EmundusViewChecklist extends JView
 		$forms = $this->get('FormsList');
 		$attachments = $this->get('AttachmentsList');
 		$sent = $this->get('sent');
+		$confirm_form_url = $this->get('ConfirmUrl');
 		$greeting = $this->get('Greeting');
 		$need = $this->get('Need');
 		$instructions = $this->get('Instructions');
@@ -57,6 +58,7 @@ class EmundusViewChecklist extends JView
 		$this->assignRef('text', $greeting->text);
 		$this->assignRef('need', $need);
 		$this->assignRef('sent', $sent);
+		$this->assignRef('confirm_form_url', $confirm_form_url);
 		$this->assignRef('forms', $forms);
 		$this->assignRef('attachments', $attachments);
 		$this->assignRef('instructions', $instructions);

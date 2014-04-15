@@ -320,17 +320,20 @@ class EmundusModelApplication extends JModel
 						foreach($elements as &$element) { 
 							$t_elt[] = $element->name;
 							$forms .= '<th scope="col">'.$element->label.'</th>';
-							/*$element->content = explode('//..*..//', $element->content);
-							if(count($element->content)>$nb_lignes) $nb_lignes = count($element->content);*/
 						}
 						unset($element);
-						$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
+						//$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
+						$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id;
+						$this->_db->setQuery($query);
+						$table = $this->_db->loadResult();
+
 						if($itemg->group_id == 174)
 							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
 										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
 						else
 							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
 									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
+				//$forms .= $query;
 						$this->_db->setQuery($query);
 						$repeated_elements = $this->_db->loadObjectList();
 						unset($t_elt);
@@ -338,6 +341,7 @@ class EmundusModelApplication extends JModel
 						$forms .= '</tr></thead><tbody>';
 						// -- Ligne du tableau -- 
 						foreach ($repeated_elements as $r_element) {
+							$delete_link = false;
 							$forms .= '<tr>';
 								$j = 0;
 								foreach ($r_element as $key => $r_elt) {
@@ -358,11 +362,12 @@ class EmundusModelApplication extends JModel
 										} else 
 											$elt = $r_elt;
 //print_r($this->_mainframe->data);
-										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$delete_link) {
 											//$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
 											$delete_link = '<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
 										}
-										$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.' '.$delete_link.'</div></td>';
+										$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
+										$delete_link = true;
 									}
 									$j++;
 								}
@@ -395,7 +400,7 @@ class EmundusModelApplication extends JModel
 		FROM #__messages as email
 		LEFT JOIN #__users as user ON user.id=email.user_id_from 
 		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id
-		WHERE email.user_id_to ='.$user_id;
+		WHERE email.user_id_to ='.$user_id.' ORDER BY `date_time` DESC';
 		$this->_db->setQuery($query);
 		$results['to'] = $this->_db->loadObjectList('message_id');
 		
@@ -403,7 +408,7 @@ class EmundusModelApplication extends JModel
 		FROM #__messages as email
 		LEFT JOIN #__users as user ON user.id=email.user_id_to 
 		LEFT JOIN #__emundus_users as eu ON eu.user_id=user.id 
-		WHERE email.user_id_from ='.$user_id;
+		WHERE email.user_id_from ='.$user_id.' ORDER BY `date_time` DESC';
 		$this->_db->setQuery($query);		
 		$results['from'] = $this->_db->loadObjectList('message_id');
 		

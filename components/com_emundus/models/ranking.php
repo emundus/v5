@@ -567,6 +567,7 @@ class EmundusModelRanking extends JModel
 					//$eval_list['schoolyear'] = $applicant->schoolyear;
 					//$eval_list['registerDate'] = $applicant->registerDate;
 				}
+				$eval_list['email'] = @$applicant->email;
 				$eval_list['row_id']=$applicant->final_grade_id;
 				$eval_list['profile']=$applicant->profile; 
 				$eval_list['campaign_id']=$applicant->campaign_id; 

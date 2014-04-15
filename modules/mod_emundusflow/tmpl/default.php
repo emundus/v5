@@ -14,10 +14,10 @@ if ($sent>0 && $user->candidature_incomplete == 0) {
 	$db->setQuery($query);
 	$cpt = $db->loadResult();
 	$complete =  '<i class="large ok sign icon"></i>'.JText::_('APPLICATION_SENT')." : ".$user->campaign_name;
-	if($cpt>0)
+	if($cpt>0 && $applicant_can_renew)
 		$renew =  ' <a href="index.php?option=com_emundus&view=renew_application"><i class="large repeat icon"></i>'.JText::_('RENEW_APPLICATION').'</a>';
 } else {
-	$complete =  '<i class="large time icon"></i><a href="index.php?option=com_fabrik&c=form&view=form&formid=22&tableid=22&usekey=user&rowid=-1" title="'.JText::_('APPLICATION_NOT_SENT').'">'.JText::_('APPLICATION_NOT_SENT').'</a>'." : ".$user->campaign_name;
+	$complete =  '<i class="large time icon"></i><a href="'.$confirm_form_url.'&usekey=user&rowid=-1" title="'.JText::_('APPLICATION_NOT_SENT').'">'.JText::_('APPLICATION_NOT_SENT').'</a>'." : ".$user->campaign_name;
 }
 ?>
 <div class="ui small steps">

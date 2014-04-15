@@ -20,6 +20,10 @@ $user =& JFactory::getUser();
 
 $db =& JFactory::getDBO();
 
+$eMConfig =& JComponentHelper::getParams('com_emundus');
+$applicant_can_renew = $eMConfig->get('applicant_can_renew'); 
+
+
 $query = 'SELECT 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id)
 			FROM #__emundus_setup_attachment_profiles AS profiles 
 			LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$user->id.'
@@ -38,7 +42,14 @@ foreach ($forms as $form) {
 $forms = floor(100*$nb/count($forms));
 
 
-$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$user->id.' AND time_date != "0000-00-00 00:00:00"';
+/*$query = 'SELECT COUNT(*) FROM #__emundus_declaration WHERE user = '.$user->id.' AND time_date != "0000-00-00 00:00:00"';
 $db->setQuery( $query );
 $sent = $db->loadResult();
+*/
+$sent = $user->candidature_posted;
+
+$query = 'SELECT link FROM #__menu WHERE level=1 AND menutype = "menu_profile'.$user->profile.'" ORDER BY lft DESC';
+$db->setQuery($query);
+$confirm_form_url = $db->loadResult();
+
 require(JModuleHelper::getLayoutPath('mod_emundusflow'));

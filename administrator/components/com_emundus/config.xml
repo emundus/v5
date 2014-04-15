@@ -24,7 +24,7 @@
 			<option value="3">COM_EMUNDUS_AFFECTED_AND_LINKED</option>
 			<option value="4">COM_EMUNDUS_ALL</option>
 		</field>
-		<field name="evaluators_can_see_other_eval" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION" description="CCOM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION_DESC">
+		<field name="evaluators_can_see_other_eval" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION" description="COM_EMUNDUS_EVALUATORS_CAN_SEE_OTHER_EVALUATION_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -33,6 +33,10 @@
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />
 		<field name="applicant_files_path" type="text" size="50" default="images/emundus/files/" label="APPLICANT_FILES_PATH" description="APPLICANT_FILES_PATH_DESC" />
+		<field name="applicant_can_renew" menu="hide" type="list" default="1" label="COM_EMUNDUS_APPLICANT_CAN_RENEW" description="COM_EMUNDUS_APPLICANT_CAN_RENEW_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />

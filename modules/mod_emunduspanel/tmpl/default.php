@@ -11,7 +11,7 @@ if (!empty($tab)) {
         $query='SELECT label,id FROM #__emundus_setup_profiles WHERE id ='.$name;
         $db->setQuery($query);
         $label = $db->loadResult();
-        echo '<a href="index.php?option=com_users&view=profile&layout=edit"><h2>'.JText::_('YOUR_PROFILE').' : '.$label. '</h2></a>';
+        echo '<a href="index.php?option=com_users&view=profile&layout=edit"><h2>'.$label. '</h2></a>';
     }
     
     ?>
@@ -37,7 +37,7 @@ if (!empty($tab)) {
 	$db->setQuery($query);
 	$cpt = $db->loadResult();
 
-	if (@$user->applicant == 1 && @$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 && $cpt > 0) {
+	if (@$user->applicant == 1 && @$user->candidature_posted == 1 && @$user->candidature_incomplete == 0 && $cpt > 0 && $applicant_can_renew) {
 		$str = '<a href="index.php?option=com_emundus&view=renew_application"><img src="'.JURI::Base().'media/com_emundus/images/icones/renew.png" /></a>';
 		$str .= '<br/><a class="text" href="'.JURI::Base().'index.php?option=com_emundus&view=renew_application">'.JText::_('RENEW_APPLICATION').'</a>';
 		echo '<td align="center">'.$str.'</td>';

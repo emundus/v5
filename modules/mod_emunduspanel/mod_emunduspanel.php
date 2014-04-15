@@ -15,6 +15,9 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emunduspanel/style/' );
 
+$eMConfig =& JComponentHelper::getParams('com_emundus');
+$applicant_can_renew = $eMConfig->get('applicant_can_renew'); 
+
 $user = JFactory::getUser();
 	if(isset($user->menutype)) $user_menutype = $user->menutype;
 	else $user_menutype = 'mainmenu';

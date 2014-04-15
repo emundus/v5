@@ -844,6 +844,7 @@ class EmundusModelCheck extends JModel
         $db->setQuery($query);
         return $db->loadResultArray();
     }
+
 }
 
 ?>

@@ -541,6 +541,7 @@ function application_form_pdf($user_id, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$m_users = new EmundusModelUsers;
 	$user_profile = $m_users->getCurrentUserProfile($user_id);
@@ -549,10 +550,14 @@ function application_form_pdf($user_id, $output = true) {
 
 	$current_user =  JFactory::getUser();
 
+	$application = new EmundusModelApplication;
+	$forms = $application->getForms($user_id);
+
 	// --- CONFIGURATION --- //
 	$group_personal_infos = 14;
 	$str_repeat = '//..*..//';
 	$htmldata = '';
+	$htmldata .= $forms;
 	// --------------------- //
 	set_time_limit(0);
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -652,6 +657,13 @@ $htmldata .= '
 </tr>
 </table>
 </div>';
+
+if (!empty($htmldata)) {
+				$pdf->startTransaction();
+				$start_y = $pdf->GetY();
+				$start_page = $pdf->getPage();
+				$pdf->Bookmark($itemt->label, 0);
+				$pdf->writeHTMLCell(0,'','',$start_y,$htmldata,'B', 1); }
 /**  END APPLICANT   ****/
 
 	$html_table = '';
@@ -716,7 +728,7 @@ $htmldata .= '
 
 	$tableuser = $db->loadObjectList();
 	// var_dump($tableuser);
-	if(isset($tableuser)) {
+	/*if(isset($tableuser)) {
 		foreach($tableuser as $key => $itemt) {
 			if($current_user->usertype != $registered || ($output == false && !empty($item->user))){
 				// EVALUATION & COMMENTS (Only for != Registered usertype
@@ -818,7 +830,7 @@ $htmldata .= '
 			$groups = $db->loadObjectList();
 	//die( str_replace('#_','jos',$query).'<BR /><BR />');
 
-			/*-- Liste des groupes -- */
+			// Liste des groupes 
 			foreach($groups as $keyg => $itemg) {
 				// liste des items par groupe
 				$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
@@ -958,7 +970,7 @@ $htmldata .= '
 			}
 ///			
 		}
-	}
+	}*/
 	
 	/* --- Listes des fichiers chargés --- */
 	$query = 'SELECT sa.value, u.filename, u.description, u.timedate 
