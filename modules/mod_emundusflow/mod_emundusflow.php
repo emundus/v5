@@ -48,7 +48,7 @@ $sent = $db->loadResult();
 */
 $sent = $user->candidature_posted;
 
-$query = 'SELECT link FROM #__menu WHERE level=1 AND menutype = "menu_profile'.$user->profile.'" ORDER BY lft DESC';
+$query = 'SELECT link FROM #__menu WHERE level=1 AND menutype = (SELECT p.menutype FROM #__emundus_setup_profiles as p WHERE p.id='.$user->profile.') ORDER BY lft DESC';
 $db->setQuery($query);
 $confirm_form_url = $db->loadResult();
 

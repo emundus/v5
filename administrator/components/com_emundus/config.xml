@@ -29,6 +29,7 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="nb_months_registration_period_access" type="text" size="2" default="11" label="NB_MONTHS_REGISTRATION_PERIOD_ACCESS" description="NB_MONTHS_REGISTRATION_PERIOD_ACCESS_DESC" />
+		<field name="evaluation_groups_id" type="text" size="10" default="41" label="EVALUATION_GROUPS_ID" description="EVALUATION_GROUPS_ID_DESC" />
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
 		<field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS" description="ID_APPLICANTS_DESC" />

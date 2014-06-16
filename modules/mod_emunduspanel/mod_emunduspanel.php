@@ -14,7 +14,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 JHTML::stylesheet( 'emundus.css', JURI::Base().'modules/mod_emunduspanel/style/' );
-
+$db	= JFactory::getDBO();
 $eMConfig =& JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew'); 
 
@@ -40,7 +40,7 @@ $user = JFactory::getUser();
 		$t__ = $text;
 	}
 	if (!empty($t__)) {
-		$db	= JFactory::getDBO();
+		
 		if($user_menutype == 'mainmenu')
 			$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE m.id IN ('.$t__.') ORDER BY m.parent_id, m.lft, m.level, m.menutype, m.id';
 		else
@@ -67,6 +67,25 @@ $user = JFactory::getUser();
 	
 			echo '</div>';
 		}
-	}	
+	} else {
+		$query = 'SELECT m.menutype, m.title, m.alias, m.link, m.id FROM #__menu m WHERE menutype="'.$user_menutype.'" ORDER BY m.parent_id DESC, m.lft, m.level, m.menutype, m.id ASC';
+		$db->setQuery($query);
+		$res = $db->loadObjectList();
+		if (count($res > 0)) {
+			$tab = array();
+			$tab_temp = array();
+			echo '<div class="emundus_home_page">';
+			foreach($res as $r){
+				$src = $folder.'files_grey.png';
+				$str = '<a href="'.$r->link.'&Itemid='.$r->id.'"><img src="'.JURI::Base().'/'.$src.'" /></a>';
+				$str .= '<br/><a class="text" href="'.$r->link.'&Itemid='.$r->id.'">'.$r->title.'</a>';
+				$tab[] = $str;
+			}
+			$col = count($tab);
+	
+			echo '</div>';
+		}
+
+	}
 
 require(JModuleHelper::getLayoutPath('mod_emunduspanel'));

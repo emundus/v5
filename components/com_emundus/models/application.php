@@ -1,13 +1,12 @@
 <?php
 /**
- * Users Model for eMundus Component
+ * Application Model for eMundus Component
  * 
  * @package    eMundus
  * @subpackage Components
- *             components/com_emundus/emundus.php
  * @link       http://www.decisionpublique.fr
  * @license    GNU/GPL
- * @author     Jonas Lerebours
+ * @author     Benjamin Rivalland
  */
  
 // No direct access
@@ -317,21 +316,22 @@ class EmundusModelApplication extends JModel
 						//-- Entrée du tableau -- */
 						//$nb_lignes = 0;
 						$t_elt = array();
-						foreach($elements as &$element) { 
+						foreach($elements as $key => $element) { 
 							$t_elt[] = $element->name;
-							$forms .= '<th scope="col">'.$element->label.'</th>';
+							if ($element->name != 'id' && $element->name != 'parent_id') 
+								$forms .= '<th scope="col">'.$element->label.'</th>';
 						}
 						unset($element);
 						//$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
-						$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id;
+						$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND list_id='.$itemt->table_id;
 						$this->_db->setQuery($query);
 						$table = $this->_db->loadResult();
 
 						if($itemg->group_id == 174)
-							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
+							$query = 'SELECT `'.implode("`,`", $t_elt).'`, `id` FROM `'.$table.'` 
 										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
 						else
-							$query = 'SELECT '.implode(",", $t_elt).', id FROM '.$table.' 
+							$query = 'SELECT `'.implode("`,`", $t_elt).'`, `id` FROM `'.$table.'` 
 									WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.')';
 				//$forms .= $query;
 						$this->_db->setQuery($query);
@@ -341,7 +341,7 @@ class EmundusModelApplication extends JModel
 						$forms .= '</tr></thead><tbody>';
 						// -- Ligne du tableau -- 
 						foreach ($repeated_elements as $r_element) {
-							$delete_link = false;
+							$linked = false;
 							$forms .= '<tr>';
 								$j = 0;
 								foreach ($r_element as $key => $r_elt) {
@@ -362,12 +362,14 @@ class EmundusModelApplication extends JModel
 										} else 
 											$elt = $r_elt;
 //print_r($this->_mainframe->data);
-										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$delete_link) {
+										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 											//$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
-											$delete_link = '<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​';
+											$delete_link = !$linked?'<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​':'';
+											$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
+											$linked = true;
+										} else {
+											$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.'</div></td>';
 										}
-										$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
-										$delete_link = true;
 									}
 									$j++;
 								}

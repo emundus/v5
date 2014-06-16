@@ -107,7 +107,7 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 										if(array_key_exists($value, $this->fg))
                                         	echo $this->fg[$value];
                                         echo '</td>';
-                                    }elseif($key != 'row_id' && $key != 'final_grade' && $key != 'profile' && $key != 'campaign_id'){
+                                    }elseif($key != 'row_id' && $key != 'final_grade' && $key != 'profile' && $key != 'campaign_id' && $key != 'email'){
                                         echo '<td>'.$value.'</td>';
                                     }
                                 } ?>

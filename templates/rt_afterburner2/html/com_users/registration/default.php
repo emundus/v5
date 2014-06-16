@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
-JHtml::_('behavior.noframes');
+//JHtml::_('behavior.noframes');
 
 $app	= JFactory::getApplication();
 $template = $app->getTemplate();
@@ -30,7 +30,32 @@ $campaigns = $campaign->getCampaignsByCourse($course);
 $campaign_id = $campaigns['id'];
 
 ?>
-<style> #jform_name {border:solid 0px #FFF;} </style>
+<style type="text/css"> 
+#jform_name {border:solid 0px #FFF;} 
+#content-fallback .download-link span {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("media/com_emundus/images/icones/download-logo-sub.png");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    display: block;
+    font-family: georgia,serif;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: normal;
+    height: 40px;
+    line-height: 1;
+    /*margin-left: -25px;*/
+    padding-bottom: 0;
+    padding-left: 55px;
+    padding-right: 10px;
+    padding-top: 8px;
+    position: relative;
+}
+</style>
 <div class="box">
 	<div class="box_content"><?php echo JText::_("EMUNDUS_REGISTRATION_INSTRUCTIONS"); ?></div>
 </div>
@@ -100,6 +125,10 @@ elseif (preg_match('/Mozilla/', $HTTP_USER_AGENT))
 	$browser='FireFox';
 else {
 	$browser=$HTTP_USER_AGENT;
+}
+
+if($browser=='IE'){
+	echo JText::_('IE_ALERT');
 }
 
 //var_dump($jform);

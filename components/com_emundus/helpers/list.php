@@ -339,7 +339,7 @@ class EmundusHelperList{
 					$checked = ($s==$user['user_id'])?'checked':'';
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_checkbox" id="em_checkbox_'.$user['user_id'].'"><input id="cb'.$user['user_id'].'|'.$user['campaign_id'].'" type="checkbox" name="ud[]" value="'.$user['user_id'].'|'.$user['campaign_id'].'" '.$checked.' /></div>';
 				}
-				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'">#'.$user['user_id'].'</div>';
+				@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'_'.$user['campaign_id'].'">#'.$user['user_id'].'</div>';
 				if(in_array('gender',$params)){
 					@$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_gender" id="em_gender_'.$user['user_id'].'">';
 					@$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';

@@ -65,8 +65,8 @@ $db->query();
 
 // Pour tous les mails
 $user = & JFactory::getUser();
-$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
-$replacements = array ($student->id, $student->name, $student->email, '<br />');
+$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/');
+$replacements = array ($student->id, $student->name, $student->email);
 $mode = 1;
 if ($can_be_view == 1) {
 	$attachment[] = EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom;

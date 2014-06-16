@@ -619,11 +619,11 @@ class EmundusModelUsers extends JModel
 			$univ_id=$other_params['univ_id'];
 			
 			if(empty($univ_id)){
-				$query="INSERT INTO `#__emundus_users` VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
+				$query="INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','',0)";
 				$db->setQuery($query);
 				$db->Query() or die($db->getErrorMsg());
 			}else{
-				$query="INSERT INTO `#__emundus_users` VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','','".$univ_id."')";
+				$query="INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".date('Y-m-d H:i:s')."','".$firstname."','".$lastname."',".$profile.",'',0,'','','','".$univ_id."')";
 				$db->setQuery($query);
 				$db->Query() or die($db->getErrorMsg());
 			}

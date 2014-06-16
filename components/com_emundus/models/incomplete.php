@@ -153,7 +153,7 @@ class EmundusModelIncomplete extends JModel
 		$filter_order     = $this->getState('filter_order');
        	$filter_order_Dir = $this->getState('filter_order_Dir');
 				
-		$can_be_ordering = array ('user', 'id', 'lastname', 'nationality', 'registerDate','profile', 'date_time', 'year', 'label', 'jos_emundus_setup_campaigns.year');
+		$can_be_ordering = array ('user', 'user_id', 'id', 'lastname', 'nationality', 'registerDate','profile', 'date_time', 'year', 'label', 'jos_emundus_setup_campaigns.year');
         /* Error handling is never a bad thing*/
         if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;

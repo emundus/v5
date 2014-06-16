@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die();
  * @description Envoi automatique d'un email aux professeurs référents choisis par l'étudiant
  */
 $baseurl = JURI::root();
-$student = JFactory::getUser($_REQUEST['jos_emundus_references___user']);
+$student = JFactory::getUser($_REQUEST['jos_emundus_references___user_raw'][0]);
 jimport( 'joomla.utilities.utility' );
 
 $db =& JFactory::getDBO();
@@ -163,4 +163,5 @@ if ($is_uploaded3==0) {
 	}
 }
 //JUtility::sendMail($from, $fromname, $recipient, $subject, $body, $mode, $cc, $bcc, $attachment, $replyto, $replytoname);
+
 ?>

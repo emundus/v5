@@ -36,7 +36,7 @@ class EmundusHelperMenu{
 		INNER JOIN #__emundus_setup_profiles AS profile ON profile.menutype = menu.menutype AND profile.id = '.$profile.' 
 		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-		WHERE fbtables.published = 1 AND menu.parent_id !=1
+		WHERE fbtables.published = 1 AND menu.published =1 AND menu.parent_id !=1
 		ORDER BY menu.lft';
 		$_db->setQuery( $query );
 		return $_db->loadResultArray();

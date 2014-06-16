@@ -393,7 +393,9 @@ class EmundusModelEvaluation extends JModel
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
-		$this->_eval_elements 	= $this->getElementsByGroups(41);
+		$evaluation_groups_id = $eMConfig->get('evaluation_groups_id', '41');
+		$this->_eval_elements 	= $this->getElementsByGroups($evaluation_groups_id);
+
 		$db = JFactory::getDBO();
 		
 		foreach ($this->_eval_elements as $eval) {
@@ -835,9 +837,11 @@ class EmundusModelEvaluation extends JModel
 
 	// get evaluation columns
 	function getEvalColumns(){
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$evaluation_groups_id = $eMConfig->get('evaluation_groups_id', '41');
 		$query = 'SELECT name, label, plugin, params, ordering 
 				FROM #__fabrik_elements 
-				WHERE group_id=41
+				WHERE group_id IN ('.$evaluation_groups_id.')
 				AND hidden != 1
 				AND show_in_list_summary=1
 				ORDER BY ordering';

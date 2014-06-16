@@ -53,5 +53,6 @@ $app->render();
 
 // Mark afterRender in the profiler.
 JDEBUG ? $_PROFILER->mark('afterRender') : null;
+
 // Return the response.
 echo $app;
