@@ -382,6 +382,7 @@ class EmundusModelEvaluation extends JModel
 	}
 	
 	function _buildSelect(){
+		$eMConfig 				= JComponentHelper::getParams('com_emundus');
 		$current_user 			= JFactory::getUser();
 		$search					= $this->getState('elements');
 		$s_elements				= $this->getState('s_elements');
@@ -393,7 +394,7 @@ class EmundusModelEvaluation extends JModel
 		$uid					= $this->getState('user');
 		$miss_doc				= $this->getState('missing_doc');
 		$validate_application	= $this->getState('validate');
-		$evaluation_groups_id = $eMConfig->get('evaluation_groups_id', '41');
+		$evaluation_groups_id 	= $eMConfig->get('evaluation_groups_id', '41');
 		$this->_eval_elements 	= $this->getElementsByGroups($evaluation_groups_id);
 
 		$db = JFactory::getDBO();

@@ -86,7 +86,6 @@ function return_bytes($val) {
 						INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 						INNER JOIN #__menu AS menu ON tab.form_id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 						WHERE tab.published = 1 
-						AND (tab.created_by_alias = "form" OR tab.created_by_alias = "comment")
 						AND element.published=1 
 						AND element.hidden=0 
 						AND element.label!=" " 

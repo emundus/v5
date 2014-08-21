@@ -323,10 +323,9 @@ class EmundusModelApplication extends JModel
 						}
 						unset($element);
 						//$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
-						$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND list_id='.$itemt->table_id;
+						$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND list_id='.$itemt->table_id.' AND table_join_key like "parent_id"';
 						$this->_db->setQuery($query);
 						$table = $this->_db->loadResult();
-
 						if($itemg->group_id == 174)
 							$query = 'SELECT `'.implode("`,`", $t_elt).'`, `id` FROM `'.$table.'` 
 										WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.') OR applicant_id='.$aid;
@@ -337,43 +336,45 @@ class EmundusModelApplication extends JModel
 						$this->_db->setQuery($query);
 						$repeated_elements = $this->_db->loadObjectList();
 						unset($t_elt);
-//print_r($repeated_elements);
+
 						$forms .= '</tr></thead><tbody>';
 						// -- Ligne du tableau -- 
-						foreach ($repeated_elements as $r_element) {
-							$linked = false;
-							$forms .= '<tr>';
-								$j = 0;
-								foreach ($r_element as $key => $r_elt) {
-									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
-										if ($elements[$j]->plugin=='date') {
-											$date_params = json_decode($elements[$j]->params);
-											$elt = strftime($date_params->date_form_format, strtotime($r_elt));
-										} elseif($elements[$j]->plugin=='databasejoin') {
-												$params = json_decode($elements[$j]->params);
-												$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-												$from = $params->join_db_name;
-												$where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
-												$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-												$query = preg_replace('#{thistable}#', $from, $query);
-												$query = preg_replace('#{my->id}#', @$item->user_id, $query);
-												$this->_db->setQuery( $query );
-												$elt = $this->_db->loadResult();
-										} else 
-											$elt = $r_elt;
-//print_r($this->_mainframe->data);
-										if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-											//$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
-											$delete_link = !$linked?'<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​':'';
-											$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
-											$linked = true;
-										} else {
-											$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.'</div></td>';
+						if (count($repeated_elements>0)) {
+							foreach ($repeated_elements as $r_element) {
+								$linked = false;
+								$forms .= '<tr>';
+									$j = 0;
+									foreach ($r_element as $key => $r_elt) {
+										if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+											if ($elements[$j]->plugin=='date') {
+												$date_params = json_decode($elements[$j]->params);
+												$elt = strftime($date_params->date_form_format, strtotime($r_elt));
+											} elseif($elements[$j]->plugin=='databasejoin') {
+													$params = json_decode($elements[$j]->params);
+													$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+													$from = $params->join_db_name;
+													$where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
+													$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+													$query = preg_replace('#{thistable}#', $from, $query);
+													$query = preg_replace('#{my->id}#', @$item->user_id, $query);
+													$this->_db->setQuery( $query );
+													$elt = $this->_db->loadResult();
+											} else 
+												$elt = $r_elt;
+	//print_r($this->_mainframe->data);
+											if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+												//$delete_link = '<div class="comment_icon" id="training_'.$r_element->id.'"><img src="'.JURI::Base().'/media/com_emundus/images/icones/button_cancel.png" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_CONFIRM").'"').')) {deleteData('.$r_element->id.', \''.$table.'\');}"/></div>';
+												$delete_link = !$linked?'<a class=​"ui" name="delete_course" data-title="'.JText::_('DELETE_CONFIRM').'" onClick="$(\'#confirm_type\').val(this.name); $(\'#course_id\').val('.$r_element->id.'); $(\'#course_table\').val(\''.$table.'\'); $(\'.basic.modal.confirm.course\').modal(\'show\');"><i class="trash icon"></i>​</a>​':'';
+												$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$delete_link.' '.$elt.'</div></td>';
+												$linked = true;
+											} else {
+												$forms .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.$elt.'</div></td>';
+											}
 										}
+										$j++;
 									}
-									$j++;
-								}
-								$forms .= '</tr>';
+									$forms .= '</tr>';
+							}
 						}
 						$forms .= '</tbody></table>';
 
