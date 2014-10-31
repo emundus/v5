@@ -283,7 +283,7 @@ class EmundusHelperFilters {
 		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 	
-		$eMConfig =& JComponentHelper::getParams('com_emundus');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$export_pdf = $eMConfig->get('export_pdf');
 		
 		$menu = new EmundusHelperMenu;
@@ -314,6 +314,45 @@ class EmundusHelperFilters {
 					AND element.label!=""  
 				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
 		$db->setQuery( $query );
+		return $db->loadObjectList('id');
+	}
+
+	function getElementsByProfile($pid) {
+		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$export_pdf = $eMConfig->get('export_pdf');
+		
+		$menu = new EmundusHelperMenu;
+		$user = new EmundusModelUsers;
+
+		$profiles = $user->getApplicantProfiles();
+
+		foreach ($profiles as $profile) {
+			$menu_list = $menu->buildMenuQuery($profile->id); 
+			foreach ($menu_list as $m) {
+				$fl[] = $m->table_id;
+			}
+		}
+		$db = JFactory::getDBO();
+		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
+				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
+				FROM #__fabrik_elements element 
+				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
+				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
+				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
+				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
+				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+				WHERE menu.menutype like "menu%'.$pid.'"
+					AND tab.published = 1 
+					AND (tab.id IN ( '.implode(',', $fl).' ) OR tab.id IN ( '.$export_pdf.' ) )
+					AND element.published=1 
+					AND element.hidden=0 
+					AND element.label!=" " 
+					AND element.label!=""  
+				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
+		$db->setQuery( $query ); 
 		return $db->loadObjectList('id');
 	}
 

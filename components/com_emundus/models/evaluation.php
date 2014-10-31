@@ -748,10 +748,10 @@ class EmundusModelEvaluation extends JModel
 				if (!empty($applicant->user)) {
 					$evaluator = JFactory::getUser($applicant->user);
 					$eval_list['user'] = $evaluator->id;
-					$eval_list['user_name'] = $evaluator->name;
+					$eval_list['evaluator'] = $evaluator->name;
 				} else {
 					$eval_list['user']='';
-					$eval_list['user_name']='';
+					$eval_list['evaluator']='';
 				}
 				
 				// ranking list

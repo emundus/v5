@@ -623,10 +623,10 @@ function updateprofile() {
 		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) 
-			&& !EmundusHelperAccess::isCoordinator($current_user->id)
-			&& !EmundusHelperAccess::isEvaluator($current_user->id)
-			&& !EmundusHelperAccess::isPartner($current_user->id)) die( JText::_('RESTRICTED_ACCESS') );
+		if(!EmundusHelperAccess::isAdministrator($user->id) 
+			&& !EmundusHelperAccess::isCoordinator($user->id)
+			&& !EmundusHelperAccess::isEvaluator($user->id)
+			&& !EmundusHelperAccess::isPartner($user->id)) die( JText::_('RESTRICTED_ACCESS') );
 			
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
 

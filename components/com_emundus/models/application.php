@@ -50,6 +50,19 @@ class EmundusModelApplication extends JModel
 //var_dump($infos);
 		return $infos;
 	}
+	
+	function getLastCampaignApply($aid){
+		$query = 'SELECT esc.*, ecc.submitted, ecc.date_submitted
+				FROM #__emundus_campaign_candidature as ecc 
+				LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
+				WHERE ecc.applicant_id='.$aid.'  
+				ORDER BY ecc.date_time DESC';
+		$this->_db->setQuery( $query );
+		$infos =  $this->_db->loadAssoc();
+//echo str_replace("#_", "jos", $query);
+//var_dump($infos);
+		return $infos;
+	}
 
 	function getApplicantDetails($aid, $ids){
 		$details = EmundusHelperList::getElementsDetailsByID($ids);

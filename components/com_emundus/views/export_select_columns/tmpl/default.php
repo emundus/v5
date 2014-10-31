@@ -7,6 +7,7 @@ JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $current_user = JFactory::getUser();
 $view = JRequest::getVar('v', null, 'GET', 'none',0); 
+$pid = JRequest::getVar('pid', null, 'GET', 'none',0);
 //$view = JRequest::getVar('view', null, 'GET', 'none',0); 
 $comments = JRequest::getVar('comments', null, 'POST', 'none', 0);
 $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -21,21 +22,30 @@ foreach($s_elements as $s){
 	$table_name[] = $t[0];
 	$element_name[] = $t[1];
 }
-?>
 
+foreach ($this->profiles as $key => $value) {
+	if ($value->id == $pid) 
+		echo '<a class="btn btn-primary" ';
+	else
+		echo '<a class="btn" ';
+	echo ' href="index.php?option=com_emundus&view=export_select_columns&v='.$view.'&Itemid='.$itemid.'&pid='.$value->id.'">'.$value->label.'</a> ';
+}
+echo "<hr>";
+?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
-	<input type='button' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
-	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
+	<input type='button' class='btn btn-inverse' onclick='location.href="index.php?option=com_emundus&view=<?php echo $view;?>&Itemid=<?php echo $itemid; ?>"' value="<?php echo JText::_('RETURN_BACK'); ?>"/>
+	<input type="submit" name="send_elements" class='btn btn-success' onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
 	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/> -->
 	<input type="hidden" name="option" value="com_emundus"/>
     <input type="hidden" name="view" value="<?php echo $view; ?>"/>
     <input type="hidden" name="task" value=""/>
     <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
 	<?php
-		echo JText::_('SELECT_ALL');
-		echo '<input type="checkbox" id="emundus_checkall" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /><div id="emundus_elements">';
+		echo '<label class="checkbox"><input type="checkbox" id="emundus_checkall" class="emundusraw" onClick="javascript:check_all(\'emundus_checkall\', \'emundus_elements\', 3)" /> '.JText::_('SELECT_ALL').'</label>';
+		echo '<div id="emundus_elements">';
 		$tbl_tmp='';
 		$grp_tmp='';
+
 		
 		foreach($this->elements as $t){
 			if ($tbl_tmp == '') {
@@ -78,7 +88,7 @@ foreach($s_elements as $s){
 		echo '</fieldset></fieldset>';
 		echo '</div>';
 		?>
-	<input type="submit" name="send_elements" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
+	<input type="submit" name="send_elements" class='btn btn-success' onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS'); ?>"/> 
 	<!-- <input type="submit" name="send_elements_csv" onclick="document.pressed=this.name" value="<?php echo JText::_('SEND_ELEMENTS_CSV'); ?>"/>  -->
 </form>    
 

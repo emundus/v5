@@ -80,7 +80,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 			$files = array();
 			foreach ($attachments as $attachment) {
 				$file_info['id'] = $attachment->id;
-				$file_info['path'] = EMUNDUS_PATH_ABS.$user_id.DS.$attachment->filename;
+				$file_info['path'] = EMUNDUS_PATH_ABS.$user->id.DS.$attachment->filename;
 				$file_info['attachment_id'] = $attachment->attachment_id;
 				$file_info['name'] = $attachment->value;
 				$file_info['url'] = EMUNDUS_PATH_REL.$student_id.'/'.$attachment->filename;

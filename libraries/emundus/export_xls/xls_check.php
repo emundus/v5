@@ -150,17 +150,25 @@ function sortObjectByArray($object,$orderArray) {
 			
 			$select = '';
 			$table = '';
+						$joined_table = array();
 			foreach($elements as $element) {
-				if(!array_key_exists($element->element_name,$users[0]))	{
+				if(!array_key_exists($element->element_name, $users[0])) {
+
 					if($element->table_name == 'jos_emundus_comments')
 						$select_comment .= '`'.$element->table_name.'`.`'.$element->element_name.'`,';
 					else
-						$select .= '`'.$element->table_name.'`.`'.$element->element_name.'`,';
-					if($table != $element->table_name){
-						if($element->table_name == 'jos_emundus_comments') $join_comment .= ' LEFT JOIN `'.$element->table_name.'` ON `'.$element->table_name.'`.`applicant_id`=`#__users`.`id`';
-						else $join .= ' LEFT JOIN `'.$element->table_name.'` ON `'.$element->table_name.'`.`user`=`#__users`.`id`';
+						if ($element->group_repeated==0 && $element->group_repeated_1==0) 
+							$select .= '`'.$element->table_name.'`.`'.$element->element_name.'`,';
+					
+					if($table != $element->table_name && !in_array($element->table_name, $joined_table)){
+						if($element->table_name == 'jos_emundus_comments') 
+							$join_comment .= ' LEFT JOIN `'.$element->table_name.'` ON `'.$element->table_name.'`.`applicant_id`=`#__users`.`id`';
+						else 
+							if ($element->group_repeated==0 && $element->group_repeated_1==0) 
+								$join .= ' LEFT JOIN `'.$element->table_name.'` ON `'.$element->table_name.'`.`user`=`#__users`.`id`';
 					}
 				}
+				$joined_table[] = $element->table_name;
 				$table = $element->table_name;
 			}
 			$query = 'SELECT ';
@@ -169,12 +177,12 @@ function sortObjectByArray($object,$orderArray) {
 						FROM `#__users` 
 						LEFT JOIN `#__emundus_users` ON `#__emundus_users`.`user_id`=`#__users`.`id`';
 			$query .= $join;
-			$query .= 'WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
+			$query .= ' WHERE `#__users`.`usertype`="Registered" and `#__users`.`id` IN ('.implode(',', $user_id).') 
 						ORDER BY `#__emundus_users`.`user_id`,`#__emundus_users`.`lastname`,`#__emundus_users`.`firstname`';
-			//die(str_replace('#_','jos',$query));
+//die(str_replace('#_','jos',$query));
 			$db->setQuery( $query );
 			$valeurs = $db->loadObjectList('user');			
-			
+//die(var_dump($valeurs));
 			$query='';
 			$query = 'SELECT ';
 			$query .= $select_comment;
@@ -458,9 +466,21 @@ function sortObjectByArray($object,$orderArray) {
 						}else{
 							$user_id=$user->user;
 						}
-						if($element->table_name != 'jos_emundus_comments'){ $value = $valeurs[$user_id]->$el; }
-						if ($element->group_repeated>0) 
-							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user_id]->$el);
+
+						if ($element->group_repeated>0 || $element->group_repeated_1>0) {
+							//$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user_id]->$el);
+							$query = 'SELECT `'.$element->table_name.'_'.$element->group_id.'_repeat`.`'.$element->element_name.'` 
+										FROM `'.$element->table_name.'` 
+										LEFT JOIN `'.$element->table_name.'_'.$element->group_id.'_repeat` ON `'.$element->table_name.'_'.$element->group_id.'_repeat`.`parent_id` = '.$element->table_name.'.id 
+										WHERE '.$element->table_name.'.user = '.$user_id;
+							$db->setQuery( $query );
+							$value = implode(' |\n ', $db->loadColumn()); 
+						}
+						else {
+							if($element->table_name != 'jos_emundus_comments')
+								$value = $valeurs[$user_id]->$el; 
+						} 
+						
 						if($element->element_label == "Telephone" || $element->element_label == "Zip code" || $element->element_label == "Fax number") 
 							$value =" ".$value;
 						//have comment, date and reason in the same square (many rows of comments)

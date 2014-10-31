@@ -32,6 +32,7 @@ class EmundusViewExport_select_columns extends JView
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -42,6 +43,8 @@ class EmundusViewExport_select_columns extends JView
 	
     function display($tpl = null)
     {
+    	$user = new EmundusModelUsers;
+
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/css/emundus.css" );
 		
@@ -52,9 +55,17 @@ class EmundusViewExport_select_columns extends JView
 		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) die("You are not allowed to access to this page.");
 		
 		//$elements = $this->get('Elements');
-		$elements = EmundusHelperFilters::getElements();
-		$this->assignRef('elements', $elements);
+		$profile = JRequest::getVar('pid', null, 'GET', 'none',0);
+		$profiles = $user->getApplicantProfiles();
+
+		if ($profile>0)
+			$elements = EmundusHelperFilters::getElementsByProfile($profile);
+		else
+			$elements = EmundusHelperFilters::getElements();
 		
+		$this->assignRef('elements', $elements);
+		$this->assignRef('profiles', $profiles);
+//var_dump($profiles);
 		parent::display($tpl);
     }
 }
