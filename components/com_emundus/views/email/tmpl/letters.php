@@ -48,13 +48,6 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$chemin = EMUNDUS_PATH_REL;
 
 	// Get email 
-	/*if($result_id == 4)
-		$email_lb = "candidature_accepted";
-	elseif($result_id == 3)
-		$email_lb = "candidature_waiting_list";
-	elseif($result_id == 2)
-		$email_lb = "candidature_rejected";
-	*/
 	$email = $emails->getEmail("candidature_decision");
 
 	?>
@@ -192,7 +185,7 @@ if(!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	var mail_body = document.getElementById("mail_body");
 	var mail_subject = document.getElementById("mail_subject");
 	var mail_attachments = document.getElementById("mail_attachments");
-	mail_body.value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
+	mail_body.value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', addslashes($email->message)); ?>";
 	mail_subject.value = "<?php echo $campaign['label']; ?>";
 	mail_attachments.value = "<?php echo $files_path; ?>"; 
 

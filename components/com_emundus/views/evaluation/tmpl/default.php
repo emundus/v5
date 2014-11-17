@@ -64,8 +64,10 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
 								echo '<th align="center" style="font-size:9px;"><input type="checkbox" id="checkall" class="emundusraw" onClick="check_all(\'ud\',this)" />';
 								echo JHTML::_('grid.sort', JText::_('#'), $value['name'], $this->lists['order_Dir'], $this->lists['order']);
 								echo '</th>';
-							}else
+							}elseif($value['name'] != 'assoc_evaluators')
 								echo '<th>'.JHTML::_('grid.sort', JText::_($value['label']), $value['name'], $this->lists['order_Dir'], $this->lists['order']).'</th>';
+							else
+								echo '<th>'.JText::_($value['label']).'</th>';
                         } ?>
                     </tr>
                 </thead>

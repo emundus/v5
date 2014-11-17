@@ -165,6 +165,8 @@ class EmundusModelEvaluation extends JModel
 		foreach($this->getEvalColumns() as $eval_col) $can_be_ordering[] = $eval_col['name'];
 		foreach($this->_applicantColumns as $info_col) $can_be_ordering[] = $info_col['name'];
 		//foreach($this->getRankingColumns() as $rank_col) $can_be_ordering[] = $rank_col['name'];
+		$can_be_ordering[] = 'evaluator';
+		$can_be_ordering[] = 'assoc_evaluators';
 
 		$select_list = $this->getSelectList();
 		if(!empty($select_list))
