@@ -184,7 +184,7 @@ function age($naiss) {
         ?>
               <a data-html="<?php echo htmlentities($info); ?>" href="#" title="" >
               <div class="title-campaign"><?php echo $campaign->label; ?></div>
-              </a><?php echo $delete_link; ?></div>
+              </a><?php echo @$delete_link; ?></div>
             <?php                           
                     
                     echo '<div class="ui divider"></div>';

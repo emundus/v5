@@ -552,7 +552,7 @@ class EmundusHelperList{
 				if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->evaluators_can_see > 1 ) {
 					$canview = true;
 					$canedit = true;
-				} elseif ($this->evaluators_can_see > 0) {
+				} elseif (@$this->evaluators_can_see > 0) {
 						$canview = true;
 						$canedit = false;
 				} else {
