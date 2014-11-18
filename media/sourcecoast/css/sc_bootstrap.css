@@ -8,7 +8,11 @@
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
 .sclogin-greeting {
- display: inline;
+display: inline-block !important;
+padding-bottom: 0;
+padding-left: 0;
+padding-right: 5px;
+padding-top: 5px;
  }
  .dropdown-view {
  display: inline;
@@ -17,7 +21,7 @@
  display: inline;
  } 
 .sclogout-button{
- display: inline;
+ display: inline-flex;
  }
 .sclogin-joomla-login{
  display: inline;
@@ -4283,6 +4287,7 @@ Layout helpers
 }
 .sclogin {
   text-align: left;
+  display: inline-flex;
 }
 
 #social-toolbar button {

@@ -60,7 +60,7 @@ if (count($this->attachments) > 0) {
             } else {
                 $class= 'need_ok';
             }
-            $div = '<fieldset id="a'.$attachment->id .'"><legend class="'.$class.'">'.$attachment->value .'<a href="javascript:toggleVisu(\''.$attachment->id .'\')">[+/-]</a></legend>
+            $div = '<fieldset id="a'.$attachment->id .'"><legend class="'.$class.'">'.$attachment->value .'</legend>
                 <p class="description">'.$attachment->description .'</p>
                 <table id="'.$attachment->id .'" border="0"><tbody>';
             if ($attachment->nb>0)
@@ -87,6 +87,8 @@ if (count($this->attachments) > 0) {
                     } 
             if ($attachment->nb<$attachment->nbmax || $user->profile<=4) { 
                 $div .= '<tr><td>'.JText::_('FILE').'<br /><input type="hidden" name="attachment[]" value="'.$attachment->id .'"/><input type="hidden" name="label[]" value="'.$attachment->lbl.'"/><input type="file" name="nom[]" size=15%/><br />'.JText::_('SHORT_DESC').'<br /><input type="text" name="description[]" size=35 /></td></tr><tr><td colspan="2"><h2>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</h2><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></td></tr></tbody><tfoot><tr><td><input name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></td></tr></tfoot>';
+            } elseif ($attachment->nbmax == 0) {
+                 $div .= '<tr><td colspan="2"><p class="description">'. JText::_('YOU_CANNOT_UPLOAD_BY_YOURSELF').'</p></td></tr></tbody>';
             } else { 
                 $div .= '<tr><td colspan="2"><p class="description">'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p></td></tr></tbody>';
             }
@@ -125,10 +127,14 @@ function toggleVisu(baliseId)
 		}
     }
   }
-<?php foreach($this->attachments as $attachment) { ?>
+<?php 
+/*
+foreach($this->attachments as $attachment) { ?>
   document.getElementById('<?php echo $attachment->id; ?>').style.visibility='<?php echo ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
   document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
-<?php } ?>
+<?php }
+*/
+ ?>
 
 function OnSubmitForm() {
 	var btn = document.getElementsByName(document.pressed);

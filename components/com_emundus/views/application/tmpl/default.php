@@ -266,6 +266,177 @@ function age($naiss) {
           <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="icon edit"></i><?php echo JText::_('ADD_COMMENT'); ?> </button>
           </a> </div>
         <div class="ui comments">
+
+        <style type="text/css">
+  .widget .panel-body { padding:5px; }
+  .widget .list-group { margin-bottom: 0; }
+  .widget .panel-title { display:inline }
+  .widget .label-info { float: right; }
+  .widget li.list-group-item {border-radius: 0;border: 0;border-top: 1px solid #ddd;}
+  .widget li.list-group-item:hover { background-color: rgba(86,61,124,.1); }
+  .widget .mic-info { color: #666666;font-size: 11px; }
+  .widget .action { margin-top:5px; }
+  .widget .comment-text { font-size: 12px; }
+  .widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
+</style>
+
+<div class="comments">
+    <div class="row">
+        <div class="panel panel-default widget">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-comment"></span>
+                <h3 class="panel-title"><?php echo JText::_('COMMENTS'); ?></h3>
+                <span class="label label-info"><?php echo count($this->userComments); ?></span>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                <?php
+        if(count($this->userComments) > 0) {
+          $i=0;
+          foreach($this->userComments as $comment){ ?>
+                    <li class="list-group-item" id="<?php echo $comment->id; ?>">
+                        <div class="row">
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    <a href="#"><?php echo $comment->reason; ?></a>
+                                    <div class="mic-info">
+                                        <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
+                                    </div>
+                                </div>
+                                <div class="comment-text">
+                                    <?php echo $comment->comment; ?>
+                                </div>
+                                <?php
+                                if($this->_user->id == $comment->user_id) { ?>
+                                <div class="action">
+                                    <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </li>
+                 <?php
+            $i++;
+          }
+        } else echo JText::_('NO_COMMENT');
+        ?>  
+                </ul>
+            </div>
+
+            <div class="form" id="form"></div>
+        
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
+{ 
+  if (e.handle === true) {
+    e.handle = false;
+    url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
+    var id = $(this).parents('li').attr('id');
+      $.ajax({
+              type:'GET',
+              url:url,
+              dataType:'json',
+              data:({comment_id:id}),
+              success: function(result)
+              {
+                  if(result.status)
+                  {
+
+                      $('.comments li#'+id).empty();
+                      $('.comments li#'+id).append(result.msg);
+                  }
+                  else
+                  {
+                      $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+                  }
+              },
+              error: function (jqXHR, textStatus, errorThrown)
+              {
+                  console.log(jqXHR.responseText);
+              }
+             });
+  }
+});
+
+var textArea = '<hr><div id="form">' +
+                    '<label class="control-label"><?php echo JText::_('TITLE');?></label><br>' +
+                    '<input class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
+                    '<label for="comment" class="control-label"><?php echo JText::_('ENTER_COMMENT');?></label><br>' +
+                    '<textarea class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' + 
+                '<button type="button" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button></div>';
+
+$('#form').append(textArea);
+
+$(document).on('click', '#form .btn.btn-success', function(f)
+{ 
+  if (f.handle === true) {
+    f.handle = false;
+    var comment = $('#comment-body').val();
+      var title = $('#comment-title').val();
+      if (comment.length == 0)
+      {
+          $('#comment-body').attr('style', 'height:250px !important;width:100% !important; border-color: red !important; background-color:pink !important;');
+          return;
+      }
+      $('.modal-body').empty();
+      $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
+      url = 'index.php?option=com_emundus&controller=application&task=addcomment';
+
+      $.ajax({
+              type:'POST',
+              url:url,
+              dataType:'json',
+              data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
+              success: function(result)
+              {
+                  $('#form').empty();
+                  if(result.status)
+                  {
+                      $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
+                      var li = ' <li class="list-group-item" id="'+result.id+'">'+
+                          '<div class="row">'+
+                              '<div class="col-xs-10 col-md-11">'+
+                                  '<div>'+
+                                      '<a href="#">'+title+'</a>'+
+                                      '<div class="mic-info">'+
+                                          '<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
+                                      '</div>'+
+                                  '</div>'+
+                                  '<div class="comment-text">'+title+'</div>'+
+                                  '<div class="action">'+
+                                      '<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
+                                          '<span class="glyphicon glyphicon-trash"></span>'+
+                                      '</button>'+
+                                  '</div>'+
+                              '</div>'+
+                          '</div>'+
+                      '</li>';
+                      $('.comments .list-group').append(li);
+                  }
+                  else
+                  {
+                      $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+                  }
+
+                  $('#form').append(textArea);
+              },
+              error: function (jqXHR, textStatus, errorThrown)
+              {
+                  console.log(jqXHR.responseText);
+              }
+             });
+  }
+});
+</script>
+
+
+
           <?php
 		if(count($this->userComments) > 0) { 
 			$i=0;
