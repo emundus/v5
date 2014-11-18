@@ -108,7 +108,7 @@ function sortObjectByArray($object,$orderArray) {
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
-			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, INSTR(groupe.params,"\"repeat_group_button\":\"1\"") AS group_repeated_1, tab.db_table_name AS table_name, groupe.id as group_id, element.plugin, element.params
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
@@ -280,33 +280,66 @@ function sortObjectByArray($object,$orderArray) {
 						$colonne++;
 					}	
 				}
-			// ********************************************
-			//				Application form
-			// ********************************************
-
-				$comment_val= '';
+				// ********************************************
+				//				Application form
+				// ********************************************
+	
 				$tab_com = '';
 				$c = 0;
 				foreach($elements as $element){
-					if(!array_key_exists($element->element_name,$users[0]) || (($element->element_name == 'user_id' || $element->element_name == 'comment') && $element->table_name == 'jos_emundus_comments'))	{
+					if(!array_key_exists($element->element_name,$users[0]))	{
 						$el = $element->element_name;
-						if($element->table_name != 'jos_emundus_comments') $value = $valeurs[$user['user_id']]->$el;
-						if ($element->group_repeated>0) 
-							$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user['user_id']]->$el);
+						if(is_array($user)){
+							$user_id=$user['user'];
+						}else{
+							$user_id=$user->user;
+						}
+
+						if ($element->group_repeated>0 || $element->group_repeated_1>0) {
+							$query = 'SELECT `'.$element->table_name.'_'.$element->group_id.'_repeat`.`'.$element->element_name.'` 
+										FROM `'.$element->table_name.'` 
+										LEFT JOIN `'.$element->table_name.'_'.$element->group_id.'_repeat` ON `'.$element->table_name.'_'.$element->group_id.'_repeat`.`parent_id` = '.$element->table_name.'.id 
+										WHERE '.$element->table_name.'.user = '.$user_id;
+							$db->setQuery( $query );
+							$result = $db->loadColumn();
+
+							$elt = array();
+							foreach ($result as $r_elt) {
+								if ($element->element_name != 'id' && $element->element_name != 'parent_id' && isset($element)) {
+									if ($element->plugin=='date') {
+										$date_params = json_decode($element->params);
+										$elt[] = strftime($date_params->date_form_format, strtotime($r_elt));
+									} elseif($element->plugin=='databasejoin') {
+											$params = json_decode($element->params);
+											$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+											$from = $params->join_db_name;
+											$where = $params->join_key_column.'='.$db->Quote($r_elt);
+											$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+											$query = preg_replace('#{thistable}#', $from, $query);
+											$query = preg_replace('#{my->id}#', $user_id, $query);
+											$db->setQuery( $query );
+											$elt[] = $db->loadResult();
+									} else 
+										$elt[] = $r_elt;
+								}
+							}
+							$value = implode(' | '.chr(10), $elt); 
+						}
+						else {
+							if($element->table_name != 'jos_emundus_comments')
+								$value = $valeurs[$user_id]->$el; 
+						} 
+						
 						if($element->element_label == "Telephone" || $element->element_label == "Zip code" || $element->element_label == "Fax number") 
 							$value =" ".$value;
-						if($element->element_label == 'email'){
-							$objPHPExcel->getActiveSheet()->getCell($colonne_by_id[$colonne].$i)->getHyperlink()->setUrl('mailto:'.$value);
-							$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$colonne].$i)->getFont()->setUnderline(PHPExcel_Style_Font::UNDERLINE_SINGLE);
-						}
 						//have comment, date and reason in the same square (many rows of comments)
 						if($element->table_name == 'jos_emundus_comments'){
 							$c++;
 							foreach($comments as $comment){
-								if($comment->user == $user['user_id']) {
+								if($comment->user == $user_id) {
 									if($element->element_name == 'user_id'){
+										//die(print_r($comment->$el));
 										$query = 'SELECT name FROM #__users WHERE id ='.$comment->$el;
-										// die(str_replace('#_','jos',$query));
 										$db->setQuery( $query );
 										$tab_value[] = $db->loadResult();
 									}else{
@@ -314,7 +347,7 @@ function sortObjectByArray($object,$orderArray) {
 									}
 								}
 							}
-
+						
 							if($c == $count){
 								//have comment, date and reason in the same case (many rows of comments)
 								$nb_com = count($tab_value)/$count;
@@ -336,7 +369,7 @@ function sortObjectByArray($object,$orderArray) {
 							$value = '';
 						}
 					}
-				}			
+				}				
 				$i++;	
 			}
 			$objPHPExcel->setActiveSheetIndex(0);

@@ -103,7 +103,7 @@ function sortObjectByArray($object,$orderArray) {
 			/// ****************************** ///
 			// Elements selected by administrator
 			/// ****************************** ///
-			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, tab.db_table_name AS table_name
+			$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, INSTR(groupe.params,"repeat_group_button=1") AS group_repeated, INSTR(groupe.params,"\"repeat_group_button\":\"1\"") AS group_repeated_1, tab.db_table_name AS table_name, groupe.id as group_id, element.plugin, element.params
 						FROM #__fabrik_elements element	
 						INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 						INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
@@ -117,7 +117,7 @@ function sortObjectByArray($object,$orderArray) {
 						AND element.id IN ("'.implode('","', $element_id).'") 
 						ORDER BY menu.ordering, formgroup.ordering, groupe.id, element.ordering'; 
 			$db->setQuery( $query );
-			//die(str_replace("#_","jos",$query));
+
 			$elements = $db->loadObjectList();		
 			
 			// @TODO : générer une chaine de caractère avec tous les user_id
@@ -455,7 +455,6 @@ function sortObjectByArray($object,$orderArray) {
 				//				Application form
 				// ********************************************
 	
-					
 				$tab_com = '';
 				$c = 0;
 				foreach($elements as $element){
@@ -468,13 +467,34 @@ function sortObjectByArray($object,$orderArray) {
 						}
 
 						if ($element->group_repeated>0 || $element->group_repeated_1>0) {
-							//$value = str_replace("//..*..//", "\n ----- \n", $valeurs[$user_id]->$el);
 							$query = 'SELECT `'.$element->table_name.'_'.$element->group_id.'_repeat`.`'.$element->element_name.'` 
 										FROM `'.$element->table_name.'` 
 										LEFT JOIN `'.$element->table_name.'_'.$element->group_id.'_repeat` ON `'.$element->table_name.'_'.$element->group_id.'_repeat`.`parent_id` = '.$element->table_name.'.id 
 										WHERE '.$element->table_name.'.user = '.$user_id;
 							$db->setQuery( $query );
-							$value = implode(' |\n ', $db->loadColumn()); 
+							$result = $db->loadColumn();
+
+							$elt = array();
+							foreach ($result as $r_elt) {
+								if ($element->element_name != 'id' && $element->element_name != 'parent_id' && isset($element)) {
+									if ($element->plugin=='date') {
+										$date_params = json_decode($element->params);
+										$elt[] = strftime($date_params->date_form_format, strtotime($r_elt));
+									} elseif($element->plugin=='databasejoin') {
+											$params = json_decode($element->params);
+											$select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+											$from = $params->join_db_name;
+											$where = $params->join_key_column.'='.$db->Quote($r_elt);
+											$query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+											$query = preg_replace('#{thistable}#', $from, $query);
+											$query = preg_replace('#{my->id}#', $user_id, $query);
+											$db->setQuery( $query );
+											$elt[] = $db->loadResult();
+									} else 
+										$elt[] = $r_elt;
+								}
+							}
+							$value = implode(' | '.chr(10), $elt); 
 						}
 						else {
 							if($element->table_name != 'jos_emundus_comments')
@@ -523,7 +543,6 @@ function sortObjectByArray($object,$orderArray) {
 				}				
 				$i++;	
 			}
-			// die();
 			
 			// debug file
 			/*ob_start(); 
