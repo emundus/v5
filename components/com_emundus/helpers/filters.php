@@ -95,24 +95,26 @@ class EmundusHelperFilters {
 	* @param 	array 	values to extract and insert
 	*/
 	function insertValuesInQueryResult($results, $options) { 
-		foreach ($results as $key=>$result) {
-			if (array_key_exists('params', $result)) {
-				if (is_array($result)) {
-					$params = json_decode($result['params']);
-					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-							$results[$key][$option] = implode('|', $params->sub_options->$option);
-						else
-							$results[$key][$option] = '';
+		if (count($results) > 0) {	
+			foreach ($results as $key=>$result) {
+				if (array_key_exists('params', $result)) {
+					if (is_array($result)) {
+						$params = json_decode($result['params']);
+						foreach ($options as $option) {
+							if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+								$results[$key][$option] = implode('|', $params->sub_options->$option);
+							else
+								$results[$key][$option] = '';
+						}
 					}
-				}
-				else {
-					$params = json_decode($result->params);
-					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
-							$results[$key]->$option = implode('|', $params->sub_options->$option);
-						else
-							$results[$key]->$option = '';
+					else {
+						$params = json_decode($result->params);
+						foreach ($options as $option) {
+							if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options))
+								$results[$key]->$option = implode('|', $params->sub_options->$option);
+							else
+								$results[$key]->$option = '';
+						}
 					}
 				}
 			}
@@ -283,7 +285,7 @@ class EmundusHelperFilters {
 		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 	
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$eMConfig =& JComponentHelper::getParams('com_emundus');
 		$export_pdf = $eMConfig->get('export_pdf');
 		
 		$menu = new EmundusHelperMenu;
@@ -314,45 +316,6 @@ class EmundusHelperFilters {
 					AND element.label!=""  
 				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
 		$db->setQuery( $query );
-		return $db->loadObjectList('id');
-	}
-
-	function getElementsByProfile($pid) {
-		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-	
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$export_pdf = $eMConfig->get('export_pdf');
-		
-		$menu = new EmundusHelperMenu;
-		$user = new EmundusModelUsers;
-
-		$profiles = $user->getApplicantProfiles();
-
-		foreach ($profiles as $profile) {
-			$menu_list = $menu->buildMenuQuery($profile->id); 
-			foreach ($menu_list as $m) {
-				$fl[] = $m->table_id;
-			}
-		}
-		$db = JFactory::getDBO();
-		$query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)), element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
-				FROM #__fabrik_elements element 
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id 
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id 
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id 
-				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id 
-				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
-				WHERE menu.menutype like "menu%'.$pid.'"
-					AND tab.published = 1 
-					AND (tab.id IN ( '.implode(',', $fl).' ) OR tab.id IN ( '.$export_pdf.' ) )
-					AND element.published=1 
-					AND element.hidden=0 
-					AND element.label!=" " 
-					AND element.label!=""  
-				ORDER BY menu.lft, formgroup.ordering, groupe.id, element.ordering';
-		$db->setQuery( $query ); 
 		return $db->loadObjectList('id');
 	}
 
@@ -561,7 +524,7 @@ class EmundusHelperFilters {
 		$mainframe = JFactory::getApplication();
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
-		$document->addScript( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap/bootstrap.min.css" );
 		$document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
 		$current_s 				= $mainframe->getUserStateFromRequest(  $option.'s', 's' );
@@ -583,11 +546,12 @@ class EmundusHelperFilters {
 		$complete_application	= $mainframe->getUserStateFromRequest(  $option.'complete', 'complete', @$params['complete'] );
 		$validate_application	= $mainframe->getUserStateFromRequest(  $option.'validate', 'validate', @$params['validate'] );
 		$select_id				= $mainframe->getUserStateFromRequest(  $option.'select_filter', 'select_filter');
+		$current_engaged 		= $mainframe->getUserStateFromRequest(  $option.'engaged', 'engaged');
 		
 		$option;
-		$filters = '<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
+		//$filters = '<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>';
 		$research_filters = EmundusHelperFilters::getEmundusFilters();
-		$filters .='<div id="emundus_filters" style="float:right; border: 1px black solid; border-radius: 10px; padding:0px 10px 10px 10px;">
+		$custom_filters ='<div id="emundus_filters" style="float:right; border: 1px black solid; border-radius: 10px; padding:0px 10px 10px 10px;">
 		<table style="border-spacing:10px;">
 			<tr>
 				<td  colspan="2">'.JText::_('SELECT_FILTER').'</td>
@@ -605,7 +569,7 @@ class EmundusHelperFilters {
 						}
 					}
 				}
-			$filters .='
+			$custom_filters .='
 				</select>
 				</td>
 				<td>
@@ -617,6 +581,7 @@ class EmundusHelperFilters {
 		<div id="emundus_filters_response"></div>
 		</div>
 		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().''.EmundusHelperJavascript::clearAdvanceFilter().'</script>';
+		
 		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
 		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/> <span id="filter_action"> <a href="#" id="shower">'.JText::_('MORE_FILTERS').'</a> | <a href="#" id="hider">'.JText::_('HIDE_FILTERS').'</a> </span></div></div>';
 
@@ -844,6 +809,22 @@ class EmundusHelperFilters {
 			$programme .= '<script>$(document).ready(function() {$("#select-multiple_programmes").chosen({width: "650px"});})</script>';
 			$filters .= $programme;
 		}
+
+		if(@$params['engaged'] !== NULL){ 
+			//$current_engaged = JRequest::getVar('engaged', null, 'POST', 'none', 0); 
+			$yes = $current_engaged == "1" ? "selected" : "";
+			$no = $current_engaged == "2" ? "selected" : "";
+			$engaged = '<div class="em_filters" id="engaged">
+						<div class="em_label"><label>'.JText::_('ENGAGED').'</label></div>
+							<div class="em_filtersElement">';
+			$engaged .= '<select name="engaged" onChange="javascript:submit()">
+                    <option value=""> '.JText::_('ALL').'</option>
+                    <option value="1" '.$yes.'> '.JText::_('YES').' </option>
+                    <option value="2" '.$no.'> '.JText::_('NO').' </option>
+                </select>';
+			$engaged .= '</div></div>';
+			$filters .= $engaged;
+		}
 		
 		//Advance filter builtin
 		if(@$params['adv_filter'] !== NULL){
@@ -887,9 +868,8 @@ class EmundusHelperFilters {
 					$i++; 
 					$adv_filter .= '</div>';
 				} 
-			}//else{
-			//echo 'ici';
-			//}
+			}
+
 	        $adv_filter .= '</div></div>';
 		
 		
@@ -932,9 +912,6 @@ class EmundusHelperFilters {
 					$other_filter .= '</select>';
 					if(!isset($search_values_other[$i])) $search_values_other[$i] = "";
 					if ($selected_other != "")
-					//var_dump($selected_other);
-					//echo'<BR />';
-					//var_dump($search_values_other[$i]);
 						$other_filter .= EmundusHelperFilters::setSearchBox($selected_other, $search_values_other[$i], "elements_values_other");
 					$other_filter .= '<a href="javascript:clearAdvanceFilter(\'filter_other'.$i.'\'); javascript:removeElement(\'filter_other'.$i.'\', 2);"><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag-_16x16.png" alt="'.JText::_('REMOVE_SEARCH_ELEMENT').'" id="add_filt"/></a>';
 					$i++; 
@@ -946,42 +923,43 @@ class EmundusHelperFilters {
 		}
 		
 		if(@$params['newsletter'] !== NULL){
-			$filters.= '<div class="em_filters" id="newsletter"><div class="em_label"><label>'.JText::_('NEWSLETTER').'</label></div>';
-			$filters .= '<div class="em_filtersElement">
+			$news  = '<div class="em_filters" id="newsletter"><div class="em_label"><label>'.JText::_('NEWSLETTER').'</label></div>';
+			$news .= '<div class="em_filtersElement">
 				<select id="select_newsletter" name="newsletter" '.($types['newsletter'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 					<option value="0"';
-					if($newsletter == 0) $filters .= ' selected';
+					if($newsletter == 0) $news .= ' selected';
 					$filters.='>'.JText::_("ALL").'</option>
 					<option value="1"';
-					if($newsletter == 1) $filters .= ' selected';
+					if($newsletter == 1) $news .= ' selected';
 					$filters.='>'.JText::_("JYES").'</option>
 				</select>
 			</div>';
 			//$filters.='<div class="em_filtersElement"><input id="check_newsletter" name="newsletter" onMouseUp="if(this.checked==true){this.value=0;}else{this.value=1;}" type="checkbox" value="0" '.($newsletter==1?'checked=checked':'').' /></div>';
-			$filters.='</div>';
+			$news .='</div>';
+			$filters .= $news;
 		}
 		
 		if(@$params['spam_suspect'] !== NULL){
-			$filters.= '<div class="em_filters" id="spam_suspect"><div class="em_label"><label>'.JText::_('SPAM_SUSPECT').'</label></div>';
-			$filters .= '<div class="em_filtersElement">
+			$spam = '<div class="em_filters" id="spam_suspect"><div class="em_label"><label>'.JText::_('SPAM_SUSPECT').'</label></div>';
+			$spam .= '<div class="em_filtersElement">
 				<select id="select_spam-suspect" name="spam_suspect" '.($types['spam_suspect'] == 'hidden' ? 'style="visibility:hidden" ' : '').'onChange="document.adminForm.task.value=\'\'; javascript:submit()">
 					<option value="0"';
-					if($spam_suspect == 0) $filters .= ' selected';
-					$filters.='>'.JText::_("ALL").'</option>
+					if($spam_suspect == 0) $spam .= ' selected';
+						$spam .= '>'.JText::_("ALL").'</option>
 					<option value="1"';
-					if($spam_suspect == 1) $filters .= ' selected';
-					$filters.='>'.JText::_("JYES").'</option>
+					if($spam_suspect == 1) $spam .= ' selected';
+						$spam.='>'.JText::_("JYES").'</option>
 				</select>
 			</div>';
-			// $filters.= '<div class="em_filtersElement"><input id="check_spam-suspect" name="spam_suspect" onMouseUp="if(this.checked==true){this.value=1;}else{this.value=0;}" type="checkbox" value="0" '.($spam_suspect==1?'checked=checked':'').' /></div>';
-			$filters.= '</div>';
+			$spam .= '</div>';
+			$filters .= $spam;
 		}
 		
 
-		$filters .= '</div><div class="buttons"><input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
-		$filters .='<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
-		$filters .= '</fieldset>';
-		$filters .= '<script>
+		//$filters .= '</div><div class="buttons"><input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
+		//$filters .='<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
+		//$filters .= '</fieldset>';
+		$script = '<script>
 					$( "#hider" ).click(function() {
 						$( ".em_filters" ).hide( "slow" ); 
 						document.cookie="em_filters=hidden";
@@ -994,8 +972,46 @@ class EmundusHelperFilters {
 					if(cookies.indexOf("em_filters=hidden")>=0) 
 							$( ".em_filters" ).hide("slow"); 
 					</script>';
+
+		$grid = '
+<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>'.$custom_filters.'
+<div class="row">
+  <div class="col-md-3">'.$quick.'</div>
+  <div class="col-md-3">'.$profile.'</div>
+  <div class="col-md-3">'.$profile_user.'</div>
+  <div class="col-md-3">'.$eval.'</div>
+</div>
+<div class="row">
+  <div class="col-md-3">'.$group_eval.'</div>
+  <div class="col-md-3">'.$final_grade.'</div>
+  <div class="col-md-3">'.$missing_doc.'</div>
+  <div class="col-md-3">'.$complete.'</div>
+</div>
+<div class="row">
+  <div class="col-md-3">'.$validate.'</div>
+  <div class="col-md-3"></div>
+  <div class="col-md-3"></div>
+  <div class="col-md-3"></div>
+</div>
+<div class="row">
+  <div class="col-md-3">'.$campaign.'</div>
+  <div class="col-md-3">'.$schoolyear.'</div>
+  <div class="col-md-3">'.$programme.'</div>
+  <div class="col-md-3"></div>
+</div>
+<div class="row">
+  <div class="col-md-3">'.$adv_filter.'</div>
+  <div class="col-md-3">'.$other_filter.'</div>
+  <div class="col-md-3">'.$news.'</div>
+  <div class="col-md-3">'.$spam.'</div>
+</div>
+<div class="buttons">
+	<input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>
+	<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/>
+</div>
+</fieldset>'.$script;
 		
-		return $filters;
+		return $grid;
 	}
 	
 	function getEmundusFilters(){
