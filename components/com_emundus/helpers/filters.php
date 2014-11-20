@@ -524,6 +524,8 @@ class EmundusHelperFilters {
 		$mainframe = JFactory::getApplication();
 		$document = JFactory::getDocument();
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/chosen/chosen.min.css" );
+		//$document->addStyleSheet( JURI::base()."media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
+		//$document->addStyleSheet( JURI::base()."media/com_emundus/lib/semantic/minified/collections/grid.min.css" );
 		$document->addStyleSheet( JURI::base()."media/com_emundus/lib/bootstrap/bootstrap.min.css" );
 		$document->addScript( JURI::base()."media/com_emundus/lib/chosen/chosen.jquery.min.js" );
 
@@ -569,7 +571,7 @@ class EmundusHelperFilters {
 						}
 					}
 				}
-			$custom_filters .='
+		$custom_filters .='
 				</select>
 				</td>
 				<td>
@@ -582,10 +584,18 @@ class EmundusHelperFilters {
 		</div>
 		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().''.EmundusHelperJavascript::clearAdvanceFilter().'</script>';
 		
-		$quick = '<div id="filters"><div id="quick"><div class="em_label"><label><span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span></label></div>';
-		$quick .= '<div class="em_filtersElement"><input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/> <span id="filter_action"> <a href="#" id="shower">'.JText::_('MORE_FILTERS').'</a> | <a href="#" id="hider">'.JText::_('HIDE_FILTERS').'</a> </span></div></div>';
+		$quick = '
+	<div id="quick">
+		<div class="em_label">
+		<label>
+			<span class="editlinktip hasTip" title="'.JText::_('NOTE').'::'.JText::_('NAME_EMAIL_USERNAME').'">'.JText::_('QUICK_FILTER').'</span>
+		</label></div>
+		<div class="em_filtersElement">
+			<input id="text_s" type="text" name="s" size="30" value="'.$current_s.'"/> <span id="filter_action"> <a href="#" id="shower">'.JText::_('MORE_FILTERS').'</a> | <a href="#" id="hider">'.JText::_('HIDE_FILTERS').'</a> </span>
+		</div>
+	</div>';
 
-		$filters .= $quick;
+		//$filters .= $quick;
 
 		if(@$params['profile'] !== NULL){
 			$profile = '';
@@ -601,8 +611,9 @@ class EmundusHelperFilters {
 				$profile .= '>'.$prof->label.'</option>'; 
 			}
 			$profile .= '</select>';
-			if ($types['profile'] != 'hidden') $profile .= '</div></div>';
-			$filters .= $profile;
+			if ($types['profile'] != 'hidden') 
+				$profile .= '</div></div>';
+			//$filters .= $profile;
 		}
 		//if($debug==1) $div .= '<input name="view_calc" type="checkbox" onclick="document.pressed=this.name" value="1" '.$view_calc==1?'checked=checked':''.' />';
 		
@@ -621,7 +632,7 @@ class EmundusHelperFilters {
 			}
 			$profile_user .= '</select>';
 			if ($types['profile_users'] != 'hidden') $profile_user .= '</div></div>';
-			$filters .= $profile_user;
+			//$filters .= $profile_user;
 		}
 		
 		if(@$params['evaluator'] !== NULL){
@@ -639,7 +650,7 @@ class EmundusHelperFilters {
 			}
 			$eval .= '</select>';
 			if ($types['evaluator'] != 'hidden') $eval .= '</div></div>';
-			$filters .= $eval;
+			//$filters .= $eval;
 		}
 		
 		if($params['evaluator_group'] !== NULL){
@@ -657,7 +668,7 @@ class EmundusHelperFilters {
 			}
 			$group_eval .= '</select>';
 			if ($types['evaluator_group'] != 'hidden') $group_eval .= '</div></div>';
-			$filters .= $group_eval;
+			//$filters .= $group_eval;
 		}
 		
 		if(@$params['finalgrade'] !== NULL){
@@ -682,7 +693,7 @@ class EmundusHelperFilters {
 							unset($val); unset($i);
 			$final_grade .= '</select>';
 			if ($types['finalgrade'] != 'hidden') $final_grade .= '</div></div>';
-			$filters .= $final_grade;
+			//$filters .= $final_grade;
 		}
 		
 		if(@$params['missing_doc'] !== NULL){
@@ -700,7 +711,7 @@ class EmundusHelperFilters {
 			}
 			$missing_doc .= '</select>';
 			if ($types['schoolyear'] != 'hidden') $missing_doc .= '</div></div>';
-			$filters .= $missing_doc;
+			//$filters .= $missing_doc;
 		}
 		
 		if(@$params['complete'] !== NULL){
@@ -718,7 +729,7 @@ class EmundusHelperFilters {
 			$complete .= '>'.JText::_('NO').'</option>';
 			$complete .= '</select>';
 			if ($types['complete'] != 'hidden') $complete .= '</div></div>';
-			$filters .= $complete;
+			//$filters .= $complete;
 		}
 
 		if(@$params['validate'] !== NULL){
@@ -736,7 +747,7 @@ class EmundusHelperFilters {
 			$validate .= '>'.JText::_('UNVALIDATED').'</option>';
 			$validate .= '</select>';
 			if ($types['validate'] != 'hidden') $validate .= '</div></div>';
-			$filters .= $validate;
+			//$filters .= $validate;
 		}
 
 		if(@$params['campaign'] !== NULL){
@@ -760,7 +771,7 @@ class EmundusHelperFilters {
 			//$campaign .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_campaigns\')">'.JText::_('CLEAR').'</a></div>';
 			if ($types['campaign'] != 'hidden') $campaign .= '</div></div>';
 			$campaign .= '<script>$(document).ready(function() {$("#select-multiple_campaigns").chosen({width: "650px"}); })</script>';
-			$filters .= $campaign;
+			//$filters .= $campaign;
 		}
 
 		if($params['schoolyear'] !== NULL){
@@ -783,7 +794,7 @@ class EmundusHelperFilters {
 			//$schoolyear .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_schoolyears\')">'.JText::_('CLEAR').'</a></div>';
 			if ($types['schoolyear'] != 'hidden') $schoolyear .= '</div></div>';
 			$schoolyear .= '<script>$(document).ready(function() {$("#select-multiple_schoolyears").chosen({width: "650px"});})</script>';
-			$filters .= $schoolyear;
+			//$filters .= $schoolyear;
 		}
 
 		if(@$params['programme'] !== NULL){ 
@@ -807,7 +818,7 @@ class EmundusHelperFilters {
 			//$programme .= '<div id="clearchosen_campaign"><a href="javascript:clearchosen(\'#select-multiple_programmes\')">'.JText::_('CLEAR').'</a></div>';
 			if ($types['programme'] != 'hidden') $programme .= '</div></div>';
 			$programme .= '<script>$(document).ready(function() {$("#select-multiple_programmes").chosen({width: "650px"});})</script>';
-			$filters .= $programme;
+			//$filters .= $programme;
 		}
 
 		if(@$params['engaged'] !== NULL){ 
@@ -823,7 +834,7 @@ class EmundusHelperFilters {
                     <option value="2" '.$no.'> '.JText::_('NO').' </option>
                 </select>';
 			$engaged .= '</div></div>';
-			$filters .= $engaged;
+			//$filters .= $engaged;
 		}
 		
 		//Advance filter builtin
@@ -873,7 +884,7 @@ class EmundusHelperFilters {
 	        $adv_filter .= '</div></div>';
 		
 		
-			$filters .= $adv_filter;
+			//$filters .= $adv_filter;
 		}
 
 		//Other filters builtin
@@ -919,7 +930,7 @@ class EmundusHelperFilters {
 				} 
 			}
 			$other_filter .= '</div></div>';
-			$filters .= $other_filter;
+			//$filters .= $other_filter;
 		}
 		
 		if(@$params['newsletter'] !== NULL){
@@ -952,13 +963,9 @@ class EmundusHelperFilters {
 				</select>
 			</div>';
 			$spam .= '</div>';
-			$filters .= $spam;
+			//$filters .= $spam;
 		}
-		
 
-		//$filters .= '</div><div class="buttons"><input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>';
-		//$filters .='<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/></div>';
-		//$filters .= '</fieldset>';
 		$script = '<script>
 					$( "#hider" ).click(function() {
 						$( ".em_filters" ).hide( "slow" ); 
@@ -974,44 +981,46 @@ class EmundusHelperFilters {
 					</script>';
 
 		$grid = '
-<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>'.$custom_filters.'
 <div class="row">
-  <div class="col-md-3">'.$quick.'</div>
-  <div class="col-md-3">'.$profile.'</div>
-  <div class="col-md-3">'.$profile_user.'</div>
-  <div class="col-md-3">'.$eval.'</div>
+  <div class="col-md-4">'.$quick.'</div>
+  <div class="col-md-4">'.$missing_doc.'</div>
+  <div class="col-md-4">'.$profile_user.'</div>
 </div>
 <div class="row">
-  <div class="col-md-3">'.$group_eval.'</div>
-  <div class="col-md-3">'.$final_grade.'</div>
-  <div class="col-md-3">'.$missing_doc.'</div>
-  <div class="col-md-3">'.$complete.'</div>
+  <div class="col-md-4">'.$eval.'</div>
+  <div class="col-md-4">'.$group_eval.'</div>
+  <div class="col-md-4">'.$final_grade.'</div>
 </div>
 <div class="row">
-  <div class="col-md-3">'.$validate.'</div>
-  <div class="col-md-3"></div>
-  <div class="col-md-3"></div>
-  <div class="col-md-3"></div>
+  <div class="col-md-4">'.$complete.'</div>
+  <div class="col-md-4">'.$validate.'</div>
+  <div class="col-md-4">'.$profile.'</div>
 </div>
 <div class="row">
-  <div class="col-md-3">'.$campaign.'</div>
-  <div class="col-md-3">'.$schoolyear.'</div>
-  <div class="col-md-3">'.$programme.'</div>
-  <div class="col-md-3"></div>
+  <div class="col-md-4">'.$campaign.'</div>
+  <div class="col-md-4">'.$schoolyear.'</div>
+  <div class="col-md-4">'.$programme.'</div>
 </div>
 <div class="row">
-  <div class="col-md-3">'.$adv_filter.'</div>
-  <div class="col-md-3">'.$other_filter.'</div>
-  <div class="col-md-3">'.$news.'</div>
-  <div class="col-md-3">'.$spam.'</div>
+  <div class="col-md-4">'.$spam.'</div>
+  <div class="col-md-4">'.$news.'</div>
+  <div class="col-md-4"></div>
 </div>
+<div class="row">
+  <div class="col-md-4">'.$adv_filter.'</div>
+  <div class="col-md-4">'.$other_filter.'</div>
+  <div class="col-md-4"></div>
+</div>';
+
+	$button ='
 <div class="buttons">
 	<input type="submit" name="search_button" id="search_button" onclick="document.pressed=this.name" value="'.JText::_('SEARCH_BTN').'"/>
 	<input type="submit" name="clear_button" id="clear_button" onclick="document.pressed=this.name" value="'.JText::_('CLEAR_BTN').'"/>
 </div>
-</fieldset>'.$script;
-		
-		return $grid;
+'.$script;
+
+		$filters = '<fieldset id="fieldset-filters"><legend><img src="'.JURI::Base().'media/com_emundus/images/icones/viewmag_22x22.png" alt="'.JText::_('FILTERS').'"/>'.JText::_('FILTERS').'</legend>'.$custom_filters.$grid.$button.'</fieldset>';
+		return $filters;
 	}
 	
 	function getEmundusFilters(){
