@@ -115,7 +115,7 @@ class EmundusModelApplication extends JModel
 	
 	function getUsersComments($id){ 
 		
-		$query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.date, u.name
+		$query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.date, ec.user_id, u.name
 				FROM #__emundus_comments ec 
 				LEFT JOIN #__users u ON u.id = ec.user_id 
 				WHERE ec.applicant_id ="'.$id.'" 
@@ -143,7 +143,7 @@ class EmundusModelApplication extends JModel
 		$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body) 
 				VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).')';
 		$this->_db->setQuery( $query );
-		$this->_db->query();
+		return $this->_db->query();
 	}
 
 	function deleteData($id, $table){ 

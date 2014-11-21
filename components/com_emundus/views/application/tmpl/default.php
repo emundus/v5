@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined('_JEXEC') or die('Restricted access'); 
 
 $itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -48,17 +48,33 @@ function age($naiss) {
                                     echo'<img id="image" class="rounded ui image" src="'.JURI::Base().'media/com_emundus/images/icones/'.strtolower($this->userInformations["gender"]).'_user.png" style="padding:10px 0 0 10px; width:120px;">';
                                 }
                                 ?>
-                      <div class="ui buttons"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&task=pdf&user=<?php echo $this->student->id; ?>">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="file icon"></i> </button>
-                        </a>
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="archive icon"></i> </button>
-                        <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="comment basic icon"></i> </button>
-                        </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=email&tmpl=component&sid=<?php echo $this->student->id; ?>&Itemid=<?php echo $itemid; ?>">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('SEND_EMAIL'); ?>"> <i class="mail basic icon "></i> </button>
-                        </a> </div>
+                      <div class="mini ui icon buttons">
+                        <div class="ui button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>">
+                          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&task=pdf&user=<?php echo $this->student->id; ?>">
+                            <i class="file icon"></i> 
+                          </a>
+                        </div>   
+                        <div class="ui button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>">
+                          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
+                            <i class="attachment icon"></i> 
+                          </a>
+                        </div>
+                        <div class="ui button" data-title="<?php echo JText::_('ADD_COMMENT'); ?>">
+                          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
+                            <i class="comment icon"></i> 
+                          </a>
+                        </div>
+                        <div class="ui button" data-title="<?php echo JText::_('SEND_EMAIL'); ?>">
+                          <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_emundus&view=email&tmpl=component&sid=<?php echo $this->student->id; ?>&Itemid=<?php echo $itemid; ?>">
+                            <i class="mail icon"></i> 
+                          </a>
+                        </div>
+                        <div class="ui button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>">
+                          <button onclick="document.pressed=this.name;" name="export_zip"> 
+                            <i class="archive icon"></i> 
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="column">
@@ -262,9 +278,6 @@ function age($naiss) {
         <?php echo $this->forms; ?> </div>
       <div class="title" id="em_application_comments"> <i class="dropdown icon"></i> <?php echo JText::_('COMMENTS'); ?> </div>
       <div class="content">
-        <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::Base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=89&tableid=92&rowid=&jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
-          <button class="ui button teal submit labeled icon" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="icon edit"></i><?php echo JText::_('ADD_COMMENT'); ?> </button>
-          </a> </div>
         <div class="ui comments">
 
         <style type="text/css">
@@ -286,7 +299,7 @@ function age($naiss) {
             <div class="panel-heading">
                 <span class="glyphicon glyphicon-comment"></span>
                 <h3 class="panel-title"><?php echo JText::_('COMMENTS'); ?></h3>
-                <span class="label label-info"><?php echo count($this->userComments); ?></span>
+                <span id="nb_comment" class="label label-info"><?php echo count($this->userComments); ?></span>
             </div>
             <div class="panel-body">
                 <ul class="list-group">
@@ -294,11 +307,15 @@ function age($naiss) {
         if(count($this->userComments) > 0) {
           $i=0;
           foreach($this->userComments as $comment){ ?>
-                    <li class="list-group-item" id="<?php echo $comment->id; ?>">
+                    <li class="list-group-item comment <?php echo $comment->id; ?>" id="<?php echo $comment->id; ?>">
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
                                 <div>
-                                    <a href="#"><?php echo $comment->reason; ?></a>
+                                <?php
+                                if($this->_user->id == $comment->user_id) { ?>
+                                    <a name="delete_comment" class="​&quot;ui&quot;" id="delete_comment" onclick="$('#confirm_type').val(this.name); $('#confirm_id').val(<?php echo $comment->id; ?>); $('.basic.modal.confirm').modal('show');" data-title="<?php echo JText::_('DELETE_COMMENT'); ?>"><i class="trash icon"></i>​</a>​ 
+                                <?php } ?>
+                                   <a href="#"><?php echo $comment->reason; ?></a>
                                     <div class="mic-info">
                                         <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                                     </div>
@@ -306,14 +323,7 @@ function age($naiss) {
                                 <div class="comment-text">
                                     <?php echo $comment->comment; ?>
                                 </div>
-                                <?php
-                                if($this->_user->id == $comment->user_id) { ?>
-                                <div class="action">
-                                    <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
-                                </div>
-                                <?php } ?>
+
                             </div>
                         </div>
                     </li>
@@ -325,138 +335,83 @@ function age($naiss) {
                 </ul>
             </div>
 
-            <div class="form" id="form"></div>
-        
+            <div class="form" id="form">
+              <input class="form" placeholder="<?php echo JText::_('COMMENT_REASON');?>" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>
+              <textarea class="form" placeholder="<?php echo JText::_('ENTER_COMMENT');?>"  style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>
+              <button type="button" onclick="send_comment()" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-$(document).on('click', '.comments .btn.btn-danger.btn-xs', function(e)
-{ 
-  if (e.handle === true) {
-    e.handle = false;
-    url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
-    var id = $(this).parents('li').attr('id');
-      $.ajax({
-              type:'GET',
-              url:url,
-              dataType:'json',
-              data:({comment_id:id}),
-              success: function(result)
-              {
-                  if(result.status)
-                  {
 
-                      $('.comments li#'+id).empty();
-                      $('.comments li#'+id).append(result.msg);
-                  }
-                  else
-                  {
-                      $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
-                  }
-              },
-              error: function (jqXHR, textStatus, errorThrown)
-              {
-                  console.log(jqXHR.responseText);
-              }
-             });
-  }
-});
-
-var textArea = '<hr><div id="form">' +
+var textArea = '<hr>' +
                     '<label class="control-label"><?php echo JText::_('TITLE');?></label><br>' +
                     '<input class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
                     '<label for="comment" class="control-label"><?php echo JText::_('ENTER_COMMENT');?></label><br>' +
                     '<textarea class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' + 
-                '<button type="button" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button></div>';
+                '<button type="button" onclick="send_comment()" class="btn btn-success"><?php echo JText::_('ADD_COMMENT');?></button>';
 
-$('#form').append(textArea);
+//$('#form').append(textArea);
 
-$(document).on('click', '#form .btn.btn-success', function(f)
-{ 
-  if (f.handle === true) {
-    f.handle = false;
-    var comment = $('#comment-body').val();
-      var title = $('#comment-title').val();
-      if (comment.length == 0)
-      {
-          $('#comment-body').attr('style', 'height:250px !important;width:100% !important; border-color: red !important; background-color:pink !important;');
-          return;
-      }
-      $('.modal-body').empty();
-      $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
-      url = 'index.php?option=com_emundus&controller=application&task=addcomment';
+function send_comment() {
+  var comment = $('#comment-body').val();
+  var title = $('#comment-title').val();
+  var applicant_id = <?php echo $this->student->id; ?>
 
-      $.ajax({
-              type:'POST',
-              url:url,
-              dataType:'json',
-              data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
-              success: function(result)
-              {
-                  $('#form').empty();
-                  if(result.status)
-                  {
-                      $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
-                      var li = ' <li class="list-group-item" id="'+result.id+'">'+
-                          '<div class="row">'+
-                              '<div class="col-xs-10 col-md-11">'+
-                                  '<div>'+
-                                      '<a href="#">'+title+'</a>'+
-                                      '<div class="mic-info">'+
-                                          '<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
-                                      '</div>'+
-                                  '</div>'+
-                                  '<div class="comment-text">'+title+'</div>'+
-                                  '<div class="action">'+
-                                      '<button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">'+
-                                          '<span class="glyphicon glyphicon-trash"></span>'+
-                                      '</button>'+
-                                  '</div>'+
-                              '</div>'+
-                          '</div>'+
-                      '</li>';
-                      $('.comments .list-group').append(li);
-                  }
-                  else
-                  {
-                      $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
-                  }
-
-                  $('#form').append(textArea);
-              },
-              error: function (jqXHR, textStatus, errorThrown)
-              {
-                  console.log(jqXHR.responseText);
-              }
-             });
+  if (comment.length == 0)
+  {
+      $('#comment-body').attr('style', 'height:250px !important;width:100% !important; border-color: red !important; background-color:pink !important;');
+      return;
   }
-});
+  $('.modal-body').empty();
+  $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="media/com_emundus/images/icones/loader-line.gif" alt="loading"/>' +'</div>');
+  url = 'index.php?option=com_emundus&controller=application&task=addcomment';
+
+  $.ajax({
+    type:'POST',
+    url:url,
+    dataType:'json',
+    data:({id:1, applicant_id: applicant_id, title: title, comment:comment}),
+    success: function(result)
+    {
+        
+        if(result.status)
+        {
+            $('#nb_comment').text(parseInt($('#nb_comment').text())+1);
+            $('#form').empty();
+            $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
+            var li = ' <li class="list-group-item" id="'+result.id+'">'+
+                '<div class="row">'+
+                    '<div class="col-xs-10 col-md-11">'+
+                        '<div>'+
+                            '<a href="#">'+title+'</a>'+
+                            '<div class="mic-info">'+
+                                '<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="comment-text">'+title+'</div>'+
+                    '</div>'+
+                '</div>'+
+            '</li>';
+            $('.comments .list-group').append(li);
+            $('#form').append(textArea);
+        }
+        else
+        {
+            $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+        }
+    },
+    error: function (jqXHR, textStatus, errorThrown)
+    {
+        console.log(jqXHR.responseText);
+    }
+  });
+}
 </script>
 
-
-
-          <?php
-		if(count($this->userComments) > 0) { 
-			$i=0;
-			foreach($this->userComments as $comment){ ?>
-          <div class="comment <?php echo $comment->id; ?>" id="comment-box_<?php echo $comment->id; ?>'">
-            <div class="content"  id="comment_content_<?php echo $comment->id; ?>'"> <a name="delete_comment" class="​&quot;ui&quot;" id="delete_comment" onclick="$('#confirm_type').val(this.name); $('#confirm_id').val(<?php echo $comment->id; ?>); $('.basic.modal.confirm').modal('show');" data-title="<?php echo JText::_('DELETE_COMMENT'); ?>"><i class="trash icon"></i>​</a>​ <a class="author"><?php echo $comment->name; ?></a>
-              <div class="metadata">
-                <div class="date"><?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?></div>
-              </div>
-              <div class="text">
-                <h3><?php echo $comment->reason; ?></h3>
-                <?php echo $comment->comment; ?></div>
-            </div>
-            <div class="ui clearing divider"></div>
-          </div>
-          <?php
-				$i++;
-			}
-		} else echo JText::_('NO_COMMENT');
-		?>
         </div>
       </div>
       <div class="title" id="em_application_evaluations"> <i class="dropdown icon"></i> <?php echo JText::_('EVALUATIONS'); ?> </div>
@@ -638,7 +593,8 @@ $('.basic.modal.confirm')
                 case "delete_comment" :
                     var id = $('#confirm_id').val();
                     deleteComment(id);
-                    $('.comment.'+id).fadeOut('slow');
+                    $('#nb_comment').text(parseInt($('#nb_comment').text())-1);
+                    $('.list-group-item.comment.'+id).fadeOut('slow');
                     break;
 
             }

@@ -454,11 +454,11 @@ input.btnhov {
 	display: block;
 	margin:2px;
 }
-#schoolyear.em_filters, #select_missing-doc.em_filters, #campaign.em_filters, #finalgrade.em_filters, #evaluator.em_filters, #gp_evaluator.em_filters, #missing_doc.em_filters, #profile.em_filters  {
+/*#schoolyear.em_filters, #select_missing-doc.em_filters, #campaign.em_filters, #finalgrade.em_filters, #evaluator.em_filters, #gp_evaluator.em_filters, #missing_doc.em_filters, #profile.em_filters  {
 	display: inline-block;
 	margin:5px 2px 5px 2px;
 }
-
+*/
 #add_filt {
 	margin-left:10px;
 }

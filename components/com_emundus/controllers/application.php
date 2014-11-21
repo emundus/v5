@@ -42,6 +42,27 @@ class EmundusControllerApplication extends JController
 		exit;
 	}
 
+	public function addcomment()
+	{
+		$jinput = JFactory::getApplication()->input;
+		$row['user_id'] = JFactory::getUser()->id;
+		$row['applicant_id']  = $jinput->getString('applicant_id', null);
+		$row['reason'] = $jinput->getString('title', '');
+		$row['comment_body'] = $jinput->getString('comment', null);
+
+		$model = $this->getModel('Application');
+
+		$res = $model->addComment($row);
+		if($res == 0)
+		{
+			echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). $res)));
+			exit;
+		}
+
+		echo json_encode((object)(array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'), 'id' => $res)));
+		exit;
+	}
+
 	/**
 	 * Delete an applicant attachment(s)
 	 */
