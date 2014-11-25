@@ -112,16 +112,19 @@ class EmundusHelperList{
 	
 	//check if an applicant is evaluated
 	function isEvaluatedBy($user_id, $campaign_id, $eval_id){
-		$query = 'SELECT id,user FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id.' AND campaign_id='.$campaign_id;
+		$query = 'SELECT count(id) FROM #__emundus_evaluations WHERE student_id='.$user_id.' AND user='.$eval_id.' AND campaign_id='.$campaign_id;
 		$this->_db->setQuery( $query );
-		return count($this->_db->loadObject())>0?true:false;
+		$res = $this->_db->loadResult();
+//echo " -".(($res>0)?1:0).':'.$query;
+		return (($res>0)?1:0);
 	}
 	
 	//check if the applicant is affected to the evaluator to be evaluated
 	function isAffectedToMe($user_id, $campaign_id, $user_eval){
-		$query = 'SELECT id FROM #__emundus_groups_eval ege WHERE ege.applicant_id  = '.$user_id.' AND ege.campaign_id='.$campaign_id.'  AND (ege.user_id='.$user_eval.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$user_eval.'))';
+		$query = 'SELECT count(id) FROM #__emundus_groups_eval ege WHERE ege.applicant_id  = '.$user_id.' AND ege.campaign_id='.$campaign_id.'  AND (ege.user_id='.$user_eval.' OR ege.group_id IN (select group_id from #__emundus_groups where user_id='.$user_eval.'))';
 		$this->_db->setQuery( $query );
-		return count($this->_db->loadObject())>0?true:false;
+		$res = $this->_db->loadResult();
+		return (($res>0)?true:false);
 	}
 	
 	//get all the evaluator for an applicant
@@ -536,6 +539,7 @@ class EmundusHelperList{
 				$ids[] = $val;
 				$evaluation = (!empty($user['user']) && !empty($user['campaign_id']))?EmundusHelperList::getEvaluation($user['user_id'], $user['campaign_id'], $user['user']):array();
 				$isEvalByMe = EmundusHelperList::isEvaluatedBy($user['user_id'], $user['campaign_id'], $current_user->id);
+//@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= ($isEvalByMe);
 				$myAffect = EmundusHelperList::isAffectedToMe($user['user_id'],$user['campaign_id'], $current_user->id); 
 				$pid = EmundusHelperList::getProfile($user['user_id']);
 				$profile = EmundusHelperList::getProfileDetails($pid);
@@ -549,10 +553,59 @@ class EmundusHelperList{
 				
 				$delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['evaluation_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
 
+				if( EmundusHelperAccess::isAdministrator($current_user->id) || EmundusHelperAccess::isCoordinator($current_user->id) ) {
+					$canview = (in_array('view',$params))?true:false;
+					$canadd = (in_array('add',$params))?true:false;;
+					$canedit = (in_array('edit',$params))?true:false;;
+					$candelete = (in_array('delete',$params))?true:false;;
+				} elseif (EmundusHelperAccess::isEvaluator($current_user->id)) {
+					$canview = (in_array('view',$params) && $this->evaluators_can_see > 0)?true:false;
+					$canadd = (in_array('add',$params) && !$isEvalByMe)?true:false;
+					$canedit = (in_array('edit',$params) && $this->evaluators_can_see > 0 && $user['user']==$current_user->id)?true:false;
+					$candelete = (in_array('delete',$params) && $user['user']==$current_user->id)?true:false;
+				} else{
+					$canview = false;
+					$canadd = false;
+					$canedit = false;
+					$candelete = false;
+				}
+
+				if(count($evaluation) > 0) {
+					if($isEvalByMe) {
+						if($canview)
+							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
+						if($canedit)
+							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
+						if($candelete)
+							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
+					} else {
+						if($this->multi_eval == 1) {
+							if($canadd)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
+							if($canview)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
+							if($canedit)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
+							if($candelete)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
+						} else {
+							if($canview)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
+							if($canedit)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
+							if($candelete)
+								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
+						}
+					}
+				} else {
+					if(in_array('add',$params))
+						@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
+				}
+/*
 				if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->evaluators_can_see > 1 ) {
 					$canview = true;
 					$canedit = true;
-				} elseif (@$this->evaluators_can_see > 0) {
+				} elseif ($this->evaluators_can_see > 0) {
 						$canview = true;
 						$canedit = false;
 				} else {
@@ -570,7 +623,7 @@ class EmundusHelperList{
 					if($isEvalByMe) {
 						if(in_array('view',$params) && $canview)
 							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
-						if(in_array('edit',$params) && $canedit)
+						if(in_array('edit',$params))
 							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
 						if(in_array('delete',$params))
 							@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
@@ -580,23 +633,23 @@ class EmundusHelperList{
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
 							if(in_array('view',$params) && $canview)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
-							if(in_array('edit',$params) && $canedit)
+							if(in_array('edit',$params) && $isEvalByMe && $canedit)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
-							if(in_array('delete',$params) && $candelete)
+							if(in_array('delete',$params) && $isEvalByMe && $candelete)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
 						} else {
 							if(in_array('view',$params) && $canview)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $view;
-							if(in_array('edit',$params) && $canedit)
+							if(in_array('edit',$params) && $isEvalByMe && $canedit)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $edit;
-							if(in_array('delete',$params) && $candelete)
+							if(in_array('delete',$params) && $isEvalByMe && $candelete)
 								@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $delete;
 						}
 					}
 				} else {
 					if(in_array('add',$params))
 						@$eval[$user['user_id']][$user['user']][$user['campaign_id']] .= $add;
-				}	
+				}	*/
 			}
 		} 
 		return $eval;

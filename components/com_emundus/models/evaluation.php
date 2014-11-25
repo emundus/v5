@@ -303,20 +303,6 @@ class EmundusModelEvaluation extends JModel
 	
 	function setSelect($search) {
 		$cols = array();
-		/*if(!empty($search)) {
-			asort($search);
-			$i = -1;
-			$old_table = '';
-			foreach ($search as $c)
-				if(!empty($c)){
-					$tab = explode('.', $c);
-					if ($this->details->{$tab[0].'__'.$tab[1]}['group_by'])
-						$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-					else $cols[] = $c.' AS '.$tab[0].'__'.$tab[1];
-				}
-			if(count($cols > 0) && !empty($cols))
-				$cols = implode(', ',$cols);
-		}*/
 
 		if(!empty($search)) {
 			asort($search);
@@ -329,17 +315,11 @@ class EmundusModelEvaluation extends JModel
 				  if(!in_array($tab[0].'.'.$tab[1], $cols)) {
 					if($tab[0]=="jos_emundus_training"){
 						if (count($tab)>=1) {
-							/*if($tab[0] != $old_table)
-								$i++;*/
 							$cols[] = 'search_'.$tab[0].'.label as '.$tab[1].' ';
-							//$old_table = $tab[0];
 						}
 					}else{
 						if (count($tab)>=1) {
-							/*if($tab[0] != $old_table)
-								$i++;*/
 							$cols[] = $tab[0].'.'.$tab[1];
-							//$old_table = $tab[0];
 						}
 					}
 				  }
@@ -663,7 +643,14 @@ class EmundusModelEvaluation extends JModel
 		} else{
 			$applicants = array();	
 		}
+
+
 		if(!empty($applicants)) {
+
+			// Application Comments
+			$params = array("user_name", "date", "reason", "comment");
+			$applicationComment = EmundusHelperList::createApplicationCommentBlock($applicants, $params);
+
 			$eMConfig = JComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
 			///** Ajout des colonnes de moyennes 
@@ -680,7 +667,7 @@ class EmundusModelEvaluation extends JModel
 				$eval_list['campaign_id'] 		= $applicant->campaign_id;
 				$eval_list['evaluation_id'] 	= $applicant->evaluation_id;
 				$eval_list['final_grade'] 		= $applicant->final_grade;
-
+				
 				if (in_array('expert', $this->_actions)) {
 					$request = $this->isFileRequestSent($applicant->user_id, $expert_document_id, $applicant->campaign_id);
 					$eval_list['request'] 		= !empty($request) ? $request : 0;
@@ -689,6 +676,9 @@ class EmundusModelEvaluation extends JModel
 				if (in_array('letter', $this->_actions)) {
 					$eval_list['date_result_sent'] = !empty($applicant->date_result_sent) ? $applicant->date_result_sent : 0;
 				}
+
+				$eval_list['application_comment'] = $applicationComment[$applicant->user_id];
+
 				
 	//var_dump($this->col);			
 				if(!empty($search)){
@@ -871,13 +861,13 @@ class EmundusModelEvaluation extends JModel
 		if (in_array('letter', $this->_actions)) {
 			$cols[] = array('name' =>'date_result_sent', 'label'=>'DATE_RESULT_SENT_ON'); 
 		}
-		
+		$cols[] = array('name' =>'application_comment', 'label'=>'APPLICATION_COMMENT'); 
 		$this->_applicantColumns = $cols;
 
 		return $cols;
 	}
 	
-	// get ranking columns
+	// get ranking columns 
 	function getRankingColumns(){
 		$cols = array();
 		$cols[] = array('name' =>'ranking', 'label'=>'RANKING'); 

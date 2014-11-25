@@ -307,27 +307,27 @@ function age($naiss) {
         if(count($this->userComments) > 0) {
           $i=0;
           foreach($this->userComments as $comment){ ?>
-                    <li class="list-group-item comment <?php echo $comment->id; ?>" id="<?php echo $comment->id; ?>">
-                        <div class="row">
-                            <div class="col-xs-10 col-md-11">
-                                <div>
-                                <?php
-                                if($this->_user->id == $comment->user_id) { ?>
-                                    <a name="delete_comment" class="​&quot;ui&quot;" id="delete_comment" onclick="$('#confirm_type').val(this.name); $('#confirm_id').val(<?php echo $comment->id; ?>); $('.basic.modal.confirm').modal('show');" data-title="<?php echo JText::_('DELETE_COMMENT'); ?>"><i class="trash icon"></i>​</a>​ 
-                                <?php } ?>
-                                   <a href="#"><?php echo $comment->reason; ?></a>
-                                    <div class="mic-info">
-                                        <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
-                                    </div>
-                                </div>
-                                <div class="comment-text">
-                                    <?php echo $comment->comment; ?>
-                                </div>
-
+            <li class="list-group-item comment <?php echo $comment->id; ?>" id="<?php echo $comment->id; ?>">
+                <div class="row">
+                    <div class="col-xs-10 col-md-11">
+                        <div>
+                        <?php
+                        if($this->_user->id == $comment->user_id) { ?>
+                            <a name="delete_comment" class="​&quot;ui&quot;" id="delete_comment" onclick="$('#confirm_type').val(this.name); $('#confirm_id').val(<?php echo $comment->id; ?>); $('.basic.modal.confirm').modal('show');" data-title="<?php echo JText::_('DELETE_COMMENT'); ?>"><i class="trash icon"></i>​</a>​ 
+                        <?php } ?>
+                           <a href="#"><?php echo $comment->reason; ?></a>
+                            <div class="mic-info">
+                                <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
                             </div>
                         </div>
-                    </li>
-                 <?php
+                        <div class="comment-text">
+                            <?php echo $comment->comment; ?>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+         <?php
             $i++;
           }
         } else echo JText::_('NO_COMMENT');
@@ -392,7 +392,7 @@ function send_comment() {
                                 '<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
                             '</div>'+
                         '</div>'+
-                        '<div class="comment-text">'+title+'</div>'+
+                        '<div class="comment-text">'+comment+'</div>'+
                     '</div>'+
                 '</div>'+
             '</li>';

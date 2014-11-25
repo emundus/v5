@@ -101,7 +101,7 @@ $schoolyears = JRequest::getVar('schoolyears', null, 'POST', 'array',0);
                                 }elseif(empty($value) && $value !== '0' && $key != 'overall' && $key !='application_mark')
                                     echo '<td class="red">'.$value.'</td>';
 								else
-									echo '<td>'.$value.'</td>';
+									echo '<td class="green">'.$value.'</td>';
 								}
                             } //end foreach($evalu)
                             if ( EmundusHelperAccess::isAdministrator($this->_user->id) ||  EmundusHelperAccess::isCoordinator($this->_user->id)  
@@ -215,5 +215,6 @@ function hidden_affect(affect)
 		set_default(eval);
 	}
 }
-
+// column application comments
+$('.comment.icon.link').popup({inline: true});
 </script>

@@ -565,9 +565,9 @@ class EmundusHelperFilters {
 					foreach($research_filters as $filter){
 						// var_dump($select_id);
 						if($select_id==$filter->id){
-							$filters .= '<option value="'.$filter->id.'" selected >'.$filter->name.'</option>';
+							$custom_filters .= '<option value="'.$filter->id.'" selected >'.$filter->name.'</option>';
 						}else{
-							$filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+							$custom_filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
 						}
 					}
 				}
@@ -983,32 +983,32 @@ class EmundusHelperFilters {
 		$grid = '
 <div class="row">
   <div class="col-md-4">'.$quick.'</div>
-  <div class="col-md-4">'.$missing_doc.'</div>
-  <div class="col-md-4">'.$profile_user.'</div>
+  <div class="col-md-4">'.@$missing_doc.'</div>
+  <div class="col-md-4">'.@$profile_user.'</div>
 </div>
 <div class="row">
-  <div class="col-md-4">'.$eval.'</div>
-  <div class="col-md-4">'.$group_eval.'</div>
-  <div class="col-md-4">'.$final_grade.'</div>
+  <div class="col-md-4">'.@$eval.'</div>
+  <div class="col-md-4">'.@$group_eval.'</div>
+  <div class="col-md-4">'.@$final_grade.'</div>
 </div>
 <div class="row">
-  <div class="col-md-4">'.$complete.'</div>
-  <div class="col-md-4">'.$validate.'</div>
-  <div class="col-md-4">'.$profile.'</div>
+  <div class="col-md-4">'.@$complete.'</div>
+  <div class="col-md-4">'.@$validate.'</div>
+  <div class="col-md-4">'.@$profile.'</div>
 </div>
 <div class="row">
-  <div class="col-md-4">'.$campaign.'</div>
-  <div class="col-md-4">'.$schoolyear.'</div>
-  <div class="col-md-4">'.$programme.'</div>
+  <div class="col-md-4">'.@$campaign.'</div>
+  <div class="col-md-4">'.@$schoolyear.'</div>
+  <div class="col-md-4">'.@$programme.'</div>
 </div>
 <div class="row">
-  <div class="col-md-4">'.$spam.'</div>
-  <div class="col-md-4">'.$news.'</div>
+  <div class="col-md-4">'.@$spam.'</div>
+  <div class="col-md-4">'.@$news.'</div>
   <div class="col-md-4"></div>
 </div>
 <div class="row">
-  <div class="col-md-4">'.$adv_filter.'</div>
-  <div class="col-md-4">'.$other_filter.'</div>
+  <div class="col-md-4">'.@$adv_filter.'</div>
+  <div class="col-md-4">'.@$other_filter.'</div>
   <div class="col-md-4"></div>
 </div>';
 

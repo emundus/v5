@@ -56,6 +56,9 @@ class EmundusViewApplication extends JView{
 		
 		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) die("ACCESS_DENIED");
 
+		$jinput = JFactory::getApplication()->input;
+		$layout  = $jinput->getString('layout', 'default');
+
 		$menu_params = $menu->getParams($current_menu->id);
 
 		$campaign_id = JRequest::getVar('campaign_id', null, 'GET', 'none', 0);
@@ -72,72 +75,89 @@ class EmundusViewApplication extends JView{
 
 		$application = $this->getModel('application');
 
-		$details_id = "82, 87, 89"; // list of Fabrik elements ID
-		$userDetails = $application->getApplicantDetails($aid, $details_id);
-		$this->assignRef('userDetails', $userDetails);
+		switch ($layout) {
+			case 'comment':
+				$userComments = $application->getUsersComments($aid);
+				$this->assignRef('userComments', $userComments);
+				
+				$userCampaigns = $application->getUserCampaigns($aid);
+				$this->assignRef('userCampaigns', $userCampaigns);
+				
+				$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate');
+				$userInformations = $application->getApplicantInfos($aid, $infos);
+				$this->assignRef('userInformations', $userInformations);
+				
+				break;
+			
+			default:
+				$details_id = "82, 87, 89"; // list of Fabrik elements ID
+				$userDetails = $application->getApplicantDetails($aid, $details_id);
+				$this->assignRef('userDetails', $userDetails);
 
-		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate');
-		$userInformations = $application->getApplicantInfos($aid, $infos);
-		$this->assignRef('userInformations', $userInformations);
-		
-		$userCampaigns = $application->getUserCampaigns($aid);
-		$this->assignRef('userCampaigns', $userCampaigns);
-		
-		$userAttachments = $application->getUserAttachments($aid);
-		$this->assignRef('userAttachments', $userAttachments);
-		
-		$userComments = $application->getUsersComments($aid);
-		$this->assignRef('userComments', $userComments);
+				$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate');
+				$userInformations = $application->getApplicantInfos($aid, $infos);
+				$this->assignRef('userInformations', $userInformations);
+				
+				$userCampaigns = $application->getUserCampaigns($aid);
+				$this->assignRef('userCampaigns', $userCampaigns);
+				
+				$userAttachments = $application->getUserAttachments($aid);
+				$this->assignRef('userAttachments', $userAttachments);
+				
+				$userComments = $application->getUsersComments($aid);
+				$this->assignRef('userComments', $userComments);
 
-		$lastCampaign = $application->getLastCampaignApply($aid);
-		
-		$formsProgress = $application->getFormsProgress($aid, $lastCampaign['profile_id']);
-		$this->assignRef('formsProgress', $formsProgress);
+				$lastCampaign = $application->getLastCampaignApply($aid);
+				
+				$formsProgress = $application->getFormsProgress($aid, $lastCampaign['profile_id']);
+				$this->assignRef('formsProgress', $formsProgress);
 
-		$attachmentsProgress = $application->getAttachmentsProgress($aid, $lastCampaign['profile_id']);
-		$this->assignRef('attachmentsProgress', $attachmentsProgress);
+				$attachmentsProgress = $application->getAttachmentsProgress($aid, $lastCampaign['profile_id']);
+				$this->assignRef('attachmentsProgress', $attachmentsProgress);
 
-		$logged = $application->getlogged($aid);
-		$this->assignRef('logged', $logged);
+				$logged = $application->getlogged($aid);
+				$this->assignRef('logged', $logged);
 
-		$forms = $application->getforms($aid);
-		$this->assignRef('forms', $forms);
-		
-		$email = $application->getEmail($aid);
-		$this->assignRef('email', $email);
+				$forms = $application->getforms($aid);
+				$this->assignRef('forms', $forms);
+				
+				$email = $application->getEmail($aid);
+				$this->assignRef('email', $email);
 
-		//Evaluation
-		if($this->_user->profile==16)
-			$options = array('view');
-		else
-			$options = array('add', 'edit', 'delete');
+				//Evaluation
+				if($this->_user->profile==16)
+					$options = array('view');
+				else
+					$options = array('add', 'edit', 'delete');
 
-		$user[0] = array (
-	      'user_id' => $student->id,
-	      'name' => $student->name,
-	      'email_applicant' => $student->email,
-	      'campaign' => "",
-	      'campaign_id' => $campaign_id,
-	      'evaluation_id' => $rowid, 
-	      'final_grade' => "",
-	      'date_result_sent' => "",
-	      'result' => "",
-	      'comment' => "",
-	      'user' => $this->_user->id,
-	      'user_name' => "",
-	      'ranking' => ""
-	      );
+				$user[0] = array (
+			      'user_id' => $student->id,
+			      'name' => $student->name,
+			      'email_applicant' => $student->email,
+			      'campaign' => "",
+			      'campaign_id' => $campaign_id,
+			      'evaluation_id' => $rowid, 
+			      'final_grade' => "",
+			      'date_result_sent' => "",
+			      'result' => "",
+			      'comment' => "",
+			      'user' => $this->_user->id,
+			      'user_name' => "",
+			      'ranking' => ""
+			      );
 
-		$this->assignRef('campaign_id', $campaign_id);
+				$this->assignRef('campaign_id', $campaign_id);
 
-		$evaluation = EmundusHelperList::createEvaluationBlock($user, $options);
-		$this->assignRef('evaluation', $evaluation);
-		unset($options);
+				$evaluation = EmundusHelperList::createEvaluationBlock($user, $options);
+				$this->assignRef('evaluation', $evaluation);
+				unset($options);
 
-		$options = array('evaluation');
-		$actions = EmundusHelperList::createActionsBlock($user, $options);
-		$this->assignRef('actions', $actions);
-		unset($options);
+				$options = array('evaluation');
+				$actions = EmundusHelperList::createActionsBlock($user, $options);
+				$this->assignRef('actions', $actions);
+				unset($options);
+				break;
+		}
 
         parent::display($tpl);
     }

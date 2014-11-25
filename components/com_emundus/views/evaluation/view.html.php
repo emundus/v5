@@ -48,6 +48,9 @@ class EmundusViewEvaluation extends JView
 		JHTML::_('behavior.tooltip');
 		JHTML::stylesheet( 'emundus.css', JURI::Base().'media/com_emundus/css/' );
 		JHTML::stylesheet( 'menu_style.css', JURI::Base().'media/com_emundus/css/' );
+		JHTML::stylesheet( JURI::base()."media/com_emundus/lib/semantic/packaged/css/semantic.min.css" );
+		JHTML::script( JURI::base()."media/com_emundus/lib/jquery-1.10.2.min.js" );
+		JHTML::script( JURI::base()."media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$evaluators_can_see = $eMConfig->get('evaluators_can_see', '0');
@@ -78,7 +81,7 @@ class EmundusViewEvaluation extends JView
 
 		$access =! empty($current_menu)?$current_menu->access : 0;
 		$state	= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access) ? '' : NULL;
-		$filts_details	= array(//'profile' => $state,
+/*		$filts_details	= array(//'profile' => $state,
 			'evaluator'	=> $state,
 			'evaluator_group'	=> $state,
 			'schoolyear'	=> $state,
@@ -100,31 +103,7 @@ class EmundusViewEvaluation extends JView
 			'validate'	=> NULL,
 			'other'	=> NULL,
 			'adv_filter'		=> '');
-		/*$filts_details = array('profile' => NULL,
-		'evaluator' => NULL,
-		'evaluator_group' => NULL,
-		'schoolyear' => NULL,
-		'campaign' => NULL,
-		'missing_doc' => NULL,
-		'complete' => NULL,
-		'finalgrade' => NULL,
-		'validate' => NULL,
-		'other' => NULL);
-		$filts_options = array('profile' => NULL,
-		'evaluator' => NULL,
-		'evaluator_group' => NULL,
-		'schoolyear' => NULL,
-		'campaign' => NULL,
-		'missing_doc' => NULL,
-		'complete' => NULL,
-		'finalgrade' => NULL,
-		'validate' => NULL,
-		'other' => NULL);*/
-		/*if($isallowed)
-		$options = array('profile', 'evaluator', 'evaluator_group', 'schoolyear', 'finalgrade', 'missing_doc');
-		else
-		$options = array();*/
-
+*/
 		//Filters
 		$tables 		= explode(',', $menu_params->get('em_tables_id'));
 		$filts_names 	= explode(',', $menu_params->get('em_filters_names'));
